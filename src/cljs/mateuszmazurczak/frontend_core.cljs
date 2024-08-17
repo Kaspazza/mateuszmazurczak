@@ -1,17 +1,17 @@
 (ns mateuszmazurczak.frontend-core
   "Entry point for customer app frontend"
   (:require
-   [automaton-core.log                        :as core-log]
-   [automaton-web.configuration               :as web-conf]
-   [automaton-web.duplex.router               :as rt]
-   [automaton-web.events-proxy                :as web-events-proxy]
-   [automaton-web.log.tracking.error-tracking :as error-tracking]
-   [automaton-web.react-proxy                 :as web-react]
-   [mateuszmazurczak.fe.events                :as mateuszmazurczak-fe-events]
-   [mateuszmazurczak.fe.history               :as mateuszmazurczak-fe-history]
+   [automaton-core.log          :as core-log]
+   ;; [automaton-web.configuration               :as web-conf]
+   [automaton-web.duplex.router :as rt]
+   [automaton-web.events-proxy  :as web-events-proxy]
+   ;; [automaton-web.log.tracking.error-tracking :as error-tracking]
+   [automaton-web.react-proxy   :as web-react]
+   [mateuszmazurczak.fe.events  :as mateuszmazurczak-fe-events]
+   [mateuszmazurczak.fe.history :as mateuszmazurczak-fe-history]
    [mateuszmazurczak.fe.panels.public]
-   [mateuszmazurczak.main                     :as lm]
-   [mount.core                                :as mount]))
+   [mateuszmazurczak.main       :as lm]
+   [mount.core                  :as mount]))
 
 (defonce *root (atom nil))
 

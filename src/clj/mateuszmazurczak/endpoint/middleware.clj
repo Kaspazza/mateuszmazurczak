@@ -18,7 +18,7 @@
              :access-control-allow-origin
              (concat (web-language/cors-domain-routes
                       mateuszmazurczak-language/languages
-                      "hephaistox")
+                      "mateuszmazurczak")
                      ;;TODO update it for my provider
                      [#".*cleverapps.io$"])
              :access-control-allow-methods

@@ -9,7 +9,7 @@
   First level of keyword is the id of the language, used internally, should be present in `automaton-core.i18n.language`
   Then, the map has the following data:
   * For now, no specific data is needed in that app "
-  {:fr {}
+  {:pl {}
    :en {}})
 
 (def languages

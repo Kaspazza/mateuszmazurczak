@@ -5,16 +5,18 @@
    [automaton-web.adapters.be.http-response :as http-response]
    [automaton-web.pages.errors              :as error-pages]
    [automaton-web.router                    :as web-router]
-   [mateuszmazurczak.endpoint.handler                :as mateuszmazurczak-handler]
-   [mateuszmazurczak.endpoint.middleware             :as mateuszmazurczak-middleware]
-   [mateuszmazurczak.endpoint.routes                 :as mateuszmazurczak-endpoint-routes]))
+   [mateuszmazurczak.endpoint.handler       :as mateuszmazurczak-handler]
+   [mateuszmazurczak.endpoint.middleware    :as mateuszmazurczak-middleware]
+   [mateuszmazurczak.endpoint.routes        :as
+                                            mateuszmazurczak-endpoint-routes]))
 
 (def ring-handler
   "Ring handler for web pages of mateuszmazurczak app
   Params:
   * `ring-handler`"
   (web-router/ring-handler
-   {:web-routes (mateuszmazurczak-endpoint-routes/web-routes mateuszmazurczak-handler/registry)
+   {:web-routes (mateuszmazurczak-endpoint-routes/web-routes
+                 mateuszmazurczak-handler/registry)
     :web-middleware mateuszmazurczak-middleware/web-middleware
     :translator-middlewares []
     :global-middlewares mateuszmazurczak-middleware/global-middlewares}))

@@ -1,11 +1,11 @@
 (ns mateuszmazurczak.main
   "Entry point to mateuszmazurczak app"
   (:require
-   [automaton-web.events-proxy :as web-events-proxy]
-   [automaton-web.react-proxy  :as web-react]
-   [clojure.string             :as str]
-   [mateuszmazurczak.events.subs        :as mateuszmazurczak-subs]
-   [mateuszmazurczak.fe.panels          :as mateuszmazurczak-fe-panels]))
+   [automaton-web.events-proxy   :as web-events-proxy]
+   [automaton-web.react-proxy    :as web-react]
+   [clojure.string               :as str]
+   [mateuszmazurczak.events.subs :as mateuszmazurczak-subs]
+   [mateuszmazurczak.fe.panels   :as mateuszmazurczak-fe-panels]))
 
 (defn- set-scroll-position!
   "Aligns scroll position of a page to Match fragment. If there is no specified fragment element or there is no component with that id on the page scroll position is set to the top of the window.
@@ -24,9 +24,10 @@
   (web-react/create-class
    {:component-did-update (fn [_] (set-scroll-position!))
     :reagent-render (fn [_]
-                      (let [route-match (some-> (web-events-proxy/subscribe
-                                                 [::mateuszmazurczak-subs/route-match])
-                                                deref)]
+                      (let [route-match
+                            (some-> (web-events-proxy/subscribe
+                                     [::mateuszmazurczak-subs/route-match])
+                                    deref)]
                         [mateuszmazurczak-fe-panels/panels route-match]))}))
 
 (defn main-component "Main component replacing app" [] [router-component])

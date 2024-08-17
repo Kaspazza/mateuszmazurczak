@@ -42,7 +42,7 @@
    :jvm-opts ["-Dheph-conf=env/test/config.edn,env/common_config.edn"]}
   :env-development-repl
   {:extra-deps {org.clojars.hephaistox/automaton-web-dev #:mvn{:version
-                                                               "0.0.15"}}
+                                                               "0.0.2"}}
    :extra-paths ["env/development/resources"
                  "env/development/src/clj"
                  "env/development/src/cljc"]

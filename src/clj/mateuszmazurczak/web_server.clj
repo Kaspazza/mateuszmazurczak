@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.web-server
   "Webserver state component, hold the webserver instance"
   (:require
-   [automaton-core.log       :as core-log]
-   [automaton-web.web-server :as server]
-   [mateuszmazurczak.endpoint.router  :as mateuszmazurczak-router]
-   [mount.core               :refer [defstate]]))
+   [automaton-core.log               :as core-log]
+   [automaton-web.web-server         :as server]
+   [mateuszmazurczak.endpoint.router :as mateuszmazurczak-router]
+   [mount.core                       :refer [defstate]]))
 
 (defstate http-server
           :start (try (core-log/info "Starting http-server")

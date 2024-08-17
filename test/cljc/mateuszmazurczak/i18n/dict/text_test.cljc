@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.i18n.dict.text-test
   (:require
    [automaton-core.i18n.missing-translation-report :as b-language]
-   [mateuszmazurczak.i18n.dict.text                         :as sut]
+   [mateuszmazurczak.i18n.dict.text                :as sut]
    #?(:clj [clojure.test :refer [deftest is testing]]
       :cljs [cljs.test :refer [deftest is testing] :include-macros true])))
 

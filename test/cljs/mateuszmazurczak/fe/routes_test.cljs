@@ -1,9 +1,9 @@
 (ns mateuszmazurczak.fe.routes-test
   (:require
-   [cljs.test         :refer          [deftest is testing]
-                      :include-macros true]
+   [cljs.test                  :refer          [deftest is testing]
+                               :include-macros true]
    [mateuszmazurczak.fe.router :as mateuszmazurczak-fe-router]
-   [reitit.core       :as reitit]))
+   [reitit.core                :as reitit]))
 
 ;; Use this to show expanded routes
 (reitit/routes (:router @mateuszmazurczak-fe-router/router))

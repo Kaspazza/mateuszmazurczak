@@ -7,7 +7,7 @@
    [automaton-web.fe.history.reitit :as fe-history-reitit]
    [clojure.string                  :as str]
    [day8.re-frame.tracing           :refer-macros [fn-traced]]
-   [mateuszmazurczak.fe.router               :as mateuszmazurczak-fe-router]
+   [mateuszmazurczak.fe.router      :as mateuszmazurczak-fe-router]
    [mount.core                      :refer [defstate]]))
 
 (defn update-match-fragment

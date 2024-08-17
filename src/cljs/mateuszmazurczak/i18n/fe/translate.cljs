@@ -3,9 +3,10 @@
   (:require
    [automaton-web.i18n.fe.translator         :as fe-translator]
    [automaton-web.i18n.fe.translator.tempura :as fe-tempura-translator]
-   [mateuszmazurczak.i18n.dict.resources              :as mateuszmazurczak-dict-resources]
-   [mateuszmazurczak.i18n.dict.text                   :as mateuszmazurczak-dict-text]
-   [mateuszmazurczak.i18n.language                    :as mateuszmazurczak-language]))
+   [mateuszmazurczak.i18n.dict.resources     :as
+                                             mateuszmazurczak-dict-resources]
+   [mateuszmazurczak.i18n.dict.text          :as mateuszmazurczak-dict-text]
+   [mateuszmazurczak.i18n.language           :as mateuszmazurczak-language]))
 
 (def main-langs "List of main languages the first matching is used" [:fr])
 

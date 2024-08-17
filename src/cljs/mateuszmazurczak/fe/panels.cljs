@@ -1,11 +1,11 @@
 (ns mateuszmazurczak.fe.panels
   "Describe panels dispatch mechanism for the mateuszmazurczak frontend"
   (:require
-   [automaton-core.log               :as core-log]
-   [automaton-web.components.errors  :as web-comp-errors]
-   [automaton-web.components.spinner :as web-spinner]
-   [mateuszmazurczak.fe.router                :as mateuszmazurczak-fe-router]
-   [mateuszmazurczak.i18n.fe.translate        :as mateuszmazurczak-fe-translate]))
+   [automaton-core.log                 :as core-log]
+   [automaton-web.components.errors    :as web-comp-errors]
+   [automaton-web.components.spinner   :as web-spinner]
+   [mateuszmazurczak.fe.router         :as mateuszmazurczak-fe-router]
+   [mateuszmazurczak.i18n.fe.translate :as mateuszmazurczak-fe-translate]))
 
 (defn- match-to-panel-id
   "Transform a match coming from routing into a panel id that will be displayed

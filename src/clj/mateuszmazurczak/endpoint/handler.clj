@@ -84,46 +84,4 @@
 
 (def registry
   "Registry matching keywords to handler"
-  {:html-page/index mateuszmazurczak-page
-   :html-page/simulation (partial article-page
-                                  {:title :simulation
-                                   :description :simulation-meta-description
-                                   :image :simulation-page-preview
-                                   :url "articles/simulation"})
-   :html-page/simulation-pitch (partial article-page
-                                        {:title :simulation-pitch
-                                         :description
-                                         :simulation-pitch-meta-description
-                                         :image :simulation-pitch-page-preview
-                                         :url "articles/simulation-pitch"})
-   :html-page/about-us (partial article-page
-                                {:title :about-us
-                                 :description :about-us-meta-description
-                                 :image :about-us-page-preview
-                                 :url "articles/about-us"})
-   :html-page/our-brand (partial article-page
-                                 {:title :our-brand
-                                  :description :our-brand-meta-description
-                                  :image :our-brand-page-preview
-                                  :url "articles/our-brand"})
-   :html-page/commitment (partial article-page
-                                  {:title :commitment-to-collaboration
-                                   :description :commitment-meta-description
-                                   :image :commitment-page-preview
-                                   :url "articles/commitment"})
-   :html-page/additional-outcomes
-   (partial article-page
-            {:title :additional-outcomes
-             :description :additional-outcomes-meta-description
-             :image :additional-outcomes-page-preview
-             :url "articles/additional-outcomes"})
-   :html-page/network (partial article-page
-                               {:title :network
-                                :description :network-meta-description
-                                :image :network-page-preview
-                                :url "articles/network"})
-   :html-page/our-values (partial article-page
-                                  {:title :our-values
-                                   :description :our-values-meta-description
-                                   :image :our-values-page-preview
-                                   :url "articles/our-values"})})
+  {:html-page/index mateuszmazurczak-page})

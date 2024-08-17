@@ -28,10 +28,10 @@
 
 (defn ^:export init!
   []
-  (try (error-tracking/init-error-tracking!
-        {:dsn (web-conf/read-param [:log :sentry :frontend :dsn])
-         :traced-website #"^https://mateuszmazurczak\.com/"
-         :env (web-conf/read-param [:env])})
+  (try #_(error-tracking/init-error-tracking!
+          {:dsn (web-conf/read-param [:log :sentry :frontend :dsn])
+           :traced-website #"^https://mateuszmazurczak\.com/"
+           :env (web-conf/read-param [:env])})
        (core-log/info "Front end starting")
        (web-events-proxy/client-app-db-init!
         ::mateuszmazurczak-fe-events/initialize-db) ;; What is done before will be lost in the state

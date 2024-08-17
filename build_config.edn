@@ -1,5 +1,13 @@
 {:app-name "mateuszmazurczak"
  :task-shared {:gha {}
+               :publication
+               {:as-lib kaspazza/mateuszmazurczak
+                :frontend {:css {}
+                           :deploy-alias :mateuszmazurczak-app
+                           :run-aliases
+                           [:mateuszmazurczak-app :browser-test :ltest]}
+                :jar-main "mateuszmazurczak.core"
+                :repo "git@github.com:hephaistox/mateuszmazurczak.git"}
                :repl-aliases [:common-test :env-development-repl :build]
                :storage-datomic {}}
  :tasks {:clean {:dirs [".cpcache/"

@@ -1,12 +1,7 @@
 (ns mateuszmazurczak.portfolio.portfolio
   (:require
    [automaton-web.portfolio.proxy :as web-proxy]
-   [mateuszmazurczak.portfolio.mateuszmazurczak.downloadable]
-   [mateuszmazurczak.portfolio.mateuszmazurczak.elevator]
-   [mateuszmazurczak.portfolio.mateuszmazurczak.hero]
-   [mateuszmazurczak.portfolio.mateuszmazurczak.home]
-   [mateuszmazurczak.portfolio.mateuszmazurczak.team]
-   [mateuszmazurczak.portfolio.mateuszmazurczak.us]))
+   [mateuszmazurczak.portfolio.mateuszmazurczak.home]))
 
 (defonce app
   (web-proxy/start!

@@ -1,26 +1,28 @@
 (ns mateuszmazurczak.fe.panels.public
   "Describes the link between panel names and contents"
   (:require
-   [automaton-web.components.errors :as web-comp-errors]
-   [mateuszmazurczak.fe.history              :as mateuszmazurczak-fe-history]
-   [mateuszmazurczak.fe.panels               :as mateuszmazurczak-fe-panels]
-   [mateuszmazurczak.i18n.fe.translate       :as mateuszmazurczak-fe-translate]
-   [mateuszmazurczak.routes                  :as mateuszmazurczak-routes]
-   [mateuszmazurczak.simulation-toy-example  :as mateuszmazurczak-toy-example]
-   [mateuszmazurczak.ui.additional-outcomes  :as mateuszmazurczak-ui-additional-outcomes]
-   [mateuszmazurczak.ui.brand                :as mateuszmazurczak-ui-brand]
-   [mateuszmazurczak.ui.commitment           :as mateuszmazurczak-ui-commitment]
-   [mateuszmazurczak.ui.home                 :as mateuszmazurczak-home]
-   [mateuszmazurczak.ui.legal                :as mateuszmazurczak-ui-legal]
-   [mateuszmazurczak.ui.simulation           :as mateuszmazurczak-ui-simulation]
-   [mateuszmazurczak.ui.structure            :as mateuszmazurczak-ui-structure]
-   [mateuszmazurczak.ui.team                 :as mateuszmazurczak-ui-team]
-   [mateuszmazurczak.ui.us                   :as mateuszmazurczak-ui-us]
-   [mateuszmazurczak.ui.values               :as mateuszmazurczak-ui-values]))
+   [automaton-web.components.errors         :as web-comp-errors]
+   [mateuszmazurczak.fe.history             :as mateuszmazurczak-fe-history]
+   [mateuszmazurczak.fe.panels              :as mateuszmazurczak-fe-panels]
+   [mateuszmazurczak.i18n.fe.translate      :as mateuszmazurczak-fe-translate]
+   [mateuszmazurczak.routes                 :as mateuszmazurczak-routes]
+   [mateuszmazurczak.simulation-toy-example :as mateuszmazurczak-toy-example]
+   [mateuszmazurczak.ui.additional-outcomes
+    :as mateuszmazurczak-ui-additional-outcomes]
+   [mateuszmazurczak.ui.brand               :as mateuszmazurczak-ui-brand]
+   [mateuszmazurczak.ui.commitment          :as mateuszmazurczak-ui-commitment]
+   [mateuszmazurczak.ui.home                :as mateuszmazurczak-home]
+   [mateuszmazurczak.ui.legal               :as mateuszmazurczak-ui-legal]
+   [mateuszmazurczak.ui.simulation          :as mateuszmazurczak-ui-simulation]
+   [mateuszmazurczak.ui.structure           :as mateuszmazurczak-ui-structure]
+   [mateuszmazurczak.ui.team                :as mateuszmazurczak-ui-team]
+   [mateuszmazurczak.ui.us                  :as mateuszmazurczak-ui-us]
+   [mateuszmazurczak.ui.values              :as mateuszmazurczak-ui-values]))
 
 (defmethod mateuszmazurczak-fe-panels/panels :panels/home
   []
-  [mateuszmazurczak-ui-structure/mateuszmazurczak-page-structure [mateuszmazurczak-home/home]])
+  [mateuszmazurczak-ui-structure/mateuszmazurczak-page-structure
+   [mateuszmazurczak-home/home]])
 
 (defmethod mateuszmazurczak-fe-panels/panels :panels/disclaimer
   []
@@ -105,4 +107,5 @@
    {:title (mateuszmazurczak-fe-translate/tr :not-found-page)
     :description (mateuszmazurczak-fe-translate/tr :not-found-description)
     :back-home-text (mateuszmazurczak-fe-translate/tr :back-home)
-    :back-link (mateuszmazurczak-fe-history/href ::mateuszmazurczak-routes/home)}))
+    :back-link (mateuszmazurczak-fe-history/href
+                ::mateuszmazurczak-routes/home)}))

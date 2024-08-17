@@ -1,8 +1,8 @@
 (ns mateuszmazurczak.endpoint.routes
   (:require
-   [automaton-web.routes :as web-routes]
-   [mateuszmazurczak.env          :as env]
-   [mateuszmazurczak.routes       :as mateuszmazurczak-routes]))
+   [automaton-web.routes    :as web-routes]
+   [mateuszmazurczak.env    :as env]
+   [mateuszmazurczak.routes :as mateuszmazurczak-routes]))
 
 (defn web-routes
   "Routes for mateuszmazurczak,

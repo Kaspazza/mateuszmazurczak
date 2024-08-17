@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.fe.router-test
   (:require
-   [cljs.test         :refer          [deftest is testing]
-                      :include-macros true]
+   [cljs.test                  :refer          [deftest is testing]
+                               :include-macros true]
    [mateuszmazurczak.fe.router :as sut]))
 
 (deftest start-router-test

@@ -27,14 +27,14 @@
                 conj
                 (web-hiccup/js-script-raw (web-conf/config-web-reference)))
      {:meta-tags {:description (fallback/always-return #(tr description) "")
-                  :image (str "https://hephaistox.com/"
+                  :image (str "https://mateuszmazurczak.com/"
                               (if image
                                 (fallback/always-return #(tr image)
                                                         "img/preview/en.png")
                                 "img/preview/en.png"))
                   :title (fallback/always-return #(tr title) title)
-                  :author (or author "Hephaistox")
-                  :url (str/join "/" ["https://hephaistox.com" url])
+                  :author (or author "Mateuszmazurczak")
+                  :url (str/join "/" ["https://mateuszmazurczak.com" url])
                   :twitter-content (or twitter-content "sumary_large_image")
                   :type "website"}})
     [:div {:id "app"
@@ -66,12 +66,12 @@
        (fallback/always-return
         #(tr :we-know-how-and-we-will-help-you-grow)
         "With over two decades of expertise in supply chain and IT, working with many industries, we have the tools and knowledge to help you grow!")
-       :image (str "https://hephaistox.com/"
+       :image (str "https://mateuszmazurczak.com/"
                    (fallback/always-return #(tr :page-preview)
                                            "img/preview/en.png"))
-       :title "Hephaistox"
-       :author "Hephaistox"
-       :url "https://hephaistox.com/"
+       :title "Mateuszmazurczak"
+       :author "Mateuszmazurczak"
+       :url "https://mateuszmazurczak.com/"
        :twitter-content "sumary_large_image"
        :type "website"}})
     [:div {:id "app"

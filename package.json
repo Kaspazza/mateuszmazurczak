@@ -1,12 +1,12 @@
 {
     "name": "mateuszmazurczak",
-    "repository": "https://github.com/hephaistox/mateuszmazurczak",
+    "repository": "https://github.com/kaspazza/mateuszmazurczak",
     "license": "MIT",
     "scripts": {},
     "private": true,
     "description": "mateuszmazurczak",
     "version": "1.0.0",
-    "author": "Hephaistox <info@hephaistox.com>",
+    "author": "Mateusz Mazurczak <mateusz@hephaistox.com>",
     "dependencies": {
         "autoprefixer": "^10.4.14",
         "axe-core": "4.7.0",

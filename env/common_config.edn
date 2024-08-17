@@ -1,0 +1,4 @@
+;; This configuration file contains all configuration common to all environments.
+{:app-name "mateuszmazurczak"
+ :log {:spitted-edns "tmp/logs/spitted"}
+ :tests {:tmp-dirs "tmp/tests"}}

@@ -1,0 +1,34 @@
+{:builds
+ {:browser-test {:ns-regexp "-test$"
+                 :runner-ns shadow.test.browser
+                 :target :browser-test
+                 :test-dir "target/browser-test"}
+  :mateuszmazurczak-app
+  {:asset-path "js/compiled"
+   :build-options {:ns-aliases {cljsjs.marked cljsjs.highlight}}
+   :compiler-options {:infer-externs :auto
+                      :optimizations :advanced}
+   :dev {:compiler-options {:closure-defines
+                            {day8.re-frame.tracing.trace-enabled? true
+                             re-frame.trace.trace-enabled? true}}
+         :modules {:portfolio {:depends-on #{:mateuszmazurczak-share}
+                               :entries [mateuszmazurczak.portfolio.portfolio]
+                               :init-fn mateuszmazurczak.portfolio.portfolio/init}}}
+   :devtools {:after-load mateuszmazurczak.frontend-core/re-render
+              :preloads [day8.re-frame-10x.preload]
+              :repl-pprint true}
+   :modules {:mateuszmazurczak-frontend-core {:depends-on #{:mateuszmazurczak-share}
+                                     :init-fn mateuszmazurczak.frontend-core/init!}
+             :mateuszmazurczak-share {:entries []}}
+   :output-dir "resources/public/js/compiled"
+   :release {:build-options {:cache-level :off
+                             :ns-aliases {day8.re-frame.tracing
+                                          day8.re-frame.tracing-stubs}}
+             :compiler-options {:portfolio false}}
+   :target :browser}
+  :ltest {:ns-regexp "-test$"
+          :output-to "target/karma-test.js"
+          :target :karma}}
+ :deps {:aliases [:cljs-deps]}
+ :dev-http {8081 ["target/browser-test"]}
+ :nrepl {:port 8777}}

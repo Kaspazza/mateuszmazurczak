@@ -1,0 +1,99 @@
+/* Template-app manages this namespace */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+/* Fix for ios */
+@supports (-webkit-touch-callout: none) {
+                                         .h-screen {
+                                                    height: 100vh;
+                                                    max-height: -webkit-fill-available;
+                                                    }
+                                         }
+
+html {height: 100%}
+body {height: 100%}
+
+.svg-hover-orange:hover {
+  fill: orange;
+}
+
+.text-border-red {
+ text-shadow:  0.02em 0 #EC5834,
+        0 0.02em #EC5834,
+        -0.02em 0 #EC5834,
+        0 -0.02em #EC5834,
+        -0.02em -0.02em #EC5834,
+        -0.02em 0.02em #EC5834,
+        0.02em -0.02em #EC5834,
+        0.02em 0.02em #EC5834;
+ }
+
+.text-border-red-thin {
+ text-shadow: 0.01em 0 #EC5834,
+        0 0.01em #EC5834,
+        -0.01em 0 #EC5834,
+        0 -0.01em #EC5834,
+        -0.01em -0.01em #EC5834,
+        -0.05em 0.01em #EC5834,
+        0.01em -0.01em #EC5834,
+        0.01em 0.01em #EC5834;
+}
+
+.text-border-black {
+  text-shadow: 0.05em 0 black,
+        0 0.05em black,
+        -0.05em 0 black,
+        0 -0.05em black,
+        -0.05em -0.05em black,
+        -0.05em 0.05em black,
+        0.05em -0.05em black,
+        0.05em 0.05em black;
+}
+
+.overflow-y-scroll::-webkit-scrollbar-track
+{
+  /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); */
+  background-color: #f1f5f9;
+  border-radius: 10px;
+}
+
+.overflow-y-scroll {
+  scrollbar-color: #9ca3af #f1f5f9;
+  scrollbar-width: thin;
+}
+
+.overflow-y-scroll::-webkit-scrollbar
+{
+  width: 5px;
+  @background-color: #f1f5f9;
+}
+
+.overflow-y-scroll::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+  background-color: #9ca3af;
+  border: 1px solid #e2e8f0;
+}
+
+.overflow-y-scroll::-webkit-scrollbar-button {
+  width: 50px;
+  height: 50px;
+}
+
+.icon-red {@apply stroke-red-500 fill-red-100;}
+.icon-green {@apply stroke-green-500 fill-green-100;}
+.icon-yellow {@apply stroke-yellow-500 fill-yellow-100;}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('../../font/PlusJakartaSans-Regular.ttf');
+}
+
+@font-face { font-family: 'Plus Jakarta Sans';
+             font-weight: bold;
+             src: url('../../font/PlusJakartaSans-Bold.ttf');
+}
+}

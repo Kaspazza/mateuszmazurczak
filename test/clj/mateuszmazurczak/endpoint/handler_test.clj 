@@ -1,0 +1,28 @@
+(ns mateuszmazurczak.endpoint.handler-test
+  (:require
+   [clojure.test :refer [deftest is testing]]
+   [mateuszmazurczak.endpoint.handler :as sut]
+   [mateuszmazurczak.endpoint.routes :as mateuszmazurczak-routes]
+   [reitit.core :as r]
+   [reitit.ring :as rr]))
+
+(defn- get-router
+  []
+  (rr/router (mateuszmazurczak-routes/web-routes sut/mateuszmazurczak-handler-registry)))
+
+(comment
+  (def router (get-router)))
+
+(deftest web-routes-test
+  (let [router (get-router)]
+    (testing "test mateuszmazurczak page"
+      (is (= sut/mateuszmazurczak-page
+             (get-in (r/match-by-path router "/")
+                     [:result :get :handler]))))))
+
+(deftest get-app-test
+  (testing "Check the handler is ok"
+    (is (= {:status 200}
+           (select-keys (sut/get-app {:request-method :get
+                                      :uri ""})
+                        [:status])))))

@@ -1,0 +1,15 @@
+{:app-name "mateuszmazurczak"
+ :dev {:clj-nrepl-port 8100
+       :portal-port 8351}
+ :env :development
+ :http-server {:port 3000
+               :url "http://localhost"}
+ :log
+ {:sentry
+  {:backend
+   {:dsn
+    "https://f9ae2661677efccf4cddab7382bb5381@o4505874471714816.ingest.sentry.io/4505874482724864"}
+   :frontend
+   {:dsn
+    "https://5125e74d9cc455a9e79cdaedcf8a43f2@o4505874471714816.ingest.sentry.io/4505885002694656"}}}
+ :storage {:datomic {:url "datomic:dev://localhost:4334/mateuszmazurczak-dev"}}}

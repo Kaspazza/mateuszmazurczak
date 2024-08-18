@@ -1,11 +1,11 @@
 (ns mateuszmazurczak.core
   "Gather all components to start production app"
   (:require
-   [mount.core         :as mount]
-   [mount.tools.graph  :as mount-graph]
-   [automaton-core.log :as core-log]
-   ;; [automaton-core.log.be-log   :as be-log]
-   ;; [automaton-web.configuration :as web-conf]
+   [mount.core                  :as mount]
+   [mount.tools.graph           :as mount-graph]
+   [automaton-core.log          :as core-log]
+   [automaton-core.log.be-log   :as be-log]
+   [automaton-web.configuration :as web-conf]
    ;;List here all namespace to be mounted
    [mateuszmazurczak.web-server])
   (:gen-class))

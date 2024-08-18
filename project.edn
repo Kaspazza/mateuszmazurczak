@@ -1,0 +1,5 @@
+{:app-name "mateuszmazurczak"
+ :code {:forbidden-words ["TODO" "DONE" "NOTE" "FIXME" "tap>"]}
+ :deps {:excluded-libs #{}}
+ :publication {:base-branch "main"
+               :repo-url "git@github.com:kaspazza/mateuszmazurczak.git"}}

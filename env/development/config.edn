@@ -1,5 +1,5 @@
 {:app-name "mateuszmazurczak"
- :dev {:clj-nrepl-port 8100
+ :dev {:clj-nrepl-port 8000
        :portal-port 8351}
  :env :development
  :http-server {:port 3000

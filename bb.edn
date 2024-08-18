@@ -1,13 +1,31 @@
 ;; The file is updated automatically
-{:deps {org.clojars.hephaistox/automaton-build #:mvn{:version "2.0.0"}}
- :paths []
+{:deps
+ {org.clojars.hephaistox/automaton-build
+  {:local/root
+   "/Users/Mati/Projects/hephaistox/monorepo/clojure/automaton/automaton_build"}}
  :tasks
- {:requires
-  [[automaton-build.tasks.launcher.bb-entrypoint :as build-task-bb-entrypoint]
-   [babashka.process :as babahska-process]]
-  heph-task {:doc "Launch an Hephaistox task"
-             :task (System/exit (build-task-bb-entrypoint/-main
-                                 *command-line-args*))}
+ {-base-deps {:doc "Dependencies for a task using bb"
+              :extra-deps {org.clojure/tools.cli {:mvn/version "1.1.230"}}}
+  -wf-dev-launch {:depends [-wf-dev-launch:fe-watch
+                            -wf-dev-launch:start-repl
+                            -wf-dev-launch:css-watch]}
+  -wf-dev-launch:css-watch {:doc "Watch the css modifications"
+                            :enter (wf-common/enter wf-dev-launch/cli-opts
+                                                    (current-task))
+                            :requires [[automaton-build.wf.2 :as wf-dev-launch]]
+                            :task (wf-dev-launch/css-watch)}
+  -wf-dev-launch:fe-watch
+  {:doc "Watch the frontend."
+   :enter (wf-common/enter wf-dev-launch/cli-opts (current-task))
+   :requires [[automaton-build.wf.2 :as wf-dev-launch]]
+   :task (wf-dev-launch/fe-watch [:ltest :mateuszmazurczak-app :browser-test])}
+  -wf-dev-launch:start-repl
+  {:doc "Start the clojure REPL."
+   :enter (wf-common/enter wf-dev-launch/cli-opts (current-task))
+   :extra-deps {djblue/portal {:mvn/version "0.52.2"}}
+   :requires [[automaton-build.wf.2 :as wf-dev-launch]]
+   :task (wf-dev-launch/start-repl [:common-test :env-development-repl :build])}
+  :requires [[automaton-build.wf.common :as wf-common]]
   lconnect
   {:doc
    "Repl in case mateuszmazurczak is failing. Using -f or --force cli arguments to force start if some part are failing"
@@ -18,4 +36,19 @@
                   System/exit)
               (catch Exception e
                 (println "Repl failed also - error during repl startup"
-                         (ex-message e))))}}}
+                         (ex-message e))))}
+  wf-dev-launch {:depends [-base-deps]
+                 :doc "Launch dev environment toolings."
+                 :enter (wf-common/enter wf-dev-launch/cli-opts (current-task))
+                 :requires [[automaton-build.wf.2 :as wf-dev-launch]]
+                 :task (run '-wf-dev-launch {:parallel true})}
+  wf-pre-deploy {:depends [-base-deps]
+                 :doc "Full test and formatting."
+                 :enter (wf-common/enter wf-4/cli-opts (current-task))
+                 :requires [[automaton-build.wf.4 :as wf-4]]
+                 :task (wf-4/run-monorepo [:env-development-test :common-test])}
+  wf-quick-check {:depends [-base-deps]
+                  :doc "Quick test and formatting."
+                  :enter (wf-common/enter wf-3/cli-opts (current-task))
+                  :requires [[automaton-build.wf.3 :as wf-3]]
+                  :task (wf-3/run-monorepo)}}}

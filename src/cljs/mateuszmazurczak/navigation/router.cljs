@@ -1,22 +1,22 @@
-(ns mateuszmazurczak.fe.router
+(ns mateuszmazurczak.navigation.router
   "Mateuszmazurczak cust-app front end router"
   (:require
    [automaton-core.log                 :as core-log]
    [automaton-web.fe.router            :as web-fe-router]
    [automaton-web.fe.router.reitit     :as fe-reitit-router]
-   [mateuszmazurczak.fe.routes         :as mateuszmazurczak-fe-routes]
-   [mateuszmazurczak.i18n.fe.translate :as mateuszmazurczak-fe-translate]
+   [mateuszmazurczak.i18n.translate    :as mm-fe-translate]
+   [mateuszmazurczak.navigation.routes :as mm-fe-routes]
    [mount.core                         :refer [defstate]]))
 
 (defn- gather-route-params-fn
   "Gather parameters necessary to build the route,
   Note that it is useless in mateuszmazurczak as no parameters encoded in path are used"
   []
-  {:lang (mateuszmazurczak-fe-translate/lang)})
+  {:lang (mm-fe-translate/lang)})
 
 (defn start-router
   []
-  (fe-reitit-router/make-reitit-router mateuszmazurczak-fe-routes/routes
+  (fe-reitit-router/make-reitit-router mm-fe-routes/routes
                                        gather-route-params-fn))
 
 (defstate router

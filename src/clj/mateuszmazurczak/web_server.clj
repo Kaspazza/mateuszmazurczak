@@ -3,12 +3,12 @@
   (:require
    [automaton-core.log               :as core-log]
    [automaton-web.web-server         :as server]
-   [mateuszmazurczak.endpoint.router :as mateuszmazurczak-router]
+   [mateuszmazurczak.endpoint.router :as mm-endpoint-router]
    [mount.core                       :refer [defstate]]))
 
 (defstate http-server
           :start (try (core-log/info "Starting http-server")
-                      (server/start-server mateuszmazurczak-router/get-app {})
+                      (server/start-server mm-endpoint-router/get-app {})
                       (catch Throwable e
                         (core-log/fatal
                          (ex-info "Unexpected error during web server starting"

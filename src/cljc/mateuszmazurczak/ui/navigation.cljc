@@ -3,7 +3,7 @@
   (:require
    [automaton-web.components.navigation :as web-navigation]
    #?@(:cljs
-         [[mateuszmazurczak.ui.fe-navigation :as mateuszmazurczak-fe-nav]])))
+         [[mateuszmazurczak.navigation.utils :as mateuszmazurczak-fe-nav]])))
 
 (defn back-navigation
   "Print a back navigation button

@@ -17,4 +17,8 @@
    ["/"
     {:name ::home ;; Important for history as browser adds systematically that `/`
      :be {:get :html-page/index}
-     :fe {:panel-id :panels/home}}]])
+     :fe {:panel-id :panels/home}}]
+   ["/articles"
+    {:name ::articles
+     :be {:get :html-page/index}
+     :fe {:panel-id :panels/articles}}]])

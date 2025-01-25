@@ -5,7 +5,7 @@
  {:sentry
   {:backend
    {:dsn
-    "https://f9ae2661677efccf4cddab7382bb5381@o4505874471714816.ingest.sentry.io/4505874482724864"}
+    "https://86167a7f36c16b913cbe0973ba3d30bb@o4508704825147392.ingest.de.sentry.io/4508704830783568"}
    :frontend
    {:dsn
-    "https://5125e74d9cc455a9e79cdaedcf8a43f2@o4505874471714816.ingest.sentry.io/4505885002694656"}}}}
+    "https://96e2a27d085619b3c6c38084045e88a9@o4508704825147392.ingest.de.sentry.io/4508704840810576"}}}}

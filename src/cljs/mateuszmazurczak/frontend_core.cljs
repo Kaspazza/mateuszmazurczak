@@ -1,17 +1,17 @@
 (ns mateuszmazurczak.frontend-core
   "Entry point for customer app frontend"
   (:require
-   [automaton-core.log          :as core-log]
-   ;; [automaton-web.configuration               :as web-conf]
-   [automaton-web.duplex.router :as rt]
-   [automaton-web.events-proxy  :as web-events-proxy]
-   ;; [automaton-web.log.tracking.error-tracking :as error-tracking]
-   [automaton-web.react-proxy   :as web-react]
-   [mateuszmazurczak.fe.events  :as mateuszmazurczak-fe-events]
-   [mateuszmazurczak.fe.history :as mateuszmazurczak-fe-history]
-   [mateuszmazurczak.fe.panels.public]
-   [mateuszmazurczak.main       :as lm]
-   [mount.core                  :as mount]))
+   [automaton-core.log                        :as core-log]
+   [automaton-web.configuration               :as web-conf]
+   [automaton-web.duplex.router               :as rt]
+   [automaton-web.events-proxy                :as web-events-proxy]
+   [automaton-web.log.tracking.error-tracking :as error-tracking]
+   [automaton-web.react-proxy                 :as web-react]
+   [mateuszmazurczak.events.db                :as mm-evts-db]
+   [mateuszmazurczak.main                     :as lm]
+   [mateuszmazurczak.navigation.history       :as mateuszmazurczak-fe-history]
+   [mateuszmazurczak.navigation.panels]
+   [mount.core                                :as mount]))
 
 (defonce *root (atom nil))
 
@@ -28,13 +28,12 @@
 
 (defn ^:export init!
   []
-  (try #_(error-tracking/init-error-tracking!
-          {:dsn (web-conf/read-param [:log :sentry :frontend :dsn])
-           :traced-website #"^https://mateuszmazurczak\.com/"
-           :env (web-conf/read-param [:env])})
+  (try (error-tracking/init-error-tracking!
+        {:dsn (web-conf/read-param [:log :sentry :frontend :dsn])
+         :traced-website #"^https://mateuszmazurczak\.com/"
+         :env (web-conf/read-param [:env])})
        (core-log/info "Front end starting")
-       (web-events-proxy/client-app-db-init!
-        ::mateuszmazurczak-fe-events/initialize-db) ;; What is done before will be lost in the state
+       (web-events-proxy/client-app-db-init! ::mm-evts-db/initialize-db) ;; What is done before will be lost in the state
        (mount-root)
        (rt/start-router!)
        (mount/start)

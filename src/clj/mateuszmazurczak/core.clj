@@ -14,8 +14,8 @@
   "Main entry point for production, running production handler"
   [& _args]
   (try
-    #_(be-log/log-init! {:dsn (web-conf/read-param [:log :sentry :backend :dsn])
-                         :env (name (web-conf/read-param [:env]))})
+    (be-log/log-init! {:dsn (web-conf/read-param [:log :sentry :backend :dsn])
+                       :env (name (web-conf/read-param [:env]))})
     (core-log/info "Start mateuszmazurczak")
     (core-log/trace "Component dependencies: " (mount-graph/states-with-deps))
     (mount/start)

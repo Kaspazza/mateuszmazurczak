@@ -1,23 +1,21 @@
-(ns mateuszmazurczak.i18n.fe.translate
+(ns mateuszmazurczak.i18n.translate
   "Frontend translation for mateuszmazurczak"
   (:require
    [automaton-web.i18n.fe.translator         :as fe-translator]
    [automaton-web.i18n.fe.translator.tempura :as fe-tempura-translator]
-   [mateuszmazurczak.i18n.dict.resources     :as
-                                             mateuszmazurczak-dict-resources]
-   [mateuszmazurczak.i18n.dict.text          :as mateuszmazurczak-dict-text]
-   [mateuszmazurczak.i18n.language           :as mateuszmazurczak-language]))
+   [mateuszmazurczak.i18n.dict.resources     :as mm-dict-resources]
+   [mateuszmazurczak.i18n.dict.text          :as mm-dict-text]
+   [mateuszmazurczak.i18n.language           :as mm-language]))
 
 (def main-langs "List of main languages the first matching is used" [:fr])
 
 (def mateuszmazurczak-tempura-translator
   "Instance of `fe-tempura-translator/FeTempuraTranslator` for mateuszmazurczak frontend
   Decides what dictionaries to use and the default language for mateuszmazurczak"
-  (fe-tempura-translator/make-fe-tempura-translator
-   main-langs
-   mateuszmazurczak-language/ui-str-to-id
-   mateuszmazurczak-dict-text/dict
-   mateuszmazurczak-dict-resources/dict))
+  (fe-tempura-translator/make-fe-tempura-translator main-langs
+                                                    mm-language/ui-str-to-id
+                                                    mm-dict-text/dict
+                                                    mm-dict-resources/dict))
 
 (defn tr
   "Translate a translation id

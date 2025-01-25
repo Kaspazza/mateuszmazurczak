@@ -1,31 +1,32 @@
 ;; The file is updated automatically
-{:deps
- {org.clojars.hephaistox/automaton-build
-  {:local/root
-   "/Users/Mati/Projects/hephaistox/monorepo/clojure/automaton/automaton_build"}}
+{:deps {org.clojars.hephaistox/automaton-build #:mvn{:version "3.4.0"}}
  :tasks
  {-base-deps {:doc "Dependencies for a task using bb"
               :extra-deps {org.clojure/tools.cli {:mvn/version "1.1.230"}}}
-  -wf-dev-launch {:depends [-wf-dev-launch:fe-watch
-                            -wf-dev-launch:start-repl
-                            -wf-dev-launch:css-watch]}
-  -wf-dev-launch:css-watch {:doc "Watch the css modifications"
-                            :enter (wf-common/enter wf-dev-launch/cli-opts
+  -dev-launch
+  {:depends [-dev-launch:fe-watch -dev-launch:start-repl -dev-launch:css-watch]}
+  -dev-launch:css-watch {:doc "Watch the css modifications"
+                         :enter (tasks-common/enter dev-launch/cli-opts
                                                     (current-task))
-                            :requires [[automaton-build.wf.2 :as wf-dev-launch]]
-                            :task (wf-dev-launch/css-watch)}
-  -wf-dev-launch:fe-watch
+                         :requires [[automaton-build.tasks.2 :as dev-launch]]
+                         :task (dev-launch/css-watch)}
+  -dev-launch:fe-watch
   {:doc "Watch the frontend."
-   :enter (wf-common/enter wf-dev-launch/cli-opts (current-task))
-   :requires [[automaton-build.wf.2 :as wf-dev-launch]]
-   :task (wf-dev-launch/fe-watch [:ltest :mateuszmazurczak-app :browser-test])}
-  -wf-dev-launch:start-repl
+   :enter (tasks-common/enter dev-launch/cli-opts (current-task))
+   :requires [[automaton-build.tasks.2 :as dev-launch]]
+   :task (dev-launch/fe-watch [:ltest :mateuszmazurczak-app :browser-test])}
+  -dev-launch:start-repl
   {:doc "Start the clojure REPL."
-   :enter (wf-common/enter wf-dev-launch/cli-opts (current-task))
-   :extra-deps {djblue/portal {:mvn/version "0.52.2"}}
-   :requires [[automaton-build.wf.2 :as wf-dev-launch]]
-   :task (wf-dev-launch/start-repl [:common-test :env-development-repl :build])}
-  :requires [[automaton-build.wf.common :as wf-common]]
+   :enter (tasks-common/enter dev-launch/cli-opts (current-task))
+   :extra-deps {djblue/portal {:mvn/version "0.58.5"}}
+   :requires [[automaton-build.tasks.2 :as dev-launch]]
+   :task (dev-launch/start-repl [:common-test :env-development-repl :build])}
+  :requires [[automaton-build.tasks.common :as tasks-common]]
+  dev-launch {:depends [-base-deps]
+              :doc "Launch dev environment toolings."
+              :enter (tasks-common/enter dev-launch/cli-opts (current-task))
+              :requires [[automaton-build.tasks.2 :as dev-launch]]
+              :task (run '-dev-launch {:parallel true})}
   lconnect
   {:doc
    "Repl in case mateuszmazurczak is failing. Using -f or --force cli arguments to force start if some part are failing"
@@ -37,18 +38,19 @@
               (catch Exception e
                 (println "Repl failed also - error during repl startup"
                          (ex-message e))))}
-  wf-dev-launch {:depends [-base-deps]
-                 :doc "Launch dev environment toolings."
-                 :enter (wf-common/enter wf-dev-launch/cli-opts (current-task))
-                 :requires [[automaton-build.wf.2 :as wf-dev-launch]]
-                 :task (run '-wf-dev-launch {:parallel true})}
-  wf-pre-deploy {:depends [-base-deps]
-                 :doc "Full test and formatting."
-                 :enter (wf-common/enter wf-4/cli-opts (current-task))
-                 :requires [[automaton-build.wf.4 :as wf-4]]
-                 :task (wf-4/run-monorepo [:env-development-test :common-test])}
-  wf-quick-check {:depends [-base-deps]
-                  :doc "Quick test and formatting."
-                  :enter (wf-common/enter wf-3/cli-opts (current-task))
-                  :requires [[automaton-build.wf.3 :as wf-3]]
-                  :task (wf-3/run-monorepo)}}}
+  pre-deploy {:depends [-base-deps]
+              :doc "Full test and formatting."
+              :enter (tasks-common/enter tasks-4/cli-opts (current-task))
+              :requires [[automaton-build.tasks.4 :as tasks-4]]
+              :task (tasks-4/run-monorepo [:env-development-test :common-test])}
+  quick-check {:depends [-base-deps]
+               :doc "Quick test and formatting."
+               :enter (tasks-common/enter tasks-3/cli-opts (current-task))
+               :requires [[automaton-build.tasks.3 :as tasks-3]]
+               :task (tasks-3/run-monorepo)}
+  update-deps {:depends [-base-deps]
+               :doc "Update outdated dependencies in a monorepo"
+               :enter (tasks-common/enter tasks-deps/cli-opts (current-task))
+               :extra-deps {}
+               :requires [[automaton-build.tasks.deps-version :as tasks-deps]]
+               :task (tasks-deps/run)}}}

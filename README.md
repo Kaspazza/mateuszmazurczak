@@ -15,7 +15,11 @@ https://phoenixnap.com/kb/set-environment-variable-mac
 
 ## Running the App
 From this directory run:
-- wf-2
+- bb dev-launch
+
+Tests: localhost:8081
+Shadow: localhost:9630
+App: localhost:3000
 
 After that connect to repl and evaluate -main function in mateusz.core
 

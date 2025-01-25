@@ -1,8 +1,8 @@
 (ns mateuszmazurczak.endpoint.routes
   (:require
    [automaton-web.routes    :as web-routes]
-   [mateuszmazurczak.env    :as env]
-   [mateuszmazurczak.routes :as mateuszmazurczak-routes]))
+   [mateuszmazurczak.env    :as mm-env]
+   [mateuszmazurczak.routes :as mm-routes]))
 
 (defn web-routes
   "Routes for mateuszmazurczak,
@@ -11,5 +11,4 @@
   Params:
   * `registry` "
   [registry]
-  (conj (web-routes/parse-routes :be mateuszmazurczak-routes/routes registry)
-        (env/route)))
+  (conj (web-routes/parse-routes :be mm-routes/routes registry) (mm-env/route)))

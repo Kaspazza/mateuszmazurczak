@@ -1,14 +1,14 @@
-(ns mateuszmazurczak.fe.history
+(ns mateuszmazurczak.navigation.history
   "Implement a `fe-history/History` instance to manage browser history for spa"
   (:require
-   [automaton-core.log              :as core-log]
-   [automaton-web.events-proxy      :as web-events-proxy]
-   [automaton-web.fe.history        :as web-fe-history]
-   [automaton-web.fe.history.reitit :as fe-history-reitit]
-   [clojure.string                  :as str]
-   [day8.re-frame.tracing           :refer-macros [fn-traced]]
-   [mateuszmazurczak.fe.router      :as mateuszmazurczak-fe-router]
-   [mount.core                      :refer [defstate]]))
+   [automaton-core.log                 :as core-log]
+   [automaton-web.events-proxy         :as web-events-proxy]
+   [automaton-web.fe.history           :as web-fe-history]
+   [automaton-web.fe.history.reitit    :as fe-history-reitit]
+   [clojure.string                     :as str]
+   [mateuszmazurczak.events.routing    :as ev-routing]
+   [mateuszmazurczak.navigation.router :as mm-fe-router]
+   [mount.core                         :refer [defstate]]))
 
 (defn update-match-fragment
   "Adds fragment in the case when match is comming from ring handler.
@@ -21,11 +21,11 @@
 
 (defstate history
           :start (try (fe-history-reitit/make-history
-                       (:router @mateuszmazurczak-fe-router/router)
+                       (:router @mm-fe-router/router)
                        (fn [match _history]
                          (let [match (update-match-fragment match)]
-                           (web-events-proxy/dispatch [::new-route-match
-                                                       match]))))
+                           (web-events-proxy/dispatch
+                            [::ev-routing/new-route-match match]))))
                       (catch :default e
                         (core-log/error
                          (ex-info "History component did not start" {:e e}))))
@@ -49,7 +49,3 @@
   "See `automaton-web.fe.history.pushy/href-delta`"
   [match route-name path-param query-param]
   (web-fe-history/href-delta @history match route-name path-param query-param))
-
-(web-events-proxy/reg-event-db ::new-route-match
-                               (fn-traced [db [_ match]]
-                                          (assoc db :route-match match)))

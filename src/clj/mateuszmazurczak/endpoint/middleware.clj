@@ -2,11 +2,11 @@
   "Middlewares for mateuszmazurczak project
   Should mainly select middlewares from `automaton-web.middleware`"
   (:require
-   [automaton-web.i18n.language         :as web-language]
-   [automaton-web.middleware            :as web-middleware]
-   [mateuszmazurczak.env                :as env]
-   [mateuszmazurczak.i18n.be.translator :as mateuszmazurczak-be-translator]
-   [mateuszmazurczak.i18n.language      :as mateuszmazurczak-language]))
+   [automaton-web.i18n.language      :as web-language]
+   [automaton-web.middleware         :as web-middleware]
+   [mateuszmazurczak.env             :as mm-env]
+   [mateuszmazurczak.i18n.language   :as mm-i18n-language]
+   [mateuszmazurczak.i18n.translator :as mm-i18n-translator]))
 
 (def web-middleware
   "Midllewares for web pages"
@@ -16,11 +16,10 @@
             web-middleware/wrap-anti-forgery
             [web-middleware/wrap-cors
              :access-control-allow-origin
-             (concat (web-language/cors-domain-routes
-                      mateuszmazurczak-language/languages
-                      "mateuszmazurczak")
-                     ;;TODO update it for my provider
-                     [#".*cleverapps.io$"])
+             (concat (web-language/cors-domain-routes mm-i18n-language/languages
+                                                      "mateuszmazurczak")
+                     ;;TODO make sure this provider is okay after deploy
+                     [#".*my-provider.domain$"])
              :access-control-allow-methods
              [:get :post :put :delete]
              :access-control-allow-credentials
@@ -32,9 +31,8 @@
             web-middleware/format-negotiate-middleware
             web-middleware/format-response-middleware
             web-middleware/format-request-middleware]
-           env/env-middlewares)))
+           mm-env/env-middlewares)))
 
 (def global-middlewares
   "Middleware for the whole app"
-  (web-middleware/translation-middlewares
-   mateuszmazurczak-be-translator/web-be-translator))
+  (web-middleware/translation-middlewares mm-i18n-translator/web-be-translator))

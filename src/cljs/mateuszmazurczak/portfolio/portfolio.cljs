@@ -1,10 +1,12 @@
 (ns mateuszmazurczak.portfolio.portfolio
   (:require
-   [automaton-web.portfolio.proxy :as web-proxy]
-   [mateuszmazurczak.portfolio.mateuszmazurczak.home]))
+   [mateuszmazurczak.portfolio.mateuszmazurczak.home]
+   [portfolio.data      :as data]
+   [portfolio.ui        :as ui]
+   [portfolio.ui.search :as search]))
 
 (defonce app
-  (web-proxy/start!
+  (ui/start!
    {:config {:css-paths ["/css/compiled/styles.css"]
              :viewport/options [{:title "<sm | small phone"
                                  :value {:viewport/width 390
@@ -33,8 +35,8 @@
              ;; Default - tailwind sm
              :viewport/defaults {:viewport/width 640
                                  :viewport/height 1136}}
-    :index (web-proxy/search-index)}))
+    :index (search/create-index)}))
 
 (defn init [] app)
 
-(web-proxy/register-collection! :mateuszmazurczak {:title "Mateuszmazurczak"})
+(data/register-collection! :mateuszmazurczak {:title "Mateuszmazurczak"})

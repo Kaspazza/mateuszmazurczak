@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.events.routing
   (:require
-   [automaton-web.events-proxy :as web-events-proxy]
-   [day8.re-frame.tracing      :refer-macros [fn-traced]]))
+   [day8.re-frame.tracing :refer-macros [fn-traced]]
+   [re-frame.core         :as rf]))
 
 (defn on-element-exist
   "Waits for `selector` element to appear in document and executes `on-exist-fn`"
@@ -23,17 +23,15 @@
                             :subtree true})))
       (.then on-exist-fn)))
 
-(web-events-proxy/reg-sub ::route-match (fn [db _] (:route-match db)))
+(rf/reg-sub ::route-match (fn [db _] (:route-match db)))
 
-(web-events-proxy/reg-fx :new-route-scroll-position
-                         (fn [fragment]
-                           (if fragment
-                             (on-element-exist (str "#" fragment)
-                                               #(.scrollIntoView %))
-                             (.scrollTo js/window 0 0))))
+(rf/reg-fx :new-route-scroll-position
+           (fn [fragment]
+             (if fragment
+               (on-element-exist (str "#" fragment) #(.scrollIntoView %))
+               (.scrollTo js/window 0 0))))
 
-(web-events-proxy/reg-event-fx ::new-route-match
-                               (fn-traced [{:keys [db]} [_ match]]
-                                          {:db (assoc db :route-match match)
-                                           :new-route-scroll-position (:fragment
-                                                                       match)}))
+(rf/reg-event-fx ::new-route-match
+                 (fn-traced [{:keys [db]} [_ match]]
+                            {:db (assoc db :route-match match)
+                             :new-route-scroll-position (:fragment match)}))

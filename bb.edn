@@ -1,56 +1,60 @@
-;; The file is updated automatically
-{:deps {org.clojars.hephaistox/automaton-build #:mvn{:version "3.4.0"}}
+{:deps {}
+ :paths ["src/bb"]
  :tasks
  {-base-deps {:doc "Dependencies for a task using bb"
               :extra-deps {org.clojure/tools.cli {:mvn/version "1.1.230"}}}
   -dev-launch
-  {:depends [-dev-launch:fe-watch -dev-launch:start-repl -dev-launch:css-watch]}
-  -dev-launch:css-watch {:doc "Watch the css modifications"
-                         :enter (tasks-common/enter dev-launch/cli-opts
-                                                    (current-task))
-                         :requires [[automaton-build.tasks.2 :as dev-launch]]
-                         :task (dev-launch/css-watch)}
-  -dev-launch:fe-watch
-  {:doc "Watch the frontend."
-   :enter (tasks-common/enter dev-launch/cli-opts (current-task))
-   :requires [[automaton-build.tasks.2 :as dev-launch]]
-   :task (dev-launch/fe-watch [:ltest :mateuszmazurczak-app :browser-test])}
+  {:depends [-dev-launch:css-watch -dev-launch:fe-watch -dev-launch:start-repl]}
+  -dev-launch:css-watch
+  {:doc "Watch the css modifications"
+   :enter (common/enter dev-launch/cli-opts (current-task))
+   :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
+   :task (dev-launch/css-watch)}
+  -dev-launch:fe-watch {:doc "Watch the frontend."
+                        :enter (common/enter dev-launch/cli-opts (current-task))
+                        :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
+                        :task (dev-launch/fe-watch
+                               [:ltest :mateuszmazurczak-app :browser-test])}
   -dev-launch:start-repl
   {:doc "Start the clojure REPL."
-   :enter (tasks-common/enter dev-launch/cli-opts (current-task))
+   :enter (common/enter dev-launch/cli-opts (current-task))
    :extra-deps {djblue/portal {:mvn/version "0.58.5"}}
-   :requires [[automaton-build.tasks.2 :as dev-launch]]
+   :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
    :task (dev-launch/start-repl [:common-test :env-development-repl :build])}
-  :requires [[automaton-build.tasks.common :as tasks-common]]
+  :requires [[mateuszmazurczak.common :as common]]
+  clean {:depends [-base-deps]
+         :doc "Clean temp files"
+         :enter (common/enter clean/cli-opts (current-task))
+         :requires [[mateuszmazurczak.tasks.clean :as clean]]
+         :task (clean/clean [:common-test])}
   dev-launch {:depends [-base-deps]
               :doc "Launch dev environment toolings."
-              :enter (tasks-common/enter dev-launch/cli-opts (current-task))
-              :requires [[automaton-build.tasks.2 :as dev-launch]]
+              :enter (common/enter dev-launch/cli-opts (current-task))
+              :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
               :task (run '-dev-launch {:parallel true})}
   lconnect
   {:doc
    "Repl in case mateuszmazurczak is failing. Using -f or --force cli arguments to force start if some part are failing"
-   :task (try (-> (babahska-process/shell
-                   "clojure"
-                   "-M:common-test:env-development-repl:build"
-                   *command-line-args*)
+   :task (try (-> (babahska-process/shell "clojure"
+                                          "-M:common-test:env-development-repl"
+                                          *command-line-args*)
                   System/exit)
               (catch Exception e
                 (println "Repl failed also - error during repl startup"
                          (ex-message e))))}
-  pre-deploy {:depends [-base-deps]
-              :doc "Full test and formatting."
-              :enter (tasks-common/enter tasks-4/cli-opts (current-task))
-              :requires [[automaton-build.tasks.4 :as tasks-4]]
-              :task (tasks-4/run-monorepo [:env-development-test :common-test])}
-  quick-check {:depends [-base-deps]
-               :doc "Quick test and formatting."
-               :enter (tasks-common/enter tasks-3/cli-opts (current-task))
-               :requires [[automaton-build.tasks.3 :as tasks-3]]
-               :task (tasks-3/run-monorepo)}
+  lint {:depends [-base-deps]
+        :doc "Linting"
+        :enter (common/enter lint/cli-opts (current-task))
+        :requires [[mateuszmazurczak.tasks.lint :as lint]]
+        :task (lint/lint)}
+  test {:depends [-base-deps]
+        :doc "Quick test"
+        :enter (common/enter test/cli-opts (current-task))
+        :requires [[mateuszmazurczak.tasks.tests :as test]]
+        :task (test/run [:common-test])}
   update-deps {:depends [-base-deps]
                :doc "Update outdated dependencies in a monorepo"
-               :enter (tasks-common/enter tasks-deps/cli-opts (current-task))
+               :enter (common/enter tasks-deps/cli-opts (current-task))
                :extra-deps {}
-               :requires [[automaton-build.tasks.deps-version :as tasks-deps]]
+               :requires [[mateuszmazurczak.tasks.deps-version :as tasks-deps]]
                :task (tasks-deps/run)}}}

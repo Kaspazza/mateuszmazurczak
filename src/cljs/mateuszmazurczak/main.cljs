@@ -1,14 +1,14 @@
 (ns mateuszmazurczak.main
   "Entry point to mateuszmazurczak app"
   (:require
-   [automaton-web.events-proxy         :as web-events-proxy]
    [mateuszmazurczak.events.routing    :as ev-routing]
-   [mateuszmazurczak.navigation.panels :as mm-nav-panels]))
+   [mateuszmazurczak.navigation.panels :as mm-nav-panels]
+   [re-frame.core                      :as rf]))
 
 (defn router-component
   "Component to route to the `:mateuszmazurczak-subs/route-match`"
   []
-  (let [current-panel (web-events-proxy/subscribe [::ev-routing/route-match])]
+  (let [current-panel (rf/subscribe [::ev-routing/route-match])]
     (fn [] [mm-nav-panels/panels @current-panel])))
 
 

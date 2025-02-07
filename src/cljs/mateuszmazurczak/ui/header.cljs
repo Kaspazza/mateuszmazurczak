@@ -1,37 +1,164 @@
 (ns mateuszmazurczak.ui.header
   (:require
-   [automaton-web.components.fe-language-select :as web-fe-language-select]
-   [automaton-web.components.header             :as web-header]
-   [mateuszmazurczak.i18n.events                :as mm-i18n-evts]
-   [mateuszmazurczak.i18n.language              :as mm-i18n-lang]
-   [mateuszmazurczak.i18n.translate             :as mm-i18n-translate]
-   [mateuszmazurczak.navigation.utils           :as mm-nav]
-   [mateuszmazurczak.routes                     :as mm-routes]))
+   [clojure.string                      :as str]
+   [mateuszmazurczak.i18n.events        :as mm-i18n-evts]
+   [mateuszmazurczak.i18n.language      :as mm-i18n-lang]
+   [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
+   [mateuszmazurczak.navigation.history :as mm-nav-hist]
+   [mateuszmazurczak.routes             :as mm-routes]
+   [re-frame.core                       :as rf]))
 
+(defn string-to-id
+  "Transform what is not alphanumerical to an id
+  If `txt` is an empty string, a uuid turned into a string is returned
+  Params:
+  * `txt` text to transform"
+  [txt]
+  (if (str/blank? txt)
+    (-> (random-uuid)
+        str)
+    (-> txt
+        str
+        (str/replace #"[^\w]" "-")
+        str/lower-case)))
+
+(defn reagent-option
+  "Return the option of an existing reagent object
+  Manages both case where the option map is already existing or not
+  Params:
+  * `comp` reagent component to update "
+  [component]
+  (let [maybe-opt (second component)] (if (map? maybe-opt) maybe-opt {})))
+
+
+(defn- update-select-options
+  "Add options to select options components.
+  Generate a key based on `select-id` and `opt-value`"
+  [{:keys [opt-value key]
+    :as opt}
+   select-id]
+  (assoc opt :key (or key (str select-id "-" (string-to-id opt-value)))))
+
+(defn update-reagent-options
+  "Update the reagent component to insert `options`
+  Manage both cases where the option map already exist or not
+  Params:
+  * `options` reagent options to be inserted
+  * `component` reagent component to update"
+  [options component]
+  (let [[comp-key & comp-rest] component
+        maybe-opt (first comp-rest)
+        updated-options (if (map? maybe-opt)
+                          (apply vector comp-key options (rest comp-rest))
+                          (apply vector comp-key options comp-rest))]
+    updated-options))
+
+(defn simple-select
+  "Simple html select
+
+  Params:
+  * `props` properties to tweak the selector
+      * `id` Optional (default to string-to-id of html-name) is the html id of the component
+      * `html-name` name to represent the data stored if that data are POSTed in a form
+      * `class`  css attributes to add to default presentation
+      * `value` is a currently selected value
+      * `on-change` method to call on change of the value, typically dispatch an event
+      * `options` a list of option, as `options-arg`, easier to use if you already handle a collection of options
+  * `options-arg` options should be a collection of [:option] html tags. This value is useful to directly pass options as a variadic arguments. It's superseeding `options` keyword."
+  [{:keys [id html-name class on-change value options]
+    :as _props}
+   &
+   options-arg]
+  (let [options (for [select-option (or options-arg options)]
+                  (-> select-option
+                      reagent-option
+                      (update-select-options id)
+                      (update-reagent-options select-option)))]
+    (fn [] [:select {:id id
+                     :name html-name
+                     :default-value value
+                     :class (vec (concat ["block"
+                                          "w-full"
+                                          "rounded-md"
+                                          "border-0"
+                                          "py-1"
+                                          "pl-3"
+                                          "pr-10"
+                                          "text-gray-900"
+                                          "ring-1"
+                                          "ring-inset"
+                                          "ring-gray-300"
+                                          "focus:ring-2"
+                                          "focus:ring-indigo-600"
+                                          "sm:text-sm"
+                                          "sm:leading-6"]
+                                         class))
+                     :on-change on-change}
+            options])))
+
+(defn- base-header
+  [{:keys [size sticky? border?]} content]
+  [:header {:class [(if sticky? "sticky" "absolute")
+                    (when border?
+                      "border border-solid border-b-theme-dark bg-theme-light")
+                    "inset-x-0 top-0 z-50"
+                    "py-2"
+                    (if (= :full size) "w-full" "w-full lg:w-1/2")]}
+   content])
+
+(defn transparent-header-comp
+  [{:keys [size sticky? border? logo right-section]}]
+  [base-header {:size size
+                :sticky? sticky?
+                :border? border?}
+   [:nav {:class
+          ["flex items-center content-between justify-between px-6 lg:px-8"]}
+    logo
+    [:div right-section]]])
+
+
+(defn header-comp
+  [{:keys [size logo sticky? border? right-section]} & menu-items]
+  [base-header {:size size
+                :sticky? sticky?
+                :border? border?}
+   [:nav {:class
+          ["flex items-center content-between justify-between px-6 lg:px-8"]}
+    logo
+    [:div {:class ["hidden lg:flex lg:gap-x-12"]}
+     (for [{:keys [title href]} menu-items]
+       ^{:key (str title href)}
+       [:a {:href href
+            :class ["text-sm font-semibold leading-6 text-gray-900"]}
+        title])]
+    [:div right-section]]])
 
 
 (def lang-select
-  [web-fe-language-select/language-select
-   ::mm-i18n-evts/change-lang
-   (mm-i18n-lang/create-ui-languages)
-   mm-i18n-lang/id-to-str])
+  (let [selected-value (-> @(rf/subscribe [::mm-i18n-evts/lang])
+                           mm-i18n-lang/id-to-str)]
+    [simple-select {:id "lang"
+                    :name "lang"
+                    :on-change #(rf/dispatch [::mm-i18n-evts/change-lang %])
+                    :value selected-value
+                    :options (map (fn [{:keys [value]}] [:option {:value value}
+                                                         value])
+                                  (mm-i18n-lang/create-ui-languages))}]))
 
 (defn transparent-header
   [{:keys [size border? sticky?]}]
-  [web-header/transparent-header {:size size
-                                  :sticky? sticky?
-                                  :border? border?
-                                  :right-section lang-select}])
+  [transparent-header-comp {:size size
+                            :sticky? sticky?
+                            :border? border?
+                            :right-section lang-select}])
 
 (defn header
   [{:keys [size border? sticky?]}]
-  [web-header/header {:size size
-                      :sticky? sticky?
-                      :border? border?
-                      :right-section lang-select}
-   {:title (mm-i18n-translate/tr :simulation)
-    :href (mm-nav/href-delta ::mm-routes/simulation-pitch)}
-   {:title (mm-i18n-translate/tr :about-us)
-    :href (mm-nav/href-delta ::mm-routes/about-us)}
-   {:title (mm-i18n-translate/tr :our-offers)
-    :href (str (mm-nav/href-delta ::mm-routes/home) "#offer")}])
+  [header-comp {:size size
+                :sticky? sticky?
+                :border? border?
+                :right-section lang-select}
+   {:title "Mateusz Mazurczak"
+    :href (mm-nav-hist/href-delta ::mm-routes/home)}
+   {:title (mm-i18n-translate/tr :articles)
+    :href (mm-nav-hist/href-delta ::mm-routes/articles)}])

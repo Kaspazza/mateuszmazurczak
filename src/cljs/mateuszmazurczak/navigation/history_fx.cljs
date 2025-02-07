@@ -1,12 +1,8 @@
 (ns mateuszmazurczak.navigation.history-fx
   (:require
-   [automaton-core.log                  :as core-log]
-   [automaton-web.events-proxy          :as web-events-proxy]
-   [automaton-web.fe.history            :as web-fe-history]
-   [mateuszmazurczak.navigation.history :as mm-fe-history]))
+   [mateuszmazurczak.navigation.history          :as mm-fe-history]
+   [mateuszmazurczak.navigation.history.protocol :as mm-nav-hist]
+   [re-frame.core                                :as rf]))
 
-(web-events-proxy/reg-fx ::history-change
-                         (fn [[href]]
-                           (core-log/trace "History change to `" href "`")
-                           (web-fe-history/navigate! @mm-fe-history/history
-                                                     href)))
+(rf/reg-fx ::history-change
+           (fn [[href]] (mm-nav-hist/navigate! @mm-fe-history/history href)))

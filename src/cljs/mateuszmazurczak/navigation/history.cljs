@@ -1,14 +1,13 @@
 (ns mateuszmazurczak.navigation.history
   "Implement a `fe-history/History` instance to manage browser history for spa"
   (:require
-   [automaton-core.log                 :as core-log]
-   [automaton-web.events-proxy         :as web-events-proxy]
-   [automaton-web.fe.history           :as web-fe-history]
-   [automaton-web.fe.history.reitit    :as fe-history-reitit]
-   [clojure.string                     :as str]
-   [mateuszmazurczak.events.routing    :as ev-routing]
-   [mateuszmazurczak.navigation.router :as mm-fe-router]
-   [mount.core                         :refer [defstate]]))
+   [clojure.string                               :as str]
+   [mateuszmazurczak.events.routing              :as ev-routing]
+   [mateuszmazurczak.navigation.history.protocol :as mm-nav-history]
+   [mateuszmazurczak.navigation.history.reitit   :as mm-nav-history-reitit]
+   [mateuszmazurczak.navigation.router           :as mm-fe-router]
+   [mount.core                                   :refer [defstate]]
+   [re-frame.core                                :as rf]))
 
 (defn update-match-fragment
   "Adds fragment in the case when match is comming from ring handler.
@@ -20,32 +19,50 @@
       (assoc match :fragment (subs window-hash 1)))))
 
 (defstate history
-          :start (try (fe-history-reitit/make-history
+          :start (try (mm-nav-history-reitit/make-history
                        (:router @mm-fe-router/router)
                        (fn [match _history]
                          (let [match (update-match-fragment match)]
-                           (web-events-proxy/dispatch
-                            [::ev-routing/new-route-match match]))))
+                           (rf/dispatch [::ev-routing/new-route-match match]))))
                       (catch :default e
-                        (core-log/error
-                         (ex-info "History component did not start" {:e e}))))
-          :stop (web-fe-history/stop! @history))
+                        (ex-info "History component did not start" {:e e})))
+          :stop (mm-nav-history/stop! @history))
 
-(defn init!
-  "See `automaton-web.fe.history.pushy/init!`"
-  []
-  (web-fe-history/init! @history))
+(defn init! [] (mm-nav-history/init! @history))
 
 (defn href
-  "See `automaton-web.fe.history.pushy/href`"
-  ([] (web-fe-history/href @history nil nil nil))
-  ([route-name] (web-fe-history/href @history route-name nil nil))
+  ([] (mm-nav-history/href @history nil nil nil))
+  ([route-name] (mm-nav-history/href @history route-name nil nil))
   ([route-name path-param]
-   (web-fe-history/href @history route-name path-param nil))
+   (mm-nav-history/href @history route-name path-param nil))
   ([route-name path-param query-param]
-   (web-fe-history/href @history route-name path-param query-param)))
+   (mm-nav-history/href @history route-name path-param query-param)))
 
 (defn href-delta
-  "See `automaton-web.fe.history.pushy/href-delta`"
-  [match route-name path-param query-param]
-  (web-fe-history/href-delta @history match route-name path-param query-param))
+  "Search for an hyperlink relatively to the current
+  So all nil values set below will be replaced with the value of the current match
+  Params:
+  * `route-name` name of the route to navigate, replaced with current route name if nil
+  * `path-params` add the parameters in that map to the current parameter map
+  * `query-params` add the parameters in that map to the current query parameters"
+  ([route-name path-params query-params]
+   (mm-nav-history/href-delta @history
+                              @(rf/subscribe
+                                [:mateuszmazurczak.events.routing/route-match])
+                              route-name
+                              path-params
+                              query-params))
+  ([route-name path-params]
+   (mm-nav-history/href-delta @history
+                              @(rf/subscribe
+                                [:mateuszmazurczak.events.routing/route-match])
+                              route-name
+                              path-params
+                              {}))
+  ([route-name]
+   (mm-nav-history/href-delta @history
+                              @(rf/subscribe
+                                [:mateuszmazurczak.events.routing/route-match])
+                              route-name
+                              {}
+                              {})))

@@ -1,13 +1,10 @@
 (ns mateuszmazurczak.env
   "Define prod specific behavior for customer app"
   (:require
-   [automaton-core.log       :as core-log]
-   [automaton-web.middleware :as web-middleware]))
-
-(core-log/info "The Local Acceptance environment has been loaded")
+   [ring.middleware.gzip :as ring-gzip]))
 
 ;; Redefined on purpose, as we are loading either dev or prod.
 (def route (constantly []))
 
 ;; Redefined on purpose, as we are loading either dev or prod.
-(def env-middlewares [web-middleware/wrap-gzip])
+(def env-middlewares [ring-gzip/wrap-gzip])

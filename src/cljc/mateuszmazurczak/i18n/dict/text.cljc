@@ -3,5 +3,7 @@
 
 (def dict
   "Translation dictionary for this customer app"
-  {:en {}
-   :pl {}})
+  {:en {:homepage "Home"
+        :articles "Articles"}
+   :pl {:homepage "Główna"
+        :articles "Artykuły"}})

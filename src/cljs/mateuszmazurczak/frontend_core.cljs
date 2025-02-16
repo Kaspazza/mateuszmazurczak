@@ -74,11 +74,6 @@
   (try (reset! *root (render-id "app" [lm/main-component]))
        (catch :default e (ex-info "Mount error" {:error e}))))
 
-;;TODO add realtime with updates to refresh page on-click
-;;TODO add logs
-;;TODO add deploy task with deploy to droplet
-;;TODO add versioning
-;;TODO add auth
 ;;TODO cleanup - go over files and re-check
 (defn ^:export init!
   []

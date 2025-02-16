@@ -7,7 +7,6 @@
    [mateuszmazurczak.echo.headers          :refer [build-writter
                                                    errorln
                                                    h1
-                                                   h1-error
                                                    h1-error!
                                                    h1-valid
                                                    h1-valid!
@@ -57,9 +56,9 @@
   [project-dir]
   (h2 "cljs dependencies installation.")
   (let [s (build-writter)
-        install-res (binding [*out* s]
-                      (-> (shadow/install-cmd)
-                          (blocking-cmd ["tests"] project-dir "" verbose)))
+        install-res
+        (binding [*out* s]
+          (blocking-cmd ["tests"] (shadow/install-cmd) project-dir "" verbose))
         install-success (success install-res)]
     (if install-success
       (h2-valid "npm install ok")
@@ -72,12 +71,12 @@
   [project-dir]
   (h2 "cljs compilation")
   (let [s (build-writter)
-        compile-shadow-res (binding [*out* s]
-                             (some->
-                               (shadow/read-dir project-dir)
-                               shadow/build
-                               shadow/cljs-compile-cmd
-                               (blocking-cmd ["tests"] project-dir "" verbose)))
+        compile-shadow-res
+        (binding [*out* s]
+          (let [cmd (some-> (shadow/read-dir project-dir)
+                            shadow/build
+                            shadow/cljs-compile-cmd)]
+            (blocking-cmd ["tests"] cmd project-dir "" verbose)))
         compilation-success (success compile-shadow-res)]
     (if compilation-success
       (h2-valid "cljs compilation ok")
@@ -91,8 +90,11 @@
   (h2 "karma test")
   (let [s (build-writter)
         cljs-test-res (binding [*out* s]
-                        (-> (shadow/karma-test-cmd)
-                            (blocking-cmd ["tests"] project-dir "" verbose)))
+                        (blocking-cmd ["tests"]
+                                      (shadow/karma-test-cmd)
+                                      project-dir
+                                      ""
+                                      verbose))
         cljs-test-success (success cljs-test-res)]
     (if cljs-test-success
       (h2-valid "karma test ok")
@@ -111,11 +113,11 @@
   (h1 "Test clj")
   (let [s (build-writter)
         clj-res (map #(let [res (binding [*out* s]
-                                  (-> ["clojure" (str "-M" %)]
-                                      (blocking-cmd ["tests"]
-                                                    project-dir
-                                                    "Error during tests"
-                                                    verbose)))]
+                                  (blocking-cmd ["tests"]
+                                                ["clojure" (str "-M" %)]
+                                                project-dir
+                                                "Error during tests"
+                                                verbose))]
                         (when verbose (normalln (:out res)))
                         res)
                      test-aliases)

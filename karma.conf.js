@@ -3,7 +3,7 @@ module.exports = function (config) {
     config.set({
         browsers: ['ChromeHeadless'],
         // The directory where the output file lives
-        basePath: 'target',
+        basePath: '.shadow-cljs/target',
         // The file itself
         files: ['karma-test.js'],
         frameworks: ['cljs-test'],

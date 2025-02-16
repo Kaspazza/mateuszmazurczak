@@ -2,9 +2,9 @@
  {:browser-test {:ns-regexp "-test$"
                  :runner-ns shadow.test.browser
                  :target :browser-test
-                 :test-dir "target/browser-test"}
+                 :test-dir ".shadow-cljs/target/browser-test"}
   :ltest {:ns-regexp "-test$"
-          :output-to "target/karma-test.js"
+          :output-to ".shadow-cljs/target/karma-test.js"
           :target :karma}
   :mateuszmazurczak-app
   {:asset-path "js/compiled"
@@ -32,5 +32,5 @@
              :compiler-options {:portfolio false}}
    :target :browser}}
  :deps {:aliases [:cljs-deps :cljs-dev-deps]}
- :dev-http {8081 ["target/browser-test"]}
+ :dev-http {8081 [".shadow-cljs/target/browser-test"]}
  :nrepl {:port 8777}}

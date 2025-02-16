@@ -20,13 +20,17 @@
    :enter (common/enter dev-launch/cli-opts (current-task))
    :extra-deps {djblue/portal {:mvn/version "0.58.5"}}
    :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
-   :task (dev-launch/start-repl [:common-test :env-development-repl :build])}
+   :task (dev-launch/start-repl [:common-test :env-development-repl])}
   :requires [[mateuszmazurczak.common :as common]]
   clean {:depends [-base-deps]
          :doc "Clean temp files"
          :enter (common/enter clean/cli-opts (current-task))
          :requires [[mateuszmazurczak.tasks.clean :as clean]]
-         :task (clean/clean [:common-test])}
+         :task (clean/clean [".cpcache"
+                             ".shadow-cljs"
+                             "node_modules"
+                             "resources/public/js/compiled"
+                             "tmp"])}
   dev-launch {:depends [-base-deps]
               :doc "Launch dev environment toolings."
               :enter (common/enter dev-launch/cli-opts (current-task))

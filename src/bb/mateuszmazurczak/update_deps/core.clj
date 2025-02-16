@@ -52,7 +52,7 @@
 (defn exclude-deps
   "Returns `deps` without those that name is in `excluded-libs-names`."
   [deps excluded-deps]
-  (remove (fn [dep] (some #(= (:name %) (:name dep)) excluded-deps)) deps))
+  (remove (fn [dep] (some #(= % (:name dep)) excluded-deps)) deps))
 
 (defn update-dep!
   "Update single `dep` conforming to `dependency-schema`"

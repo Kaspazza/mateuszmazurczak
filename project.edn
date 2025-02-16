@@ -1,4 +1,13 @@
 {:app-name "mateuszmazurczak"
- :deps {:excluded-libs #{}}
+ :deps {:excluded-libs #{
+                         ;;TODO check if sentry can be updated
+                         "io.sentry/sentry"
+                         "io.sentry/sentry-clj"
+                         "daisyui"
+                         "marked"
+                         "@sentry/react"
+                         "react"
+                         "react-dom"
+                         "react-router-dom"}}
  :publication {:base-branch "main"
                :repo-url "git@github.com:kaspazza/mateuszmazurczak.git"}}

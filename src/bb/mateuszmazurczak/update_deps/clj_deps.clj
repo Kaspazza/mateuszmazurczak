@@ -53,17 +53,18 @@
 (defn update-deps!
   "Update all `deps` in `dir`"
   ([dir target-dir deps]
-   (let [res (cond-> ["clojure" "-M:antq" "--upgrade" "--no-changes" "--force"]
+   (let [cmd (cond-> ["clojure" "-M:antq" "--upgrade" "--no-changes" "--force"]
                (and deps (not-empty deps))
                (concat (mapv #(str "--focus="
                                    (:name %)
                                    (when (:version %) (str "@" (:version %))))
                              deps))
-               (some? target-dir) (concat ["-d" target-dir])
-               true (echo-cmds/blocking-cmd ["deps-update"]
-                                            dir
-                                            "Antq update failed"
-                                            false))]
+               (some? target-dir) (concat ["-d" target-dir]))
+         res (echo-cmds/blocking-cmd ["deps-update"]
+                                     cmd
+                                     dir
+                                     "Antq update failed"
+                                     false)]
      (when-not (= 0 (:exit res))
        {:error (:err res)
         :data res})))

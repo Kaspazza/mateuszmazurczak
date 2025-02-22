@@ -1,14 +1,14 @@
 (ns mateuszmazurczak.endpoint.router
   "Create web routers"
   (:require
-   [mateuszmazurczak.endpoint.error-page    :as error-page]
-   [mateuszmazurczak.endpoint.handler       :as mm-handler]
-   [mateuszmazurczak.endpoint.http-response :as http-response]
-   [mateuszmazurczak.endpoint.middleware    :as mm-middleware]
-   [mateuszmazurczak.endpoint.routes        :as mm-endpoint-routes]
-   [muuntaja.core                           :as m]
-   [reitit.coercion                         :as coercion]
-   [reitit.ring                             :as reitit-ring]))
+   [mateuszmazurczak.endpoint.error-page :as error-page]
+   [mateuszmazurczak.endpoint.handler    :as mm-handler]
+   [mateuszmazurczak.endpoint.middleware :as mm-middleware]
+   [mateuszmazurczak.endpoint.routes     :as mm-endpoint-routes]
+   [muuntaja.core                        :as m]
+   [reitit.coercion                      :as coercion]
+   [reitit.ring                          :as reitit-ring]
+   [ring.util.http-response              :as http-response]))
 
 (defn not-found-handler
   [request]
@@ -73,13 +73,10 @@
   Params:
   * `ring-handler`"
   (reitit-ring/ring-handler
-   (router (mm-endpoint-routes/web-routes mm-handler/registry)
-           mm-middleware/web-middleware)
+   (router mm-endpoint-routes/routes mm-middleware/web-middleware)
    (reitit-ring/routes (resource-handler {}) (default-handlers nil []))
    {:middleware mm-middleware/global-middlewares
-    :inject-match? true ;; So the `:match` keyword
-                        ;; is in the request and
-                        ;; you can analyse it
+    :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
    }))
 
 (defn get-app

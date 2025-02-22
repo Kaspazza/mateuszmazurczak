@@ -1,8 +1,7 @@
-(ns mateuszmazurczak.i18n.dict.text
-  "Translation dictionary for this customer app")
+(ns mateuszmazurczak.i18n.dict.text "Translation of text")
 
 (def dict
-  "Translation dictionary for this customer app"
+  "Translation dictionary"
   {:en {:homepage "Home"
         :articles "Articles"}
    :pl {:homepage "Główna"

@@ -4,7 +4,7 @@
    [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
    [mateuszmazurczak.navigation.history :as mm-nav-hist]
    [mateuszmazurczak.navigation.router  :as mm-nav-router]
-   [mateuszmazurczak.routes             :as mm-routes]
+   [mateuszmazurczak.navigation.routes  :as mm-routes]
    [mateuszmazurczak.ui.errors          :as mm-ui-errors]
    [mateuszmazurczak.ui.home            :as mm-home]
    [mateuszmazurczak.ui.navigation      :as mm-ui-navigation]

@@ -1,4 +1,6 @@
-(ns mateuszmazurczak.i18n.tempura)
+(ns mateuszmazurczak.i18n.tempura
+  (:require
+   [mateuszmazurczak.configuration :as conf]))
 
 (defn deep-merge
   "Deep merge nested maps.
@@ -34,8 +36,7 @@
   Params:
   * `dicts` list of dictionaries to append together, the default keys for missing keys and the core dictionary are defaulted"
   [& dicts]
-  (let [debug true ;; (= :dev (conf-core/read-param [:env]))
-       ]
+  (let [debug (= :development (conf/read-param [:env]))]
     {:dict (append-dictionaries dicts)
      :cache-dict? (not debug)
      :default-local :en

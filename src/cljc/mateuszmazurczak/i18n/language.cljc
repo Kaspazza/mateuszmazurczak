@@ -3,20 +3,29 @@
   (:require
    [clojure.string :as str]))
 
+(def main-langs
+  "Default language if all language strategy fail to select a language
+  As it is not supposed to happen, this is set to `:en`"
+  [:en :pl])
 
-(def languages
-  {:en {:core-dict? true
+(def web-languages
+  "Is a map defining all supported languages in a web app and add specific data
+  Then, the map has the following data:
+  * `:tld` name of the language in the tld, e.g. mateuszmazurczak.com will be directed to `:en`"
+  {:pl {:tld "pl"
+        :ui-text "PL"
+        :desc "Polski"}
+   :en {:tld "com"
+        :core-dict? true
         :ui-text "EN"
-        :desc "English"}
-   :pl {:ui-text "PL"
-        :desc "Polski"}})
+        :desc "English"}})
 
 (defn ui-str-to-id
   "Transform a ui string of a language to its id, comparison is based on string is not not case sensitive
   Params:
   * `selected-languages` selected-languages where the search is done"
   [lang-ui-text]
-  (->> languages
+  (->> web-languages
        (filter (fn [[_ lang]]
                  (when (every? string? [lang-ui-text (:ui-text lang)])
                    (= (str/upper-case lang-ui-text)
@@ -28,14 +37,14 @@
   Params:
   * `lang-id` keyword of the language which name is required"
   [lang-id]
-  (get-in languages [lang-id :ui-text]))
+  (get-in web-languages [lang-id :ui-text]))
 
 (defn create-ui-languages
   "Create options for a select component based on language
   Params:
   * none"
   []
-  (->> languages
+  (->> web-languages
        (map (fn [[lang-id lang]]
               (let [ui-text (:ui-text lang)]
                 {:name (name lang-id)

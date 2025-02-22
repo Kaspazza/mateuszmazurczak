@@ -3,14 +3,14 @@
 
   Gather all handlers for all spa pages"
   (:require
-   [clojure.string                          :as str]
-   [hiccup.page                             :as hiccup-page]
-   [hiccup2.core                            :as hiccup2]
-   [mateuszmazurczak.configuration          :as mm-conf]
-   [mateuszmazurczak.endpoint.http-response :as http-response]
-   [mateuszmazurczak.ui.spinner             :as mm-spinner]
-   [mateuszmazurczak.utils.fallback         :as fallback]
-   [ring.middleware.anti-forgery            :as ring-anti-forgery]))
+   [clojure.string                  :as str]
+   [hiccup.page                     :as hiccup-page]
+   [hiccup2.core                    :as hiccup2]
+   [mateuszmazurczak.configuration  :as mm-conf]
+   [mateuszmazurczak.ui.spinner     :as mm-spinner]
+   [mateuszmazurczak.utils.fallback :as fallback]
+   [ring.middleware.anti-forgery    :as ring-anti-forgery]
+   [ring.util.http-response         :as http-response]))
 
 (defn anti-forgery-html-token
   []
@@ -97,36 +97,38 @@
     (str (html-core head-elements body-elements))))
 
 (defn article-page
+  ;;TODO build article per page, each article is generated as separate web-page for better SEO and search engine finding
   [{:keys [title author twitter-content url image description]
     :as _seo-metadata}
    {:keys [tr]
     :as http-request}]
-  (http-response/ok
-   {"content-type" "text/html;charset=utf8"}
-   (build (merge (update-in http-request
-                            [:header-elements]
-                            conj
-                            [:script {:type "text/javascript"}
-                             (hiccup2/raw (mm-conf/config-web-reference))])
-                 {:meta-tags
-                  {:description (fallback/always-return #(tr description) "")
-                   :image (str "https://mateuszmazurczak.com/"
-                               (if image
-                                 (fallback/always-return #(tr image)
-                                                         "img/preview/en.png")
-                                 "img/preview/en.png"))
-                   :title (fallback/always-return #(tr title) title)
-                   :author (or author "Mateusz Mazurczak")
-                   :url (str/join "/" ["https://mateuszmazurczak.com" url])
-                   :twitter-content (or twitter-content "sumary_large_image")
-                   :type "website"}})
-          [:div {:id "app"
-                 :class ["h-full"]}
-           (mm-spinner/spinner)]
-          [:script {:type "text/javascript"
-                    :src "/js/compiled/mateuszmazurczak-share.js"}]
-          [:script {:type "text/javascript"
-                    :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])))
+  (-> (build (merge (update-in http-request
+                               [:header-elements]
+                               conj
+                               [:script {:type "text/javascript"}
+                                (hiccup2/raw (mm-conf/config-web-reference))])
+                    {:meta-tags
+                     {:description (fallback/always-return #(tr description) "")
+                      :image (str "https://mateuszmazurczak.com/"
+                                  (if image
+                                    (fallback/always-return
+                                     #(tr image)
+                                     "img/preview/en.png")
+                                    "img/preview/en.png"))
+                      :title (fallback/always-return #(tr title) title)
+                      :author (or author "Mateusz Mazurczak")
+                      :url (str/join "/" ["https://mateuszmazurczak.com" url])
+                      :twitter-content (or twitter-content "sumary_large_image")
+                      :type "website"}})
+             [:div {:id "app"
+                    :class ["h-full"]}
+              (mm-spinner/spinner)]
+             [:script {:type "text/javascript"
+                       :src "/js/compiled/mateuszmazurczak-share.js"}]
+             [:script {:type "text/javascript"
+                       :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])
+      http-response/ok
+      (assoc-in [:headers "content-type"] "text/html;charset=utf8")))
 
 (defn mateuszmazurczak-page
   "Generate the mateuszmazurczak page
@@ -135,36 +137,33 @@
   * `http-request`"
   [{:keys [tr]
     :as http-request}]
-  (http-response/ok
-   {"content-type" "text/html;charset=utf8"}
-   (build
-    (merge
-     (update-in http-request
-                [:header-elements]
-                conj
-                [:script {:type "text/javascript"}
-                 (hiccup2/raw (mm-conf/config-web-reference))])
-     {:meta-tags
-      {:description
-       (fallback/always-return
-        #(tr :we-know-how-and-we-will-help-you-grow)
-        "With over two decades of expertise in supply chain and IT, working with many industries, we have the tools and knowledge to help you grow!")
-       :image (str "https://mateuszmazurczak.com/"
-                   (fallback/always-return #(tr :page-preview)
-                                           "img/preview/en.png"))
-       :title "Mateuszmazurczak"
-       :author "Mateuszmazurczak"
-       :url "https://mateuszmazurczak.com/"
-       :twitter-content "sumary_large_image"
-       :type "website"}})
-    [:div {:id "app"
-           :class ["h-full"]}
-     (mm-spinner/spinner)]
-    [:script {:type "text/javascript"
-              :src "/js/compiled/mateuszmazurczak-share.js"}]
-    [:script {:type "text/javascript"
-              :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])))
-
-(def registry
-  "Registry matching keywords to handler"
-  {:html-page/index mateuszmazurczak-page})
+  (->
+    (build
+     (merge
+      (update-in http-request
+                 [:header-elements]
+                 conj
+                 [:script {:type "text/javascript"}
+                  (hiccup2/raw (mm-conf/config-web-reference))])
+      {:meta-tags
+       {:description
+        (fallback/always-return
+         #(tr :we-know-how-and-we-will-help-you-grow)
+         "With over two decades of expertise in supply chain and IT, working with many industries, we have the tools and knowledge to help you grow!")
+        :image (str "https://mateuszmazurczak.com/"
+                    (fallback/always-return #(tr :page-preview)
+                                            "img/preview/en.png"))
+        :title "Mateuszmazurczak"
+        :author "Mateuszmazurczak"
+        :url "https://mateuszmazurczak.com/"
+        :twitter-content "sumary_large_image"
+        :type "website"}})
+     [:div {:id "app"
+            :class ["h-full"]}
+      (mm-spinner/spinner)]
+     [:script {:type "text/javascript"
+               :src "/js/compiled/mateuszmazurczak-share.js"}]
+     [:script {:type "text/javascript"
+               :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])
+    http-response/ok
+    (assoc-in [:headers "content-type"] "text/html;charset=utf8")))

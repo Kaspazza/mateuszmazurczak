@@ -6,7 +6,7 @@
 
 (deftest start-router-test
   (testing
-    "Parsing is returning parameter lang = en, and path :mateuszmazurczak.routes/articles"
+    "Parsing is returning parameter lang = en, and path :mateuszmazurczak.navigation.routes/articles"
     (let [match (-> (sut/start-router)
                     (sut/match-from-url "/articles?lang=en"))]
       (is (= :mateuszmazurczak.routes/articles (get-in match [:data :name])))

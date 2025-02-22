@@ -5,8 +5,8 @@
    [mateuszmazurczak.env                 :as mm-env]
    [mateuszmazurczak.i18n.dict.resources :as mm-i18n-dict-resources]
    [mateuszmazurczak.i18n.dict.text      :as mm-i18n-dict-text]
+   [mateuszmazurczak.i18n.language       :as lang-web]
    [mateuszmazurczak.i18n.tempura        :as mm-i18n-tempura]
-   [mateuszmazurczak.utils               :as mm-utils]
    [reitit.ring.coercion                 :as rrc]
    [reitit.ring.middleware.muuntaja      :as rrmm]
    [reitit.ring.middleware.parameters    :as rrmp]
@@ -21,9 +21,52 @@
 
 (defn cors-domain-routes
   [main-domain]
-  (let [tlds ["pl" "com"]]
+  (let [tlds (->> lang-web/web-languages
+                  vals
+                  (map :tld)
+                  (into #{}))]
     (->> (for [tld tlds] (str/join "." [main-domain tld]))
          (mapv (fn [domain] (re-pattern (str ".*" domain "$")))))))
+
+(defn extract-tld-from-host
+  "Extract the tld from an host
+  Params:
+  * `url` - url to parse"
+  [url]
+  (some->> url
+           (re-find #".*(?:\.([a-zA-Z]\w{1,2}))(?::\d{1,4})?$")
+           second))
+
+(defn tld-language
+  "Get the tld in the host of the http request"
+  [http-request]
+  (->> http-request
+       :headers
+       (get "host")
+       extract-tld-from-host))
+
+(defn accepted-languages
+  "Return the accepted languages in the http request
+  Params:
+  * `http-request` an http request"
+  [http-request]
+  (-> http-request
+      :headers
+      (get "accept-language")))
+
+(defn cookies-language
+  "Get cookies value under 'lang' key from req
+  Params:
+  * `http-request` an http request"
+  [http-request]
+  (let [lang (-> http-request
+                 :cookies
+                 (get "lang")
+                 :value)]
+    (cond
+      (= lang "null") nil
+      (string? lang) (keyword (str/lower-case lang))
+      :else lang)))
 
 (def web-middleware
   "Midllewares for web pages"
@@ -52,65 +95,49 @@
      rrmm/format-request-middleware]
     mm-env/env-middlewares)))
 
-(def main-langs [:en])
-
 (def opts
   (mm-i18n-tempura/create-opts mm-i18n-dict-text/dict
                                mm-i18n-dict-resources/dict))
 
-(defn language-choice-strategy*
-  "Apply the language selection strategy
+
+(defn language-strategy
+  "Parse an http request to decide which language to use.
   - If a parameter language is set in the path, just use it,
   - Else If a language is set in the cookie, use it
   - Use the tld
   - If none is set, use the main-lang as a default language
-  All variables with trailing _ are delays, so they'll be evaluted only if the previous step has failed to find a value
-  Params:
-  * `par-lang` language imposed in the parameters
-  * `cookies-lang_` language stored in the cookie
-  * `accepted-languages_` accepted languages by the user browser
-  * `tld-lang_` is the language in the tld
-  * `main-lang_` main language"
-  [par-lang cookies-lang_ accepted-languages_ tld-lang_ main-lang_]
-  (or par-lang @cookies-lang_ @accepted-languages_ @tld-lang_ @main-lang_))
-
-(defn lang-str-choice-strategy-def
-  "Parse an http request to apply the strategy to decide which language we use
-  This is a design choice to let the strategy decides how default-language is used, so it is not left to tempura to apply default
   Params:
   * `web-translator` the translator instance to know the default languages
   * `http-request` request to parse"
   [default-languages http-request]
-  (let [par-lang (mm-utils/get-param http-request :lang)
-        lang-str (if (or (not (string? par-lang)) (str/blank? par-lang))
-                   (language-choice-strategy*
-                    par-lang
-                    (delay (mm-utils/cookies-language http-request))
-                    (delay (some-> (mm-utils/accepted-languages http-request)
-                                   (subs 0 2)))
-                    (delay (some-> http-request
-                                   mm-utils/tld-language))
-                    (delay (first default-languages)))
-                   par-lang)]
+  (let [par-lang (get-in http-request [:params :lang])
+        lang-str (or par-lang
+                     (cookies-language http-request)
+                     (some-> (accepted-languages http-request)
+                             (subs 0 2))
+                     (some-> http-request
+                             tld-language)
+                     (first default-languages))]
     lang-str))
 
-(defn translate
+(defn- translate
   [langs-id tr-id resources]
-  (let [locales (vec (concat langs-id main-langs))
+  (let [locales (vec (concat langs-id lang-web/main-langs))
         translated-text (tempura/tr opts locales [tr-id] resources)]
     translated-text))
 
-(defn wrap-ring-request
+(defn- wrap-ring-request
   [handler]
   (fn [{:keys [tempura/accept-langs_ locales]
         :as http-request}]
-    (let [locales-str [(lang-str-choice-strategy-def main-langs http-request)]
+    (let [locales-str [(language-strategy lang-web/main-langs http-request)]
           {:keys [locales]
            :as updated-request}
           (-> http-request
               (assoc :accept-langs accept-langs_ :locales locales-str)
-              (dissoc :tempura/accept-langs_ :tempura/tr))]
+              (dissoc :tempura/accept-langs_))]
       (-> updated-request
+          (dissoc :tempura/tr)
           (assoc :tr
                  (fn
                    ([tr-id resources] (translate locales tr-id resources))
@@ -118,13 +145,13 @@
           handler
           (assoc-in [:headers "locales"] locales-str)))))
 
+(defn wrap-translation
+  [handler]
+  (tempura/wrap-ring-request (wrap-ring-request handler) {}))
+
 (def global-middlewares
   "Middleware for the whole app"
-  [ring-cookies/wrap-cookies  ;; It's important to have cookies before
-   ;; translator to allow strategy based on cookie
-   ;; lang
-   rrmp/parameters-middleware ;; It's important to have parameters before
-   ;; translator to allow strategy based on
-   ;; parameters lang
+  [ring-cookies/wrap-cookies ;; It's important to have cookies before translator to allow strategy based on cookie lang
+   rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
-   (fn [handler] (tempura/wrap-ring-request (wrap-ring-request handler) {}))])
+   wrap-translation])

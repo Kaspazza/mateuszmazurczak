@@ -1,6 +1,6 @@
 (ns mateuszmazurczak.configuration.files
   "Namespace for simple configuration based on local file.
-   Just like in core configuration, we are not using log nor outside dependencies to comply with the configuration requirements."
+   Log is not used and outside dependencies limited to comply with the configuration requirements."
   (:require
    #?@(:clj [[clojure.edn :as edn] [clojure.java.io :as io]]
        :cljs [[cljs.reader]])

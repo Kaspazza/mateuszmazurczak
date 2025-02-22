@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.ui.nav "Navigation component")
 
 (defn navigation
-  "Print a navigation button
+  "Navigation button
   * The linked could be set with `href` or `on-click` and are higher priority"
   [{:keys [href text dark? on-click]}]
   [:a
@@ -14,7 +14,7 @@
    text])
 
 (defn back-navigation
-  "Print a back navigation button
+  "Back navigation button
   * The linked could be set with `href` or `on-click` and are higher priority"
   [{:keys [href text dark? on-click]}]
   [:a

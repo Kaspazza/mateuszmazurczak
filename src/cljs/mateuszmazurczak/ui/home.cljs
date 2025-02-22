@@ -2,7 +2,7 @@
   "Customer app home page assembly"
   (:require
    [mateuszmazurczak.navigation.history :as mm-nav-hist]
-   [mateuszmazurczak.routes             :as mm-routes]
+   [mateuszmazurczak.navigation.routes  :as mm-routes]
    [mateuszmazurczak.ui.navigation      :as mm-ui-navigation]))
 
 

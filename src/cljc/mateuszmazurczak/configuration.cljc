@@ -2,11 +2,7 @@
   "Configuration parameters, stored in configuration file.
    This namespace is the entry point to call conf.
 
-  We use prn instead of log and try to limit outside dependencies as much as possible here on purpose to be able to use configuration everywhere.
-
-  For a parameter `p`:
-  * Create the parameter, in the current implementation, in the `util/conf.clj`
-  * Read the parameter with  `conf/read-param`"
+  prn is used here instead of log and dependencies are limited as much as possible here on purpose to be able to use configuration everywhere."
   (:require
    #?(:clj [mateuszmazurczak.configuration.files :as conf-files]
       :cljs [mateuszmazurczak.utils.keywords :as mm-keyword])

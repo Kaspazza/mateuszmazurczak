@@ -5,7 +5,7 @@
    [mateuszmazurczak.i18n.language      :as mm-i18n-lang]
    [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
    [mateuszmazurczak.navigation.history :as mm-nav-hist]
-   [mateuszmazurczak.routes             :as mm-routes]
+   [mateuszmazurczak.navigation.routes  :as mm-routes]
    [re-frame.core                       :as rf]))
 
 (defn string-to-id

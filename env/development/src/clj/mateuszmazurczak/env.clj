@@ -1,11 +1,11 @@
 (ns mateuszmazurczak.env
   "Define dev specific behavior for customer app"
   (:require
-   [babashka.fs                             :as fs]
-   [clojure.edn                             :as edn]
-   [mateuszmazurczak.endpoint.handler       :as mm-endpoint-handler]
-   [mateuszmazurczak.endpoint.http-response :as http-response]
-   [ring.middleware.reload                  :as mr]))
+   [babashka.fs                       :as fs]
+   [clojure.edn                       :as edn]
+   [mateuszmazurczak.endpoint.handler :as mm-endpoint-handler]
+   [ring.middleware.reload            :as mr]
+   [ring.util.http-response           :as http-response]))
 
 (def deps-edn "deps.edn")
 
@@ -87,15 +87,16 @@
    ["/portfolio"
     {:summary "Show portfolio"
      :get (fn [request]
-            (http-response/ok {"content-type" "text/html;charset=utf8"}
-                              (mm-endpoint-handler/build
-                               request
-                               [:div ""]
-                               [:script {:type "text/javascript"
-                                         :src share-js}]
-                               [:script {:type "text/javascript"
-                                         :src
-                                         "/js/compiled/portfolio.js"}])))}]))
+            (-> (mm-endpoint-handler/build request
+                                           [:div ""]
+                                           [:script {:type "text/javascript"
+                                                     :src share-js}]
+                                           [:script
+                                            {:type "text/javascript"
+                                             :src "/js/compiled/portfolio.js"}])
+                http-response/ok
+                (assoc-in [:headers "content-type"]
+                          "text/html;charset=utf8")))}]))
 
 ;; Redefined on purpose, as we are loading either dev or prod.
 (defn route

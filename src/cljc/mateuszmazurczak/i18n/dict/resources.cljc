@@ -1,5 +1,4 @@
-(ns mateuszmazurczak.i18n.dict.resources
-  "Dictionary to translate resources for mateuszmazurczak project")
+(ns mateuszmazurczak.i18n.dict.resources "Dictionary to translate resources")
 
 (def dict
   "Dictionary to translate resources"

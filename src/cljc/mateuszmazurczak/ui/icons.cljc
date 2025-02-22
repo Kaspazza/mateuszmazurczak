@@ -2,7 +2,7 @@
 
 (def icons-path
   "List of paths by icon namespaced keyword
-   See https://fontawesome.com/ if you want to add new paths here."
+   Mostly based on https://fontawesome.com/"
   {:svg/exclamation
    {:original-width 512
     :original-height 512

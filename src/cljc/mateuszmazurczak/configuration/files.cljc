@@ -5,7 +5,8 @@
    #?@(:clj [[clojure.edn :as edn] [clojure.java.io :as io]]
        :cljs [[cljs.reader]])
    [clojure.string                  :as str]
-   [mateuszmazurczak.utils.keywords :as core-keywords]))
+   [mateuszmazurczak.utils.keywords :as core-keywords]
+   [mateuszmazurczak.utils.map      :as utils-map]))
 
 #?(:clj (defn get-java-properties
           "Get the java properties"
@@ -26,19 +27,6 @@
 
 #?(:cljs (def ^:private nodejs? (exists? js/require)))
 #?(:cljs (def ^:private fs (when nodejs? (js/require "fs"))))
-
-(defn deep-merge
-  "Deep merge nested maps.
-  Last map has higher priority
-
-  This code comes from this [gist](https://gist.github.com/danielpcox/c70a8aa2c36766200a95)"
-  [& maps]
-  (apply merge-with
-         (fn [& args]
-           (if (every? #(or (map? %) (nil? %)) args)
-             (apply deep-merge args)
-             (last args)))
-         maps))
 
 (defn slurp-file
   [f]
@@ -77,7 +65,7 @@
           :when (> freq 1)]
       (println "WARNING: configuration keys are duplicated for:" id))))
 
-(defn merge-configs [& m] (warn-on-overwrite m) (apply deep-merge m))
+(defn merge-configs [& m] (warn-on-overwrite m) (apply utils-map/deep-merge m))
 
 (defn read-config
   "Reads configuration, currently it's based on config.edn file. On js part, if nodejs is not available to get the configuration from file. If used with js, config-js-reference variable is expected to be set publicly."

@@ -41,6 +41,7 @@ Current state of code contains:
 
 TODO:
 - Logs
+- describe testing FE/BE
 - Database integration
 - Auth
 - Versioning

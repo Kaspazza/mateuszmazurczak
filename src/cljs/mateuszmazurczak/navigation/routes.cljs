@@ -12,3 +12,4 @@
    ["/articles"
     {:name ::articles
      :panel-id :panels/articles}]])
+

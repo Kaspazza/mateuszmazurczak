@@ -1,8 +1,8 @@
 (ns mateuszmazurczak.main
   "Entry point to mateuszmazurczak app"
   (:require
-   [mateuszmazurczak.events.routing    :as ev-routing]
    [mateuszmazurczak.navigation.panels :as mm-nav-panels]
+   [mateuszmazurczak.navigation.router :as ev-routing]
    [re-frame.core                      :as rf]))
 
 (defn router-component

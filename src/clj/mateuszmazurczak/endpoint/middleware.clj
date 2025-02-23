@@ -1,23 +1,22 @@
 (ns mateuszmazurczak.endpoint.middleware
   "Middlewares for mateuszmazurczak project"
   (:require
-   [clojure.string                       :as str]
-   [mateuszmazurczak.env                 :as mm-env]
-   [mateuszmazurczak.i18n.dict.resources :as mm-i18n-dict-resources]
-   [mateuszmazurczak.i18n.dict.text      :as mm-i18n-dict-text]
-   [mateuszmazurczak.i18n.language       :as lang-web]
-   [mateuszmazurczak.i18n.tempura        :as mm-i18n-tempura]
-   [reitit.ring.coercion                 :as rrc]
-   [reitit.ring.middleware.muuntaja      :as rrmm]
-   [reitit.ring.middleware.parameters    :as rrmp]
-   [ring.middleware.anti-forgery         :as ring-anti-forgery]
-   [ring.middleware.content-type         :as ring-content-type]
-   [ring.middleware.cookies              :as ring-cookies]
-   [ring.middleware.cors                 :as ring-cors]
-   [ring.middleware.keyword-params       :as ring-keyword-params]
-   [ring.middleware.session              :as ring-session]
-   [ring.middleware.session.memory       :as ring-memory]
-   [taoensso.tempura                     :as tempura]))
+   [clojure.set]
+   [clojure.string                    :as str]
+   [mateuszmazurczak.env              :as mm-env]
+   [mateuszmazurczak.i18n             :as i18n]
+   [mateuszmazurczak.i18n.language    :as lang-web]
+   [reitit.ring.coercion              :as rrc]
+   [reitit.ring.middleware.muuntaja   :as rrmm]
+   [reitit.ring.middleware.parameters :as rrmp]
+   [ring.middleware.anti-forgery      :as ring-anti-forgery]
+   [ring.middleware.content-type      :as ring-content-type]
+   [ring.middleware.cookies           :as ring-cookies]
+   [ring.middleware.cors              :as ring-cors]
+   [ring.middleware.keyword-params    :as ring-keyword-params]
+   [ring.middleware.session           :as ring-session]
+   [ring.middleware.session.memory    :as ring-memory]
+   [taoensso.tempura                  :as tempura]))
 
 (defn cors-domain-routes
   [main-domain]
@@ -40,19 +39,29 @@
 (defn tld-language
   "Get the tld in the host of the http request"
   [http-request]
-  (->> http-request
-       :headers
-       (get "host")
-       extract-tld-from-host))
+  (let [user-tld (-> http-request
+                     :headers
+                     (get "host")
+                     extract-tld-from-host)]
+    (some (fn [[id {:keys [tld]}]] (when (= user-tld tld) id))
+          lang-web/web-languages)))
 
 (defn accepted-languages
   "Return the accepted languages in the http request
   Params:
   * `http-request` an http request"
   [http-request]
-  (-> http-request
-      :headers
-      (get "accept-language")))
+  (let [headers-lang (-> http-request
+                         :headers
+                         (get "accept-language"))
+        user-accepted-languages (when headers-lang
+                                  (->> (str/split headers-lang #",")
+                                       (map #(subs % 0 2))
+                                       (map #(keyword (str/lower-case %)))
+                                       vec))]
+    (when (seq (clojure.set/intersection (set user-accepted-languages)
+                                         (set (keys lang-web/web-languages))))
+      user-accepted-languages)))
 
 (defn cookies-language
   "Get cookies value under 'lang' key from req
@@ -95,10 +104,6 @@
      rrmm/format-request-middleware]
     mm-env/env-middlewares)))
 
-(def opts
-  (mm-i18n-tempura/create-opts mm-i18n-dict-text/dict
-                               mm-i18n-dict-resources/dict))
-
 
 (defn language-strategy
   "Parse an http request to decide which language to use.
@@ -109,45 +114,21 @@
   Params:
   * `web-translator` the translator instance to know the default languages
   * `http-request` request to parse"
-  [default-languages http-request]
-  (let [par-lang (get-in http-request [:params :lang])
-        lang-str (or par-lang
-                     (cookies-language http-request)
-                     (some-> (accepted-languages http-request)
-                             (subs 0 2))
-                     (some-> http-request
-                             tld-language)
-                     (first default-languages))]
-    lang-str))
-
-(defn- translate
-  [langs-id tr-id resources]
-  (let [locales (vec (concat langs-id lang-web/main-langs))
-        translated-text (tempura/tr opts locales [tr-id] resources)]
-    translated-text))
-
-(defn- wrap-ring-request
-  [handler]
-  (fn [{:keys [tempura/accept-langs_ locales]
-        :as http-request}]
-    (let [locales-str [(language-strategy lang-web/main-langs http-request)]
-          {:keys [locales]
-           :as updated-request}
-          (-> http-request
-              (assoc :accept-langs accept-langs_ :locales locales-str)
-              (dissoc :tempura/accept-langs_))]
-      (-> updated-request
-          (dissoc :tempura/tr)
-          (assoc :tr
-                 (fn
-                   ([tr-id resources] (translate locales tr-id resources))
-                   ([tr-id] (translate locales tr-id nil))))
-          handler
-          (assoc-in [:headers "locales"] locales-str)))))
+  [http-request]
+  (or (get-in http-request [:params :lang])
+      (cookies-language http-request)
+      (accepted-languages http-request)
+      (tld-language http-request)
+      (first lang-web/main-langs)))
 
 (defn wrap-translation
   [handler]
-  (tempura/wrap-ring-request (wrap-ring-request handler) {}))
+  (fn [http-request]
+    (let [lang [(language-strategy http-request)]]
+      (-> http-request
+          (assoc :tr (fn ([tr-id] (i18n/tr lang tr-id))))
+          handler))))
+
 
 (def global-middlewares
   "Middleware for the whole app"

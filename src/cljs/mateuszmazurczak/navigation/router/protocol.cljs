@@ -1,5 +1,5 @@
 (ns mateuszmazurczak.navigation.router.protocol)
-
+;;TODO go over navigation in general here in FE and clean-code/make sure everything works 100%
 (defprotocol Router
   (match-from-url [this url]
    "Find a match object from url. A match should contain what is needed to build a path again (what spa page, its parameters, the url encoded parameters...)")

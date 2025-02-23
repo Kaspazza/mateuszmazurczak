@@ -1,19 +1,8 @@
 (ns mateuszmazurczak.i18n.tempura
   (:require
-   [mateuszmazurczak.configuration :as conf]))
-
-(defn deep-merge
-  "Deep merge nested maps.
-  Last map has higher priority
-
-  This code comes from this [gist](https://gist.github.com/danielpcox/c70a8aa2c36766200a95)"
-  [& maps]
-  (apply merge-with
-         (fn [& args]
-           (if (every? #(or (map? %) (nil? %)) args)
-             (apply deep-merge args)
-             (last args)))
-         maps))
+   [mateuszmazurczak.configuration :as conf]
+   [mateuszmazurczak.i18n.language :as i18n-lang]
+   [mateuszmazurczak.utils.map     :as utils-map]))
 
 (def tempura-missing-text
   "Necessary for tempura,  a missing key is expected for all languages marked with `:core-dict?`"
@@ -29,7 +18,7 @@
   Params:
   * `dicts` list of dictionaries to append together, the default keys for missing keys and the core dictionary are defaulted"
   [dicts]
-  (apply deep-merge tempura-missing-text dicts))
+  (apply utils-map/deep-merge tempura-missing-text dicts))
 
 (defn create-opts
   "Create the options for tempura/tr
@@ -39,5 +28,5 @@
   (let [debug (= :development (conf/read-param [:env]))]
     {:dict (append-dictionaries dicts)
      :cache-dict? (not debug)
-     :default-local :en
+     :default-local (first i18n-lang/main-langs)
      :cache-locales (not debug)}))

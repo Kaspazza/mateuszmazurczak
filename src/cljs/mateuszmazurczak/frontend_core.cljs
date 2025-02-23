@@ -6,15 +6,28 @@
                                                 useNavigationType
                                                 createRoutesFromChildren
                                                 matchRoutes)]
+   [day8.re-frame.tracing               :refer [fn-traced]]
    [mateuszmazurczak.configuration      :as mm-conf]
-   [mateuszmazurczak.events.db          :as mm-evts-db]
+   [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
    [mateuszmazurczak.main               :as lm]
    [mateuszmazurczak.navigation.history :as mateuszmazurczak-fe-history]
-   [mateuszmazurczak.navigation.panels]
    [mount.core                          :as mount]
    [re-frame.core                       :as rf]
    [react                               :as react]
    [reagent.dom.client                  :as rdc]))
+
+(def default-db
+  "Default value for front end state"
+  {:name "mateuszmazurczak"
+   :route-match :pending
+   :lang (mm-i18n-translate/language-strategy)})
+
+(rf/reg-event-db ::initialize-db
+                 (fn-traced [_ _]
+                            ;; Intentionally not using
+                            ;; previous value of db, as it is
+                            ;; an init
+                            default-db))
 
 (defn init-sentry!
   "Initialize sentry for react, which is recording react errors that happens inside the components and enables to send events.
@@ -74,14 +87,13 @@
   (try (reset! *root (render-id "app" [lm/main-component]))
        (catch :default e (ex-info "Mount error" {:error e}))))
 
-;;TODO cleanup - go over files and re-check
 (defn ^:export init!
   []
   (try (init-error-tracking! {:dsn (mm-conf/read-param
                                     [:log :sentry :frontend :dsn])
                               :traced-website #"^https://mateuszmazurczak\.com/"
                               :env (mm-conf/read-param [:env])})
-       (client-app-db-init! ::mm-evts-db/initialize-db) ;; What is done before will be lost in the state
+       (client-app-db-init! ::initialize-db) ;; What is done before will be lost in the state
        (mount-root)
        (mount/start)
        (mateuszmazurczak-fe-history/init!) ;; Should be done after init-db so

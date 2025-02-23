@@ -1,7 +1,6 @@
 (ns mateuszmazurczak.ui.header
   (:require
    [clojure.string                      :as str]
-   [mateuszmazurczak.i18n.events        :as mm-i18n-evts]
    [mateuszmazurczak.i18n.language      :as mm-i18n-lang]
    [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
    [mateuszmazurczak.navigation.history :as mm-nav-hist]
@@ -134,16 +133,19 @@
     [:div right-section]]])
 
 
+(def languages-options
+  (->> mm-i18n-lang/web-languages
+       (map (fn [[_lang-id {:keys [ui-text]}]] [:option {:value ui-text}
+                                                ui-text]))))
 (def lang-select
-  (let [selected-value (-> @(rf/subscribe [::mm-i18n-evts/lang])
+  (let [selected-value (-> @(rf/subscribe [::mm-i18n-translate/lang])
                            mm-i18n-lang/id-to-str)]
     [simple-select {:id "lang"
                     :name "lang"
-                    :on-change #(rf/dispatch [::mm-i18n-evts/change-lang %])
+                    :on-change #(rf/dispatch [::mm-i18n-translate/change-lang
+                                              %])
                     :value selected-value
-                    :options (map (fn [{:keys [value]}] [:option {:value value}
-                                                         value])
-                                  (mm-i18n-lang/create-ui-languages))}]))
+                    :options languages-options}]))
 
 (defn transparent-header
   [{:keys [size border? sticky?]}]

@@ -5,29 +5,61 @@
 
   Create an instance preferably with `make-reitit-routes` function"
   (:require
-   [mateuszmazurczak.navigation.router.protocol :refer [Router]]
-   [reitit.core                                 :as reitit]
-   [reitit.dev.pretty                           :as pretty]
-   [reitit.frontend                             :as reitit-frontend]
-   [reitit.spec                                 :as rs]))
+   [reitit.core       :as reitit]
+   [reitit.dev.pretty :as pretty]
+   [reitit.frontend   :as reitit-frontend]
+   [reitit.spec       :as rs]))
 
-(defrecord ReititRouter [router gather-route-params-fn]
-  Router
-    (match-from-url [_ url] (reitit-frontend/match-by-path router url))
-    (route-name [_ match] (get-in match [:data :name]))
-    (panel-id [_ match] (get-in match [:data :panel-id] :panels/not-found))
-    (url-params [_ match] (get match :query-params)))
-
-(defn make-reitit-router
+(defn create-router
   "Make reitit router
   Params:
   * `routes` is the data structure describing the routes
   * `gather-route-params-fn` function with no argument returning a map with all data used in the routes"
-  [routes gather-route-params-fn]
-  (let [reitit-router (reitit/router routes
-                                     {:conflicts (fn [conflicts]
-                                                   {:conflicts conflicts
-                                                    :routes routes})
-                                      :validate rs/validate
-                                      :exception pretty/exception})]
-    (->ReititRouter reitit-router gather-route-params-fn)))
+  ([routes] (create-router routes {}))
+  ([routes router-params]
+   (reitit/router routes
+                  (merge {:conflicts (fn [conflicts]
+                                       {:conflicts conflicts
+                                        :routes routes})
+                          :validate rs/validate
+                          :exception pretty/exception}
+                         router-params))))
+
+(defn match-by-path
+  "Find match for a given path"
+  [router path]
+  (reitit-frontend/match-by-path router path))
+
+(defn match-by-name
+  "Find match for a given route name"
+  [router route-name & [path-params]]
+  (reitit/match-by-name router route-name path-params))
+
+;; Extraction from match functions
+(defn panel-id-from-match
+  [match]
+  (get-in match [:data :panel-id] :panels/not-found))
+
+(defn route-name-from-match [match] (get-in match [:data :name]))
+
+(defn path-params-from-match [match] (:path-params match))
+
+(defn query-params-from-match [match] (:query-params match))
+
+;; Route name based functions
+(defn panel-id
+  "Get panel ID for a route"
+  [router route-name & [path-params]]
+  (let [match (match-by-name router route-name path-params)]
+    (panel-id-from-match match)))
+
+(defn path-params
+  "Get default path parameters for a route"
+  [router route-name]
+  (let [match (match-by-name router route-name)]
+    (path-params-from-match match)))
+
+(defn all-routes
+  "Get all route names in the router"
+  [router]
+  (map route-name-from-match (reitit/routes router)))

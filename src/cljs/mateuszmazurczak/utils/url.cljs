@@ -1,5 +1,4 @@
-(ns mateuszmazurczak.navigation.utils
-  "Navigation based on router and history"
+(ns mateuszmazurczak.utils.url
   (:require
    [lambdaisland.uri :as lambda-uri]))
 
@@ -64,13 +63,3 @@
   (-> url
       parse-queries
       :lang))
-
-(defn navigate!
-  "Navigate to the `url` and decide if browser should `preserve-history?`
-  Params:
-  * `url`"
-  ([url] (navigate! url true))
-  ([url preserve-history?]
-   (if preserve-history?
-     (.pushState js/window.history nil "" url)
-     (.replaceState js/window.history nil "" url))))

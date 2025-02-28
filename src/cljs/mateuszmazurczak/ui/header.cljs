@@ -1,11 +1,11 @@
 (ns mateuszmazurczak.ui.header
   (:require
-   [clojure.string                      :as str]
-   [mateuszmazurczak.i18n.language      :as mm-i18n-lang]
-   [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
-   [mateuszmazurczak.navigation.history :as mm-nav-hist]
-   [mateuszmazurczak.navigation.routes  :as mm-routes]
-   [re-frame.core                       :as rf]))
+   [clojure.string                     :as str]
+   [mateuszmazurczak.i18n.language     :as mm-i18n-lang]
+   [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
+   [mateuszmazurczak.navigation.core   :as navigation]
+   [mateuszmazurczak.navigation.routes :as mm-routes]
+   [re-frame.core                      :as rf]))
 
 (defn string-to-id
   "Transform what is not alphanumerical to an id
@@ -161,6 +161,6 @@
                 :border? border?
                 :right-section lang-select}
    {:title "Mateusz Mazurczak"
-    :href (mm-nav-hist/href-delta ::mm-routes/home)}
+    :href (navigation/href ::mm-routes/home)}
    {:title (mm-i18n-translate/tr :articles)
-    :href (mm-nav-hist/href-delta ::mm-routes/articles)}])
+    :href (navigation/href ::mm-routes/articles)}])

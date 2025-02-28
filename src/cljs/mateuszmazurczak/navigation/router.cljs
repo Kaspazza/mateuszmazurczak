@@ -1,12 +1,10 @@
 (ns mateuszmazurczak.navigation.router
   "Mateuszmazurczak cust-app front end router"
   (:require
-   [day8.re-frame.tracing                       :refer-macros [fn-traced]]
-   [mateuszmazurczak.navigation.router.protocol :as mm-router]
-   [mateuszmazurczak.navigation.router.reitit   :as mm-router-reitit]
-   [mateuszmazurczak.navigation.routes          :as mm-fe-routes]
-   [mount.core                                  :refer [defstate]]
-   [re-frame.core                               :as rf]))
+   [mateuszmazurczak.navigation.router.reitit :as router-impl]
+   [mateuszmazurczak.navigation.routes        :as mm-fe-routes]
+   [mount.core                                :refer [defstate]]
+   [re-frame.core                             :as rf]))
 
 (defn on-element-exist
   "Waits for `selector` element to appear in document and executes `on-exist-fn`"
@@ -28,45 +26,55 @@
                             :subtree true})))
       (.then on-exist-fn)))
 
-(rf/reg-sub ::route-match (fn [db _] (:route-match db)))
 
-(rf/reg-fx :new-route-scroll-position
+
+
+(rf/reg-fx :handle-fragment-scroll
            (fn [fragment]
              (if fragment
                (on-element-exist (str "#" fragment) #(.scrollIntoView %))
                (.scrollTo js/window 0 0))))
 
-(rf/reg-event-fx ::new-route-match
-                 (fn-traced [{:keys [db]} [_ match]]
-                            {:db (assoc db :route-match match)
-                             :new-route-scroll-position (:fragment match)}))
-
-(defn start-router
-  []
-  (mm-router-reitit/make-reitit-router mm-fe-routes/routes {}))
-
-(defstate router
-          :start
-          (try (start-router)
-               (catch :default e (ex-info "Impossible to start router" e))))
-
-(defn match-from-url
-  "Match the `url`
-  For instance match `#legal/disclaimer` into reitit matcher to `:disclaimer`, query params, ...
-  Params:
-  * `router` (Optional, default to this namespace router )
-  * `url` to analyse"
-  ([url] (mm-router/match-from-url @router url))
-  ([router url] (mm-router/match-from-url router url)))
+(defstate
+ router
+ :start
+ (try (js/console.log "Router started")
+      (router-impl/create-router mm-fe-routes/routes)
+      (catch :default e (js/console.error "Router failed to start" e) nil)))
 
 (defn panel-id
-  "Return the name of the panel to retrieve"
-  [match]
-  (mm-router/panel-id @router match))
+  "Get panel ID for a route"
+  [route-name & [path-params]]
+  (router-impl/panel-id @router route-name path-params))
 
-(defn url-params
-  "Return the url parameters of the matched route
-Params:
-  * `match` match"
-  [match]
-  (mm-router/url-params @router match))
+(defn path-params
+  "Get default path parameters for a route"
+  [route-name]
+  (router-impl/path-params @router route-name))
+
+(defn all-routes "Get all route names" [] (router-impl/all-routes @router))
+
+(defn current-route-name
+  "Get the name of the current route"
+  [current-route]
+  (:route-name current-route))
+
+(defn current-path-params
+  "Get path parameters from current route"
+  [current-route]
+  (:path-parameters current-route))
+
+(defn current-query-params
+  "Get query parameters from current route"
+  [current-route]
+  (:query-parameters current-route))
+
+(defn route-details
+  "Find route data for a given path"
+  [path]
+  (when-let [match (router-impl/match-by-path @router path)]
+    {:route-name (router-impl/route-name-from-match match)
+     :panel-id (router-impl/panel-id-from-match match)
+     :path-parameters (router-impl/path-params-from-match match)
+     :query-parameters (router-impl/query-params-from-match match)
+     :fragment (:fragment match)}))

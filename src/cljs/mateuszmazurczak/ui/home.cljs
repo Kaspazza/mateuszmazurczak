@@ -1,9 +1,9 @@
 (ns mateuszmazurczak.ui.home
   "Customer app home page assembly"
   (:require
-   [mateuszmazurczak.navigation.history :as mm-nav-hist]
-   [mateuszmazurczak.navigation.routes  :as mm-routes]
-   [mateuszmazurczak.ui.navigation      :as mm-ui-navigation]))
+   [mateuszmazurczak.navigation.core   :as navigation]
+   [mateuszmazurczak.navigation.routes :as mm-routes]
+   [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]))
 
 
 
@@ -29,8 +29,7 @@
   [:div {:class ["flex flex-col p-36 gap-16"]}
    [about-me]
    [:span {:class ["text-2xl/7 font-bold"]}
-    [mm-ui-navigation/navigation {:href (mm-nav-hist/href-delta
-                                         ::mm-routes/articles)
+    [mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/articles)
                                   :text "Blog posts:"
                                   :dark? true}]]])
 

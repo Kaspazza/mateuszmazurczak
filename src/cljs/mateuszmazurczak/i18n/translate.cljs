@@ -1,13 +1,12 @@
 (ns mateuszmazurczak.i18n.translate
   "Frontend translation for mateuszmazurczak"
   (:require
-   [day8.re-frame.tracing               :refer-macros [fn-traced]]
-   [mateuszmazurczak.i18n               :as i18n]
-   [mateuszmazurczak.i18n.language      :as i18n-lang]
-   [mateuszmazurczak.navigation.history :as mm-fe-history]
-   [mateuszmazurczak.navigation.utils   :as mm-nav-utils]
-   [mateuszmazurczak.utils.cookies      :as mm-cookies]
-   [re-frame.core                       :as rf]))
+   [day8.re-frame.tracing          :refer-macros [fn-traced]]
+   [mateuszmazurczak.i18n          :as i18n]
+   [mateuszmazurczak.i18n.language :as i18n-lang]
+   [mateuszmazurczak.utils.cookies :as mm-cookies]
+   [mateuszmazurczak.utils.url     :as utils-url]
+   [re-frame.core                  :as rf]))
 
 (rf/reg-sub ::lang (fn [db _] (:lang db)))
 
@@ -25,10 +24,9 @@
                                            i18n-lang/ui-str-to-id)]
                               {:db (assoc db :lang lang)
                                ::set-cookie ["lang" lang]
-                               ::mm-fe-history/history-change
-                               [(mm-fe-history/href-delta (:route-match db)
-                                                          nil
-                                                          {:lang lang})]})))
+                               :fx [[:dispatch
+                                     [:nav/change-query-parameters!
+                                      {:lang lang}]]]})))
 
 (defn- cookies-language
   []
@@ -39,8 +37,8 @@
 (defn language-strategy
   "Init the language to start a frontend with."
   []
-  (let [par-lang (-> (mm-nav-utils/current-url)
-                     mm-nav-utils/lang-in-url-par
+  (let [par-lang (-> (utils-url/current-url)
+                     utils-url/lang-in-url-par
                      i18n-lang/ui-str-to-id)]
     (or par-lang (cookies-language) (first i18n-lang/main-langs))))
 

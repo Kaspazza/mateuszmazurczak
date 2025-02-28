@@ -1,17 +1,16 @@
 (ns mateuszmazurczak.navigation.panels
   "Describes the link between panel names and contents"
   (:require
-   [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
-   [mateuszmazurczak.navigation.history :as mm-nav-hist]
-   [mateuszmazurczak.navigation.router  :as mm-nav-router]
-   [mateuszmazurczak.navigation.routes  :as mm-routes]
-   [mateuszmazurczak.ui.errors          :as mm-ui-errors]
-   [mateuszmazurczak.ui.home            :as mm-home]
-   [mateuszmazurczak.ui.navigation      :as mm-ui-navigation]
-   [mateuszmazurczak.ui.spinner         :as mm-ui-spinner]
-   [mateuszmazurczak.ui.structure       :as mm-ui-structure]))
+   [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
+   [mateuszmazurczak.navigation.core   :as navigation]
+   [mateuszmazurczak.navigation.routes :as mm-routes]
+   [mateuszmazurczak.ui.errors         :as mm-ui-errors]
+   [mateuszmazurczak.ui.home           :as mm-home]
+   [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]
+   [mateuszmazurczak.ui.spinner        :as mm-ui-spinner]
+   [mateuszmazurczak.ui.structure      :as mm-ui-structure]))
 
-
+;;TODO check if that's needed and if we can't pass just name of route or smth and rename match to smth else
 (defn- match-to-panel-id
   "Transform a match coming from routing into a panel id that will be displayed
   Params:
@@ -24,7 +23,7 @@
                    ;; than displaying a white page
                    default-panel-id)
     (= match :pending) :panels/pending
-    :else (let [panel-id (mm-nav-router/panel-id match)] panel-id)))
+    :else (let [panel-id (:panel-id match)] panel-id)))
 
 (defmulti panels match-to-panel-id)
 
@@ -45,7 +44,6 @@
   []
   [mm-ui-structure/mateuszmazurczak-page-structure
    [:div {:class ["mt-12"]}
-    (mm-ui-navigation/navigation {:href (mm-nav-hist/href-delta
-                                         ::mm-routes/home)
+    (mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/home)
                                   :text "Back home"
                                   :dark? true})]])

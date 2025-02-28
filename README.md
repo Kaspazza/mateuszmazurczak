@@ -40,8 +40,10 @@ Current state of code contains:
 - User error monitoring (with sentry)
 
 TODO:
-- Logs
-- describe testing FE/BE
+- Logs (directly in the app like telmere, sentry, connecting to things like google logs etc.)
+- describe testing FE/BE/E2E/ab testing 
+- Frontend analysis tooling, heatmaps, users on the page etc. 
+- Frontend a/b testing
 - Database integration
 - Auth
 - Versioning

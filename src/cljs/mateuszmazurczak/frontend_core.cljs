@@ -1,20 +1,19 @@
 (ns mateuszmazurczak.frontend-core
   "Entry point for customer app frontend"
   (:require
-   ["@sentry/react"                     :as Sentry]
-   ["react-router-dom"                  :refer (useLocation
-                                                useNavigationType
-                                                createRoutesFromChildren
-                                                matchRoutes)]
-   [day8.re-frame.tracing               :refer [fn-traced]]
-   [mateuszmazurczak.configuration      :as mm-conf]
-   [mateuszmazurczak.i18n.translate     :as mm-i18n-translate]
-   [mateuszmazurczak.main               :as lm]
-   [mateuszmazurczak.navigation.history :as mateuszmazurczak-fe-history]
-   [mount.core                          :as mount]
-   [re-frame.core                       :as rf]
-   [react                               :as react]
-   [reagent.dom.client                  :as rdc]))
+   ["@sentry/react"                 :as Sentry]
+   ["react-router-dom"              :refer (useLocation useNavigationType
+                                                        createRoutesFromChildren
+                                                        matchRoutes)]
+   [day8.re-frame.tracing           :refer [fn-traced]]
+   [mateuszmazurczak.configuration  :as mm-conf]
+   [mateuszmazurczak.i18n.translate :as mm-i18n-translate]
+   [mateuszmazurczak.main           :as lm]
+   [mateuszmazurczak.navigation.core]
+   [mount.core                      :as mount]
+   [re-frame.core                   :as rf]
+   [react                           :as react]
+   [reagent.dom.client              :as rdc]))
 
 (def default-db
   "Default value for front end state"
@@ -96,7 +95,4 @@
        (client-app-db-init! ::initialize-db) ;; What is done before will be lost in the state
        (mount-root)
        (mount/start)
-       (mateuszmazurczak-fe-history/init!) ;; Should be done after init-db so
-       ;; history will update to right panel
-       ;; when ok
        (catch :default e (ex-info "App init has failed" e))))

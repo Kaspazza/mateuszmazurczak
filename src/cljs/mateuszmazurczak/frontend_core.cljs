@@ -18,7 +18,7 @@
 (def default-db
   "Default value for front end state"
   {:name "mateuszmazurczak"
-   :route-match :pending
+   :current-route {:panel-id :panels/pending}
    :lang (mm-i18n-translate/language-strategy)})
 
 (rf/reg-event-db ::initialize-db

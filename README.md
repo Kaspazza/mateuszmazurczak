@@ -39,11 +39,11 @@ Current state of code contains:
 - Portfolio setup for frontend development
 - User error monitoring (with sentry)
 
-TODO:
+TODO as features:
 - Logs (directly in the app like telmere, sentry, connecting to things like google logs etc.)
+- Chat to speak to - so instead of saying contact me at *this-email*, just open chat option that sends email or smth
 - describe testing FE/BE/E2E/ab testing 
 - Frontend analysis tooling, heatmaps, users on the page etc. 
-- Frontend a/b testing
 - Database integration
 - Auth
 - Versioning

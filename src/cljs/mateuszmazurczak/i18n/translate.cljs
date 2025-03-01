@@ -10,6 +10,13 @@
 
 (rf/reg-sub ::lang (fn [db _] (:lang db)))
 
+(rf/reg-sub ::lang-str
+            :<-
+            [::lang]
+            (fn [lang-id]
+              (-> lang-id
+                  i18n-lang/id-to-str)))
+
 (rf/reg-fx ::set-cookie
            (fn [[key lang-id]]
              (let [saved-value (-> (get i18n-lang/web-languages lang-id)

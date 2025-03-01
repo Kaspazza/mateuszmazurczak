@@ -137,9 +137,9 @@
   (->> mm-i18n-lang/web-languages
        (map (fn [[_lang-id {:keys [ui-text]}]] [:option {:value ui-text}
                                                 ui-text]))))
-(def lang-select
-  (let [selected-value (-> @(rf/subscribe [::mm-i18n-translate/lang])
-                           mm-i18n-lang/id-to-str)]
+(defn lang-select
+  []
+  (let [selected-value @(rf/subscribe [::mm-i18n-translate/lang-str])]
     [simple-select {:id "lang"
                     :name "lang"
                     :on-change #(rf/dispatch [::mm-i18n-translate/change-lang
@@ -152,14 +152,14 @@
   [transparent-header-comp {:size size
                             :sticky? sticky?
                             :border? border?
-                            :right-section lang-select}])
+                            :right-section [lang-select]}])
 
 (defn header
   [{:keys [size border? sticky?]}]
   [header-comp {:size size
                 :sticky? sticky?
                 :border? border?
-                :right-section lang-select}
+                :right-section [lang-select]}
    {:title "Mateusz Mazurczak"
     :href (navigation/href ::mm-routes/home)}
    {:title (mm-i18n-translate/tr :articles)

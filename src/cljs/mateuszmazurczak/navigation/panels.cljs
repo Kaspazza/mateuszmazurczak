@@ -10,22 +10,7 @@
    [mateuszmazurczak.ui.spinner        :as mm-ui-spinner]
    [mateuszmazurczak.ui.structure      :as mm-ui-structure]))
 
-;;TODO check if that's needed and if we can't pass just name of route or smth and rename match to smth else
-(defn- match-to-panel-id
-  "Transform a match coming from routing into a panel id that will be displayed
-  Params:
-  * `match`"
-  [match]
-  (cond
-    (nil? match) (let [default-panel-id :panels/not-found]
-                   ;; This should not happen, but it does during dev,
-                   ;; it is preferrable to display a page and a message
-                   ;; than displaying a white page
-                   default-panel-id)
-    (= match :pending) :panels/pending
-    :else (let [panel-id (:panel-id match)] panel-id)))
-
-(defmulti panels match-to-panel-id)
+(defmulti panels identity)
 
 (defmethod panels :default
   []

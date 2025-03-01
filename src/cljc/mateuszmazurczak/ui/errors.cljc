@@ -9,7 +9,7 @@
    [:div
     {:class
      ["before:content-[''] before:absolute before:h-full before:w-full before:bg-black/[.5]"]}
-    [:img {:src "/images/not_found.jpg"
+    [:img {:src "/img/not_found.jpg"
            :alt ""
            :class
            ["absolute inset-0 -z-10 h-full w-full object-cover object-top "]}]]
@@ -37,7 +37,7 @@
    [:div
     {:class
      ["before:content-[''] before:absolute before:h-full before:w-full before:bg-black/[.5]"]}
-    [:img {:src "/images/not_found.jpg"
+    [:img {:src "/img/not_found.jpg"
            :alt ""
            :class
            ["absolute inset-0 -z-10 h-full w-full object-cover object-top "]}]]

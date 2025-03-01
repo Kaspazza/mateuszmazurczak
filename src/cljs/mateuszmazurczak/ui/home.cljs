@@ -5,8 +5,6 @@
    [mateuszmazurczak.navigation.routes :as mm-routes]
    [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]))
 
-
-
 (defn about-me
   []
   [:div {:class "hero-content flex-col lg:flex-row"}

@@ -29,7 +29,7 @@ src/bb/ <- only for bb.edn, contains all useful scripts for working with this ap
 Code in this repo is for my personal website, and it's built in a way to cover all the web-app usefull functionalities and code separation for quick starting web projects in clojure.
 
 Current state of code contains:
-- Scripting for easy working with the project
+- Scripting for simplifying work with the project
 - Configuration
 - Environments separation 
 - Translation i18n (with taoensso tempura)
@@ -42,13 +42,13 @@ Current state of code contains:
 TODO as features:
 - Logs (directly in the app like telmere, sentry, connecting to things like google logs etc.)
 - Chat to speak to - so instead of saying contact me at *this-email*, just open chat option that sends email or smth
+- Realtime module with information that the page has been updated, so user can click and hard-refresh
 - describe testing FE/BE/E2E/ab testing 
 - Frontend analysis tooling, heatmaps, users on the page etc. 
 - Database integration
-- Auth
+- Auth (and feature-flags)
 - Versioning
 - Script for deployment (and deployment itself ;))
-- Realtime module
 
 License information can be found in [LICENSE file](LICENSE.md)
 Copyright © 2024 Mateusz Mazurczak

@@ -14,7 +14,9 @@
         {:dsn (mm-conf/read-param [:log :sentry :backend :dsn])
          :env (name (mm-conf/read-param [:env]))})
        (mount/start)
-       (catch Throwable e (ex-info "Unhandled exception" {:error e}))))
+       (catch Throwable e
+         (prn "failed: " e)
+         (ex-info "Unhandled exception" {:error e}))))
 
 (comment
   (-main)

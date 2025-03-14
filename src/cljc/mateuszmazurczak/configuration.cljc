@@ -6,7 +6,8 @@
   (:require
    #?(:clj [mateuszmazurczak.configuration.files :as conf-files]
       :cljs [mateuszmazurczak.utils.keywords :as mm-keyword])
-   [clojure.string :as str]))
+   [clojure.string                             :as str]
+   [mateuszmazurczak.configuration.environment :as conf-env]))
 
 (defn- kw-to-js
   "Transform a keyword in a javascript compatible name"
@@ -35,9 +36,10 @@
 
 (defn- read-config
   []
-  #?(:clj (conf-files/read-config)
-     :cljs (mm-keyword/sanitize-map-keys
-            (js->clj js-var :keywordize-keys true))))
+  #?(:clj (merge (conf-files/read-config) conf-env/config)
+     :cljs (merge (mm-keyword/sanitize-map-keys
+                   (js->clj js-var :keywordize-keys true))
+                  conf-env/config)))
 
 (def ^{:doc "A map of configuration variables."} conf (memoize read-config))
 

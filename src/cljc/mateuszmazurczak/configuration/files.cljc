@@ -48,7 +48,7 @@
 
 (def config-file
   ;; conf-var can be added e.g. in deps.edn alias like:
-  ;;    :jvm-opts ["-Dconf-var=env/test/config.edn,env/common_config.edn"]
+  ;;    :jvm-opts ["-Dconf-var=env/test/config.edn,env/other_file.edn"]
   #?(:clj "conf-var"
      :cljs "config.edn"))
 

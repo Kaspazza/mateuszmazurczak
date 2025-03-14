@@ -1,7 +1,6 @@
 (ns mateuszmazurczak.env
   "Define dev specific behavior for customer app"
   (:require
-   [babashka.fs                       :as fs]
    [clojure.edn                       :as edn]
    [mateuszmazurczak.endpoint.handler :as mm-endpoint-handler]
    [ring.middleware.reload            :as mr]
@@ -18,11 +17,6 @@
                          {:target-filename target-filename
                           :exception e})))))
 
-(defn absolutize
-  "Transform a file or dir name in an absolute path"
-  [relative-path]
-  (when relative-path (str (fs/absolutize relative-path))))
-
 (defn read-edn
   "Read the `.edn` file,
   Params:
@@ -35,7 +29,7 @@
   * `file` could be a string representing the name of the file to load
   or a (io/resource) object representing the name of the file to load"
   ([edn-filename loader-fn]
-   (let [edn-filename (absolutize edn-filename)
+   (let [edn-filename edn-filename
          edn-content (try (loader-fn edn-filename) (catch Exception _ nil))]
      (try (edn/read-string edn-content) (catch Exception e nil))))
   ([edn-filename] (read-edn edn-filename read-file)))

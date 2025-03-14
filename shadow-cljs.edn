@@ -29,7 +29,8 @@
    :release {:build-options {:cache-level :off
                              :ns-aliases {day8.re-frame.tracing
                                           day8.re-frame.tracing-stubs}}
-             :compiler-options {:portfolio false}}
+             :compiler-options {:optimizations :advanced
+                                :portfolio false}}
    :target :browser}}
  :deps {:aliases [:cljs-deps :cljs-dev-deps]}
  :dev-http {8081 [".shadow-cljs/target/browser-test"]}

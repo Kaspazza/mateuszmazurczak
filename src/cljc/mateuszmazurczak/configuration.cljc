@@ -49,11 +49,7 @@
   "Returns value under `key-path` vector."
   ([key-path default-value]
    (let [value (read-conf-param key-path)]
-     (if (nil? value)
-       (do (prn "Value for " key-path
-                " is not set, use default value" default-value)
-           default-value)
-       (do (prn "Read key-path " key-path " = " value) value))))
+     (if (nil? value) default-value value)))
   ([key-path] (read-param key-path nil)))
 
 (defn all-config

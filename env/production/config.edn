@@ -1,0 +1,3 @@
+{:app-name "mateuszmazurczak"
+ :env :production
+ :http-server {:port 8080}}

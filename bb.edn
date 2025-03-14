@@ -22,6 +22,13 @@
    :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
    :task (dev-launch/start-repl [:common-test :env-development-repl])}
   :requires [[mateuszmazurczak.common :as common]]
+  build-jar {:depends [-base-deps clean]
+             :doc "builds jar"
+             :enter (common/enter build-jar/cli-opts (current-task))
+             :extra-deps {io.github.babashka/tools.bbuild
+                          {:git/sha "f5a4acaf25ec2bc5582853758ba81383fff5e86b"}}
+             :requires [[mateuszmazurczak.tasks.build-jar :as build-jar]]
+             :task (build-jar/run)}
   clean {:depends [-base-deps]
          :doc "Clean temp files"
          :enter (common/enter clean/cli-opts (current-task))
@@ -29,23 +36,24 @@
          :task (clean/clean [".cpcache"
                              ".shadow-cljs"
                              "node_modules"
+                             "target"
                              "resources/public/js/compiled"
+                             "resources/public/css/compiled"
                              "tmp"])}
   dev-launch {:depends [-base-deps]
               :doc "Launch dev environment toolings."
               :enter (common/enter dev-launch/cli-opts (current-task))
               :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
               :task (run '-dev-launch {:parallel true})}
-  lconnect
-  {:doc
-   "Repl in case mateuszmazurczak is failing. Using -f or --force cli arguments to force start if some part are failing"
-   :task (try (-> (babahska-process/shell "clojure"
-                                          "-M:common-test:env-development-repl"
-                                          *command-line-args*)
-                  System/exit)
-              (catch Exception e
-                (println "Repl failed also - error during repl startup"
-                         (ex-message e))))}
+  lconnect {:doc "Repl in case dev-launch is failing"
+            :task (try (-> (babashka.process/shell
+                            "clojure"
+                            "-M:common-test:env-development-repl"
+                            *command-line-args*)
+                           System/exit)
+                       (catch Exception e
+                         (println "Repl failed also - error during repl startup"
+                                  (ex-message e))))}
   lint {:depends [-base-deps]
         :doc "Linting"
         :enter (common/enter lint/cli-opts (current-task))
@@ -57,7 +65,7 @@
         :requires [[mateuszmazurczak.tasks.tests :as test]]
         :task (test/run [:common-test])}
   update-deps {:depends [-base-deps]
-               :doc "Update outdated dependencies in a monorepo"
+               :doc "Update outdated dependencies"
                :enter (common/enter tasks-deps/cli-opts (current-task))
                :extra-deps {}
                :requires [[mateuszmazurczak.tasks.deps-version :as tasks-deps]]

@@ -4,10 +4,10 @@
 
   prn is used here instead of log and dependencies are limited as much as possible here on purpose to be able to use configuration everywhere."
   (:require
-   #?(:clj [mateuszmazurczak.configuration.files :as conf-files]
-      :cljs [mateuszmazurczak.utils.keywords :as mm-keyword])
    [clojure.string                             :as str]
-   [mateuszmazurczak.configuration.environment :as conf-env]))
+   [mateuszmazurczak.configuration.environment :as conf-env]
+   [mateuszmazurczak.configuration.files       :as conf-files]
+   #?(:cljs [mateuszmazurczak.utils.keywords :as mm-keyword])))
 
 (defn- kw-to-js
   "Transform a keyword in a javascript compatible name"
@@ -36,16 +36,23 @@
 
 (defn- read-config
   []
-  #?(:clj (merge (conf-files/read-config) conf-env/config)
-     :cljs (merge (mm-keyword/sanitize-map-keys
-                   (js->clj js-var :keywordize-keys true))
-                  conf-env/config)))
+  #?(:clj (merge (conf-files/config) (conf-env/config))
+     :cljs (merge (conf-files/config)
+                  (conf-env/config)
+                  (mm-keyword/sanitize-map-keys
+                   (js->clj js-var :keywordize-keys true)))))
 
 (def ^{:doc "A map of configuration variables."} conf (memoize read-config))
 
-(defn read-conf-param [key-path] (get-in (conf) key-path))
+(defn config
+  "Returns whole configuration map, with all the keys and values."
+  []
+  (conf))
 
-(defn config [] (conf))
+(defn read-conf-param
+  [key-path]
+  (or (conf-files/read-conf-param (config) key-path)
+      (conf-env/read-conf-param (config) key-path)))
 
 (defn read-param
   "Returns value under `key-path` vector."
@@ -53,11 +60,6 @@
    (let [value (read-conf-param key-path)]
      (if (nil? value) default-value value)))
   ([key-path] (read-param key-path nil)))
-
-(defn all-config
-  "Returns whole configuration map, with all the keys and values."
-  []
-  (config))
 
 (defn config-web-reference
   "Configuration variable that is used to save configuration in js code."

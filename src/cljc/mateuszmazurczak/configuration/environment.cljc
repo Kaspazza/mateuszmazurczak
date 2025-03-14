@@ -62,6 +62,6 @@
        (map (fn [[k v]] [(keywordize k) v]))
        (into {})))
 
-(def config (read-all))
+(def config (memoize read-all))
 
-(defn read-conf-param [key-path] (get config (env-key-path key-path)))
+(defn read-conf-param [config key-path] (get config (env-key-path key-path)))

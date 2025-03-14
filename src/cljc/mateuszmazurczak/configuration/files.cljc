@@ -77,6 +77,6 @@
                (apply merge-configs))
      :cljs (if nodejs? (read-config-file config-file) {})))
 
-(def config (read-config))
+(def config (memoize read-config))
 
-(defn read-conf-param [key-path] (get-in config key-path))
+(defn read-conf-param [config key-path] (get-in config key-path))

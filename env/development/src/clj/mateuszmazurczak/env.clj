@@ -106,7 +106,7 @@
   (fn [request]
     (-> request
         handler
-        (assoc-in [:headers "Pragma"] "no-cache"))))
+        (assoc-in [:headers "Cache-Control"] "no-cache"))))
 
 (defn wrap-reload
   "Reload clj as they are saved"

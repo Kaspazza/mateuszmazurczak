@@ -34,7 +34,7 @@ Current state of code contains:
 - Environments separation 
 - Translation i18n (with taoensso tempura)
 - Full-stack routing and setup (ring, reitit, shadow-cljs)
-- Basic UI with hiccup, Tailwind, DaisyUI
+- Basic UI with integrated hiccup, Tailwind, DaisyUI
 - Frontend logic and data manged with reagent/re-frame
 - Portfolio setup for frontend development
 - User error monitoring (with sentry)
@@ -48,7 +48,6 @@ TODO as features:
 - Database integration
 - Auth (and feature-flags)
 - Versioning
-- Script for deployment (and deployment itself ;))
 
 License information can be found in [LICENSE file](LICENSE.md)
 Copyright © 2024 Mateusz Mazurczak

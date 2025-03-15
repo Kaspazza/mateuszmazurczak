@@ -30,5 +30,5 @@
   [mm-ui-structure/mateuszmazurczak-page-structure
    [:div {:class ["mt-12"]}
     (mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/home)
-                                  :text "Back home"
+                                  :text (mm-i18n-translate/tr :back-home)
                                   :dark? true})]])

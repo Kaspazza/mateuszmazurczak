@@ -1,6 +1,7 @@
 (ns mateuszmazurczak.ui.home
   "Customer app home page assembly"
   (:require
+   [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
    [mateuszmazurczak.navigation.core   :as navigation]
    [mateuszmazurczak.navigation.routes :as mm-routes]
    [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]))
@@ -15,12 +16,12 @@
     [:img {:src "img/mateuszmazurczak.png"}]]
    [:div
     [:h1 {:class "text-5xl font-bold"}
-     "Hi, I'm Mati!"]
+     (mm-i18n-translate/tr :hi-mati)]
     [:p {:class "py-6 text-3xl"}
-     "I just like to write simple code in parenthesis or write about writing code."
+     (mm-i18n-translate/tr :i-like-simplicity)
      [:br]]
     [:p {:class "py-6 text-3xl"}
-     "Feel free to message me for consulting or to share insights and ideas!"]]])
+     (mm-i18n-translate/tr :contact-me)]]])
 
 (defn mateuszmazurczak-page
   []
@@ -28,7 +29,7 @@
    [about-me]
    [:span {:class ["text-2xl/7 font-bold"]}
     [mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/articles)
-                                  :text "Blog posts:"
+                                  :text (mm-i18n-translate/tr :articles)
                                   :dark? true}]]])
 
 (defn home

@@ -15,17 +15,17 @@
    [:div {:class "rounded-full block aspect-square overflow-hidden"}
     [:img {:src "img/mateuszmazurczak.png"}]]
    [:div
-    [:h1 {:class "text-5xl font-bold"}
+    [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold"}
      (mm-i18n-translate/tr :hi-mati)]
-    [:p {:class "py-6 text-3xl"}
+    [:p {:class "py-6 text-md md:text-xl lg:text-3xl"}
      (mm-i18n-translate/tr :i-like-simplicity)
      [:br]]
-    [:p {:class "py-6 text-3xl"}
+    [:p {:class "py-6 text-md md:text-xl lg:text-3xl"}
      (mm-i18n-translate/tr :contact-me)]]])
 
 (defn mateuszmazurczak-page
   []
-  [:div {:class ["flex flex-col p-36 gap-16"]}
+  [:div {:class ["flex flex-col p-12 lg:p-36 gap-16"]}
    [about-me]
    [:span {:class ["text-2xl/7 font-bold"]}
     [mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/articles)

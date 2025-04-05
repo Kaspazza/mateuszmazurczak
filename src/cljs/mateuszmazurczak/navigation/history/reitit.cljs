@@ -39,7 +39,8 @@
            :panel-id
            (get-in match-with-controllers [:data :panel-id] :panels/not-found)
            :path-parameters (:path-params match-with-controllers)
-           :query-parameters (:query-params match-with-controllers)})]
+           :query-parameters (:query-params match-with-controllers)
+           :fragment (:fragment match-with-controllers)})]
     ;; Dispatch route change event with processed and transformed match
     (dispatch-fn transformed-route)))
 
@@ -55,7 +56,10 @@
 
 (defn navigate
   "Navigate to URL, with optional history preservation"
-  [history route-name {:keys [path-params query-params replace]}]
+  [history
+   route-name
+   {:keys [path-params query-params replace]
+    :as idk}]
   (reitit-fe-history/navigate history
                               route-name
                               {:replace replace

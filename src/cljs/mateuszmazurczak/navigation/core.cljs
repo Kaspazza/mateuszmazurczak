@@ -136,7 +136,10 @@
 (rf/reg-fx ::handle-fragment-scroll
            (fn [fragment]
              (if fragment
-               (on-element-exist (str "#" fragment) #(.scrollIntoView %))
+               (on-element-exist (->> fragment
+                                      js/CSS.escape
+                                      (str "#"))
+                                 #(.scrollIntoView %))
                (.scrollTo js/window 0 0))))
 
 (rf/reg-fx ::change-query-parameters

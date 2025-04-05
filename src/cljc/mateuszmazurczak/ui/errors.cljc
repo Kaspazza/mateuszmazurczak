@@ -28,7 +28,7 @@
     [:div {:class ["mt-10 flex justify-center text-border-black"]}
      (mm-ui-nav/back-navigation {:href back-link
                                  :text back-home-text
-                                 :dark? true})]]])
+                                 :dark? false})]]])
 
 (defn internal-error
   [{:keys [title description back-home-text back-link]
@@ -56,4 +56,4 @@
     [:div {:class ["mt-10 flex justify-center text-border-black"]}
      (mm-ui-nav/back-navigation {:href back-link
                                  :text back-home-text
-                                 :dark? true})]]])
+                                 :dark? false})]]])

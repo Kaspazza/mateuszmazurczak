@@ -9,7 +9,7 @@
   (let [title (str "Mateusz Mazurczak © " (cljs-time/year (cljs-time/now)))
         dark? true]
     [:footer {:class ["footer footer-center text-base-content p-4"
-                      (if dark? "bg-theme-dark" "bg-theme-light")]}
+                      "bg-neutral"]}
      [:aside
       [:div {:class ["flex justify-center space-x-10 relative"]}
        [icons/icon {:path-kw :svg/youtube
@@ -24,5 +24,5 @@
                     :size 1.5
                     :href "https://github.com/kaspazza"
                     :dark? dark?}]]
-      [:p {:class (if dark? "text-theme-light" "text-theme-dark")}
+      [:p {:class ["text-base-200"]}
        title]]]))

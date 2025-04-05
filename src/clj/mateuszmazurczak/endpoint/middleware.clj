@@ -2,21 +2,23 @@
   "Middlewares for mateuszmazurczak project"
   (:require
    [clojure.set]
-   [clojure.string                    :as str]
-   [mateuszmazurczak.env              :as mm-env]
-   [mateuszmazurczak.i18n             :as i18n]
-   [mateuszmazurczak.i18n.language    :as lang-web]
-   [reitit.ring.coercion              :as rrc]
-   [reitit.ring.middleware.muuntaja   :as rrmm]
-   [reitit.ring.middleware.parameters :as rrmp]
-   [ring.middleware.anti-forgery      :as ring-anti-forgery]
-   [ring.middleware.content-type      :as ring-content-type]
-   [ring.middleware.cookies           :as ring-cookies]
-   [ring.middleware.cors              :as ring-cors]
-   [ring.middleware.keyword-params    :as ring-keyword-params]
-   [ring.middleware.session           :as ring-session]
-   [ring.middleware.session.memory    :as ring-memory]
-   [taoensso.tempura                  :as tempura]))
+   [clojure.string                       :as str]
+   [mateuszmazurczak.endpoint.error-page :as error-page]
+   [mateuszmazurczak.endpoint.handler    :as mm-endpoint-handler]
+   [mateuszmazurczak.env                 :as mm-env]
+   [mateuszmazurczak.i18n                :as i18n]
+   [mateuszmazurczak.i18n.language       :as lang-web]
+   [reitit.ring.coercion                 :as rrc]
+   [reitit.ring.middleware.muuntaja      :as rrmm]
+   [reitit.ring.middleware.parameters    :as rrmp]
+   [ring.middleware.anti-forgery         :as ring-anti-forgery]
+   [ring.middleware.content-type         :as ring-content-type]
+   [ring.middleware.cookies              :as ring-cookies]
+   [ring.middleware.cors                 :as ring-cors]
+   [ring.middleware.keyword-params       :as ring-keyword-params]
+   [ring.middleware.session              :as ring-session]
+   [ring.middleware.session.memory       :as ring-memory]
+   [ring.util.http-response              :as http-response]))
 
 (defn cors-domain-routes
   [main-domain]
@@ -77,6 +79,20 @@
       (string? lang) (keyword (str/lower-case lang))
       :else lang)))
 
+(defn wrap-throw [_handler] (fn [_request] (/ 1 0)))
+
+(defn wrap-exception-handling
+  [handler]
+  (fn [request]
+    (try (handler request)
+         (catch Exception e
+           (prn e)
+           (->> request
+                error-page/internal-error-page
+                http-response/internal-server-error
+                mm-endpoint-handler/web-page)))))
+
+
 (def web-middleware
   "Midllewares for web pages"
   (vec
@@ -129,10 +145,10 @@
           (assoc :tr (fn ([tr-id] (i18n/tr lang tr-id))))
           handler))))
 
-
 (def global-middlewares
   "Middleware for the whole app"
   [ring-cookies/wrap-cookies ;; It's important to have cookies before translator to allow strategy based on cookie lang
    rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
-   wrap-translation])
+   wrap-translation
+   wrap-exception-handling])

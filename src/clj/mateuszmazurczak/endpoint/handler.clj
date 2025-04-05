@@ -12,6 +12,11 @@
    [ring.middleware.anti-forgery    :as ring-anti-forgery]
    [ring.util.http-response         :as http-response]))
 
+(defn web-page
+  [request]
+  (-> request
+      (assoc-in [:headers "content-type"] "text/html;charset=utf8")))
+
 (defn anti-forgery-html-token
   []
   [:div {:name "__anti-forgery-token"
@@ -97,7 +102,6 @@
     (str (html-core head-elements body-elements))))
 
 (defn article-page
-  ;;TODO build article per page, each article is generated as separate web-page for better SEO and search engine finding
   [{:keys [title author twitter-content url image description]
     :as _seo-metadata}
    {:keys [tr]
@@ -128,7 +132,7 @@
              [:script {:type "text/javascript"
                        :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])
       http-response/ok
-      (assoc-in [:headers "content-type"] "text/html;charset=utf8")))
+      web-page))
 
 (defn mateuszmazurczak-page
   "Generate the mateuszmazurczak page
@@ -137,33 +141,29 @@
   * `http-request`"
   [{:keys [tr]
     :as http-request}]
-  (->
-    (build
-     (merge
-      (update-in http-request
-                 [:header-elements]
-                 conj
-                 [:script {:type "text/javascript"}
-                  (hiccup2/raw (mm-conf/config-web-reference))])
-      {:meta-tags
-       {:description
-        (fallback/always-return
-         #(tr :we-know-how-and-we-will-help-you-grow)
-         "With over two decades of expertise in supply chain and IT, working with many industries, we have the tools and knowledge to help you grow!")
-        :image (str "https://mateuszmazurczak.com/"
-                    (fallback/always-return #(tr :page-preview)
-                                            "img/preview/en.png"))
-        :title "Mateuszmazurczak"
-        :author "Mateuszmazurczak"
-        :url "https://mateuszmazurczak.com/"
-        :twitter-content "sumary_large_image"
-        :type "website"}})
-     [:div {:id "app"
-            :class ["h-full"]}
-      (mm-spinner/spinner)]
-     [:script {:type "text/javascript"
-               :src "/js/compiled/mateuszmazurczak-share.js"}]
-     [:script {:type "text/javascript"
-               :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])
-    http-response/ok
-    (assoc-in [:headers "content-type"] "text/html;charset=utf8")))
+  (-> (build (merge (update-in http-request
+                               [:header-elements]
+                               conj
+                               [:script {:type "text/javascript"}
+                                (hiccup2/raw (mm-conf/config-web-reference))])
+                    {:meta-tags
+                     {:description (fallback/always-return
+                                    #(tr :consulting)
+                                    "Software development consulting")
+                      :image (str "https://mateuszmazurczak.com/"
+                                  (fallback/always-return #(tr :page-preview)
+                                                          "img/preview/en.png"))
+                      :title "Mateuszmazurczak"
+                      :author "Mateuszmazurczak"
+                      :url "https://mateuszmazurczak.com/"
+                      :twitter-content "sumary_large_image"
+                      :type "website"}})
+             [:div {:id "app"
+                    :class ["h-full"]}
+              (mm-spinner/spinner)]
+             [:script {:type "text/javascript"
+                       :src "/js/compiled/mateuszmazurczak-share.js"}]
+             [:script {:type "text/javascript"
+                       :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])
+      http-response/ok
+      web-page))

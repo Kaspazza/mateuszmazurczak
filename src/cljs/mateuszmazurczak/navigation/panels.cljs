@@ -2,11 +2,9 @@
   "Describes the link between panel names and contents"
   (:require
    [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
-   [mateuszmazurczak.navigation.core   :as navigation]
-   [mateuszmazurczak.navigation.routes :as mm-routes]
    [mateuszmazurczak.ui.errors         :as mm-ui-errors]
-   [mateuszmazurczak.ui.home           :as mm-home]
-   [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]
+   [mateuszmazurczak.ui.pages.articles :as pages-articles]
+   [mateuszmazurczak.ui.pages.home     :as mm-home]
    [mateuszmazurczak.ui.spinner        :as mm-ui-spinner]
    [mateuszmazurczak.ui.structure      :as mm-ui-structure]))
 
@@ -28,7 +26,9 @@
 (defmethod panels :panels/articles
   []
   [mm-ui-structure/mateuszmazurczak-page-structure
-   [:div {:class ["mt-12"]}
-    (mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/home)
-                                  :text (mm-i18n-translate/tr :back-home)
-                                  :dark? true})]])
+   [pages-articles/articles-page]])
+
+(defmethod panels :panels/routing-big-picture
+  []
+  [mm-ui-structure/mateuszmazurczak-page-structure
+   [pages-articles/article-routing-big-picture]])

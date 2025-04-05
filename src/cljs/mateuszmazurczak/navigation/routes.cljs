@@ -11,5 +11,8 @@
      :panel-id :panels/home}]
    ["/articles"
     {:name ::articles
-     :panel-id :panels/articles}]])
-
+     :panel-id :panels/articles}]
+   ["/article"
+    ["/routing/big-picture"
+     {:name ::routing-big-picture
+      :panel-id :panels/routing-big-picture}]]])

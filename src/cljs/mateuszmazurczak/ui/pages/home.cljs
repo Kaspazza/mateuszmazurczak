@@ -1,10 +1,13 @@
-(ns mateuszmazurczak.ui.home
+(ns mateuszmazurczak.ui.pages.home
   "Customer app home page assembly"
   (:require
+   [mateuszmazurczak.articles.core     :as articles]
    [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
    [mateuszmazurczak.navigation.core   :as navigation]
    [mateuszmazurczak.navigation.routes :as mm-routes]
-   [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]))
+   [mateuszmazurczak.ui.articles       :as ui-articles]
+   [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]
+   [re-frame.core                      :as rf]))
 
 (defn about-me
   []
@@ -25,12 +28,21 @@
 
 (defn mateuszmazurczak-page
   []
-  [:div {:class ["flex flex-col p-12 lg:p-36 gap-16"]}
+  [:div {:class ["flex flex-col pt-8 p-12 lg:p-36 lg:pt-14 gap-14"]}
    [about-me]
-   [:span {:class ["text-2xl/7 font-bold"]}
+   [:span {:class ["text-4xl/7 font-bold ml-4"]}
     [mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/articles)
                                   :text (mm-i18n-translate/tr :articles)
-                                  :dark? true}]]])
+                                  :dark? true}]]
+   [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
+    (doall (for [{:keys [title]
+                  :as article}
+                 articles/articles]
+             ^{:key title}
+             [ui-articles/article-card
+              (merge article
+                     {:on-click #(rf/dispatch [:nav/navigate
+                                               (:route article)])})]))]])
 
 (defn home
   "Functional component for displaying mateuszmazurczak page sections."

@@ -40,14 +40,23 @@ Current state of code contains:
 - User error monitoring (with sentry)
 
 TODO as features:
-- Logs (directly in the app like telmere, sentry, connecting to things like google logs etc.)
+- Logs  (directly in the app like telmere, sentry, connecting to things like google logs etc.)
 - Chat to speak to - so instead of saying contact me at *this-email*, just open chat option that sends email or smth
+- UI theme
 - Realtime module with information that the page has been updated, so user can click and hard-refresh
-- describe testing FE/BE/E2E/ab testing 
+- describe testing FE/BE/E2E/ab
 - Frontend analysis tooling, heatmaps, users on the page etc. 
 - Database integration
 - Auth (and feature-flags)
-- Versioning
+- Versioning (low priority)
+
+## Adding articles from notion
+1. Go to the notion page you want to display and click on "..." dots in the top right corner
+2. Click export | Export format - HTML 
+3. Copy html file content and paste to https://html2hiccup.dev/ 
+4. Paste [:article] content into mateuszmazurczak.utils.notion
+5. Save it in code (used in e.g. mateuszmazurczak.articles.routing.big-picture)
+
 
 License information can be found in [LICENSE file](LICENSE.md)
 Copyright © 2024 Mateusz Mazurczak

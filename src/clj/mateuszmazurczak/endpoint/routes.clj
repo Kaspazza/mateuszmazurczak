@@ -1,6 +1,7 @@
 (ns mateuszmazurczak.endpoint.routes
   (:require
-   [mateuszmazurczak.endpoint.handler :refer [mateuszmazurczak-page]]
+   [mateuszmazurczak.endpoint.handler :refer [article-page
+                                              mateuszmazurczak-page]]
    [mateuszmazurczak.env              :as mm-env]))
 
 (def routes
@@ -15,5 +16,13 @@
            :get mateuszmazurczak-page}]
          ["/articles"
           {:name ::articles
-           :get mateuszmazurczak-page}]]
+           :get mateuszmazurczak-page}]
+         ["/article"
+          ["/routing/big-picture"
+           {:name ::big-picture
+            :get (partial article-page
+                          {:title :routing-big-picture
+                           :description :routing-big-picture-desc
+                           :image :routing-big-picture-preview
+                           :url "articles/routing/big-picture"})}]]]
         (mm-env/route)))

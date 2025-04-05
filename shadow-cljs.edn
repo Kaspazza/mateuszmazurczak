@@ -19,7 +19,7 @@
                                :init-fn
                                mateuszmazurczak.portfolio.portfolio/init}}}
    :devtools {:after-load mateuszmazurczak.frontend-core/re-render
-              :preloads [day8.re-frame-10x.preload]
+              :preloads [day8.re-frame-10x.preload.react-18]
               :repl-pprint true
               :watch-dir "resources/public"}
    :modules {:mateuszmazurczak-frontend-core

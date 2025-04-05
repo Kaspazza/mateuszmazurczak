@@ -10,6 +10,16 @@
    [mount.core                                 :refer [defstate]]
    [re-frame.core                              :as rf]))
 
+(defn- delay-page-load
+  "Delays so that whole page can load and change height"
+  [f]
+  (-> (js/Promise. (fn [resolve]
+                     (if (= (.-readyState js/document) "complete")
+                       (resolve)
+                       (.addEventListener js/window "load" resolve))))
+      ;; Then wait a frame for all layout calculations
+      (.then #(js/requestAnimationFrame f))))
+
 (defn- on-element-exist
   "Waits for `selector` element to appear in document and executes `on-exist-fn`"
   [selector on-exist-fn]
@@ -136,11 +146,22 @@
 (rf/reg-fx ::handle-fragment-scroll
            (fn [fragment]
              (if fragment
-               (on-element-exist (->> fragment
-                                      js/CSS.escape
-                                      (str "#"))
-                                 #(.scrollIntoView %))
-               (.scrollTo js/window 0 0))))
+               (let [element-id (->> fragment
+                                     js/CSS.escape
+                                     (str "#"))]
+                 (delay-page-load #(on-element-exist
+                                    element-id
+                                    (fn [el]
+                                      ;; Wait one more frame to ensure all layout is stable
+                                      (js/requestAnimationFrame
+                                       (.scrollIntoView el
+                                                        (clj->js
+                                                         {:behavior "smooth"
+                                                          :block "start"})))))))
+               (.scrollTo js/window
+                          (clj->js {:top 0
+                                    :left 0
+                                    :behavior "smooth"})))))
 
 (rf/reg-fx ::change-query-parameters
            (fn [[query-params]] (change-query-parameters! query-params)))

@@ -6,4 +6,5 @@
            outpace.config/defconfig clojure.core/def
            spade.core/defclass clojure.core/defn
            spade.core/defglobal clojure.core/def}
- :linters {:unresolved-symbol {:exclude [(portfolio.reagent-18/defscene)]}}}
+ :linters {:redundant-ignore {:exclude [:clojure-lsp/unused-public-var]}
+           :unresolved-symbol {:exclude [(portfolio.reagent-18/defscene)]}}}

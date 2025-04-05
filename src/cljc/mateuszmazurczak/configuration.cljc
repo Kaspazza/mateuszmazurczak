@@ -49,6 +49,7 @@
   []
   (conf))
 
+#_{:clj-kondo/ignore [:invalid-arity]}
 (defn read-conf-param
   [key-path]
   (or (conf-files/read-conf-param (config) key-path)

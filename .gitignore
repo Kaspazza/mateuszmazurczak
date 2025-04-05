@@ -43,6 +43,9 @@ docs/codox
 **.iml
 **/**.iml
 
+#cursor
+.cursor/
+
 #tmp-directory
 tmp
 repos

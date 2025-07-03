@@ -10,5 +10,5 @@
             on-click {:on-click on-click})
           {:class ["font-semibold leading-7"
                    (when (some nil? [href on-click]) "cursor-pointer")
-                   "text-primary"]})
+                   #_"text-primary"]})
    text])

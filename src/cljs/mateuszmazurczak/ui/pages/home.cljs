@@ -9,14 +9,19 @@
    [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]
    [re-frame.core                      :as rf]))
 
+
+
+
 (defn about-me
   []
-  [:div {:class "hero-content flex-col lg:flex-row"}
+  [:div {:class "hero-content flex-col lg:flex-row max-w-screen justify-evenly"
+         :style {:background
+                 "linear-gradient(85deg, rgb(170 137 173) 41%, #fff 100%)"}}
    [:div {:style {:height "100%"
                   :position "relative"
                   :background-color "#bea5c2 "}}]
-   [:div {:class "rounded-full block aspect-square overflow-hidden"}
-    [:img {:src "img/mateuszmazurczak.png"}]]
+   [:div {:class "block  overflow-hidden w-80"}
+    [:img {:src "img/mateusz_mazurczak.png"}]]
    [:div
     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold"}
      (mm-i18n-translate/tr :hi-mati)]
@@ -28,21 +33,22 @@
 
 (defn mateuszmazurczak-page
   []
-  [:div {:class ["flex flex-col pt-8 p-12 lg:p-36 lg:pt-14 gap-14"]}
+  [:div
    [about-me]
-   [:span {:class ["text-4xl/7 font-bold ml-4"]}
-    [mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/articles)
-                                  :text (mm-i18n-translate/tr :articles)
-                                  :dark? true}]]
-   [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
-    (doall (for [{:keys [title]
-                  :as article}
-                 articles/articles]
-             ^{:key title}
-             [ui-articles/article-card
-              (merge article
-                     {:on-click #(rf/dispatch [:nav/navigate
-                                               (:route article)])})]))]])
+   [:div {:class ["flex flex-col pt-8 p-12 lg:p-36 lg:pt-14 gap-14"]}
+    [:span {:class ["text-4xl/7 font-bold ml-4"]}
+     [mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/articles)
+                                   :text (mm-i18n-translate/tr :articles)
+                                   :dark? true}]]
+    [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
+     (doall (for [{:keys [title]
+                   :as article}
+                  articles/articles]
+              ^{:key title}
+              [ui-articles/article-card
+               (merge article
+                      {:on-click #(rf/dispatch [:nav/navigate
+                                                (:route article)])})]))]]])
 
 (defn home
   "Functional component for displaying mateuszmazurczak page sections."

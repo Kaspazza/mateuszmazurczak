@@ -1,16 +1,9 @@
 (ns mateuszmazurczak.endpoint.handler
-  "Server-side web handlers
-
-  Gather all handlers for all spa pages"
+  "Server-side web handlers utilities"
   (:require
-   [clojure.string                  :as str]
-   [hiccup.page                     :as hiccup-page]
-   [hiccup2.core                    :as hiccup2]
-   [mateuszmazurczak.configuration  :as mm-conf]
-   [mateuszmazurczak.ui.spinner     :as mm-spinner]
-   [mateuszmazurczak.utils.fallback :as fallback]
-   [ring.middleware.anti-forgery    :as ring-anti-forgery]
-   [ring.util.http-response         :as http-response]))
+   [hiccup.page                  :as hiccup-page]
+   [hiccup2.core                 :as hiccup2]
+   [ring.middleware.anti-forgery :as ring-anti-forgery]))
 
 (defn web-page
   [request]
@@ -100,70 +93,3 @@
                        html-title]
         body-elements (merge [(anti-forgery-html-token)] body)]
     (str (html-core head-elements body-elements))))
-
-(defn article-page
-  [{:keys [title author twitter-content url image description]
-    :as _seo-metadata}
-   {:keys [tr]
-    :as http-request}]
-  (-> (build (merge (update-in http-request
-                               [:header-elements]
-                               conj
-                               [:script {:type "text/javascript"}
-                                (hiccup2/raw (mm-conf/config-web-reference))])
-                    {:meta-tags
-                     {:description (fallback/always-return #(tr description) "")
-                      :image (str "https://mateuszmazurczak.com/"
-                                  (if image
-                                    (fallback/always-return
-                                     #(tr image)
-                                     "img/preview/en.png")
-                                    "img/preview/en.png"))
-                      :title (fallback/always-return #(tr title) title)
-                      :author (or author "Mateusz Mazurczak")
-                      :url (str/join "/" ["https://mateuszmazurczak.com" url])
-                      :twitter-content (or twitter-content "sumary_large_image")
-                      :type "website"}})
-             [:div {:id "app"
-                    :class ["h-full"]}
-              (mm-spinner/spinner)]
-             [:script {:type "text/javascript"
-                       :src "/js/compiled/mateuszmazurczak-share.js"}]
-             [:script {:type "text/javascript"
-                       :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])
-      http-response/ok
-      web-page))
-
-(defn mateuszmazurczak-page
-  "Generate the mateuszmazurczak page
-
-  Params:
-  * `http-request`"
-  [{:keys [tr]
-    :as http-request}]
-  (-> (build (merge (update-in http-request
-                               [:header-elements]
-                               conj
-                               [:script {:type "text/javascript"}
-                                (hiccup2/raw (mm-conf/config-web-reference))])
-                    {:meta-tags
-                     {:description (fallback/always-return
-                                    #(tr :consulting)
-                                    "Software development consulting")
-                      :image (str "https://mateuszmazurczak.com/"
-                                  (fallback/always-return #(tr :page-preview)
-                                                          "img/preview/en.png"))
-                      :title "Mateuszmazurczak"
-                      :author "Mateuszmazurczak"
-                      :url "https://mateuszmazurczak.com/"
-                      :twitter-content "sumary_large_image"
-                      :type "website"}})
-             [:div {:id "app"
-                    :class ["h-full"]}
-              (mm-spinner/spinner)]
-             [:script {:type "text/javascript"
-                       :src "/js/compiled/mateuszmazurczak-share.js"}]
-             [:script {:type "text/javascript"
-                       :src "/js/compiled/mateuszmazurczak-frontend-core.js"}])
-      http-response/ok
-      web-page))

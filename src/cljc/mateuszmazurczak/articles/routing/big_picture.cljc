@@ -31,7 +31,7 @@
    [:figure {:id "1bb0109e-1131-8034-8a29-fbd1996e910e"
              :class "image"}
     [:img {:style {"width" "709.982666015625px"}
-           :src "image.png"}]]
+           :src "routing/image.png"}]]
    [:p {:id "1b80109e-1131-8032-8376-e71806b889b2"
         :class ""}
     [:br]
@@ -68,9 +68,9 @@
     [:br]
     [:br]
     "One example of sending a request is opening a website, e.g. entering “"
-    [:a {:href "http://github.com"}
-     "github.com"]
-    "/trending”." [:br]
+    [:a {:href "http://github.com/trending"}
+     "github.com/trending"]
+    "”." [:br]
     "Which looks something like this:" [:br]]
    [:p {:id "1bb0109e-1131-8080-b1d2-f60632fa5d80"
         :class ""}]
@@ -164,7 +164,7 @@
    [:figure {:id "1bb0109e-1131-8069-ac1b-c7759109ceb7"
              :class "image"}
     [:img {:style {"width" "709.982666015625px"}
-           :src "image%201.png"}]]
+           :src "routing/image%201.png"}]]
    [:p {:id "1b80109e-1131-803f-a7af-fef5328890ff"
         :class ""}
     [:br]
@@ -198,7 +198,7 @@
    [:figure {:id "1bb0109e-1131-8047-aa59-c76e1af14dae"
              :class "image"}
     [:img {:style {"width" "709.984375px"}
-           :src "e8cc37ca-878d-410c-a8f3-b0d6080778d6.png"}]]
+           :src "routing/e8cc37ca-878d-410c-a8f3-b0d6080778d6.png"}]]
    [:p {:id "1bb0109e-1131-809c-b37f-dd5b8ccf29c9"
         :class ""}]
    [:p {:id "1bb0109e-1131-8015-ac7e-dddbd577311c"
@@ -216,7 +216,7 @@
    [:figure {:id "1bb0109e-1131-80b5-88f4-fb712580a818"
              :class "image"}
     [:img {:style {"width" "687.0317002881845px"}
-           :src "b928a8e1-8db7-465e-b57e-73e0d5ce986c.png"}]]
+           :src "routing/b928a8e1-8db7-465e-b57e-73e0d5ce986c.png"}]]
    [:p {:id "1bb0109e-1131-80a8-8149-e76be0fa18b7"
         :class ""}]
    [:p {:id "1bb0109e-1131-8020-a4ee-d9a11adddf75"
@@ -258,7 +258,7 @@
    [:figure {:id "1bb0109e-1131-8056-a1e9-dd477e32dbbf"
              :class "image"}
     [:img {:style {"width" "709.982666015625px"}
-           :src "image%202.png"}]]
+           :src "routing/image%202.png"}]]
    [:p {:id "1bb0109e-1131-800e-acb1-cc0de071d580"
         :class ""}
     [:br]
@@ -317,12 +317,3 @@
     [:br]]
    [:p {:id "1bb0109e-1131-80b4-91b6-c3326bcf738e"
         :class ""}]])
-
-(def article
-  {:route ::mm-routes/routing-big-picture
-   :title "Routing big picture"
-   :date "2025/01/31"
-   :description
-   "This article aims to provide a general, shallow understanding of how client requests reach your application and what occurs during that process."
-   :img "article/routing/image.png"
-   :content article-content})

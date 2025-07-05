@@ -41,14 +41,16 @@
                                    :text (mm-i18n-translate/tr :articles)
                                    :dark? true}]]
     [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
-     (doall (for [{:keys [title]
+     (doall (for [{:keys [title id]
                    :as article}
                   articles/articles]
               ^{:key title}
               [ui-articles/article-card
                (merge article
                       {:on-click #(rf/dispatch [:nav/navigate
-                                                (:route article)])})]))]]])
+                                                ::mm-routes/article
+                                                {:article-id (name
+                                                              id)}])})]))]]])
 
 (defn home
   "Functional component for displaying mateuszmazurczak page sections."

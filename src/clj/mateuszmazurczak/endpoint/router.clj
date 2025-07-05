@@ -3,7 +3,6 @@
   (:require
    [mateuszmazurczak.endpoint.error-page :as error-page]
    [mateuszmazurczak.endpoint.handler    :as mm-handler]
-   [mateuszmazurczak.endpoint.handler    :as mm-endpoint-handler]
    [mateuszmazurczak.endpoint.middleware :as mm-middleware]
    [mateuszmazurczak.endpoint.routes     :as mm-endpoint-routes]
    [muuntaja.core                        :as m]
@@ -92,10 +91,10 @@
          (->> http-req
               error-page/internal-error-page
               http-response/internal-server-error
-              mm-endpoint-handler/web-page))
+              mm-handler/web-page))
        (catch Error e
          (prn "ring error" e)
          (->> http-req
               error-page/internal-error-page
               http-response/internal-server-error
-              mm-endpoint-handler/web-page))))
+              mm-handler/web-page))))

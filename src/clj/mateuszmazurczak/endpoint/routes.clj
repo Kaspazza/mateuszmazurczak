@@ -1,8 +1,7 @@
 (ns mateuszmazurczak.endpoint.routes
   (:require
-   [mateuszmazurczak.endpoint.handler :refer [article-page
-                                              mateuszmazurczak-page]]
-   [mateuszmazurczak.env              :as mm-env]))
+   [mateuszmazurczak.endpoint.pages :refer [article-page mateuszmazurczak-page]]
+   [mateuszmazurczak.env            :as mm-env]))
 
 (def routes
   "Storing backend router data, as described in [reitit.ring/router](https://cljdoc.org/d/fi.metosin/reitit/0.7.0-alpha6/doc/ring/ring-router#reititringrouter)
@@ -17,12 +16,7 @@
          ["/articles"
           {:name ::articles
            :get mateuszmazurczak-page}]
-         ["/article"
-          ["/routing/big-picture"
-           {:name ::big-picture
-            :get (partial article-page
-                          {:title :routing-big-picture
-                           :description :routing-big-picture-desc
-                           :image :routing-big-picture-preview
-                           :url "articles/routing/big-picture"})}]]]
+         ["/article/:article-name"
+          {:name ::article
+           :get article-page}]]
         (mm-env/route)))

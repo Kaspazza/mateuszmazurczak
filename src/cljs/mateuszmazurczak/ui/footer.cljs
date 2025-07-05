@@ -1,7 +1,6 @@
 (ns mateuszmazurczak.ui.footer
   "Frontend based implementation of footer"
   (:require
-   [cljs-time.core            :as cljs-time]
    [mateuszmazurczak.ui.icons :as icons]))
 
 (defn footer

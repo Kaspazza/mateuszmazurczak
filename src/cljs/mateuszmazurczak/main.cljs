@@ -7,8 +7,8 @@
 (defn router-component
   "Component to route to the `:mateuszmazurczak-subs/route-match`"
   []
-  (let [current-panel @(rf/subscribe [:nav/current-panel])]
-    [mm-nav-panels/panels current-panel]))
+  (let [current-route @(rf/subscribe [:nav/current-route])]
+    [mm-nav-panels/panels current-route]))
 
 
 (defn main-component "Main component replacing app" [] [router-component])

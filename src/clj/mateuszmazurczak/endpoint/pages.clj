@@ -35,13 +35,23 @@
                              [:script {:type "text/javascript"}
                               (hiccup2/raw (mm-conf/config-web-reference))])
                   {:meta-tags
-                   {:description (fallback/always-return #(tr description)
-                                                         (str description))
+                   {:description (cond
+                                   (keyword? description)
+                                   (fallback/always-return #(tr description)
+                                                           (str description))
+                                   (string? description) description
+                                   :else "Just my website hanging in the web")
                     :image (str "https://mateuszmazurczak.com/"
-                                (if img
+                                (cond
+                                  (keyword? img)
                                   (fallback/always-return #(tr img) (str img))
-                                  "img/preview/en.png"))
-                    :title (fallback/always-return #(tr title) (str title))
+                                  (string? img) img
+                                  :else "img/preview/en.png"))
+                    :title (cond
+                             (keyword? img) (fallback/always-return #(tr title)
+                                                                    (str title))
+                             (string? img) img
+                             :else "Mateusz Mazurczak website")
                     :author (or author "Mateusz Mazurczak")
                     :url (str/join "/" ["https://mateuszmazurczak.com" path])
                     :twitter-content (or twitter-content "sumary_large_image")
@@ -72,10 +82,11 @@
               {:meta-tags {:description (fallback/always-return
                                          #(tr :consulting)
                                          "Software development consulting")
-                           :image (str "https://mateuszmazurczak.com/"
-                                       (fallback/always-return
-                                        #(tr :page-preview)
-                                        "img/preview/en.png"))
+                           ;;TODO add preview
+                           #_#_:image
+                             (str "https://mateuszmazurczak.com/"
+                                  (fallback/always-return #(tr :page-preview)
+                                                          "img/preview/en.png"))
                            :title "Mateuszmazurczak"
                            :author "Mateuszmazurczak"
                            :url "https://mateuszmazurczak.com/"

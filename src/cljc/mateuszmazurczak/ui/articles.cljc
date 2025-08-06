@@ -27,7 +27,8 @@
    Accepts a vector of maps with :level, :text, and :id keys."
   ([headings] (toc-view headings nil))
   ([headings active-id]
-   [:div {:class ["fixed"
+   [:div {:class ["hidden lg:block"
+                  "fixed"
                   "right-8"
                   "top-24"
                   "max-w-64"

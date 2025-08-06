@@ -5,7 +5,8 @@
    [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
    [mateuszmazurczak.navigation.core   :as navigation]
    [mateuszmazurczak.navigation.routes :as mm-routes]
-   [re-frame.core                      :as rf]))
+   [re-frame.core                      :as rf]
+   [reagent.core                       :as r]))
 
 (defn string-to-id
   "Transform what is not alphanumerical to an id
@@ -100,7 +101,7 @@
   [:header {:class [(if sticky? "sticky" "absolute")
                     (when border?
                       "border border-solid border-b-theme-dark bg-theme-light")
-                    "inset-x-0 top-0 z-50"
+                    "inset-x-0 top-0"
                     "py-2"
                     (if (= :full size) "w-full" "w-full lg:w-1/2")]}
    content])
@@ -154,13 +155,31 @@
                             :border? border?
                             :right-section [lang-select]}])
 
+(defn toggle-header-border
+  [_]
+  (let [scroll-y (.-scrollY js/window)
+        header-css-list (.-classList (.querySelector js/document "header"))
+        border-none? (.contains header-css-list "border-none!")]
+    (cond
+      (and (< scroll-y 50) (true? border-none?))
+      (.remove header-css-list "border-none!" "hidden" "md:block")
+      (and (> scroll-y 50) (false? border-none?))
+      (.add header-css-list "border-none!" "hidden" "md:block")
+      :else nil)))
+
 (defn header
-  [{:keys [size border? sticky?]}]
-  [header-comp {:size size
-                :sticky? sticky?
-                :border? border?
-                :right-section [lang-select]}
-   {:title "Mateusz Mazurczak"
-    :href (navigation/href ::mm-routes/home)}
-   {:title (mm-i18n-translate/tr :articles)
-    :href (navigation/href ::mm-routes/articles)}])
+  [{:keys [_size _border? _sticky?]}]
+  (r/create-class
+   {:component-did-mount
+    (fn [_] (.addEventListener js/window "scroll" toggle-header-border))
+    :component-will-unmount
+    (fn [_] (.removeEventListener js/window "scroll" toggle-header-border))
+    :reagent-render (fn [{:keys [size border? sticky?]}]
+                      [header-comp {:size size
+                                    :sticky? sticky?
+                                    :border? border?
+                                    :right-section [lang-select]}
+                       {:title "Mateusz Mazurczak"
+                        :href (navigation/href ::mm-routes/home)}
+                       {:title (mm-i18n-translate/tr :articles)
+                        :href (navigation/href ::mm-routes/articles)}])}))

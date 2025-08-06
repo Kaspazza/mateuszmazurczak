@@ -1,5 +1,5 @@
 {:deps {}
- :paths ["src/bb"]
+ :paths ["src/bb" "resources"]
  :tasks
  {-base-deps {:doc "Dependencies for a task using bb"
               :extra-deps {org.clojure/tools.cli {:mvn/version "1.1.230"}}}
@@ -22,6 +22,13 @@
    :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
    :task (dev-launch/start-repl [:common-test :env-development-repl])}
   :requires [[mateuszmazurczak.common :as common]]
+  article {:depends [-base-deps]
+           :doc "Generate HTML from articles"
+           :enter (common/enter lint/cli-opts (current-task))
+           :extra-deps {hiccup/hiccup {:mvn/version "2.0.0"}
+                        io.github.nextjournal/markdown {:mvn/version "0.7.186"}}
+           :requires [[mateuszmazurczak.tasks.article :as article]]
+           :task (article/run)}
   build-jar {:depends [-base-deps clean]
              :doc "builds jar"
              :enter (common/enter build-jar/cli-opts (current-task))

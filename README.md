@@ -50,13 +50,14 @@ TODO as features:
 - Auth (and feature-flags)
 - Versioning (low priority)
 
-## Adding articles from notion
-1. Go to the notion page you want to display and click on "..." dots in the top right corner
-2. Click export | Export format - HTML 
-3. Copy html file content and paste to https://html2hiccup.dev/ 
-4. Paste [:article] content into mateuszmazurczak.utils.notion
-5. Save it in code (used in e.g. mateuszmazurczak.articles.routing.big-picture)
-
+## Adding articles
+- [ ]  Write article in .md (or in Notion and convert to .md)
+- [ ]  Put it in resources/public/article/content
+- [ ]  If any imgs put them in resources/public/article/img
+- [ ]  Add article in articles.edn
+- [ ]  run bb article 
+- [ ]  add :content to your article in articles inside articles.core
+------- In future it will be moved to only html and static rendering, removing the last point ----
 
 License information can be found in [LICENSE file](LICENSE.md)
 Copyright © 2024 Mateusz Mazurczak

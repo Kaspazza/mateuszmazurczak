@@ -1,16 +1,17 @@
 (ns mateuszmazurczak.articles.core
   (:require
-   [mateuszmazurczak.articles.routing.big-picture :as big-picture]
+   [mateuszmazurczak.articles.files               :as art-files]
+   [mateuszmazurczak.articles.routing-big-picture :as big-picture]
    [mateuszmazurczak.navigation.routes            :as-alias mm-routes]))
 
+(def hiccup-content {:routing-big-picture big-picture/article-content})
+
 (def articles
-  [{:id :routing-big-picture
-    :title "Routing big picture"
-    :date "2025/01/31"
-    :description
-    "This article aims to provide a general, shallow understanding of how client requests reach your application and what occurs during that process."
-    :img "article/routing/image.png"
-    :content big-picture/article-content}])
+  (mapv (fn [art]
+          (if-let [article-content (get hiccup-content (:id art))]
+            (assoc art :content article-content)
+            art))
+        (art-files/read-file "articles.edn")))
 
 (defn article
   [article-id]

@@ -20,7 +20,7 @@ Tests: localhost:8081
 Shadow: localhost:9630
 App: localhost:3000
 
-After that you can connect to running repl.
+After that you can connect to running repl (8000).
 
 
 ## General

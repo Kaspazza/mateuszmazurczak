@@ -1,3 +1,5 @@
 {:app-name "mateuszmazurczak"
+ :db {:uri "datomic:sql://app-prod?jdbc:sqlite:./storage/sqlite.db"}
  :env :production
- :http-server {:port 8080}}
+ :http-server {:port 8080}
+ :log {:level :info}}

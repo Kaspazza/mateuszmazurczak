@@ -51,17 +51,25 @@
     "-Dconf-var=env/development/config.edn"]
    :main-opts ["-m" "mateuszmazurczak.repl.entry-point"]}}
  :deps {amalloy/ring-gzip-middleware {:mvn/version "0.1.4"}
+        com.datomic/peer {:mvn/version "1.0.7364"}
+        com.taoensso/encore {:mvn/version "3.152.0"}
+        com.taoensso/telemere {:exclusions [com.taoensso/encore]
+                               :mvn/version "1.0.1"}
         com.taoensso/tempura {:mvn/version "1.5.4"}
-        hiccup/hiccup {:mvn/version "2.0.0-RC4"}
+        com.taoensso/truss {:mvn/version "2.1.0"}
+        hiccup/hiccup {:mvn/version "2.0.0"}
         http-kit/http-kit {:mvn/version "2.8.0"}
+        integrant/integrant {:mvn/version "1.0.0-RC2"}
         io.sentry/sentry {:mvn/version "7.18.0"}
         io.sentry/sentry-clj {:mvn/version "7.16.219"}
+        metosin/malli {:mvn/version "0.19.1"}
         metosin/reitit {:mvn/version "0.7.2"}
         metosin/reitit-frontend {:mvn/version "0.7.2"}
         metosin/ring-http-response {:mvn/version "0.9.5"}
-        mount/mount #:mvn{:version "0.1.21"}
+        org.xerial/sqlite-jdbc {:mvn/version "3.49.1.0"}
         ring-cors/ring-cors {:mvn/version "0.1.13"}
         ring/ring {:mvn/version "1.13.0"}
         ring/ring-anti-forgery {:mvn/version "1.4.0"}
-        ring/ring-ssl {:mvn/version "0.4.0"}}
+        ring/ring-ssl {:mvn/version "0.4.0"}
+        vvvvalvalval/datofu {:mvn/version "0.1.1"}}
  :paths ["src/clj" "src/cljc" "resources"]}

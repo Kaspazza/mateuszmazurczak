@@ -51,6 +51,23 @@
              (do (errorln "Unexpected error during execution of REPL: ")
                  (exceptionln e)))))))
 
+(defn start-db
+  "Starts local db"
+  []
+  (try (let [cmd ["dpm" "up"]
+             prefixs ["db"]
+             app-dir ""]
+         (long-living-cmd prefixs
+                          cmd
+                          app-dir
+                          100
+                          verbose
+                          (constantly true)
+                          (constantly true)))
+       (catch Exception e
+         (println "Unexpected error during execution of db start")
+         (println (pr-str e)))))
+
 (defn css-watch
   "Watch the css modificatoin with tailwind."
   []

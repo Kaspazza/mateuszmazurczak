@@ -1,4 +1,5 @@
 {:app-name "mateuszmazurczak"
+ :db {:uri "datomic:sql://app-dev?jdbc:sqlite:./storage/sqlite.db"}
  :dev {:clj-nrepl-port 8000
        :portal-port 8351}
  :env :development
@@ -11,5 +12,6 @@
     "https://86167a7f36c16b913cbe0973ba3d30bb@o4508704825147392.ingest.de.sentry.io/4508704830783568"}
    :frontend
    {:dsn
-    "https://96e2a27d085619b3c6c38084045e88a9@o4508704825147392.ingest.de.sentry.io/4508704840810576"}}}
+    "https://96e2a27d085619b3c6c38084045e88a9@o4508704825147392.ingest.de.sentry.io/4508704840810576"}
+   :level :trace}}
  :storage {:datomic {:url "datomic:dev://localhost:4334/mateuszmazurczak-dev"}}}

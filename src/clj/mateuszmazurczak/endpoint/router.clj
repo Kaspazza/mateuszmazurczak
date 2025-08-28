@@ -68,33 +68,37 @@
                               [{:compile coercion/compile-request-coercers}])
                       {:data {:muuntaja m/instance
                               :middleware web-middleware}}))
-(def ring-handler
+(defn ring-handler
   "Ring handler for web pages of mateuszmazurczak app
   Params:
   * `ring-handler`"
-  (reitit-ring/ring-handler
-   (router mm-endpoint-routes/routes mm-middleware/web-middleware)
-   (reitit-ring/routes (resource-handler {}) (default-handlers nil []))
-   {:middleware mm-middleware/global-middlewares
-    :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
-   }))
+  [routes]
+  (reitit-ring/ring-handler (router routes mm-middleware/web-middleware)
+                            (reitit-ring/routes (resource-handler {})
+                                                (default-handlers nil []))
+                            {:middleware mm-middleware/global-middlewares
+                             :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
+                            }))
 
 (defn get-app
   "Web application,
   Transform an http request in an http response
   Params:
   * `http-req`"
-  [http-req]
-  (try (ring-handler http-req)
-       (catch Exception e
-         (prn "ring error" e)
-         (->> http-req
-              error-page/internal-error-page
-              http-response/internal-server-error
-              mm-handler/web-page))
-       (catch Error e
-         (prn "ring error" e)
-         (->> http-req
-              error-page/internal-error-page
-              http-response/internal-server-error
-              mm-handler/web-page))))
+  [routes]
+  ;;TODO think about this try-catch, we may be able to remove it and just call here (ring-handler routes) which return fn
+  (let [handler-fn (ring-handler routes)]
+    (fn [http-req]
+      (try (handler-fn http-req)
+           (catch Exception e
+             (prn "ring error" e)
+             (->> http-req
+                  error-page/internal-error-page
+                  http-response/internal-server-error
+                  mm-handler/web-page))
+           (catch Error e
+             (prn "ring error" e)
+             (->> http-req
+                  error-page/internal-error-page
+                  http-response/internal-server-error
+                  mm-handler/web-page))))))

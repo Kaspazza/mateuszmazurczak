@@ -18,7 +18,6 @@
   -dev-launch:start-repl
   {:doc "Start the clojure REPL."
    :enter (common/enter dev-launch/cli-opts (current-task))
-   :extra-deps {djblue/portal {:mvn/version "0.58.5"}}
    :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
    :task (dev-launch/start-repl [:common-test :env-development-repl])}
   :requires [[mateuszmazurczak.common :as common]]

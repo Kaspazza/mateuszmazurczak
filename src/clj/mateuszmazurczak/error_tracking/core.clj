@@ -82,15 +82,6 @@
                       :level level
                       :extra context}))
 
-(defn init-sentry!
-  "Initialize sentry for jvm, so events can be recorded.
-   'development' as an environment is ignored, so no event is sent from it."
-  [{:keys [dsn env]}]
-  (if (every? some? [dsn env])
-    (sentry/init! dsn {:environment env})
-    (prn "Sentry initialization is skipped, paremeters are missing")))
-
-
 (defn- sentry-data
   [ns level & message]
   (let [context (if (map? (first message))
@@ -110,8 +101,7 @@
   (send-event! (apply sentry-data ns level message)))
 
 (defn init-error-tracking!
+  "Initialize sentry for jvm, so events can be recorded.
+   'development' as an environment is ignored, so no event is sent from it."
   [{:keys [dsn env]}]
-  (when-not dsn (prn "dsn is missing in init-error-tracking!"))
-  (when-not env (prn "env is missing in init-error-tracking!"))
-  (init-sentry! {:dsn dsn
-                 :env env}))
+  (sentry/init! dsn {:environment env}))

@@ -31,11 +31,6 @@
              (with-out-str (clojure.pprint/pprint ~obj))))
    :cljs (defn pprint [obj] (with-out-str (cljs.pprint/pprint obj))))
 
-(defn portal-log
-  "Accumulate a rolling log of 1000 entries."
-  ([] nil)
-  ([log] (tap> log)))
-
 #?(:clj
      (defmacro keep-callsite
        "The long-standing CLJ-865 means that it's not possible for an inner
@@ -98,20 +93,28 @@
       (>= ns 1e3) (str (fmt-num 0 (/ ns 1e3)) "μs")
       :else (str (fmt-num 0 ns) "ns"))))
 
+#?(:clj (defn colorize-level [level s]
+           (case level
+             :error (str "\u001b[31m" s "\u001b[0m")
+             :warn  (str "\u001b[33m" s "\u001b[0m")
+             s))
+   :cljs (defn colorize-level [_level s] s))
+
 (defn format:console-minimal
   [{:keys [inst msg_ level error kvs kind id]
     :as _signal}]
   (when-not (or (:ignore-console kvs) (= :spy kind))
-    (str (format-time inst)
-         "|"
-         level
-         (when (= (count (name level)) 4) " ")
-         "|"
-         (format-id id)
-         (when-let [msg (force msg_)] (str "| " msg))
-         (when error
-           (if (string? error) (str "| " error) (str "| \n" (pprint error))))
-         "\n")))
+    (let [line (str (format-time inst)
+                    "|"
+                    level
+                    (when (= (count (name level)) 4) " ")
+                    "|"
+                    (format-id id)
+                    (when-let [msg (force msg_)] (str "| " msg))
+                    (when error
+                      (if (string? error) (str "| " error) (str "| \n" (pprint error))))
+                    "\n")]
+      (colorize-level level line))))
 
 
 

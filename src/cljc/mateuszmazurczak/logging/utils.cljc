@@ -1,0 +1,1 @@
+(ns mateuszmazurczak.logging.utils)

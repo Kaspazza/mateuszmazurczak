@@ -7,6 +7,7 @@
    [mateuszmazurczak.endpoint.handler    :as mm-endpoint-handler]
    [mateuszmazurczak.env                 :as mm-env]
    [mateuszmazurczak.i18n                :as i18n]
+   [mateuszmazurczak.logging             :as log]
    [mateuszmazurczak.i18n.language       :as lang-web]
    [reitit.ring.coercion                 :as rrc]
    [reitit.ring.middleware.muuntaja      :as rrmm]
@@ -82,11 +83,17 @@
 (defn wrap-throw [_handler] (fn [_request] (/ 1 0)))
 
 (defn wrap-exception-handling
-  [handler]
+  [handler logger]
   (fn [request]
     (try (handler request)
          (catch Exception e
-           (prn e)
+           (log/error! logger
+                       {:error e
+                        :id ::unhandled-request-exception
+                        :data {:request-uri (:uri request)
+                               :request-method (:request-method request)
+                               :request-headers (select-keys (:headers request) 
+                                                             ["host" "user-agent" "referer"])}})
            (->> request
                 error-page/internal-error-page
                 http-response/internal-server-error
@@ -138,17 +145,21 @@
       (first lang-web/main-langs)))
 
 (defn wrap-translation
-  [handler]
+  [handler translator]
   (fn [http-request]
     (let [lang [(language-strategy http-request)]]
       (-> http-request
-          (assoc :tr (fn ([tr-id] (i18n/tr lang tr-id))))
+          (assoc :tr (fn ([tr-id] (i18n/tr translator lang tr-id))))
           handler))))
 
-(def global-middlewares
-  "Middleware for the whole app"
+(defn global-middlewares
+  "Middleware for the whole app
+  Params:
+  * `translator` - translator function from the system
+  * `logger` - logger instance from the system"
+  [translator logger]
   [ring-cookies/wrap-cookies ;; It's important to have cookies before translator to allow strategy based on cookie lang
    rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
-   wrap-translation
-   wrap-exception-handling])
+   (fn [handler] (wrap-translation handler translator))
+   (fn [handler] (wrap-exception-handling handler logger))])

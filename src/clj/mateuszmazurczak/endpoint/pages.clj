@@ -2,9 +2,7 @@
   "Web handlers implementations"
   (:require
    [clojure.string                       :as str]
-   [hiccup2.core                         :as hiccup2]
    [mateuszmazurczak.articles.core       :as articles]
-   [mateuszmazurczak.configuration       :as mm-conf]
    [mateuszmazurczak.endpoint.error-page :as error-page]
    [mateuszmazurczak.endpoint.handler    :as handler-utils]
    [mateuszmazurczak.ui.spinner          :as mm-spinner]
@@ -20,20 +18,12 @@
          :as article}
         (articles/article article-id)]
     (if (nil? article)
-      (->> (update-in http-request
-                      [:header-elements]
-                      conj
-                      [:script {:type "text/javascript"}
-                       (hiccup2/raw (mm-conf/config-web-reference))])
+      (->> http-request
            error-page/not-found-page
            http-response/not-found
            handler-utils/web-page)
       (-> (handler-utils/build
-           (merge (update-in http-request
-                             [:header-elements]
-                             conj
-                             [:script {:type "text/javascript"}
-                              (hiccup2/raw (mm-conf/config-web-reference))])
+           (merge http-request
                   {:meta-tags
                    {:description (cond
                                    (keyword? description)
@@ -74,11 +64,7 @@
   [{:keys [tr]
     :as http-request}]
   (-> (handler-utils/build
-       (merge (update-in http-request
-                         [:header-elements]
-                         conj
-                         [:script {:type "text/javascript"}
-                          (hiccup2/raw (mm-conf/config-web-reference))])
+       (merge http-request
               {:meta-tags {:description (fallback/always-return
                                          #(tr :consulting)
                                          "Software development consulting")

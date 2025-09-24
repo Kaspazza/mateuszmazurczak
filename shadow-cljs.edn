@@ -11,13 +11,19 @@
    :build-options {:ns-aliases {cljsjs.marked cljsjs.highlight}}
    :compiler-options {:infer-externs :auto
                       :optimizations :advanced}
-   :dev {:compiler-options {:closure-defines
-                            {day8.re-frame.tracing.trace-enabled? true
-                             re-frame.trace.trace-enabled? true}}
-         :modules {:portfolio {:depends-on #{:mateuszmazurczak-share}
-                               :entries [mateuszmazurczak.portfolio.portfolio]
-                               :init-fn
-                               mateuszmazurczak.portfolio.portfolio/init}}}
+   :dev
+   {:compiler-options
+    {:closure-defines
+     {day8.re-frame.tracing.trace-enabled? true
+      mateuszmazurczak.config/ENV :dev
+      mateuszmazurczak.config/LOG_SENTRY_DNS
+      (or
+       (System/getenv "LOG_SENTRY_DNS")
+       "https://96e2a27d085619b3c6c38084045e88a9@o4508704825147392.ingest.de.sentry.io/4508704840810576")
+      re-frame.trace.trace-enabled? true}}
+    :modules {:portfolio {:depends-on #{:mateuszmazurczak-share}
+                          :entries [mateuszmazurczak.portfolio.portfolio]
+                          :init-fn mateuszmazurczak.portfolio.portfolio/init}}}
    :devtools {:after-load mateuszmazurczak.frontend-core/re-render
               :preloads [day8.re-frame-10x.preload.react-18]
               :repl-pprint true
@@ -30,6 +36,9 @@
    :release {:build-options {:cache-level :off
                              :ns-aliases {day8.re-frame.tracing
                                           day8.re-frame.tracing-stubs}}
+             :closure-defines {mateuszmazurczak.config/ENV "production"
+                               mateuszmazurczak.config/LOG_SENTRY_DNS
+                               (System/getenv "LOG_SENTRY_DNS")}
              :compiler-options {:optimizations :advanced
                                 :portfolio false}}
    :target :browser}}

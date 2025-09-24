@@ -25,7 +25,8 @@
   {:doc "Start the clojure REPL."
    :enter (common/enter dev-launch/cli-opts (current-task))
    :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
-   :task (dev-launch/start-repl [:common-test :env-development-repl])}
+   :task (dev-launch/start-repl
+          [:common-test :env-development-repl :1.12-storm])}
   :requires [[mateuszmazurczak.common :as common]]
   article {:depends [-base-deps]
            :doc "Generate HTML from articles"
@@ -57,6 +58,14 @@
               :enter (common/enter dev-launch/cli-opts (current-task))
               :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
               :task (run '-dev-launch {:parallel true})}
+  format {:doc "zprint format"
+          :task (try (-> (babashka.process/shell
+                          "zprint -w **/*.clj **/*.cljs **/*.cljc **/*.edn"
+                          *command-line-args*)
+                         System/exit)
+                     (catch Exception e
+                       (println "Repl failed also - error during repl startup"
+                                (ex-message e))))}
   lconnect {:doc "Repl in case dev-launch is failing"
             :task (try (-> (babashka.process/shell
                             "clojure"

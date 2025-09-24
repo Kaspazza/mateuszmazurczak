@@ -42,14 +42,16 @@
   [_
    {:keys [handler logger http-port]
     :as _opts}]
-  (try (log/log! logger
-                 {:level :debug
-                  :id ::http-server
-                  :msg "Started http-server"})
-       (web-server/start-server handler {:http-port http-port})
-       (log/log! logger
-                 {:id ::http-server-started
-                  :msg (str "Started!!! on http://localhost:" http-port)})
+  (try
+    (log/log! logger
+              {:level :debug
+               :id ::http-server
+               :msg "Started http-server"})
+    (let [server (web-server/start-server handler {:http-port http-port})]
+      (log/log! logger
+                {:id ::http-server-started
+                 :msg (str "Started!!! on http://localhost:" http-port)})
+      server)
        (catch Throwable e
          (ex-info "Unexpected error during web server starting" {:error e}))))
 

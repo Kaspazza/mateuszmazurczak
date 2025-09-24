@@ -21,9 +21,9 @@
           :sys/handler {:logger #ig/ref :sys/logging
                         :routes #var-ref mateuszmazurczak.endpoint.routes/routes
                         :translator #ig/ref :sys/translator}
-          :sys/http-server {:handler (ig/ref :sys/handler)
+          :sys/http-server {:handler #ig/ref :sys/handler
                             :http-port #or [#ref [:http-server :port] 8080]
-                            :logger (ig/ref :sys/logging)}
+                            :logger #ig/ref :sys/logging}
           :sys/logging {:level #ref [:log :level]}
           :sys/translator {:debug? true
                            :logger #ig/ref :sys/logging}}}

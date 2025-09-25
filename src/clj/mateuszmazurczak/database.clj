@@ -1,91 +1,43 @@
 (ns mateuszmazurczak.database
+  "Database port - provides database operations interface.
+   
+   Uses Function namespace hybrid approach:
+   - This namespace acts as the port defining API functions
+   - Internally chooses appropriate adapter (currently Datomic)
+   - Integrant handles configuration and dependency injection
+   - Serves as Application Service layer"
   (:require
-   [datofu.all                       :as datofu-all]
-   [datofu.migration                 :as datofu-migration]
-   [datofu.schema.dsl                :as dsl]
-   [datomic.api                      :as d]
-   [mateuszmazurczak.database.schema :as schema]
-   [mateuszmazurczak.logging         :as log]))
+   [mateuszmazurczak.database.adapters.datomic :as datomic-adapter]))
 
-(defn entity-attr->txes
-  [kw m]
-  (let [op (cond
-             (:attr m) (partial dsl/attr kw)
-             (:enum m) (partial dsl/to-one kw)
-             (:ref m) (partial dsl/to-one kw)
-             (:ref-many m) (partial dsl/to-many kw))
-        extras (cond-> []
-                 (:attr m) (conj (:attr m))
-                 (:unique m) (conj (:unique m))
-                 (:index m) (conj :index)
-                 (:nohistory m) (conj :noHistory)
-                 (:doc m) (conj (:doc m)))
-        txes (cond-> [(apply op extras)]
-               (:enum m) (into (map #(dsl/named %) (:enum m))))]
-    txes))
+;; Port API Functions - Basic database operations
 
-(defn initial-migration
-  []
-  (let [attrs (apply merge schema/entities)]
-    {:type :schema
-     :datofu.migration/id ::initial-schema
-     :datofu.migration/tx (->> attrs
-                               (mapcat #(apply entity-attr->txes %))
-                               (vec))}))
+(defn start-database
+  "Start database connection."
+  [config]
+  (datomic-adapter/start config))
 
-(defn- retry
-  "Retries (f) up to n times with delay-ms between attempts."
-  [n delay-ms f logger]
-  (loop [attempt 1]
-    (let [result (try {:success true
-                       :value (f)}
-                      (catch Exception e 
-                        (if (< attempt n)
-                          (log/log! logger
-                                    {:level :warn
-                                     :id ::database-retry-attempt-failed
-                                     :msg (str "Database connection attempt " attempt " failed, retrying...")
-                                     :data {:attempt attempt
-                                            :max-attempts n
-                                            :delay-ms delay-ms
-                                            :error-message (.getMessage e)}})
-                          (log/error! logger
-                                      {:error e
-                                       :id ::database-all-retry-attempts-failed
-                                       :data {:attempt attempt
-                                              :max-attempts n
-                                              :delay-ms delay-ms}}))
-                        {:success false
-                         :error e}))]
-      (if (:success result)
-        (:value result)
-        (if (< attempt n)
-          (do (Thread/sleep delay-ms) (recur (inc attempt)))
-          (throw (:error result)))))))
+(defn stop-database
+  "Stop database connection."
+  [conn]
+  (datomic-adapter/stop conn))
 
-(defn connect-db
-  [uri]
-  (let [;; Just to make sure db is created
-        _created? (d/create-database uri)
-        conn (d/connect uri)
-        schema-tx (datofu-all/schema-tx)
-        _initial-mig (datofu-migration/install-and-migrate!
-                      conn
-                      schema-tx
-                      [(initial-migration)])]
-    conn))
+(defn transact!
+  "Execute transaction on database."
+  [conn tx-data]
+  (datomic-adapter/transact! conn tx-data))
 
-(defn start-db
-  "Generate the server, based on the given handler.
-  Options are optional, default values are
-  - dont-block [true] tells server not to block the thread
-  - port: should not be used to enable multiple web servers in the repl"
-  [{:keys [uri logger]}]
-  (try (retry 5 5000 (partial connect-db uri) logger)
-       (catch Exception e 
-         (log/error! logger 
-                     {:error e
-                      :id ::database-start-failed
-                      :data {:uri uri}})
-         (ex-info "Unable to start db" {:error e}))))
+(defn query
+  "Execute query on database."
+  [conn query & args]
+  (apply datomic-adapter/query conn query args))
+
+(defn find-entity
+  "Find entity by id."
+  [conn entity-id]
+  (datomic-adapter/entity conn entity-id))
+
+(defn pull-entity
+  "Pull entity data by pattern."
+  [conn pattern entity-id]
+  (datomic-adapter/pull conn pattern entity-id))
 

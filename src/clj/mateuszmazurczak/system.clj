@@ -77,8 +77,8 @@
   (log/log! logger
             {:id ::start-db
              :msg (str "Starting db..." db-uri)})
-  (try (let [conn (database/start-db {:uri db-uri
-                                      :logger logger})]
+  (try (let [conn (database/start-database {:uri db-uri
+                                             :logger logger})]
          (log/log! logger
                    {:id ::start-db-success
                     :msg (str "Started db!!! " db-uri)})

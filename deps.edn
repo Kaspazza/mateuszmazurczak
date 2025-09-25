@@ -47,7 +47,9 @@
    ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
     "-Dlog4j.configurationFile=resources/log_config/appenders.properties,resources/log_config/log4j2.properties"
     "-Dconf-var=env/development/config.edn"]
-   :main-opts ["-m" "mateuszmazurczak.repl.entry-point"]}}
+   :main-opts ["-m" "mateuszmazurczak.repl.entry-point"]}
+  :jvm-base {:jvm-opts ["--add-opens=java.base/java.nio=ALL-UNNAMED"
+                        "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"]}}
  :deps {aero/aero {:mvn/version "1.1.6"}
         amalloy/ring-gzip-middleware {:mvn/version "0.1.4"}
         com.datomic/peer {:mvn/version "1.0.7364"}
@@ -55,6 +57,7 @@
         com.taoensso/telemere-slf4j {:mvn/version "1.1.0"}
         com.taoensso/tempura {:mvn/version "1.5.4"}
         com.taoensso/truss {:mvn/version "2.2.0"}
+        datalevin/datalevin {:mvn/version "0.9.22"}
         hiccup/hiccup {:mvn/version "2.0.0"}
         http-kit/http-kit {:mvn/version "2.8.0"}
         integrant/integrant {:mvn/version "1.0.0-RC2"}

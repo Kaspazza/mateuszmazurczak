@@ -203,6 +203,7 @@
   [ring-cookies/wrap-cookies ;; It's important to have cookies before translator to allow strategy based on cookie lang
    rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
+   (fn [handler] (fn [request] (handler (assoc request :logger logger)))) ;; Add logger to request
    (fn [handler] (wrap-translation handler translator))
    (fn [handler] (wrap-request-logging handler logger))
    (partial wrap-exception-handling logger)])

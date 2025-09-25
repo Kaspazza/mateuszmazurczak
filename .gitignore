@@ -61,3 +61,6 @@ pom.properties
 /storage
 # dpm backups
 /backups
+
+.secrets.edn
+AGENTS.md

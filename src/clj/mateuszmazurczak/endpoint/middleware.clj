@@ -189,7 +189,7 @@
 (defn wrap-translation
   [handler translator]
   (fn [http-request]
-    (let [lang [(language-strategy http-request)]]
+    (let [lang (language-strategy http-request)]
       (-> http-request
           (assoc :tr (fn ([tr-id] (i18n/tr translator lang tr-id))))
           handler))))

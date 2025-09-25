@@ -6,8 +6,6 @@
    [day8.re-frame.tracing                      :refer [fn-traced]]
    [mateuszmazurczak.navigation.history.reitit :as history-reitit]
    [mateuszmazurczak.navigation.router.reitit  :as router-reitit]
-   [mateuszmazurczak.navigation.routes         :as mm-fe-routes]
-   [mount.core                                 :refer [defstate]]
    [re-frame.core                              :as rf]))
 
 (defn- delay-page-load
@@ -52,22 +50,23 @@
   [history]
   (history-reitit/stop-history! history))
 
-(defstate router
-          :start (try (js/console.log "Router started")
-                      (router-reitit/create-router mm-fe-routes/routes)
-                      (catch :default e
-                        (js/console.error "Router failed to start" e)
-                        nil))
-          :stop (prn "stopped"))
+;; Global state - to be initialized by the system
+(defonce ^:private router-instance (atom nil))
+(defonce ^:private history-instance (atom nil))
 
-(defstate history
-          :start (try (js/console.log "History started")
-                      (init-history! @router)
-                      (catch :default e
-                        (js/console.error "History component failed to start:"
-                                          e)
-                        nil))
-          :stop (when @history (stop-history! @history)))
+(defn set-router!
+  "Set the router instance - called by system during initialization"
+  [router]
+  (reset! router-instance router))
+
+(defn set-history!
+  "Set the history instance - called by system during initialization"
+  [history]
+  (reset! history-instance history))
+
+(defn get-router "Get the current router instance" [] @router-instance)
+
+(defn get-history "Get the current history instance" [] @history-instance)
 
 (defn route-name
   "Get the name of the current route"
@@ -87,7 +86,7 @@
 (defn route-details
   "Find route data for a given path"
   [path]
-  (when-let [match (router-reitit/match-by-path @router path)]
+  (when-let [match (router-reitit/match-by-path (get-router) path)]
     {:route-name (router-reitit/route-name-from-match match)
      :panel-id (router-reitit/panel-id-from-match match)
      :path-parameters (router-reitit/path-params-from-match match)
@@ -100,20 +99,22 @@
   ([route-name] (href route-name nil nil))
   ([route-name path-params] (href route-name path-params nil))
   ([route-name path-params query-params]
-   (history-reitit/href @history route-name path-params query-params)))
+   (history-reitit/href (get-history) route-name path-params query-params)))
 
 (defn change-query-parameters!
   "Change only query-params"
   ([query-params] (change-query-parameters! query-params true))
   ([query-params preserve-history?]
-   (history-reitit/set-query! @history query-params (not preserve-history?))))
+   (history-reitit/set-query! (get-history)
+                              query-params
+                              (not preserve-history?))))
 
 (defn navigate!
   "Navigate to URL, with optional history preservation"
   ([route-name] (navigate! route-name {}))
   ([route-name params] (navigate! route-name params true))
   ([route-name {:keys [path-parameters query-parameters]} preserve-history?]
-   (history-reitit/navigate @history
+   (history-reitit/navigate (get-history)
                             route-name
                             {:replace (not preserve-history?)
                              :path-params path-parameters

@@ -1,6 +1,5 @@
 (ns mateuszmazurczak.i18n.tempura
   (:require
-   [mateuszmazurczak.configuration :as conf]
    [mateuszmazurczak.i18n.language :as i18n-lang]
    [mateuszmazurczak.utils.map     :as utils-map]))
 
@@ -23,10 +22,10 @@
 (defn create-opts
   "Create the options for tempura/tr
   Params:
+  * `debug?` boolean indicating whether to enable debug mode (no caching)
   * `dicts` list of dictionaries to append together, the default keys for missing keys and the core dictionary are defaulted"
-  [& dicts]
-  (let [debug (= :development (conf/read-param [:env]))]
-    {:dict (append-dictionaries dicts)
-     :cache-dict? (not debug)
-     :default-local (first i18n-lang/main-langs)
-     :cache-locales (not debug)}))
+  [debug? & dicts]
+  {:dict (append-dictionaries dicts)
+   :cache-dict? (not debug?)
+   :default-local (first i18n-lang/main-langs)
+   :cache-locales (not debug?)})

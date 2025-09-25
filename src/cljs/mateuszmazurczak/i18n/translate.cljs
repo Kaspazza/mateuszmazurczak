@@ -10,6 +10,8 @@
 
 (rf/reg-sub ::lang (fn [db _] (:lang db)))
 
+(rf/reg-sub ::translator (fn [db _] (:translator db)))
+
 (rf/reg-sub ::lang-str
             :<-
             [::lang]
@@ -52,7 +54,9 @@
 (defn tr
   "UI component dealing with translation"
   [tr-id]
-  (let [lang @(rf/subscribe [::lang])] (i18n/tr lang tr-id)))
+  (let [lang @(rf/subscribe [::lang])
+        translator @(rf/subscribe [::translator])]
+    (when translator (i18n/tr translator lang tr-id))))
 
 (defn tr-for-key
   "Apply tr to each map in the sequence

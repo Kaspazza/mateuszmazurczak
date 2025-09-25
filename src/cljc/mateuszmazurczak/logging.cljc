@@ -5,7 +5,7 @@
    [mateuszmazurczak.logging.telemere-utils :as logging-utils]))
 
 (def log!-opts
-  [:map {:open true}
+  [:map {:closed true}
    [:id :any]
    [:level [:enum :trace :debug :info :warn :error]]
    [:msg :any]
@@ -13,7 +13,7 @@
     :map]])
 
 (def event!-opts
-  [:map {:open true}
+  [:map {:closed true}
    [:id :any]
    [:level [:enum :trace :debug :info :warn :error]]
    [:data {:optional true}

@@ -2,37 +2,38 @@
   "Gather all components to start production app"
   (:require
    [integrant.core                    :as ig]
-   [mateuszmazurczak.configuration    :as mm-conf]
-   [mateuszmazurczak.endpoint.routes  :as mm-endpoint-routes]
+   [mateuszmazurczak.config           :as config]
    [mateuszmazurczak.logging          :as logging]
    [mateuszmazurczak.logging.telemere :as t]
-   [mateuszmazurczak.system           :as sys])
+   [mateuszmazurczak.system])
   (:gen-class))
 
-(def config
-  {::sys/error-tracking {:dsn (mm-conf/read-param [:log :sentry :backend :dsn])
-                         :env (name (mm-conf/read-param [:env]))
-                         :logger (ig/ref ::sys/logging)}
-   ::sys/logging {:level (mm-conf/read-param [:log :level])
-                  :inst (t/make-logger {:level :trace})}
-   ::sys/handler {:routes mm-endpoint-routes/routes
-                  :logger (ig/ref ::sys/logging)}
-   ::sys/http-server {:http-port (mm-conf/read-param [:http-server :port] 8080)
-                      :handler (ig/ref ::sys/handler)
-                      :logger (ig/ref ::sys/logging)}
-   ::sys/db-conn {:db-uri (mm-conf/read-param [:db :uri])
-                  :logger (ig/ref ::sys/logging)}})
-
 (defn -main
-  "Main entry point for production, running production handler"
+  "Main entry point for application. Environment determined by which mateuszmazurczak.config is loaded."
   [& _args]
-  (try (ig/init config)
+  (try (let [system-config (config/system-config)
+             full-config (config/load-config)
+             system (ig/init system-config)
+             logger (:sys/logging system)]
+         (logging/log! logger
+                       {:id ::application-started
+                        :msg (str "Application started successfully with environment: "
+                                  (:env full-config))
+                        :data {:env (:env full-config)}})
+         system)
        (catch Throwable e
-         (prn "failed: " (pr-str e))
-         (ex-info "Unhandled exception" {:error e}))))
+         ;; At this point logging system might not be initialized yet
+         (println "Application startup failed:" (.getMessage e))
+         (.printStackTrace e)
+         (System/exit 1))))
+
+
+
+
 
 (comment
-  (require '[integrant.repl.state :as state])
+  (require '[integrant.repl.state :as state] '[aero.core])
+  (aero.core/read-config "env/development/config.edn")
   (tap> "hello")
   (def logger (t/make-logger {:level :trace}))
   (logging/init! logger {:level :trace})

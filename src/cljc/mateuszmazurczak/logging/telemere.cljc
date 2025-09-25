@@ -6,7 +6,7 @@
   #?(:cljs (:require-macros
             [mateuszmazurczak.logging.telemere
              :refer
-             [event! error! spy! set-min-level! with-min-level!]])))
+             [set-min-level! with-min-level!]])))
 
 
 ;;Configuration
@@ -37,7 +37,6 @@
                           (t/handler:console
                            {:output-fn logging-utils/format:console-minimal})))
         (t/set-xfn! logging-utils/middleware:console-run-time)
-        (t/add-handler! :portal-handler logging-utils/portal-log)
         (logging-utils/ensure-dir-exists path)
         (t/add-handler! :file-handler
                         (t/handler:file {:path (str path "/logs.log")}))))
@@ -48,8 +47,8 @@
             (t/remove-handler! :default/console)
             (t/add-handler! :console-handler
                             (t/handler:console
-                             {:output-fn logging-utils/format:console-minimal}))
-            (t/add-handler! :portal-handler logging-utils/portal-log))))
+                             {:output-fn
+                              logging-utils/format:console-minimal})))))
 
 
 (defrecord TelemereLogger [base-context]
@@ -79,8 +78,8 @@
                :data (merge (:data base-context) (:data opts))
                :id (:id opts)}
               form))
-    (-with-context [_ new-context]
-      (->TelemereLogger (merge base-context new-context))))
+    (-with-context [this new-context]
+      (assoc this :base-context (merge base-context new-context))))
 
 (defn make-logger
   "Create a new Telemere logger instance"

@@ -35,22 +35,38 @@
 
 (defn- retry
   "Retries (f) up to n times with delay-ms between attempts."
-  [n delay-ms f on-attempt-fn]
+  [n delay-ms f logger]
   (loop [attempt 1]
     (let [result (try {:success true
                        :value (f)}
-                      (catch Exception e (throw e)))]
+                      (catch Exception e 
+                        (if (< attempt n)
+                          (log/log! logger
+                                    {:level :warn
+                                     :id ::database-retry-attempt-failed
+                                     :msg (str "Database connection attempt " attempt " failed, retrying...")
+                                     :data {:attempt attempt
+                                            :max-attempts n
+                                            :delay-ms delay-ms
+                                            :error-message (.getMessage e)}})
+                          (log/error! logger
+                                      {:error e
+                                       :id ::database-all-retry-attempts-failed
+                                       :data {:attempt attempt
+                                              :max-attempts n
+                                              :delay-ms delay-ms}}))
+                        {:success false
+                         :error e}))]
       (if (:success result)
         (:value result)
         (if (< attempt n)
-          (do (on-attempt-fn attempt)
-              (Thread/sleep delay-ms)
-              (recur (inc attempt)))
+          (do (Thread/sleep delay-ms) (recur (inc attempt)))
           (throw (:error result)))))))
 
 (defn connect-db
   [uri]
-  (let [_created? (d/create-database uri)
+  (let [;; Just to make sure db is created
+        _created? (d/create-database uri)
         conn (d/connect uri)
         schema-tx (datofu-all/schema-tx)
         _initial-mig (datofu-migration/install-and-migrate!
@@ -65,23 +81,11 @@
   - dont-block [true] tells server not to block the thread
   - port: should not be used to enable multiple web servers in the repl"
   [{:keys [uri logger]}]
-  (try (log/log! logger
-                 {:id ::start-db
-                  :msg (str "Starting db..." uri)})
-       (retry 5
-              5000
-              (partial connect-db uri)
-              #(log/log!
-                logger
-                {:id ::start-db-retry
-                 :msg (str "DB connection failed, retrying (" % "/" 5 ")...")}))
-       (log/log! logger
-                 {:id ::start-db-success
-                  :msg (str "Started db!!! " uri)})
-       (catch Exception e
-         (log/error! logger
+  (try (retry 5 5000 (partial connect-db uri) logger)
+       (catch Exception e 
+         (log/error! logger 
                      {:error e
-                      :id ::failed-starting-db})
+                      :id ::database-start-failed
+                      :data {:uri uri}})
          (ex-info "Unable to start db" {:error e}))))
 
-(defn stop-db [_conn] (d/shutdown true))

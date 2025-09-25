@@ -2,7 +2,6 @@
  {:antq {:deps {com.github.liquidz/antq {:mvn/version "2.11.1264"}}
          :main-opts ["-m" "antq.core"]}
   :cljs-deps {:extra-deps {lambdaisland/uri #:mvn{:version "1.19.155"}
-                           mount/mount #:mvn{:version "0.1.21"}
                            re-frame/re-frame #:mvn{:version "1.4.3"}
                            reagent/reagent #:mvn{:version "1.3.0"}
                            thheller/shadow-cljs #:mvn{:version "2.28.20"}}
@@ -49,13 +48,13 @@
     "-Dlog4j.configurationFile=resources/log_config/appenders.properties,resources/log_config/log4j2.properties"
     "-Dconf-var=env/development/config.edn"]
    :main-opts ["-m" "mateuszmazurczak.repl.entry-point"]}}
- :deps {amalloy/ring-gzip-middleware {:mvn/version "0.1.4"}
+ :deps {aero/aero {:mvn/version "1.1.6"}
+        amalloy/ring-gzip-middleware {:mvn/version "0.1.4"}
         com.datomic/peer {:mvn/version "1.0.7364"}
-        com.taoensso/encore {:mvn/version "3.152.0"}
-        com.taoensso/telemere {:exclusions [com.taoensso/encore]
-                               :mvn/version "1.0.1"}
+        com.taoensso/telemere {:mvn/version "1.1.0"}
+        com.taoensso/telemere-slf4j {:mvn/version "1.1.0"}
         com.taoensso/tempura {:mvn/version "1.5.4"}
-        com.taoensso/truss {:mvn/version "2.1.0"}
+        com.taoensso/truss {:mvn/version "2.2.0"}
         hiccup/hiccup {:mvn/version "2.0.0"}
         http-kit/http-kit {:mvn/version "2.8.0"}
         integrant/integrant {:mvn/version "1.0.0-RC2"}

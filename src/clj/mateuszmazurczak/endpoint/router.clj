@@ -2,9 +2,7 @@
   "Create web routers"
   (:require
    [mateuszmazurczak.endpoint.error-page :as error-page]
-   [mateuszmazurczak.endpoint.handler    :as mm-handler]
    [mateuszmazurczak.endpoint.middleware :as mm-middleware]
-   [mateuszmazurczak.endpoint.routes     :as mm-endpoint-routes]
    [muuntaja.core                        :as m]
    [reitit.coercion                      :as coercion]
    [reitit.ring                          :as reitit-ring]
@@ -71,34 +69,23 @@
 (defn ring-handler
   "Ring handler for web pages of mateuszmazurczak app
   Params:
-  * `ring-handler`"
-  [routes]
-  (reitit-ring/ring-handler (router routes mm-middleware/web-middleware)
-                            (reitit-ring/routes (resource-handler {})
-                                                (default-handlers nil []))
-                            {:middleware mm-middleware/global-middlewares
-                             :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
-                            }))
+  * `routes` - application routes
+  * `translator` - translator function
+  * `logger` - logger instance"
+  [routes translator logger]
+  (reitit-ring/ring-handler
+   (router routes mm-middleware/web-middleware)
+   (reitit-ring/routes (resource-handler {}) (default-handlers nil []))
+   {:middleware (mm-middleware/global-middlewares translator logger)
+    :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
+   }))
 
 (defn get-app
   "Web application,
   Transform an http request in an http response
   Params:
-  * `http-req`"
-  [routes]
-  ;;TODO think about this try-catch, we may be able to remove it and just call here (ring-handler routes) which return fn
-  (let [handler-fn (ring-handler routes)]
-    (fn [http-req]
-      (try (handler-fn http-req)
-           (catch Exception e
-             (prn "ring error" e)
-             (->> http-req
-                  error-page/internal-error-page
-                  http-response/internal-server-error
-                  mm-handler/web-page))
-           (catch Error e
-             (prn "ring error" e)
-             (->> http-req
-                  error-page/internal-error-page
-                  http-response/internal-server-error
-                  mm-handler/web-page))))))
+  * `routes` - application routes
+  * `translator` - translator function
+  * `logger` - logger instance"
+  [routes translator logger]
+  (fn [http-req] ((ring-handler routes translator logger) http-req)))

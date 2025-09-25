@@ -1,6 +1,7 @@
 {:app-name "mateuszmazurczak"
- :db {:uri #or [#env DB_URI
-                "datomic:sql://app-prod?jdbc:sqlite:./storage/sqlite.db"]}
+ :db {;; :uri #or [#env DB_URI
+       ;;           "datomic:sql://app-prod?jdbc:sqlite:./storage/sqlite.db"]
+       :uri #or [#env DB_URI "/app/data/db"]}
  :env :production
  :http-server {:port #or [#env PORT 8080]
                :url "https://mateuszmazurczak.com"}

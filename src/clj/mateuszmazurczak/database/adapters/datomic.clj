@@ -1,12 +1,13 @@
 (ns mateuszmazurczak.database.adapters.datomic
   "Datomic adapter implementation for database operations."
   (:require
-   [datofu.all                       :as datofu-all]
-   [datofu.migration                 :as datofu-migration]
-   [datofu.schema.dsl                :as dsl]
-   [datomic.api                      :as d]
-   [mateuszmazurczak.database.schema :as schema]
-   [mateuszmazurczak.logging         :as log]))
+   [datofu.all                        :as datofu-all]
+   [datofu.migration                  :as datofu-migration]
+   [datofu.schema.dsl                 :as dsl]
+   [datomic.api                       :as d]
+   [mateuszmazurczak.database.schema  :as schema]
+   [mateuszmazurczak.database.utils   :as db-utils]
+   [mateuszmazurczak.logging          :as log]))
 
 (defn- entity-attr->txes
   [kw m]
@@ -34,35 +35,7 @@
                                (mapcat #(apply entity-attr->txes %))
                                (vec))}))
 
-(defn- retry
-  "Retries (f) up to n times with delay-ms between attempts."
-  [n delay-ms f logger]
-  (loop [attempt 1]
-    (let [result (try {:success true
-                       :value (f)}
-                      (catch Exception e 
-                        (if (< attempt n)
-                          (log/log! logger
-                                    {:level :warn
-                                     :id ::database-retry-attempt-failed
-                                     :msg (str "Database connection attempt " attempt " failed, retrying...")
-                                     :data {:attempt attempt
-                                            :max-attempts n
-                                            :delay-ms delay-ms
-                                            :error-message (.getMessage e)}})
-                          (log/error! logger
-                                      {:error e
-                                       :id ::database-all-retry-attempts-failed
-                                       :data {:attempt attempt
-                                              :max-attempts n
-                                              :delay-ms delay-ms}}))
-                        {:success false
-                         :error e}))]
-      (if (:success result)
-        (:value result)
-        (if (< attempt n)
-          (do (Thread/sleep delay-ms) (recur (inc attempt)))
-          (throw (:error result)))))))
+
 
 (defn- connect-db
   [uri]
@@ -79,7 +52,7 @@
 (defn start
   "Start Datomic database connection with retry mechanism."
   [{:keys [uri logger]}]
-  (try (retry 5 5000 (partial connect-db uri) logger)
+  (try (db-utils/retry 5 5000 (partial connect-db uri) logger)
        (catch Exception e 
          (log/error! logger 
                      {:error e

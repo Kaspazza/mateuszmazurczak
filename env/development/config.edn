@@ -1,6 +1,7 @@
 {:app-name "mateuszmazurczak"
  :db {:uri #or [#env DB_URI
-                "datomic:sql://app-dev?jdbc:sqlite:./storage/sqlite.db"]}
+                "./storage/datalevin/dev-db"
+                #_"datomic:sql://app-dev?jdbc:sqlite:./storage/sqlite.db"]}
  :dev {:clj-nrepl-port 8000}
  :env :development
  :http-server {:port 3000

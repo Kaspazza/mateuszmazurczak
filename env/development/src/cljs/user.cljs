@@ -1,14 +1,11 @@
-(ns cljs.user
-  (:require
-   [portal.client.web :as p-web]))
+(ns cljs.user)
 
-(def submit (partial p-web/submit {:port 8351}))
+
 
 (defn tst [] (js/alert "from REPL"))
 
-(defn client-connect [] (add-tap #'submit))
+
 (comment
-  (client-connect)
   (tap> :barbarbar)
   (tst)
   ;

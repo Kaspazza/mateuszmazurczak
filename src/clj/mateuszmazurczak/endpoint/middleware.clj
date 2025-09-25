@@ -82,22 +82,64 @@
 
 (defn wrap-throw [_handler] (fn [_request] (/ 1 0)))
 
+(defn wrap-exception-handling* [handler request logger]
+  (try (handler request)
+       (catch Exception e
+         (log/error! logger
+                     {:error e
+                      :id ::unhandled-request-exception
+                      :data {:request-uri (:uri request)
+                             :request-method (:request-method request)
+                             :request-headers (select-keys (:headers request)
+                                                           ["host" "user-agent" "referer"])}})
+         (->> request
+              error-page/internal-error-page
+              http-response/internal-server-error
+              mm-endpoint-handler/web-page))))
+
 (defn wrap-exception-handling
+  [logger handler]
+  (fn [request]
+    (wrap-exception-handling* handler request logger)
+    ))
+
+(defn wrap-request-logging
+  "Log incoming requests and responses with route info"
   [handler logger]
   (fn [request]
-    (try (handler request)
-         (catch Exception e
-           (log/error! logger
-                       {:error e
-                        :id ::unhandled-request-exception
-                        :data {:request-uri (:uri request)
-                               :request-method (:request-method request)
-                               :request-headers (select-keys (:headers request) 
-                                                             ["host" "user-agent" "referer"])}})
-           (->> request
-                error-page/internal-error-page
-                http-response/internal-server-error
-                mm-endpoint-handler/web-page)))))
+    (let [start (System/nanoTime)
+          method (-> request :request-method name str/upper-case)
+          uri (:uri request)]
+      (log/log! logger
+                {:level :debug
+                 :id ::incoming-request
+                 :data {:method method
+                        :uri uri
+                        :query-params (:query-params request)
+                        :path-params (some-> request :reitit.core/match :path-params)
+                        :headers (select-keys (:headers request)
+                                              ["host" "user-agent" "referer"])}})
+      (let [response (handler request)
+            elapsed-ms (long (/ (- (System/nanoTime) start) 1e6))
+            match (:reitit.core/match request)
+            route-name (some-> match :data :name)
+            route-template (some-> match :template)
+            status (:status response)
+            level (cond
+                    (>= (long status) 500) :error
+                    (>= (long status) 400) :warn
+                    :else :info)]
+        (log/log! logger
+                  {:level level
+                   :id ::request-completed
+                   :data {:method method
+                          :uri uri
+                          :status status
+                          :duration-ms elapsed-ms
+                          :route-name route-name
+                          :route-template route-template
+                          :path-params (some-> match :path-params)}})
+        response))))
 
 
 (def web-middleware
@@ -162,4 +204,5 @@
    rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
    (fn [handler] (wrap-translation handler translator))
-   (fn [handler] (wrap-exception-handling handler logger))])
+   (fn [handler] (wrap-request-logging handler logger))
+   (partial wrap-exception-handling logger)])

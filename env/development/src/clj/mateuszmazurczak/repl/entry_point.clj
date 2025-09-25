@@ -72,6 +72,7 @@
     (let [conf (aero.core/read-config "env/development/config.edn")
           nrepl-port (get-in conf [:dev :clj-nrepl-port])
           app-name (get conf :app-name)]
+      (spit nrepl-port-filename nrepl-port)
       ;; For now, start REPL without logger (use println), then get logger after system init
       (println "-> Starting REPL on port:" nrepl-port)
       (reset! repl {:nrepl-port nrepl-port

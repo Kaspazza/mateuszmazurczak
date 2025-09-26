@@ -9,8 +9,7 @@
   (:require
    [mateuszmazurczak.database.adapters.datalevin :as adapter]))
 
-;; Port API Functions - Basic database operations
-
+;;DB component API
 (defn start-database
   "Start database connection."
   [config]
@@ -18,6 +17,23 @@
 
 (defn stop-database "Stop database connection." [conn] (adapter/stop conn))
 
+;;Migrations API
+(defn run-migrations!
+  "Run pending database migrations."
+  [conn migrations logger]
+  (adapter/run-migrations! conn migrations logger))
+
+(defn get-applied-migrations
+  "Get list of applied migration IDs."
+  [conn]
+  (adapter/get-applied-migrations conn))
+
+(defn get-current-schema-version
+  "Get current schema version."
+  [conn]
+  (adapter/get-current-schema-version conn))
+
+;;Execution API
 (defn transact!
   "Execute transaction on database."
   [conn tx-data]

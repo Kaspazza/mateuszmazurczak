@@ -1,13 +1,14 @@
 (ns mateuszmazurczak.system
   (:require
-   [integrant.core                       :as ig]
-   [mateuszmazurczak.database            :as database]
-   [mateuszmazurczak.endpoint.router     :as mm-endpoint-router]
-   [mateuszmazurczak.error-tracking.core :as error-tracking]
-   [mateuszmazurczak.i18n                :as i18n]
-   [mateuszmazurczak.logging             :as log]
-   [mateuszmazurczak.logging.telemere    :as t]
-   [mateuszmazurczak.web-server          :as web-server]))
+   [integrant.core                            :as ig]
+   [mateuszmazurczak.database                 :as database]
+   [mateuszmazurczak.database.migrations      :as migrations]
+   [mateuszmazurczak.endpoint.router          :as mm-endpoint-router]
+   [mateuszmazurczak.error-tracking.core      :as error-tracking]
+   [mateuszmazurczak.i18n                     :as i18n]
+   [mateuszmazurczak.logging                  :as log]
+   [mateuszmazurczak.logging.telemere         :as t]
+   [mateuszmazurczak.web-server               :as web-server]))
 
 (defmethod ig/init-key :sys/error-tracking
   [_
@@ -79,10 +80,18 @@
              :msg (str "Starting db..." db-uri)})
   (try (let [conn (database/start-database {:uri db-uri
                                              :logger logger})]
-         (log/log! logger
-                   {:id ::start-db-success
-                    :msg (str "Started db!!! " db-uri)})
-         conn)
+         ;; Check and run any pending migrations
+         (let [applied-migrations (database/get-applied-migrations conn)
+               applied-ids (set (map :migration/id applied-migrations))
+               pending-migrations (migrations/get-pending-migrations applied-ids)]
+           
+           ;; Run pending migrations
+           (database/run-migrations! conn pending-migrations logger)
+           
+           (log/log! logger
+                     {:id ::start-db-success
+                      :msg (str "Started db with " (count applied-migrations) " applied migrations!!! " db-uri)})
+           conn))
        (catch Throwable e
          (log/error! logger
                      {:error e

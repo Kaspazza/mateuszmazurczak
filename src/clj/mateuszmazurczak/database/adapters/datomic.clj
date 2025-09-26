@@ -1,13 +1,16 @@
 (ns mateuszmazurczak.database.adapters.datomic
   "Datomic adapter implementation for database operations."
   (:require
-   [datofu.all                        :as datofu-all]
-   [datofu.migration                  :as datofu-migration]
-   [datofu.schema.dsl                 :as dsl]
-   [datomic.api                       :as d]
-   [mateuszmazurczak.database.schema  :as schema]
-   [mateuszmazurczak.database.utils   :as db-utils]
-   [mateuszmazurczak.logging          :as log]))
+   [datofu.all                           :as datofu-all]
+   [datofu.migration                     :as datofu-migration]
+   [datofu.schema.dsl                    :as dsl]
+   [datomic.api                          :as d]
+   [mateuszmazurczak.database.migrations :as migrations]
+   [mateuszmazurczak.database.schema     :as schema]
+   [mateuszmazurczak.database.utils      :as db-utils]
+   [mateuszmazurczak.logging             :as log]
+   [malli.core                           :as m])
+  (:import [java.time Instant]))
 
 (defn- entity-attr->txes
   [kw m]
@@ -53,12 +56,16 @@
   "Start Datomic database connection with retry mechanism."
   [{:keys [uri logger]}]
   (try (db-utils/retry 5 5000 (partial connect-db uri) logger)
-       (catch Exception e 
-         (log/error! logger 
+       (catch Exception e
+         (log/error! logger
                      {:error e
                       :id ::database-start-failed
                       :data {:uri uri}})
-         (ex-info "Unable to start db" {:error e}))))
+         (throw (ex-info "Unable to start Datomic database"
+                         {:type ::database-start-failed
+                          :uri uri
+                          :cause e}
+                         e)))))
 
 (defn stop
   "Stop Datomic database connection."
@@ -70,12 +77,29 @@
 (defn transact!
   "Execute transaction on Datomic database."
   [conn tx-data]
-  @(d/transact conn tx-data))
+  {:pre [conn (coll? tx-data)]}
+  (try
+    @(d/transact conn tx-data)
+    (catch Exception e
+      (throw (ex-info "Transaction failed"
+                      {:type ::transaction-failed
+                       :tx-data tx-data
+                       :cause e}
+                      e)))))
 
 (defn query
   "Execute query on Datomic database."
   [conn query & args]
-  (apply d/q query (d/db conn) args))
+  {:pre [conn query]}
+  (try
+    (apply d/q query (d/db conn) args)
+    (catch Exception e
+      (throw (ex-info "Query failed"
+                      {:type ::query-failed
+                       :query query
+                       :args args
+                       :cause e}
+                      e)))))
 
 (defn entity
   "Get entity by id from Datomic database."
@@ -86,3 +110,97 @@
   "Pull entity data by pattern from Datomic database."
   [conn pattern entity-id]
   (d/pull (d/db conn) pattern entity-id))
+
+;; Migration functions
+
+(defn get-applied-migrations
+  "Get list of applied migration IDs from the database."
+  [conn]
+  (->> (d/q '[:find
+              ?id
+              ?applied-at
+              ?checksum
+              :where
+              [?e :migration/id ?id]
+              [?e :migration/applied-at ?applied-at]
+              [?e :migration/checksum ?checksum]]
+            (d/db conn))
+       (map (fn [[id applied-at checksum]]
+              {:migration/id id
+               :migration/applied-at applied-at
+               :migration/checksum checksum}))))
+
+(defn get-current-schema-version
+  "Get current schema version (latest applied migration)."
+  [conn]
+  (->> (get-applied-migrations conn)
+       (map :migration/applied-at)
+       (sort)
+       (last)))
+
+(defn- apply-migration!
+  "Apply a single migration to Datomic database."
+  [conn migration logger]
+  {:pre [conn 
+         logger
+         (m/validate migrations/Migration migration)]}
+  (let [{:keys [migration/id migration/up migration/checksum]} migration]
+    (try (log/log! logger
+                   {:id ::migration-applying
+                    :msg (str "Applying migration: " id)})
+         ;; Run the migration - Datomic handles schema changes through transactions
+         (when-let [schema-changes (up conn logger)]
+           (when (seq schema-changes) @(d/transact conn schema-changes)))
+         ;; Record migration as applied
+         @(d/transact conn
+                      [{:migration/id id
+                        :migration/applied-at (java.util.Date.)
+                        :migration/checksum checksum}])
+         (log/log! logger
+                   {:id ::migration-applied
+                    :msg (str "Successfully applied migration: " id)})
+         (catch Exception e
+           (log/error! logger
+                       {:error e
+                        :id ::migration-failed
+                        :data {:migration-id id}})
+           (throw (ex-info (str "Migration failed: " id)
+                           {:type ::migration-failed
+                            :migration-id id
+                            :cause e}
+                           e))))))
+
+(defn run-migrations!
+  "Run all pending migrations on Datomic database."
+  [conn pending-migrations logger]
+  {:pre [conn 
+         logger
+         (coll? pending-migrations)
+         (every? #(m/validate migrations/Migration %) pending-migrations)]}
+  (when (seq pending-migrations)
+    (try (log/log! logger
+                   {:id ::migrations-starting
+                    :msg (str "Running "
+                              (count pending-migrations)
+                              " pending migrations")})
+         (migrations/validate-migration-registry!)
+         (let [applied-migrations (get-applied-migrations conn)]
+           (migrations/validate-migration-integrity applied-migrations
+                                                    migrations/migrations))
+         (doseq [migration pending-migrations]
+           (apply-migration! conn migration logger))
+         (log/log!
+          logger
+          {:id ::migrations-completed
+           :msg (str "Completed " (count pending-migrations) " migrations")})
+         (catch Exception e
+           (log/error! logger
+                       {:error e
+                        :id ::migrations-failed
+                        :data {:pending-migrations-count (count
+                                                          pending-migrations)}})
+           (throw (ex-info "Failed to run migrations"
+                           {:type ::migrations-failed
+                            :pending-migrations-count (count pending-migrations)
+                            :cause e}
+                           e))))))

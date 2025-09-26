@@ -1,4 +1,6 @@
-(ns mateuszmazurczak.database.schema (:refer-clojure :exclude [comment]))
+(ns mateuszmazurczak.database.schema 
+  (:refer-clojure :exclude [comment])
+  (:require [mateuszmazurczak.database.migrations :as migrations]))
 
 (def article
   {:article/id
@@ -30,4 +32,4 @@
    :comment/created-at {:doc "Timestamp when the comment was created"
                         :attr :instant}})
 
-(def entities [article author comment])
+(def entities [article author comment migrations/migration-schema])

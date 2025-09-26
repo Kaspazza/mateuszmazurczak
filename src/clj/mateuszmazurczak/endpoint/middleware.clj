@@ -120,27 +120,30 @@
                      :request-method
                      name
                      str/upper-case)
-          uri (:uri request)]
-      (log/log! logger
-                {:level :debug
-                 :id ::incoming-request
-                 :data {:method method
-                        :uri uri
-                        :query-params (:query-params request)
-                        :path-params (some-> request
-                                             :reitit.core/match
-                                             :path-params)
-                        :headers (select-keys
-                                  (:headers request)
-                                  ["host" "user-agent" "referer"])}})
+          uri (:uri request)
+          match (:reitit.core/match request)
+          route-name (some-> match
+                             :data
+                             :name)
+          route-template (some-> match
+                                 :template)]
+      (log/log!
+       logger
+       {:level :debug
+        :id ::incoming-request
+        :msg
+        (str method " " uri (when route-name (str " [" (name route-name) "]")))
+        :data {:method method
+               :uri uri
+               :route-name route-name
+               :route-template route-template
+               :query-params (:query-params request)
+               :path-params (some-> match
+                                    :path-params)
+               :headers (select-keys (:headers request)
+                                     ["host" "user-agent" "referer"])}})
       (let [response (handler request)
             elapsed-ms (long (/ (- (System/nanoTime) start) 1e6))
-            match (:reitit.core/match request)
-            route-name (some-> match
-                               :data
-                               :name)
-            route-template (some-> match
-                                   :template)
             status (:status response)
             level (cond
                     (>= (long status) 500) :error
@@ -149,6 +152,12 @@
         (log/log! logger
                   {:level level
                    :id ::request-completed
+                   :msg (str method
+                             " " uri
+                             " " status
+                             " (" elapsed-ms
+                             "ms)" (when route-name
+                                     (str " [" (name route-name) "]")))
                    :data {:method method
                           :uri uri
                           :status status
@@ -187,6 +196,14 @@
      rrmm/format-request-middleware]
     mm-env/env-middlewares)))
 
+(defn params-lang
+  [http-request]
+  (let [param-lang (get-in http-request [:params :lang])]
+    (cond
+      (keyword? param-lang) param-lang
+      (string? param-lang) (keyword (str/lower-case param-lang))
+      :else nil)))
+
 
 (defn language-strategy
   "Parse an http request to decide which language to use.
@@ -198,7 +215,7 @@
   * `web-translator` the translator instance to know the default languages
   * `http-request` request to parse"
   [http-request]
-  (or (get-in http-request [:params :lang])
+  (or (params-lang http-request)
       (cookies-language http-request)
       (accepted-languages http-request)
       (tld-language http-request)
@@ -223,5 +240,5 @@
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
    (fn [handler] (fn [request] (handler (assoc request :logger logger)))) ;; Add logger to request
    (fn [handler] (wrap-translation handler translator))
-   (fn [handler] (wrap-request-logging handler logger))
+   ;; (fn [handler] (wrap-request-logging handler logger))
    (partial wrap-exception-handling logger)])

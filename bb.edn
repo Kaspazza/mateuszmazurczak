@@ -77,7 +77,7 @@
         :doc "Linting"
         :enter (common/enter lint/cli-opts (current-task))
         :requires [[mateuszmazurczak.tasks.lint :as lint]]
-        :task (lint/lint)}
+        :task (lint/lint ["src" "test"])}
   test {:depends [-base-deps]
         :doc "Quick test"
         :enter (common/enter test/cli-opts (current-task))

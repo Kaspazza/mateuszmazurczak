@@ -27,22 +27,25 @@
   (get-in cli-opts [:options :verbose]))
 
 (defn lint-cmd
-  "Lint command If `debug?` is set, that informations are displayed."
-  [debug?]
+  "Lint command If `debug?` is set, that informations are displayed.
+   `paths` is a collection of directories/files to lint."
+  [debug? paths]
   (-> (concat ["clj-kondo"] ;; Project too small : "--parallel"
               (when debug? ["--debug"])
-              ["--lint" "."])
+              (mapcat (fn [path] ["--lint" path]) paths))
       vec))
 
 (defn lint
   "For a project which `deps.edn` is described with `deps-file-desc`.
 
-  The files to lint are extracted fro mthe `paths` and `extra-paths` of the `deps.edn` file.
-  Returns `true` if ok."
-  []
+  The files to lint are extracted from the `paths` and `extra-paths` of the `deps.edn` file.
+  Returns `true` if ok.
+  
+  Optionally accepts `paths` to override default directories to lint."
+  [paths]
   (h1 "Linter")
   (let [s (build-writter)
-        lint-cmd (lint-cmd verbose)
+        lint-cmd (lint-cmd verbose paths)
         {:keys [out err exit]}
         (binding [*out* s] (blocking-cmd ["lint"] lint-cmd "" "" verbose))]
     (cond

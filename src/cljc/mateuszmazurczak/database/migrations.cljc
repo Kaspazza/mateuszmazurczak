@@ -3,7 +3,8 @@
   (:require
    [clojure.string :as str]
    [malli.core     :as m]
-   [malli.error    :as me]))
+   [malli.error    :as me]
+   [mateuszmazurczak.validation :as validation]))
 
 (def migration-schema
   "Schema for tracking applied migrations in the database"
@@ -43,18 +44,7 @@
   "Schema for the entire migration registry"
   [:sequential Migration])
 
-(defn- validate-data
-  "Validate data against schema and throw informative error on failure."
-  [schema data error-context]
-  (when-not (m/validate schema data)
-    (let [errors (-> schema
-                     (m/explain data)
-                     (me/humanize))]
-      (throw (ex-info (str "Validation failed for " error-context)
-                      {:type ::validation-error
-                       :context error-context
-                       :errors errors
-                       :data data})))))
+
 
 (defn- validate-migration-id-chronology
   "Validate that migration IDs are in chronological order."
@@ -130,7 +120,7 @@
    Validates inputs and ensures registry integrity."
   [applied-migration-ids]
   {:pre [(coll? applied-migration-ids) (every? string? applied-migration-ids)]}
-  (try (validate-data MigrationRegistry migrations "migration registry")
+  (try (validation/validate-data MigrationRegistry migrations "migration registry")
        (validate-migration-id-chronology migrations)
        (let [applied-set (set applied-migration-ids)]
          (remove (fn [migration]
@@ -191,7 +181,7 @@
   "Validate the entire migration registry for structural integrity.
    Throws descriptive errors for any issues found."
   []
-  (try (validate-data MigrationRegistry migrations "migration registry")
+  (try (validation/validate-data MigrationRegistry migrations "migration registry")
        (validate-migration-id-chronology migrations)
        (let [ids (map :migration/id migrations)
              unique-ids (set ids)]
@@ -231,7 +221,7 @@
                    :migration/up up-fn
                    :migration/down down-fn
                    :migration/checksum (hash (str up-fn down-fn))}]
-    (try (validate-data Migration migration "migration creation")
+    (try (validation/validate-data Migration migration "migration creation")
          migration
          (catch Exception e
            (throw (ex-info "Failed to create migration"

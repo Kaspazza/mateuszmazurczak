@@ -1,14 +1,20 @@
 (ns mateuszmazurczak.logging
   "Api to logging"
   (:require
+   [malli.core                              :as m]
    [mateuszmazurczak.logging.protocol       :as p]
    [mateuszmazurczak.logging.telemere-utils :as logging-utils]))
+
+(def LoggerSchema
+  "Schema for logger objects - validates that it implements the protocol"
+  [:fn (fn [logger] (and (some? logger) (satisfies? p/Logger logger)))])
 
 (def log!-opts
   [:map {:closed true}
    [:id :any]
    [:level [:enum :trace :debug :info :warn :error]]
-   [:msg :any]
+   [:msg {:optional true}
+    :any]
    [:data {:optional true}
     :map]])
 
@@ -22,19 +28,34 @@
 (defn log!
   "Record system health and debugging info"
   [logger opts]
-  (p/-log! logger opts)
-  nil)
+  {:pre [(m/validate LoggerSchema logger) (m/validate log!-opts opts)]}
+  (try (p/-log! logger opts)
+       nil
+       (catch #?(:clj Exception
+                 :cljs :default)
+         e
+         (throw (ex-info "Failed to log message" {:opts opts} e)))))
 
 (defn event!
   "Record business or operational events"
   [logger event-data]
-  (p/-event! logger event-data)
-  nil)
+  {:pre [(m/validate LoggerSchema logger) (m/validate event!-opts event-data)]}
+  (try (p/-event! logger event-data)
+       nil
+       (catch #?(:clj Exception
+                 :cljs :default)
+         e
+         (throw (ex-info "Failed to log event" {:event-data event-data} e)))))
 
 (defn error!
   "Record error occurrences"
   [logger error-data]
-  (p/-error! logger error-data))
+  {:pre [(m/validate LoggerSchema logger) (map? error-data)]}
+  (try (p/-error! logger error-data)
+       (catch #?(:clj Exception
+                 :cljs :default)
+         e
+         (throw (ex-info "Failed to log error" {:error-data error-data} e)))))
 
 (defn spy!
   "Trace performance of executed code - returns the value"

@@ -7,8 +7,8 @@
    [mateuszmazurczak.endpoint.handler    :as mm-endpoint-handler]
    [mateuszmazurczak.env                 :as mm-env]
    [mateuszmazurczak.i18n                :as i18n]
-   [mateuszmazurczak.logging             :as log]
    [mateuszmazurczak.i18n.language       :as lang-web]
+   [mateuszmazurczak.logging             :as log]
    [reitit.ring.coercion                 :as rrc]
    [reitit.ring.middleware.muuntaja      :as rrmm]
    [reitit.ring.middleware.parameters    :as rrmp]
@@ -82,33 +82,44 @@
 
 (defn wrap-throw [_handler] (fn [_request] (/ 1 0)))
 
-(defn wrap-exception-handling* [handler request logger]
+(defn wrap-exception-handling*
+  [handler request logger]
   (try (handler request)
        (catch Exception e
-         (log/error! logger
-                     {:error e
-                      :id ::unhandled-request-exception
-                      :data {:request-uri (:uri request)
-                             :request-method (:request-method request)
-                             :request-headers (select-keys (:headers request)
-                                                           ["host" "user-agent" "referer"])}})
-         (->> request
-              error-page/internal-error-page
-              http-response/internal-server-error
-              mm-endpoint-handler/web-page))))
+         (let [error-data {:request-uri (:uri request)
+                           :request-method (:request-method request)
+                           :request-headers (select-keys
+                                             (:headers request)
+                                             ["host" "user-agent" "referer"])
+                           :error-type (-> e
+                                           ex-data
+                                           :type)
+                           :original-cause (-> e
+                                               ex-data
+                                               :cause)}]
+           (log/error! logger
+                       {:error e
+                        :id ::unhandled-request-exception
+                        :data error-data})
+           (->> request
+                error-page/internal-error-page
+                http-response/internal-server-error
+                mm-endpoint-handler/web-page)))))
 
 (defn wrap-exception-handling
   [logger handler]
-  (fn [request]
-    (wrap-exception-handling* handler request logger)
-    ))
+  {:pre [logger (fn? handler)]}
+  (fn [request] (wrap-exception-handling* handler request logger)))
 
 (defn wrap-request-logging
   "Log incoming requests and responses with route info"
   [handler logger]
   (fn [request]
     (let [start (System/nanoTime)
-          method (-> request :request-method name str/upper-case)
+          method (-> request
+                     :request-method
+                     name
+                     str/upper-case)
           uri (:uri request)]
       (log/log! logger
                 {:level :debug
@@ -116,14 +127,20 @@
                  :data {:method method
                         :uri uri
                         :query-params (:query-params request)
-                        :path-params (some-> request :reitit.core/match :path-params)
-                        :headers (select-keys (:headers request)
-                                              ["host" "user-agent" "referer"])}})
+                        :path-params (some-> request
+                                             :reitit.core/match
+                                             :path-params)
+                        :headers (select-keys
+                                  (:headers request)
+                                  ["host" "user-agent" "referer"])}})
       (let [response (handler request)
             elapsed-ms (long (/ (- (System/nanoTime) start) 1e6))
             match (:reitit.core/match request)
-            route-name (some-> match :data :name)
-            route-template (some-> match :template)
+            route-name (some-> match
+                               :data
+                               :name)
+            route-template (some-> match
+                                   :template)
             status (:status response)
             level (cond
                     (>= (long status) 500) :error
@@ -138,7 +155,8 @@
                           :duration-ms elapsed-ms
                           :route-name route-name
                           :route-template route-template
-                          :path-params (some-> match :path-params)}})
+                          :path-params (some-> match
+                                               :path-params)}})
         response))))
 
 

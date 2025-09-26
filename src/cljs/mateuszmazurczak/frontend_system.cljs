@@ -23,6 +23,7 @@
   [_ {:keys [routes logger]}]
   (log/log! logger 
             {:id ::router-started
+             :level :info
              :msg "Router started"})
   (let [router (router-reitit/create-router routes)]
     (nav/set-router! router)
@@ -36,6 +37,7 @@
   [_ {:keys [router _app-db logger]}]
   (log/log! logger 
             {:id ::history-started
+             :level :info
              :msg "History started"})
   (let [history (nav/init-history! router)]
     (nav/set-history! history)
@@ -68,6 +70,7 @@
   [_ {:keys [init-db-event translator logger]}]
   (log/log! logger 
             {:id ::app-db-initialized
+             :level :info
              :msg "App-db initialized"})
   (rf/clear-subscription-cache!)
   (rf/dispatch-sync [init-db-event])
@@ -113,6 +116,7 @@
                :msg "env is missing in error tracking initialization"}))
   (log/log! logger 
             {:id ::error-tracking-initialized
+             :level :info
              :msg "Error tracking initialized"})
   (init-sentry! {:dsn dsn
                  :traced-website traced-website
@@ -128,6 +132,7 @@
     (log/init! logger {:level level})
     (log/log! logger 
               {:id ::frontend-logging-started
+               :level :info
                :msg "Frontend logging system initialized"})
     logger))
 
@@ -135,12 +140,14 @@
   [_ logger]
   (log/log! logger 
             {:id ::frontend-logging-stopped
+             :level :info
              :msg "Frontend logging system stopped"}))
 
 (defmethod ig/init-key :frontend/translator
   [_ {:keys [debug? logger]}]
   (log/log! logger 
             {:id ::translator-started
+             :level :info
              :msg (str "Translator started with debug=" debug?)})
   (mm-i18n/create-translator debug?))
 

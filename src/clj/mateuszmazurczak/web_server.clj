@@ -1,7 +1,8 @@
 (ns mateuszmazurczak.web-server
   "Webserver state component, hold the webserver instance"
   (:require
-   [org.httpkit.server :as http-kit]))
+   [org.httpkit.server :as http-kit]
+   [mateuszmazurczak.validation :as validation]))
 
 (defn start-server
   "Generate the server, based on the given handler.

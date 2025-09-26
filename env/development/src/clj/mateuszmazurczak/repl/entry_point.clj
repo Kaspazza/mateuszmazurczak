@@ -2,13 +2,13 @@
   "REPL entry point"
   (:require
    [aero.core]
-   [clojure.java.io       :as io]
-   [integrant.core        :as ig]
-   [integrant.repl        :refer [go halt init prep reset]]
-   [integrant.repl.state  :as state]
-   [mateuszmazurczak.core :as mateuszmazurczak-core]
+   [integrant.core           :as ig]
+   [integrant.repl           :refer [go halt init prep reset]]
+   [integrant.repl.state     :as state]
+   [mateuszmazurczak.configuration]
    [mateuszmazurczak.logging :as log]
-   [nrepl.server          :refer [default-handler start-server stop-server]])
+   [mateuszmazurczak.system]
+   [nrepl.server             :refer [default-handler start-server stop-server]])
   (:gen-class))
 
 
@@ -24,9 +24,10 @@
           symbol
           require))
 
-(defn try-require 
-  [ns] 
-  (try (require-ns ns) ns 
+(defn try-require
+  [ns]
+  (try (require-ns ns)
+       ns
        (catch Exception e
          ;; This is expected to fail for optional dependencies, so we don't log it as error
          nil)))
@@ -68,39 +69,41 @@
   Params:
   * `mdws` List of middlewares"
   [args mdws main-fn]
-  (try 
-    (let [conf (aero.core/read-config "env/development/config.edn")
-          nrepl-port (get-in conf [:dev :clj-nrepl-port])
-          app-name (get conf :app-name)]
-      (spit nrepl-port-filename nrepl-port)
-      ;; For now, start REPL without logger (use println), then get logger after system init
-      (println "-> Starting REPL on port:" nrepl-port)
-      (reset! repl {:nrepl-port nrepl-port
-                    :repl (start-server :port nrepl-port
-                                        :handler (apply default-handler
-                                                        (default-middleware)))})
-      (println "-> REPL started successfully on port:" nrepl-port)
-      (.addShutdownHook
-       (Runtime/getRuntime)
-       (Thread. #(do (println "SHUTDOWN in progress, stopping REPL on port:" nrepl-port)
-                     (shutdown-agents)
-                     (stop-repl)
-                     (println "SHUTDOWN completed successfully"))))
-      (integrant.repl/set-prep! #(ig/expand (:system conf))))
-    (when-not (force-option? args) 
-      (main-fn)
-      ;; After system is initialized, we can use the logger
-      (when-let [logger (:sys/logging state/system)]
-        (log/log! logger
-                  {:id ::repl-system-integration-complete
-                   :msg "REPL and system integration completed"
-                   :data {:port (get-active-nrepl-port)}})))
-    :started
-    (catch Exception e
-      ;; At this point we might not have logger available yet
-      (println "Failed to start REPL, relaunch with -force option. Error:" (.getMessage e))
-      (.printStackTrace e)
-      (throw e))))
+  (try (let [conf (aero.core/read-config "env/development/config.edn")
+             nrepl-port (get-in conf [:dev :clj-nrepl-port])
+             app-name (get conf :app-name)]
+         (spit nrepl-port-filename nrepl-port)
+         ;; For now, start REPL without logger (use println), then get logger after system init
+         (println "-> Starting REPL on port:" nrepl-port)
+         (reset! repl {:nrepl-port nrepl-port
+                       :repl (start-server :port nrepl-port
+                                           :handler (apply
+                                                     default-handler
+                                                     (default-middleware)))})
+         (println "-> REPL started successfully on port:" nrepl-port)
+         (.addShutdownHook
+          (Runtime/getRuntime)
+          (Thread. #(do (println "SHUTDOWN in progress, stopping REPL on port:"
+                                 nrepl-port)
+                        (shutdown-agents)
+                        (stop-repl)
+                        (println "SHUTDOWN completed successfully"))))
+         (integrant.repl/set-prep! #(ig/expand (:system conf))))
+       (when-not (force-option? args)
+         (main-fn)
+         (when-let [logger (:sys/logging state/system)]
+           (log/log! logger
+                     {:id ::repl-system-integration-complete
+                      :level :info
+                      :msg "REPL and system integration completed"
+                      :data {:port (get-active-nrepl-port)}})))
+       :started
+       (catch Exception e
+         ;; At this point we might not have logger available yet
+         (println "Failed to start REPL, relaunch with -force option. Error:"
+                  (.getMessage e))
+         (.printStackTrace e)
+         (throw e))))
 
 
 (defn -main

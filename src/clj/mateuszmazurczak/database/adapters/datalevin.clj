@@ -6,7 +6,8 @@
    [mateuszmazurczak.database.schema     :as schema]
    [mateuszmazurczak.database.utils      :as db-utils]
    [mateuszmazurczak.logging             :as log]
-   [malli.core                           :as m])
+   [malli.core                           :as m]
+   [mateuszmazurczak.logging             :as logging])
   (:import [java.time Instant]))
 
 (defn- build-datalevin-schema
@@ -132,7 +133,7 @@
   "Apply a single migration to Datalevin database using its powerful update-schema capabilities."
   [conn migration logger]
   {:pre [conn 
-         logger
+         (m/validate logging/LoggerSchema logger)
          (m/validate migrations/Migration migration)]}
   (let [{:keys [migration/id migration/up migration/checksum]} migration]
     (try (log/log! logger
@@ -181,7 +182,7 @@
   "Run all pending migrations on Datalevin database."
   [conn pending-migrations logger]
   {:pre [conn 
-         logger
+         (m/validate logging/LoggerSchema logger)
          (coll? pending-migrations)
          (every? #(m/validate migrations/Migration %) pending-migrations)]}
   (when (seq pending-migrations)

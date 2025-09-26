@@ -112,6 +112,5 @@
      [ui-comments/comments-section {:comments nested-comments
                                     :count comments-count
                                     :add-comment-props add-comment-props
-                                    "on-reply" on-reply}]]))
-(comment
-  :clj)
+                                    :on-reply on-reply}]]))
+

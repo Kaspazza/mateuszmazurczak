@@ -26,6 +26,7 @@
     (when-let [logger (get @sys/system :frontend/logging)]
       (log/log! logger 
                 {:id ::hot-reload-complete
+                 :level :info
                  :msg "Hot reload completed successfully"}))
     (catch :default e 
       (when-let [logger (get @sys/system :frontend/logging)]

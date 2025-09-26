@@ -7,21 +7,46 @@
    - Integrant handles configuration and dependency injection
    - Serves as Application Service layer"
   (:require
-   [mateuszmazurczak.database.adapters.datalevin :as adapter]))
+   [mateuszmazurczak.database.adapters.datalevin :as adapter]
+   [mateuszmazurczak.validation                  :as validation]))
 
 ;;DB component API
 (defn start-database
   "Start database connection."
   [config]
-  (adapter/start config))
+  {:pre [(map? config)]}
+  (try (adapter/start config)
+       (catch Exception e
+         (throw (ex-info "Failed to start database"
+                         {:type ::database-start-failed
+                          :config config
+                          :cause e}
+                         e)))))
 
-(defn stop-database "Stop database connection." [conn] (adapter/stop conn))
+(defn stop-database
+  "Stop database connection."
+  [conn]
+  {:pre [conn]}
+  (try (adapter/stop conn)
+       (catch Exception e
+         (throw (ex-info "Failed to stop database"
+                         {:type ::database-stop-failed
+                          :conn conn
+                          :cause e}
+                         e)))))
 
 ;;Migrations API
 (defn run-migrations!
   "Run pending database migrations."
   [conn migrations logger]
-  (adapter/run-migrations! conn migrations logger))
+  {:pre [conn (validation/valid-collection? migrations) logger]}
+  (try (adapter/run-migrations! conn migrations logger)
+       (catch Exception e
+         (throw (ex-info "Failed to run migrations"
+                         {:type ::migrations-failed
+                          :migration-count (count migrations)
+                          :cause e}
+                         e)))))
 
 (defn get-applied-migrations
   "Get list of applied migration IDs."
@@ -37,12 +62,26 @@
 (defn transact!
   "Execute transaction on database."
   [conn tx-data]
-  (adapter/transact! conn tx-data))
+  {:pre [conn (validation/valid-collection? tx-data)]}
+  (try (adapter/transact! conn tx-data)
+       (catch Exception e
+         (throw (ex-info "Failed to execute transaction"
+                         {:type ::transaction-failed
+                          :tx-data tx-data
+                          :cause e}
+                         e)))))
 
 (defn query
   "Execute query on database."
   [conn query & args]
-  (apply adapter/query conn query args))
+  {:pre [conn query]}
+  (try (apply adapter/query conn query args)
+       (catch Exception e
+         (throw (ex-info "Failed to execute query"
+                         {:type ::query-failed
+                          :query query
+                          :args args}
+                         e)))))
 
 (defn find-entity
   "Find entity by id."

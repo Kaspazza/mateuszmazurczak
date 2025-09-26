@@ -9,7 +9,8 @@
    [mateuszmazurczak.database.schema     :as schema]
    [mateuszmazurczak.database.utils      :as db-utils]
    [mateuszmazurczak.logging             :as log]
-   [malli.core                           :as m])
+   [malli.core                           :as m]
+   [mateuszmazurczak.logging             :as logging])
   (:import [java.time Instant]))
 
 (defn- entity-attr->txes
@@ -142,11 +143,12 @@
   "Apply a single migration to Datomic database."
   [conn migration logger]
   {:pre [conn 
-         logger
+         (m/validate logging/LoggerSchema logger)
          (m/validate migrations/Migration migration)]}
   (let [{:keys [migration/id migration/up migration/checksum]} migration]
     (try (log/log! logger
                    {:id ::migration-applying
+                    :level :info
                     :msg (str "Applying migration: " id)})
          ;; Run the migration - Datomic handles schema changes through transactions
          (when-let [schema-changes (up conn logger)]
@@ -174,7 +176,7 @@
   "Run all pending migrations on Datomic database."
   [conn pending-migrations logger]
   {:pre [conn 
-         logger
+         (m/validate logging/LoggerSchema logger)
          (coll? pending-migrations)
          (every? #(m/validate migrations/Migration %) pending-migrations)]}
   (when (seq pending-migrations)

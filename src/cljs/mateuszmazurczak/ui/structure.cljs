@@ -14,10 +14,10 @@
 
 (defn mateuszmazurczak-page-structure
   [& components]
-  [apply
+  (apply
    structure
    {:header [mm-ui-headers/header {:size :full
                                    :sticky? true
                                    :border? true}]
     :footer [mm-ui-footer/footer]}
-   components])
+   components))

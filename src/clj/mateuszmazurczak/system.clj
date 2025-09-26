@@ -1,14 +1,16 @@
 (ns mateuszmazurczak.system
   (:require
-   [integrant.core                            :as ig]
-   [mateuszmazurczak.database                 :as database]
-   [mateuszmazurczak.database.migrations      :as migrations]
-   [mateuszmazurczak.endpoint.router          :as mm-endpoint-router]
-   [mateuszmazurczak.error-tracking.core      :as error-tracking]
-   [mateuszmazurczak.i18n                     :as i18n]
-   [mateuszmazurczak.logging                  :as log]
-   [mateuszmazurczak.logging.telemere         :as t]
-   [mateuszmazurczak.web-server               :as web-server]))
+   [integrant.core                       :as ig]
+   [malli.core                           :as m]
+   [mateuszmazurczak.database            :as database]
+   [mateuszmazurczak.database.migrations :as migrations]
+   [mateuszmazurczak.endpoint.router     :as mm-endpoint-router]
+   [mateuszmazurczak.error-tracking.core :as error-tracking]
+   [mateuszmazurczak.i18n                :as i18n]
+   [mateuszmazurczak.logging             :as log]
+   [mateuszmazurczak.logging.telemere    :as t]
+   [mateuszmazurczak.validation          :as validation]
+   [mateuszmazurczak.web-server          :as web-server]))
 
 (defmethod ig/init-key :sys/error-tracking
   [_
@@ -17,13 +19,16 @@
   (when-not dsn
     (log/log! logger
               {:id ::error-tracking-missing-param
+               :level :warn
                :msg "dsn is missing in init-error-tracking!"}))
   (when-not env
     (log/log! logger
               {:id ::error-tracking-missing-param
+               :level :warn
                :msg "env is missing in init-error-tracking!"}))
   (log/log! logger
             {:id ::error-tracking
+             :level :info
              :msg "Starting error tracking..."})
   (error-tracking/init-error-tracking! {:dsn dsn
                                         :env (name env)}))
@@ -36,6 +41,7 @@
     (log/init! inst {:level level})
     (log/log! inst
               {:id ::log-started
+               :level :info
                :msg "Started log"})
     inst))
 
@@ -43,26 +49,34 @@
   [_
    {:keys [handler logger http-port]
     :as _opts}]
-  (try
-    (log/log! logger
-              {:level :debug
-               :id ::http-server
-               :msg "Started http-server"})
-    (let [server (web-server/start-server handler {:http-port http-port})]
-      (log/log! logger
-                {:id ::http-server-started
-                 :msg (str "Started!!! on http://localhost:" http-port)})
-      server)
+  (try (log/log! logger
+                 {:level :debug
+                  :id ::http-server
+                  :msg "Started http-server"})
+       (let [server (web-server/start-server handler {:http-port http-port})]
+         (log/log! logger
+                   {:id ::http-server-started
+                    :level :info
+                    :msg (str "Started!!! on http://localhost:" http-port)})
+         server)
        (catch Throwable e
-         (ex-info "Unexpected error during web server starting" {:error e}))))
+         (log/error! logger
+                     {:error e
+                      :id ::http-server-start-failed
+                      :data {:http-port http-port}})
+         (throw (ex-info "Failed to start HTTP server"
+                         {:type ::http-server-start-failed
+                          :http-port http-port}
+                         e)))))
 
 (defmethod ig/halt-key! :sys/http-server
   [_ server]
   (try (.stop server)
        (catch Throwable e
-         (ex-info "Unexepected error when closing http-server"
-                  {:error e
-                   :data {:http-server server}}))))
+         (throw (ex-info "Failed to stop HTTP server"
+                         {:type ::http-server-stop-failed
+                          :server server}
+                         e)))))
 
 
 (defmethod ig/init-key :sys/handler
@@ -77,31 +91,37 @@
     :as _opts}]
   (log/log! logger
             {:id ::start-db
+             :level :info
              :msg (str "Starting db..." db-uri)})
   (try (let [conn (database/start-database {:uri db-uri
-                                             :logger logger})]
+                                            :logger logger})]
          ;; Check and run any pending migrations
          (let [applied-migrations (database/get-applied-migrations conn)
                applied-ids (set (map :migration/id applied-migrations))
-               pending-migrations (migrations/get-pending-migrations applied-ids)]
-           
+               pending-migrations (migrations/get-pending-migrations
+                                   applied-ids)]
            ;; Run pending migrations
            (database/run-migrations! conn pending-migrations logger)
-           
            (log/log! logger
                      {:id ::start-db-success
-                      :msg (str "Started db with " (count applied-migrations) " applied migrations!!! " db-uri)})
+                      :level :info
+                      :msg (str "Started db with " (count applied-migrations)
+                                " applied migrations!!! " db-uri)})
            conn))
        (catch Throwable e
          (log/error! logger
                      {:error e
                       :id ::failed-starting-db
                       :data {:uri db-uri}})
-         (ex-info "Unexpected error during database starting" {:error e}))))
+         (throw (ex-info "Failed to start database system"
+                         {:type ::database-system-start-failed
+                          :db-uri db-uri}
+                         e)))))
 
 (defmethod ig/init-key :sys/translator
   [_ {:keys [debug? logger]}]
   (log/log! logger
             {:id ::translator-started
+             :level :info
              :msg (str "Starting translator with debug=" debug?)})
   (i18n/create-translator debug?))

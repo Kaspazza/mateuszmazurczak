@@ -4,7 +4,6 @@
    [mateuszmazurczak.i18n.dict.resources :as mm-i18n-dict-res]
    [mateuszmazurczak.i18n.dict.text      :as mm-i18n-dict-txt]
    [mateuszmazurczak.i18n.tempura        :as i18n-tempura]
-   [mateuszmazurczak.validation          :as validation]
    [taoensso.tempura                     :as tempura]))
 
 (defn create-translator

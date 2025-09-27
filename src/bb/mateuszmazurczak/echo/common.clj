@@ -53,7 +53,7 @@
 (defn exec-cmd-str
   "Returns the string of the execution of a command `cmd-str`"
   [cmd-str]
-  (str "exec on bash: " (str "`" cmd-str "`")))
+  (str "exec on bash: " "`" cmd-str "`"))
 
 (defn pprint-str "Pretty print `data`" [data] (with-out-str (pp/pprint data)))
 

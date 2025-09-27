@@ -6,9 +6,7 @@
    [mateuszmazurczak.echo.cmds    :refer [blocking-cmd]]
    [mateuszmazurczak.echo.headers :refer [build-writter
                                           h1-error
-                                          h1-error!
                                           h1-valid
-                                          h1-valid!
                                           normalln
                                           print-writter]]
    [mateuszmazurczak.tasks.css    :as css]

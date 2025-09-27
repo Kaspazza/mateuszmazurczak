@@ -45,7 +45,7 @@
 
 (defn safe-println [& more] (.write *out* (str (str/join "" more) "\n")))
 
-(defn safe-print [& more] (.write *out* (str (str/join "" more))))
+(defn safe-print [& more] (.write *out* (str/join "" more)))
 
 (defn roundn
   ^double [precision n]

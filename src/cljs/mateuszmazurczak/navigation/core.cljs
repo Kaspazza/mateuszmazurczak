@@ -181,11 +181,11 @@
                         false)))
 
 (rf/reg-event-fx :nav/navigate
-                 (fn [cofx [_ route-name path-params query-params]]
+                 (fn [_cofx [_ route-name path-params query-params]]
                    {::navigate [route-name path-params query-params]}))
 
 (rf/reg-event-fx :nav/change-query-parameters!
-                 (fn [cofx [_ query-params]]
+                 (fn [_cofx [_ query-params]]
                    {::change-query-parameters [query-params]}))
 
 (rf/reg-event-fx :nav/navigate-no-history

@@ -4,7 +4,7 @@
    [clojure.string                :as str]
    [mateuszmazurczak.cli-opts     :as cli-opts]
    [mateuszmazurczak.echo.actions :refer [action errorln exceptionln normalln]]
-   [mateuszmazurczak.echo.cmds    :refer [blocking-cmd long-living-cmd success]]
+   [mateuszmazurczak.echo.cmds    :refer [blocking-cmd long-living-cmd]]
    [mateuszmazurczak.tasks.css    :as css]
    [mateuszmazurczak.tasks.shadow :as shadow]))
 

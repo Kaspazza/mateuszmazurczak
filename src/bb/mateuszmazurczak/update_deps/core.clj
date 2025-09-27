@@ -1,7 +1,6 @@
 (ns mateuszmazurczak.update-deps.core
   "Managing project dependencies versions"
   (:require
-   [clojure.string                        :as str]
    [mateuszmazurczak.update-deps.clj-deps :as build-project-clj]
    [mateuszmazurczak.update-deps.npm-deps :as build-project-npm]))
 

@@ -5,7 +5,6 @@
    [mateuszmazurczak.endpoint.error-page :as error-page]
    [mateuszmazurczak.endpoint.middleware :as mm-middleware]
    [mateuszmazurczak.logging             :as logging]
-   [mateuszmazurczak.validation          :as validation]
    [muuntaja.core                        :as m]
    [reitit.coercion                      :as coercion]
    [reitit.ring                          :as reitit-ring]

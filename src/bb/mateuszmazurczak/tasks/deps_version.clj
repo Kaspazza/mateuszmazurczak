@@ -7,12 +7,9 @@
    [mateuszmazurczak.echo.headers          :refer [clear-prev-line
                                                    h1
                                                    h1-error
-                                                   h1-error!
                                                    h1-valid
-                                                   h1-valid!
                                                    h2
-                                                   h2-valid
-                                                   normalln]]
+                                                   h2-valid]]
    [mateuszmazurczak.echo.text             :as echo-text]
    [mateuszmazurczak.project-config.common :as project-map]
    [mateuszmazurczak.update-deps.core      :as build-dependencies]))

@@ -1,9 +1,6 @@
 (ns mateuszmazurczak.database.migrations
   "Database migrations namespace - defines migration structure and registry."
   (:require
-   [clojure.string :as str]
-   [malli.core     :as m]
-   [malli.error    :as me]
    [mateuszmazurczak.validation :as validation]))
 
 (def migration-schema
@@ -120,18 +117,20 @@
    Validates inputs and ensures registry integrity."
   [applied-migration-ids]
   {:pre [(coll? applied-migration-ids) (every? string? applied-migration-ids)]}
-  (try (validation/validate-data MigrationRegistry migrations "migration registry")
-       (validate-migration-id-chronology migrations)
-       (let [applied-set (set applied-migration-ids)]
-         (remove (fn [migration]
-                   (contains? applied-set (:migration/id migration)))
-                 migrations))
-       (catch Exception e
-         (throw (ex-info "Failed to get pending migrations"
-                         {:type ::get-pending-migrations-error
-                          :cause e
-                          :applied-migration-ids applied-migration-ids}
-                         e)))))
+  (try
+    (validation/validate-data MigrationRegistry migrations "migration registry")
+    (validate-migration-id-chronology migrations)
+    (let [applied-set (set applied-migration-ids)]
+      (remove (fn [migration] (contains? applied-set (:migration/id migration)))
+              migrations))
+    (catch #?(:clj Exception
+              :cljs :default)
+      e
+      (throw (ex-info "Failed to get pending migrations"
+                      {:type ::get-pending-migrations-error
+                       :cause e
+                       :applied-migration-ids applied-migration-ids}
+                      e)))))
 
 (defn validate-migration-integrity
   "Validate that applied migrations match their expected checksums.
@@ -167,7 +166,9 @@
              {:type ::integrity-check-failed
               :mismatches @mismatches
               :total-mismatches (count @mismatches)}))))
-       (catch Exception e
+       (catch #?(:clj Exception
+                 :cljs :default)
+         e
          (if (= (:type (ex-data e)) ::integrity-check-failed)
            (throw e)
            (throw (ex-info "Error during migration integrity validation"
@@ -181,36 +182,39 @@
   "Validate the entire migration registry for structural integrity.
    Throws descriptive errors for any issues found."
   []
-  (try (validation/validate-data MigrationRegistry migrations "migration registry")
-       (validate-migration-id-chronology migrations)
-       (let [ids (map :migration/id migrations)
-             unique-ids (set ids)]
-         (when (not= (count ids) (count unique-ids))
-           (let [duplicates (->> ids
-                                 (frequencies)
-                                 (filter #(> (second %) 1))
-                                 (map first))]
-             (throw (ex-info "Duplicate migration IDs found"
-                             {:type ::duplicate-migration-ids
-                              :duplicates duplicates})))))
-       (let [checksums (map :migration/checksum migrations)
-             unique-checksums (set checksums)]
-         (when (not= (count checksums) (count unique-checksums))
-           (let [duplicate-checksums (->> checksums
-                                          (frequencies)
-                                          (filter #(> (second %) 1))
-                                          (map first))]
-             (throw
-              (ex-info
-               "Duplicate migration checksums found - possible copy-paste error"
-               {:type ::duplicate-migration-checksums
-                :duplicate-checksums duplicate-checksums})))))
-       (catch Exception e
-         (throw (ex-info "Migration registry validation failed"
-                         {:type ::registry-validation-error
-                          :total-migrations (count migrations)
-                          :cause e}
-                         e)))))
+  (try
+    (validation/validate-data MigrationRegistry migrations "migration registry")
+    (validate-migration-id-chronology migrations)
+    (let [ids (map :migration/id migrations)
+          unique-ids (set ids)]
+      (when (not= (count ids) (count unique-ids))
+        (let [duplicates (->> ids
+                              (frequencies)
+                              (filter #(> (second %) 1))
+                              (map first))]
+          (throw (ex-info "Duplicate migration IDs found"
+                          {:type ::duplicate-migration-ids
+                           :duplicates duplicates})))))
+    (let [checksums (map :migration/checksum migrations)
+          unique-checksums (set checksums)]
+      (when (not= (count checksums) (count unique-checksums))
+        (let [duplicate-checksums (->> checksums
+                                       (frequencies)
+                                       (filter #(> (second %) 1))
+                                       (map first))]
+          (throw
+           (ex-info
+            "Duplicate migration checksums found - possible copy-paste error"
+            {:type ::duplicate-migration-checksums
+             :duplicate-checksums duplicate-checksums})))))
+    (catch #?(:clj Exception
+              :cljs :default)
+      e
+      (throw (ex-info "Migration registry validation failed"
+                      {:type ::registry-validation-error
+                       :total-migrations (count migrations)
+                       :cause e}
+                      e)))))
 
 (defn create-migration
   "Create a migration map with required metadata.
@@ -223,7 +227,9 @@
                    :migration/checksum (hash (str up-fn down-fn))}]
     (try (validation/validate-data Migration migration "migration creation")
          migration
-         (catch Exception e
+         (catch #?(:clj Exception
+                   :cljs :default)
+           e
            (throw (ex-info "Failed to create migration"
                            {:type ::create-migration-error
                             :migration-id id

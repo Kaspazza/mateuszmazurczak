@@ -2,9 +2,7 @@
   "Web handlers implementations"
   (:require
    [clojure.string                       :as str]
-   [hiccup2.core                         :as hiccup2]
    [mateuszmazurczak.articles.core       :as articles]
-   [mateuszmazurczak.configuration       :as mm-conf]
    [mateuszmazurczak.endpoint.error-page :as error-page]
    [mateuszmazurczak.endpoint.handler    :as handler-utils]
    [mateuszmazurczak.ui.spinner          :as mm-spinner]
@@ -12,7 +10,7 @@
    [ring.util.http-response              :as http-response]))
 
 (defn article-page
-  [{:keys [tr]
+  [{:keys [tr logger]
     :as http-request}]
   (let [{:keys [path-params path]} (:reitit.core/match http-request)
         article-id (keyword (:article-name path-params))
@@ -20,42 +18,36 @@
          :as article}
         (articles/article article-id)]
     (if (nil? article)
-      (->> (update-in http-request
-                      [:header-elements]
-                      conj
-                      [:script {:type "text/javascript"}
-                       (hiccup2/raw (mm-conf/config-web-reference))])
+      (->> http-request
            error-page/not-found-page
            http-response/not-found
            handler-utils/web-page)
       (-> (handler-utils/build
-           (merge (update-in http-request
-                             [:header-elements]
-                             conj
-                             [:script {:type "text/javascript"}
-                              (hiccup2/raw (mm-conf/config-web-reference))])
-                  {:meta-tags
-                   {:description (cond
-                                   (keyword? description)
-                                   (fallback/always-return #(tr description)
-                                                           (str description))
-                                   (string? description) description
-                                   :else "Just my website hanging in the web")
-                    :image (str "https://mateuszmazurczak.com/"
-                                (cond
-                                  (keyword? img)
-                                  (fallback/always-return #(tr img) (str img))
-                                  (string? img) img
-                                  :else "img/preview/en.png"))
-                    :title (cond
-                             (keyword? img) (fallback/always-return #(tr title)
-                                                                    (str title))
-                             (string? img) img
-                             :else "Mateusz Mazurczak website")
-                    :author (or author "Mateusz Mazurczak")
-                    :url (str/join "/" ["https://mateuszmazurczak.com" path])
-                    :twitter-content (or twitter-content "sumary_large_image")
-                    :type "website"}})
+           (merge
+            http-request
+            {:meta-tags
+             {:description (cond
+                             (keyword? description) (fallback/always-return
+                                                     #(tr description)
+                                                     (str description)
+                                                     logger)
+                             (string? description) description
+                             :else "Just my website hanging in the web")
+              :image (str "https://mateuszmazurczak.com/"
+                          (cond
+                            (keyword? img)
+                            (fallback/always-return #(tr img) (str img) logger)
+                            (string? img) img
+                            :else "img/preview/en.png"))
+              :title (cond
+                       (keyword? img)
+                       (fallback/always-return #(tr title) (str title) logger)
+                       (string? img) img
+                       :else "Mateusz Mazurczak website")
+              :author (or author "Mateusz Mazurczak")
+              :url (str/join "/" ["https://mateuszmazurczak.com" path])
+              :twitter-content (or twitter-content "sumary_large_image")
+              :type "website"}})
            [:div {:id "app"
                   :class ["h-full"]}
             (mm-spinner/spinner)]
@@ -71,17 +63,14 @@
 
   Params:
   * `http-request`"
-  [{:keys [tr]
+  [{:keys [tr logger]
     :as http-request}]
   (-> (handler-utils/build
-       (merge (update-in http-request
-                         [:header-elements]
-                         conj
-                         [:script {:type "text/javascript"}
-                          (hiccup2/raw (mm-conf/config-web-reference))])
+       (merge http-request
               {:meta-tags {:description (fallback/always-return
                                          #(tr :consulting)
-                                         "Software development consulting")
+                                         "Software development consulting"
+                                         logger)
                            ;;TODO add preview
                            #_#_:image
                              (str "https://mateuszmazurczak.com/"

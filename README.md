@@ -1,13 +1,9 @@
 # Mateusz Mazurczak website 
 This is a private project representing www.mateuszmazurczak.com (and .pl) 
 
+## Architecture
+
 ## Set up
-Environment variables needed to properly run the app:
-
-GH_TOKEN - the value of your GitHub login token so the data about repos can be downloaded
-
-STORAGE_DATOMIC_URL - a string with datomic connection URL
-
 Updating system variables in Mac: 
 https://phoenixnap.com/kb/set-environment-variable-mac
 
@@ -20,7 +16,7 @@ Tests: localhost:8081
 Shadow: localhost:9630
 App: localhost:3000
 
-After that you can connect to running repl.
+After that you can connect to running repl (8000).
 
 
 ## General

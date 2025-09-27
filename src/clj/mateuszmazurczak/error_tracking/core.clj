@@ -1,10 +1,32 @@
 (ns mateuszmazurczak.error-tracking.core
   (:require
-   [clojure.pprint  :as pp]
-   [clojure.walk    :as walk]
-   [sentry-clj.core :as sentry])
+   [clojure.pprint              :as pp]
+   [clojure.walk                :as walk]
+   [malli.core                  :as m]
+   [mateuszmazurczak.validation :as validation]
+   [sentry-clj.core             :as sentry])
   (:import [io.sentry Breadcrumb Sentry SentryLevel]
            [java.util Date HashMap Map]))
+
+(def SentryLevelSchema
+  "Valid Sentry log levels"
+  [:enum :debug :info :warning :error :fatal])
+
+(def BreadcrumbData
+  "Schema for breadcrumb data"
+  [:map
+   [:message :any]
+   [:level SentryLevelSchema]
+   [:context {:optional true}
+    :map]])
+
+(def EventData
+  "Schema for Sentry event data"
+  [:map
+   [:message :any]
+   [:level SentryLevelSchema]
+   [:context {:optional true}
+    :map]])
 
 
 (defn map-util-hashmappify-vals
@@ -70,26 +92,29 @@
 (defn send-breadcrumb!
   "Sends breadcrumb, which will not be shown in sentry until event is sent.
    You can read more here: https://docs.sentry.io/platforms/java/enriching-events/breadcrumbs/"
-  [{:keys [message level context]}]
-  (Sentry/addBreadcrumb (map->breadcrumb {:message (seq->string message)
-                                          :level level
-                                          :data context})))
+  [{:keys [message level context]
+    :as breadcrumb-data}]
+  {:pre [(m/validate BreadcrumbData breadcrumb-data)]}
+  (try (Sentry/addBreadcrumb (map->breadcrumb {:message (seq->string message)
+                                               :level level
+                                               :data context}))
+       (catch Exception e
+         (throw (ex-info "Failed to send breadcrumb to Sentry"
+                         {:breadcrumb-data breadcrumb-data}
+                         e)))))
 
 (defn send-event!
   "Sends an event that is registered in sentry."
-  [{:keys [message level context]}]
-  (sentry/send-event {:message (seq->string message)
-                      :level level
-                      :extra context}))
-
-(defn init-sentry!
-  "Initialize sentry for jvm, so events can be recorded.
-   'development' as an environment is ignored, so no event is sent from it."
-  [{:keys [dsn env]}]
-  (if (every? some? [dsn env])
-    (sentry/init! dsn {:environment env})
-    (prn "Sentry initialization is skipped, paremeters are missing")))
-
+  [{:keys [message level context]
+    :as event-data}]
+  {:pre [(m/validate EventData event-data)]}
+  (try (sentry/send-event {:message (seq->string message)
+                           :level level
+                           :extra context})
+       (catch Exception e
+         (throw (ex-info "Failed to send event to Sentry"
+                         {:event-data event-data}
+                         e)))))
 
 (defn- sentry-data
   [ns level & message]
@@ -110,8 +135,15 @@
   (send-event! (apply sentry-data ns level message)))
 
 (defn init-error-tracking!
-  [{:keys [dsn env]}]
-  (when-not dsn (prn "dsn is missing in init-error-tracking!"))
-  (when-not env (prn "env is missing in init-error-tracking!"))
-  (init-sentry! {:dsn dsn
-                 :env env}))
+  "Initialize sentry for jvm, so events can be recorded.
+   'development' as an environment is ignored, so no event is sent from it."
+  [{:keys [dsn env]
+    :as config}]
+  {:pre [(map? config)
+         (validation/valid-non-empty-string? dsn)
+         (validation/valid-non-empty-string? env)]}
+  (try (sentry/init! dsn {:environment env})
+       (catch Exception e
+         (throw (ex-info "Failed to initialize Sentry error tracking"
+                         {:config (dissoc config :dsn)} ; Don't log DSN for security
+                         e)))))

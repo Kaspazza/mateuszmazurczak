@@ -30,4 +30,4 @@
     :hi-mati "Cześć, jestem Mati!"
     :i-like-simplicity "Lubię pisać kod w nawiasach albo pisać o pisaniu kodu."
     :contact-me
-    "Jeśli potrzebujesz konsultacji albo chcesz się podzielić rozkminką śmiało pisz!"}})
+    "Jeśli potrzebujesz konsultacji albo chcesz się podzielić rozkminą pisz śmiało!"}})

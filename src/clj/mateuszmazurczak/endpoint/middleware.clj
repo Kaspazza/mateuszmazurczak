@@ -8,6 +8,7 @@
    [mateuszmazurczak.env                 :as mm-env]
    [mateuszmazurczak.i18n                :as i18n]
    [mateuszmazurczak.i18n.language       :as lang-web]
+   [mateuszmazurczak.logging             :as log]
    [reitit.ring.coercion                 :as rrc]
    [reitit.ring.middleware.muuntaja      :as rrmm]
    [reitit.ring.middleware.parameters    :as rrmp]
@@ -81,16 +82,91 @@
 
 (defn wrap-throw [_handler] (fn [_request] (/ 1 0)))
 
-(defn wrap-exception-handling
-  [handler]
-  (fn [request]
-    (try (handler request)
-         (catch Exception e
-           (prn e)
+(defn wrap-exception-handling*
+  [handler request logger]
+  (try (handler request)
+       (catch Exception e
+         (let [error-data {:request-uri (:uri request)
+                           :request-method (:request-method request)
+                           :request-headers (select-keys
+                                             (:headers request)
+                                             ["host" "user-agent" "referer"])
+                           :error-type (-> e
+                                           ex-data
+                                           :type)
+                           :original-cause (-> e
+                                               ex-data
+                                               :cause)}]
+           (log/error! logger
+                       {:error e
+                        :id ::unhandled-request-exception
+                        :data error-data})
            (->> request
                 error-page/internal-error-page
                 http-response/internal-server-error
                 mm-endpoint-handler/web-page)))))
+
+(defn wrap-exception-handling
+  [logger handler]
+  {:pre [logger (fn? handler)]}
+  (fn [request] (wrap-exception-handling* handler request logger)))
+
+(defn wrap-request-logging
+  "Log incoming requests and responses with route info"
+  [handler logger]
+  (fn [request]
+    (let [start (System/nanoTime)
+          method (-> request
+                     :request-method
+                     name
+                     str/upper-case)
+          uri (:uri request)
+          match (:reitit.core/match request)
+          route-name (some-> match
+                             :data
+                             :name)
+          route-template (some-> match
+                                 :template)]
+      (log/log!
+       logger
+       {:level :debug
+        :id ::incoming-request
+        :msg
+        (str method " " uri (when route-name (str " [" (name route-name) "]")))
+        :data {:method method
+               :uri uri
+               :route-name route-name
+               :route-template route-template
+               :query-params (:query-params request)
+               :path-params (some-> match
+                                    :path-params)
+               :headers (select-keys (:headers request)
+                                     ["host" "user-agent" "referer"])}})
+      (let [response (handler request)
+            elapsed-ms (long (/ (- (System/nanoTime) start) 1e6))
+            status (:status response)
+            level (cond
+                    (>= (long status) 500) :error
+                    (>= (long status) 400) :warn
+                    :else :info)]
+        (log/log! logger
+                  {:level level
+                   :id ::request-completed
+                   :msg (str method
+                             " " uri
+                             " " status
+                             " (" elapsed-ms
+                             "ms)" (when route-name
+                                     (str " [" (name route-name) "]")))
+                   :data {:method method
+                          :uri uri
+                          :status status
+                          :duration-ms elapsed-ms
+                          :route-name route-name
+                          :route-template route-template
+                          :path-params (some-> match
+                                               :path-params)}})
+        response))))
 
 
 (def web-middleware
@@ -120,6 +196,14 @@
      rrmm/format-request-middleware]
     mm-env/env-middlewares)))
 
+(defn params-lang
+  [http-request]
+  (let [param-lang (get-in http-request [:params :lang])]
+    (cond
+      (keyword? param-lang) param-lang
+      (string? param-lang) (keyword (str/lower-case param-lang))
+      :else nil)))
+
 
 (defn language-strategy
   "Parse an http request to decide which language to use.
@@ -131,24 +215,30 @@
   * `web-translator` the translator instance to know the default languages
   * `http-request` request to parse"
   [http-request]
-  (or (get-in http-request [:params :lang])
+  (or (params-lang http-request)
       (cookies-language http-request)
       (accepted-languages http-request)
       (tld-language http-request)
       (first lang-web/main-langs)))
 
 (defn wrap-translation
-  [handler]
+  [handler translator]
   (fn [http-request]
-    (let [lang [(language-strategy http-request)]]
+    (let [lang (language-strategy http-request)]
       (-> http-request
-          (assoc :tr (fn ([tr-id] (i18n/tr lang tr-id))))
+          (assoc :tr (fn ([tr-id] (i18n/tr translator lang tr-id))))
           handler))))
 
-(def global-middlewares
-  "Middleware for the whole app"
+(defn global-middlewares
+  "Middleware for the whole app
+  Params:
+  * `translator` - translator function from the system
+  * `logger` - logger instance from the system"
+  [translator logger]
   [ring-cookies/wrap-cookies ;; It's important to have cookies before translator to allow strategy based on cookie lang
    rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
-   wrap-translation
-   wrap-exception-handling])
+   (fn [handler] (fn [request] (handler (assoc request :logger logger)))) ;; Add logger to request
+   (fn [handler] (wrap-translation handler translator))
+   ;; (fn [handler] (wrap-request-logging handler logger))
+   (partial wrap-exception-handling logger)])

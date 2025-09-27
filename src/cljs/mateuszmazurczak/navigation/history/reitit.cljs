@@ -59,7 +59,7 @@
   [history
    route-name
    {:keys [path-params query-params replace]
-    :as idk}]
+    :as _idk}]
   (reitit-fe-history/navigate history
                               route-name
                               {:replace replace

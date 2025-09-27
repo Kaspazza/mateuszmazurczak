@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.endpoint.router
   "Create web routers"
   (:require
+   [malli.core                           :as malli]
    [mateuszmazurczak.endpoint.error-page :as error-page]
-   [mateuszmazurczak.endpoint.handler    :as mm-handler]
    [mateuszmazurczak.endpoint.middleware :as mm-middleware]
-   [mateuszmazurczak.endpoint.routes     :as mm-endpoint-routes]
+   [mateuszmazurczak.logging             :as logging]
    [muuntaja.core                        :as m]
    [reitit.coercion                      :as coercion]
    [reitit.ring                          :as reitit-ring]
@@ -64,37 +64,38 @@
 
 (defn router
   [web-routes web-middleware]
-  (reitit-ring/router (vector web-routes
-                              [{:compile coercion/compile-request-coercers}])
-                      {:data {:muuntaja m/instance
-                              :middleware web-middleware}}))
-(def ring-handler
+  (reitit-ring/router
+   (vec (concat web-routes [{:compile coercion/compile-request-coercers}]))
+   {:data {:muuntaja m/instance
+           :middleware web-middleware}}))
+(defn ring-handler
   "Ring handler for web pages of mateuszmazurczak app
   Params:
-  * `ring-handler`"
-  (reitit-ring/ring-handler
-   (router mm-endpoint-routes/routes mm-middleware/web-middleware)
-   (reitit-ring/routes (resource-handler {}) (default-handlers nil []))
-   {:middleware mm-middleware/global-middlewares
-    :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
-   }))
+  * `routes` - application routes
+  * `translator` - translator function
+  * `logger` - logger instance"
+  [routes translator logger]
+  {:pre [(vector? routes)
+         (fn? translator)
+         (malli/validate logging/LoggerSchema logger)]}
+  (try (reitit-ring/ring-handler
+        (router routes mm-middleware/web-middleware)
+        (reitit-ring/routes (resource-handler {}) (default-handlers nil []))
+        {:middleware (mm-middleware/global-middlewares translator logger)
+         :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
+        })
+       (catch Exception e
+         (throw (ex-info "Failed to create ring handler" {:routes routes} e)))))
 
 (defn get-app
   "Web application,
   Transform an http request in an http response
   Params:
-  * `http-req`"
-  [http-req]
-  (try (ring-handler http-req)
-       (catch Exception e
-         (prn "ring error" e)
-         (->> http-req
-              error-page/internal-error-page
-              http-response/internal-server-error
-              mm-handler/web-page))
-       (catch Error e
-         (prn "ring error" e)
-         (->> http-req
-              error-page/internal-error-page
-              http-response/internal-server-error
-              mm-handler/web-page))))
+  * `routes` - application routes
+  * `translator` - translator function
+  * `logger` - logger instance"
+  [routes translator logger]
+  {:pre [(vector? routes)
+         (fn? translator)
+         (malli/validate logging/LoggerSchema logger)]}
+  (fn [http-req] ((ring-handler routes translator logger) http-req)))

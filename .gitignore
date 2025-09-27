@@ -53,3 +53,15 @@ containers
 
 #archive file when creating pom.xml, not need to store it
 pom.properties
+
+#dpm https://github.com/filipesilva/datomic-pro-manager?tab=readme-ov-file
+# dpm datomic-pro download
+/datomic-pro
+# dpm sqlite db
+/storage
+# dpm backups
+/backups
+
+.secrets.edn
+AGENTS.md
+/log

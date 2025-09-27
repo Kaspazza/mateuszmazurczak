@@ -4,7 +4,7 @@
    [clojure.string                :as str]
    [mateuszmazurczak.cli-opts     :as cli-opts]
    [mateuszmazurczak.echo.actions :refer [action errorln exceptionln normalln]]
-   [mateuszmazurczak.echo.cmds    :refer [blocking-cmd long-living-cmd success]]
+   [mateuszmazurczak.echo.cmds    :refer [blocking-cmd long-living-cmd]]
    [mateuszmazurczak.tasks.css    :as css]
    [mateuszmazurczak.tasks.shadow :as shadow]))
 
@@ -50,6 +50,23 @@
                            "to know what process to kill."))
              (do (errorln "Unexpected error during execution of REPL: ")
                  (exceptionln e)))))))
+
+(defn start-db
+  "Starts local db"
+  []
+  (try (let [cmd ["dpm" "up"]
+             prefixs ["db"]
+             app-dir ""]
+         (long-living-cmd prefixs
+                          cmd
+                          app-dir
+                          100
+                          verbose
+                          (constantly true)
+                          (constantly true)))
+       (catch Exception e
+         (println "Unexpected error during execution of db start")
+         (println (pr-str e)))))
 
 (defn css-watch
   "Watch the css modificatoin with tailwind."

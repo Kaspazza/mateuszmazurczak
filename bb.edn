@@ -10,6 +10,10 @@
    :enter (common/enter dev-launch/cli-opts (current-task))
    :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
    :task (dev-launch/css-watch)}
+  -dev-launch:db {:doc "Start datomic db"
+                  :enter (common/enter dev-launch/cli-opts (current-task))
+                  :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
+                  :task (dev-launch/start-db)}
   -dev-launch:fe-watch {:doc "Watch the frontend."
                         :enter (common/enter dev-launch/cli-opts (current-task))
                         :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
@@ -18,9 +22,9 @@
   -dev-launch:start-repl
   {:doc "Start the clojure REPL."
    :enter (common/enter dev-launch/cli-opts (current-task))
-   :extra-deps {djblue/portal {:mvn/version "0.58.5"}}
    :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
-   :task (dev-launch/start-repl [:common-test :env-development-repl])}
+   :task (dev-launch/start-repl
+          [:common-test :env-development-repl :1.12-storm])}
   :requires [[mateuszmazurczak.common :as common]]
   article {:depends [-base-deps]
            :doc "Generate HTML from articles"
@@ -52,6 +56,14 @@
               :enter (common/enter dev-launch/cli-opts (current-task))
               :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
               :task (run '-dev-launch {:parallel true})}
+  format {:doc "zprint format"
+          :task (try (-> (babashka.process/shell
+                          "zprint -w **/*.clj **/*.cljs **/*.cljc **/*.edn"
+                          *command-line-args*)
+                         System/exit)
+                     (catch Exception e
+                       (println "Repl failed also - error during repl startup"
+                                (ex-message e))))}
   lconnect {:doc "Repl in case dev-launch is failing"
             :task (try (-> (babashka.process/shell
                             "clojure"
@@ -65,7 +77,7 @@
         :doc "Linting"
         :enter (common/enter lint/cli-opts (current-task))
         :requires [[mateuszmazurczak.tasks.lint :as lint]]
-        :task (lint/lint)}
+        :task (lint/lint ["src" "test"])}
   test {:depends [-base-deps]
         :doc "Quick test"
         :enter (common/enter test/cli-opts (current-task))

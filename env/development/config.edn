@@ -1,15 +1,30 @@
 {:app-name "mateuszmazurczak"
- :dev {:clj-nrepl-port 8000
-       :portal-port 8351}
+ :db {:uri #or [#env DB_URI
+                "./storage/datalevin/dev-db"
+                #_"datomic:sql://app-dev?jdbc:sqlite:./storage/sqlite.db"]}
+ :dev {:clj-nrepl-port 8000}
  :env :development
  :http-server {:port 3000
                :url "http://localhost"}
  :log
- {:sentry
+ {:level :trace
+  :sentry
   {:backend
    {:dsn
-    "https://86167a7f36c16b913cbe0973ba3d30bb@o4508704825147392.ingest.de.sentry.io/4508704830783568"}
-   :frontend
-   {:dsn
-    "https://96e2a27d085619b3c6c38084045e88a9@o4508704825147392.ingest.de.sentry.io/4508704840810576"}}}
- :storage {:datomic {:url "datomic:dev://localhost:4334/mateuszmazurczak-dev"}}}
+    #or
+     [#env SENTRY_BACKEND_DSN
+      "https://86167a7f36c16b913cbe0973ba3d30bb@o4508704825147392.ingest.de.sentry.io/4508704830783568"]}}}
+ :system {:sys/db-conn {:db-uri #ref [:db :uri]
+                        :logger #ig/ref :sys/logging}
+          :sys/error-tracking {:dsn #ref [:log :sentry :backend :dsn]
+                               :env #ref [:env]
+                               :logger #ig/ref :sys/logging}
+          :sys/handler {:logger #ig/ref :sys/logging
+                        :routes #var mateuszmazurczak.endpoint.routes/routes
+                        :translator #ig/ref :sys/translator}
+          :sys/http-server {:handler #ig/ref :sys/handler
+                            :http-port #or [#ref [:http-server :port] 8080]
+                            :logger #ig/ref :sys/logging}
+          :sys/logging {:level #ref [:log :level]}
+          :sys/translator {:debug? true
+                           :logger #ig/ref :sys/logging}}}

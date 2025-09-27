@@ -18,30 +18,29 @@
 
 (defn ^:after-load re-render
   []
-  (try 
-    (.unmount @*root)
-    ;; Restart system on hot reload
-    (sys/restart-system!)
-    (reset! *root (render-id "app" [lm/main-component]))
-    (when-let [logger (get @sys/system :frontend/logging)]
-      (log/log! logger 
-                {:id ::hot-reload-complete
-                 :level :info
-                 :msg "Hot reload completed successfully"}))
-    (catch :default e 
-      (when-let [logger (get @sys/system :frontend/logging)]
-        (log/error! logger 
-                    {:error e
-                     :id ::hot-reload-failed
-                     :data {:stage "hot-reload"}}))
-      (throw e))))
+  (try (.unmount @*root)
+       ;; Restart system on hot reload
+       (sys/restart-system!)
+       (reset! *root (render-id "app" [lm/main-component]))
+       (when-let [logger (get @sys/system :frontend/logging)]
+         (log/log! logger
+                   {:id ::hot-reload-complete
+                    :level :info
+                    :msg "Hot reload completed successfully"}))
+       (catch :default e
+         (when-let [logger (get @sys/system :frontend/logging)]
+           (log/error! logger
+                       {:error e
+                        :id ::hot-reload-failed
+                        :data {:stage "hot-reload"}}))
+         (throw e))))
 
 (defn mount-root
   []
   (try (reset! *root (render-id "app" [lm/main-component]))
-       (catch :default e 
+       (catch :default e
          (when-let [logger (get @sys/system :frontend/logging)]
-           (log/error! logger 
+           (log/error! logger
                        {:error e
                         :id ::mount-error
                         :data {:component "main-component"}}))
@@ -51,9 +50,9 @@
   []
   (try (sys/start-system!)
        (mount-root)
-       (catch :default e 
+       (catch :default e
          (when-let [logger (get @sys/system :frontend/logging)]
-           (log/error! logger 
+           (log/error! logger
                        {:error e
                         :id ::app-init-failed
                         :data {:stage "initialization"}}))

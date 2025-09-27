@@ -93,11 +93,12 @@
       (>= ns 1e3) (str (fmt-num 0 (/ ns 1e3)) "μs")
       :else (str (fmt-num 0 ns) "ns"))))
 
-#?(:clj (defn colorize-level [level s]
-           (case level
-             :error (str "\u001b[31m" s "\u001b[0m")
-             :warn  (str "\u001b[33m" s "\u001b[0m")
-             s))
+#?(:clj (defn colorize-level
+          [level s]
+          (case level
+            :error (str "\u001b[31m" s "\u001b[0m")
+            :warn (str "\u001b[33m" s "\u001b[0m")
+            s))
    :cljs (defn colorize-level [_level s] s))
 
 (defn format:console-minimal
@@ -112,7 +113,9 @@
                     (format-id id)
                     (when-let [msg (force msg_)] (str "| " msg))
                     (when error
-                      (if (string? error) (str "| " error) (str "| \n" (pprint error))))
+                      (if (string? error)
+                        (str "| " error)
+                        (str "| \n" (pprint error))))
                     "\n")]
       (colorize-level level line))))
 

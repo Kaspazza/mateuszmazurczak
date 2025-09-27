@@ -1,6 +1,7 @@
-(ns mateuszmazurczak.database.schema 
+(ns mateuszmazurczak.database.schema
   (:refer-clojure :exclude [comment])
-  (:require [mateuszmazurczak.database.migrations :as migrations]))
+  (:require
+   [mateuszmazurczak.database.migrations :as migrations]))
 
 (def article
   {:article/id

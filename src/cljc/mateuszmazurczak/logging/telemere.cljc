@@ -3,10 +3,9 @@
    [mateuszmazurczak.logging.protocol       :as p]
    [mateuszmazurczak.logging.telemere-utils :as logging-utils]
    [taoensso.telemere                       :as t])
-  #?(:cljs (:require-macros
-            [mateuszmazurczak.logging.telemere
-             :refer
-             [set-min-level! with-min-level!]])))
+  #?(:cljs (:require-macros [mateuszmazurczak.logging.telemere
+                             :refer
+                             [set-min-level! with-min-level!]])))
 
 
 ;;Configuration

@@ -5,11 +5,11 @@
    [datofu.migration                     :as datofu-migration]
    [datofu.schema.dsl                    :as dsl]
    [datomic.api                          :as d]
+   [malli.core                           :as m]
    [mateuszmazurczak.database.migrations :as migrations]
    [mateuszmazurczak.database.schema     :as schema]
    [mateuszmazurczak.database.utils      :as db-utils]
-   [mateuszmazurczak.logging             :as log]
-   [malli.core                           :as m]))
+   [mateuszmazurczak.logging             :as log]))
 
 (defn- entity-attr->txes
   [kw m]
@@ -41,8 +41,7 @@
 
 (defn- connect-db
   [uri]
-  (let [;; Just to make sure db is created
-        _created? (d/create-database uri)
+  (let [_created? (d/create-database uri)
         conn (d/connect uri)
         schema-tx (datofu-all/schema-tx)
         _initial-mig (datofu-migration/install-and-migrate!
@@ -77,28 +76,26 @@
   "Execute transaction on Datomic database."
   [conn tx-data]
   {:pre [conn (coll? tx-data)]}
-  (try
-    @(d/transact conn tx-data)
-    (catch Exception e
-      (throw (ex-info "Transaction failed"
-                      {:type ::transaction-failed
-                       :tx-data tx-data
-                       :cause e}
-                      e)))))
+  (try @(d/transact conn tx-data)
+       (catch Exception e
+         (throw (ex-info "Transaction failed"
+                         {:type ::transaction-failed
+                          :tx-data tx-data
+                          :cause e}
+                         e)))))
 
 (defn query
   "Execute query on Datomic database."
   [conn query & args]
   {:pre [conn query]}
-  (try
-    (apply d/q query (d/db conn) args)
-    (catch Exception e
-      (throw (ex-info "Query failed"
-                      {:type ::query-failed
-                       :query query
-                       :args args
-                       :cause e}
-                      e)))))
+  (try (apply d/q query (d/db conn) args)
+       (catch Exception e
+         (throw (ex-info "Query failed"
+                         {:type ::query-failed
+                          :query query
+                          :args args
+                          :cause e}
+                         e)))))
 
 (defn entity
   "Get entity by id from Datomic database."
@@ -140,7 +137,7 @@
 (defn- apply-migration!
   "Apply a single migration to Datomic database."
   [conn migration logger]
-  {:pre [conn 
+  {:pre [conn
          (m/validate log/LoggerSchema logger)
          (m/validate migrations/Migration migration)]}
   (let [{:keys [migration/id migration/up migration/checksum]} migration]
@@ -173,7 +170,7 @@
 (defn run-migrations!
   "Run all pending migrations on Datomic database."
   [conn pending-migrations logger]
-  {:pre [conn 
+  {:pre [conn
          (m/validate log/LoggerSchema logger)
          (coll? pending-migrations)
          (every? #(m/validate migrations/Migration %) pending-migrations)]}

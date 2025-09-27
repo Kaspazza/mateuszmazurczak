@@ -21,7 +21,7 @@
 
 (defmethod ig/init-key :frontend/router
   [_ {:keys [routes logger]}]
-  (log/log! logger 
+  (log/log! logger
             {:id ::router-started
              :level :info
              :msg "Router started"})
@@ -29,13 +29,11 @@
     (nav/set-router! router)
     router))
 
-(defmethod ig/halt-key! :frontend/router
-  [_ _router]
-  (nav/set-router! nil))
+(defmethod ig/halt-key! :frontend/router [_ _router] (nav/set-router! nil))
 
 (defmethod ig/init-key :frontend/history
   [_ {:keys [router _app-db logger]}]
-  (log/log! logger 
+  (log/log! logger
             {:id ::history-started
              :level :info
              :msg "History started"})
@@ -45,9 +43,7 @@
 
 (defmethod ig/halt-key! :frontend/history
   [_ history]
-  (when history
-    (nav/stop-history! history)
-    (nav/set-history! nil)))
+  (when history (nav/stop-history! history) (nav/set-history! nil)))
 
 (def default-db
   "Default value for front end state"
@@ -68,7 +64,7 @@
 
 (defmethod ig/init-key :frontend/app-db
   [_ {:keys [init-db-event translator logger]}]
-  (log/log! logger 
+  (log/log! logger
             {:id ::app-db-initialized
              :level :info
              :msg "App-db initialized"})
@@ -77,9 +73,7 @@
   ;; Store translator in app-db
   (rf/dispatch-sync [::store-translator translator]))
 
-(defmethod ig/halt-key! :frontend/app-db
-  [_ _]
-  (rf/clear-subscription-cache!))
+(defmethod ig/halt-key! :frontend/app-db [_ _] (rf/clear-subscription-cache!))
 
 (defn- init-sentry!
   "Initialize sentry for react, which is recording react errors that happens inside the components and enables to send events.
@@ -105,16 +99,16 @@
 (defmethod ig/init-key :frontend/error-tracking
   [_ {:keys [dsn traced-website env logger]}]
   (when-not dsn
-    (log/log! logger 
+    (log/log! logger
               {:level :warn
                :id ::error-tracking-missing-dsn
                :msg "dsn is missing in error tracking initialization"}))
   (when-not env
-    (log/log! logger 
+    (log/log! logger
               {:level :warn
                :id ::error-tracking-missing-env
                :msg "env is missing in error tracking initialization"}))
-  (log/log! logger 
+  (log/log! logger
             {:id ::error-tracking-initialized
              :level :info
              :msg "Error tracking initialized"})
@@ -122,15 +116,13 @@
                  :traced-website traced-website
                  :env env}))
 
-(defmethod ig/halt-key! :frontend/error-tracking
-  [_ _]
-  nil)
+(defmethod ig/halt-key! :frontend/error-tracking [_ _] nil)
 
 (defmethod ig/init-key :frontend/logging
   [_ {:keys [level]}]
   (let [logger (t/make-logger {:level level})]
     (log/init! logger {:level level})
-    (log/log! logger 
+    (log/log! logger
               {:id ::frontend-logging-started
                :level :info
                :msg "Frontend logging system initialized"})
@@ -138,22 +130,20 @@
 
 (defmethod ig/halt-key! :frontend/logging
   [_ logger]
-  (log/log! logger 
+  (log/log! logger
             {:id ::frontend-logging-stopped
              :level :info
              :msg "Frontend logging system stopped"}))
 
 (defmethod ig/init-key :frontend/translator
   [_ {:keys [debug? logger]}]
-  (log/log! logger 
+  (log/log! logger
             {:id ::translator-started
              :level :info
              :msg (str "Translator started with debug=" debug?)})
   (mm-i18n/create-translator debug?))
 
-(defmethod ig/halt-key! :frontend/translator
-  [_ _]
-  nil)
+(defmethod ig/halt-key! :frontend/translator [_ _] nil)
 
 (def frontend-config
   {:frontend/logging {:level (if (= "development" conf/ENV) :debug :info)}

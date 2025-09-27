@@ -14,8 +14,7 @@
   Like e.g. it's used in not-found-page for it to be displayed without a problem and inform a user that something is wrong.
   `expr-fn` fails returns `ret-val`
   `logger` (optional) - if provided, the exception will be logged"
-  ([expr-fn ret-val]
-   `(always-return ~expr-fn ~ret-val nil))
+  ([expr-fn ret-val] `(always-return ~expr-fn ~ret-val nil))
   ([expr-fn ret-val logger]
    (let [catch-level# (if (cljs-env? &env)
                         :default

@@ -2,11 +2,11 @@
   "Datalevin adapter implementation for database operations."
   (:require
    [datalevin.core                       :as d]
+   [malli.core                           :as m]
    [mateuszmazurczak.database.migrations :as migrations]
    [mateuszmazurczak.database.schema     :as schema]
    [mateuszmazurczak.database.utils      :as db-utils]
-   [mateuszmazurczak.logging             :as log]
-   [malli.core                           :as m])
+   [mateuszmazurczak.logging             :as log])
   (:import [java.time Instant]))
 
 (defn- build-datalevin-schema
@@ -131,7 +131,7 @@
 (defn- apply-migration!
   "Apply a single migration to Datalevin database using its powerful update-schema capabilities."
   [conn migration logger]
-  {:pre [conn 
+  {:pre [conn
          (m/validate log/LoggerSchema logger)
          (m/validate migrations/Migration migration)]}
   (let [{:keys [migration/id migration/up migration/checksum]} migration]
@@ -180,7 +180,7 @@
 (defn run-migrations!
   "Run all pending migrations on Datalevin database."
   [conn pending-migrations logger]
-  {:pre [conn 
+  {:pre [conn
          (m/validate log/LoggerSchema logger)
          (coll? pending-migrations)
          (every? #(m/validate migrations/Migration %) pending-migrations)]}

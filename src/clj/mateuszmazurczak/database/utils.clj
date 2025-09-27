@@ -9,12 +9,14 @@
   (loop [attempt 1]
     (let [result (try {:success true
                        :value (f)}
-                      (catch Exception e 
+                      (catch Exception e
                         (if (< attempt n)
                           (log/log! logger
                                     {:level :warn
                                      :id ::database-retry-attempt-failed
-                                     :msg (str "Database connection attempt " attempt " failed, retrying...")
+                                     :msg (str "Database connection attempt "
+                                               attempt
+                                               " failed, retrying...")
                                      :data {:attempt attempt
                                             :max-attempts n
                                             :delay-ms delay-ms

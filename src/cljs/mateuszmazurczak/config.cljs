@@ -1,4 +1,4 @@
 (ns mateuszmazurczak.config)
 
-(goog-define ENV "development")
+(goog-define ENV "")
 (goog-define LOG_SENTRY_DNS "")

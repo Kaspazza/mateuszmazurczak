@@ -3,8 +3,8 @@
   (:require
    [mateuszmazurczak.configuration :as conf]))
 
-(def config-path "env/production/config.edn")
+(def config-path "config.edn")
 
-(defn load-config [] (conf/read-config config-path))
+(defn load-config [] (conf/read-config config-path {:env :production}))
 
 (defn system-config [] (:system (load-config)))

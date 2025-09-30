@@ -17,6 +17,10 @@
       (concat cli-opts/help-options cli-opts/verbose-options)
       cli-opts/parse-cli))
 
+(def verbose
+  "Set to true if the cli has been set up to `-v` verbose option."
+  (get-in cli-opts [:options :verbose]))
+
 (defn compile-uber-jar
   "Compile code to jar or uber-jar based on `jar-type`."
   ([class-dir target-jar-path jar-main]
@@ -50,12 +54,15 @@
                             :src "env/production/config.edn"}))
 
 (defn command-print
-  [success-text fail-text cmd-fn]
-  (let [s (build-writter)
-        {:keys [exit]} (binding [*out* s] (cmd-fn))]
-    (if (zero? exit)
-      (h1-valid success-text)
-      (do (h1-error fail-text) (print-writter s) (normalln)))))
+  ([verbose? success-text fail-text cmd-fn]
+   (let [s (build-writter)
+         {:keys [cmd-str exit out]} (binding [*out* s] (cmd-fn))]
+     (if (zero? exit)
+       (h1-valid success-text)
+       (do (h1-error fail-text) (print-writter s) (normalln)))
+     (when verbose? (normalln cmd-str) (normalln out))))
+  ([success-text fail-text cmd-fn]
+   (command-print false success-text fail-text cmd-fn)))
 
 (defn production-css
   []
@@ -67,7 +74,7 @@
                       "."
                       "css generation has failed"
                       false)
-       (command-print "Generated css" "Generating css failed")))
+       (command-print verbose "Generated css" "Generating css failed")))
 
 (defn npm-install
   []
@@ -77,17 +84,16 @@
                       "."
                       "Npm install has failed"
                       false)
-       (command-print "NPM installed" "NPM install failed")))
+       (command-print verbose "NPM installed" "NPM install failed")))
 
 (defn production-cljs
-  []
+  [verbose]
   (normalln "Generating js...")
   (->> #(blocking-cmd ["shadow-cljs"]
                       (shadow/cljs-compile-release-cmd :mateuszmazurczak-app)
                       "."
-                      "js generation has failed"
-                      false)
-       (command-print "Generated js" "Generating js failed")))
+                      "js generation has failed")
+       (command-print verbose "Generated js" "Generating js failed")))
 
 (defn build-uber-jar
   []
@@ -103,5 +109,10 @@
       (do (h1-error "Jar compilation failed.")
           (pprint/pprint (:exception res))))))
 
-(defn run [] (npm-install) (production-css) (production-cljs) (build-uber-jar))
+(defn run
+  []
+  (npm-install)
+  (production-css)
+  (production-cljs verbose)
+  (build-uber-jar))
 

@@ -65,3 +65,4 @@ pom.properties
 .secrets.edn
 AGENTS.md
 /log
+docker/db

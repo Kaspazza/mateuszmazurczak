@@ -1,12 +1,11 @@
 {:app-name "mateuszmazurczak"
- :db {;; :uri #or [#env DB_URI
-      ;;           "datomic:sql://app-prod?jdbc:sqlite:./storage/sqlite.db"]
-      :uri #or [#env DB_URI "/app/data/db"]}
+ :db {:uri #or [#env DB_URI #secrets [:db :uri]]}
  :env :production
  :http-server {:port #or [#env PORT 8080]
                :url "https://mateuszmazurczak.com"}
  :log {:level :info
-       :sentry {:backend {:dsn #env SENTRY_BACKEND_DSN}}}
+       :sentry {:backend {:dsn #or [#env SENTRY_BACKEND_DSN #secrets [:sentry :backend :dsn]]}
+                :frontend {:dsn #or [#env SENTRY_FRONTEND_DSN #secrets [:sentry :frontend :dsn]]}}}
  :system {:sys/db-conn {:db-uri #ref [:db :uri]
                         :logger #ig/ref :sys/logging}
           :sys/error-tracking {:dsn #ref [:log :sentry :backend :dsn]

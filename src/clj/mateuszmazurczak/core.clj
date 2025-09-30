@@ -18,6 +18,7 @@
          (logging/log!
           logger
           {:id ::application-started
+           :level :info
            :msg (str "Application started successfully with environment: "
                      (:env full-config))
            :data {:env (:env full-config)}})

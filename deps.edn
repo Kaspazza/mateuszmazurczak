@@ -1,17 +1,17 @@
 {:aliases
- {:antq {:deps {com.github.liquidz/antq {:mvn/version "2.11.1264"}}
+ {:antq {:deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}}
          :main-opts ["-m" "antq.core"]}
   :cljs-deps {:extra-deps {lambdaisland/uri #:mvn{:version "1.19.155"}
                            re-frame/re-frame #:mvn{:version "1.4.3"}
                            reagent/reagent #:mvn{:version "1.3.0"}
-                           thheller/shadow-cljs #:mvn{:version "2.28.20"}}
+                           thheller/shadow-cljs #:mvn{:version "3.2.1"}}
               :extra-paths ["src/cljs" "src/cljc" "resources"]}
   :cljs-dev-deps {:extra-deps
                   {binaryage/devtools #:mvn{:version "1.0.7"}
                    day8.re-frame/http-fx #:mvn{:version "0.2.4"}
-                   day8.re-frame/re-frame-10x #:mvn{:version "1.9.10"}
+                   day8.re-frame/re-frame-10x #:mvn{:version "1.10.1"}
                    day8.re-frame/tracing #:mvn{:version "0.6.2"}
-                   no.cjohansen/portfolio #:mvn{:version "2025.01.28"}}
+                   no.cjohansen/portfolio #:mvn{:version "2025.10.1"}}
                   :extra-paths ["test/cljs"
                                 "test/cljc"
                                 "test/resources"
@@ -23,7 +23,7 @@
                               "https://github.com/cognitect-labs/test-runner"
                               :sha "3f288f1f16d167723ad87cc35b1dfee3c1681e10"}
                              org.clojure/tools.namespace #:mvn{:version "1.5.0"}
-                             org.clojure/tools.reader #:mvn{:version "1.5.0"}}
+                             org.clojure/tools.reader #:mvn{:version "1.5.2"}}
                 :extra-paths ["test/clj" "test/cljc" "test/resources"]
                 :jvm-opts ["-Dconf-var=env/test/config.edn"]
                 :main-opts ["-m"
@@ -35,11 +35,11 @@
                             "-d"
                             "test/cljc"]}
   :env-development-repl
-  {:extra-deps {cider/cider-nrepl {:mvn/version "0.55.7"}
-                integrant/repl {:mvn/version "0.4.0"}
-                nrepl/nrepl {:mvn/version "1.3.1"}
+  {:extra-deps {cider/cider-nrepl {:mvn/version "0.57.0"}
+                integrant/repl {:mvn/version "0.5.0"}
+                nrepl/nrepl {:mvn/version "1.4.0"}
                 refactor-nrepl/refactor-nrepl #:mvn{:version "3.11.0"}
-                ring/ring-devel {:mvn/version "1.13.0"}}
+                ring/ring-devel {:mvn/version "1.15.3"}}
    :extra-paths ["env/development/resources"
                  "env/development/src/clj"
                  "env/development/src/cljc"]
@@ -52,24 +52,24 @@
                         "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"]}}
  :deps {aero/aero {:mvn/version "1.1.6"}
         amalloy/ring-gzip-middleware {:mvn/version "0.1.4"}
-        com.datomic/peer {:mvn/version "1.0.7364"}
+        com.datomic/peer {:mvn/version "1.0.7394"}
         com.taoensso/telemere {:mvn/version "1.1.0"}
         com.taoensso/telemere-slf4j {:mvn/version "1.1.0"}
         com.taoensso/tempura {:mvn/version "1.5.4"}
         com.taoensso/truss {:mvn/version "2.2.0"}
         datalevin/datalevin {:mvn/version "0.9.22"}
         hiccup/hiccup {:mvn/version "2.0.0"}
-        http-kit/http-kit {:mvn/version "2.8.0"}
-        integrant/integrant {:mvn/version "1.0.0-RC2"}
+        http-kit/http-kit {:mvn/version "2.8.1"}
+        integrant/integrant {:mvn/version "1.0.0"}
         io.sentry/sentry {:mvn/version "7.18.0"}
         io.sentry/sentry-clj {:mvn/version "7.16.219"}
         metosin/malli {:mvn/version "0.19.1"}
-        metosin/reitit {:mvn/version "0.7.2"}
-        metosin/reitit-frontend {:mvn/version "0.7.2"}
+        metosin/reitit {:mvn/version "0.9.1"}
+        metosin/reitit-frontend {:mvn/version "0.9.1"}
         metosin/ring-http-response {:mvn/version "0.9.5"}
-        org.xerial/sqlite-jdbc {:mvn/version "3.49.1.0"}
+        org.xerial/sqlite-jdbc {:mvn/version "3.50.3.0"}
         ring-cors/ring-cors {:mvn/version "0.1.13"}
-        ring/ring {:mvn/version "1.13.0"}
+        ring/ring {:mvn/version "1.15.3"}
         ring/ring-anti-forgery {:mvn/version "1.4.0"}
         ring/ring-ssl {:mvn/version "0.4.0"}
         vvvvalvalval/datofu {:mvn/version "0.1.1"}}

@@ -2,7 +2,7 @@
  :paths ["src/bb" "resources"]
  :tasks
  {-base-deps {:doc "Dependencies for a task using bb"
-              :extra-deps {org.clojure/tools.cli {:mvn/version "1.1.230"}}}
+              :extra-deps {org.clojure/tools.cli {:mvn/version "1.2.245"}}}
   -dev-launch
   {:depends [-dev-launch:css-watch -dev-launch:fe-watch -dev-launch:start-repl]}
   -dev-launch:css-watch
@@ -30,7 +30,7 @@
            :doc "Generate HTML from articles"
            :enter (common/enter lint/cli-opts (current-task))
            :extra-deps {hiccup/hiccup {:mvn/version "2.0.0"}
-                        io.github.nextjournal/markdown {:mvn/version "0.7.186"}}
+                        io.github.nextjournal/markdown {:mvn/version "0.7.189"}}
            :requires [[mateuszmazurczak.tasks.article :as article]]
            :task (article/run)}
   build-jar {:depends [-base-deps clean]

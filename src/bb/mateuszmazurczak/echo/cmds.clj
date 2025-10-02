@@ -70,13 +70,15 @@
 
   Print the command `cmd` if verbose is `true`, and execute `cmd` in directory `dir`.
   The `prefixs` are added, the `err-message` also if an error occur."
-  [prefixs cmd dir err-message verbose?]
-  (let [dir (cmds/defaulting-dir dir)
-        cmd-str (cmds/to-str cmd)]
-    (when verbose? (print-exec-cmd-str prefixs cmd-str dir))
-    (let [res (cmds/blocking-cmd-str cmd-str dir)]
-      (print-errors-if-cmd-failed prefixs res err-message)
-      res)))
+  ([prefixs cmd dir err-message]
+   (blocking-cmd prefixs cmd dir err-message false))
+  ([prefixs cmd dir err-message verbose?]
+   (let [dir (cmds/defaulting-dir dir)
+         cmd-str (cmds/to-str cmd)]
+     (when verbose? (print-exec-cmd-str prefixs cmd-str dir))
+     (let [res (cmds/blocking-cmd-str cmd-str dir)]
+       (print-errors-if-cmd-failed prefixs res err-message)
+       res))))
 
 (defn long-living-cmd
   "Execute and print command `cmd` that is a long living one. So all outputs will be displayed with `prefixs.`

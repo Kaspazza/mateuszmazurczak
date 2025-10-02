@@ -5,6 +5,6 @@
 
 (def config-path "env/la/config.edn")
 
-(defn load-config [] (conf/read-config config-path))
+(defn load-config [] (conf/read-config config-path {:env :la}))
 
 (defn system-config [] (:system (load-config)))

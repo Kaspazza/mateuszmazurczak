@@ -4,5 +4,5 @@
   :description
   "This article aims to provide a general, shallow understanding of how client requests reach your application and what occurs during that process."
   :img "article/img/Big%20picture%201bb0109e113180bf89cfdd873a04069f/image.png"
-  :tags [] ;; TODO add tags
+  :tags [] ;; TODO add tags - to think about may be not needed with a good content based search
   :content-md "routing_big_picture.md"}]

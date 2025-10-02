@@ -54,8 +54,48 @@
   dev-launch {:depends [-base-deps]
               :doc "Launch dev environment toolings."
               :enter (common/enter dev-launch/cli-opts (current-task))
+              :extra-deps {}
               :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
               :task (run '-dev-launch {:parallel true})}
+  docker-build
+  {:depends [-base-deps]
+   :doc "Build Docker image (requires version: bb docker-build <version>)"
+   :enter (common/enter-with-arguments docker/cli-opts
+                                       (current-task)
+                                       docker/arguments-validation)
+   :extra-deps {}
+   :requires [[mateuszmazurczak.tasks.docker :as docker]]
+   :task (docker/run "build")}
+  docker-build-push
+  {:depends [-base-deps]
+   :doc
+   "Build and push Docker image (requires version: bb docker-build-push <version>)"
+   :enter (common/enter-with-arguments docker/cli-opts
+                                       (current-task)
+                                       docker/arguments-validation)
+   :extra-deps {}
+   :requires [[mateuszmazurczak.tasks.docker :as docker]]
+   :task (docker/run "build-push")}
+  docker-push
+  {:depends [-base-deps]
+   :doc
+   "Push Docker image to registry (requires version: bb docker-push <version>)"
+   :enter (common/enter-with-arguments docker/cli-opts
+                                       (current-task)
+                                       docker/arguments-validation)
+   :extra-deps {}
+   :requires [[mateuszmazurczak.tasks.docker :as docker]]
+   :task (docker/run "push")}
+  docker-run
+  {:depends [-base-deps]
+   :doc
+   "Run Docker image locally with --rm (requires version: bb docker-run <version>)"
+   :enter (common/enter-with-arguments docker/cli-opts
+                                       (current-task)
+                                       docker/arguments-validation)
+   :extra-deps {}
+   :requires [[mateuszmazurczak.tasks.docker :as docker]]
+   :task (docker/run "run")}
   format {:doc "zprint format"
           :task (try (-> (babashka.process/shell
                           "zprint -w **/*.clj **/*.cljs **/*.cljc **/*.edn"

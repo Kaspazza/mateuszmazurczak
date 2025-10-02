@@ -1,7 +1,5 @@
 {:app-name "mateuszmazurczak"
- :db {:uri #or [#env DB_URI
-                "./storage/datalevin/dev-db"
-                #_"datomic:sql://app-dev?jdbc:sqlite:./storage/sqlite.db"]}
+ :db {:uri #or [#env DB_URI #secrets [:db :uri]]}
  :dev {:clj-nrepl-port 8000}
  :env :development
  :http-server {:port 3000
@@ -9,11 +7,8 @@
  :log
  {:level :trace
   :sentry
-  {:backend
-   {:dsn
-    #or
-     [#env SENTRY_BACKEND_DSN
-      "https://86167a7f36c16b913cbe0973ba3d30bb@o4508704825147392.ingest.de.sentry.io/4508704830783568"]}}}
+  {:backend {:dsn #or [#env SENTRY_BACKEND_DSN #secrets [:sentry :backend :dsn]]}
+   :frontend {:dsn #or [#env SENTRY_FRONTEND_DSN #secrets [:sentry :frontend :dsn]]}}}
  :system {:sys/db-conn {:db-uri #ref [:db :uri]
                         :logger #ig/ref :sys/logging}
           :sys/error-tracking {:dsn #ref [:log :sentry :backend :dsn]

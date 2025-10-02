@@ -42,10 +42,30 @@
   [builds]
   (reduce conj ["npx" "shadow-cljs" "compile"] builds))
 
+(defn resolve-frontend-config
+  "Resolve frontend config using the same Aero system as backend"
+  [env-profile]
+  (let [config-path ".secrets.edn"
+        config (:edn (file/read-edn config-path))
+        sentry-dsn (get-in config [env-profile :sentry :frontend :dsn])]
+    {:closure-defines {'mateuszmazurczak.config/ENV (name env-profile)
+                       'mateuszmazurczak.config/LOG_SENTRY_DNS (or sentry-dsn
+                                                                   "")}}))
+
+(defn production-config-merge
+  "Generate config-merge string for production builds"
+  []
+  (pr-str (resolve-frontend-config :production)))
+
 (defn cljs-compile-release-cmd
-  "Command to compile the `builds` (vector of strings)."
+  "Command to compile the `builds` (vector of strings) with production config."
   [build]
-  ["npx" "shadow-cljs" "release" build])
+  ["npx"
+   "shadow-cljs"
+   "release"
+   build
+   "--config-merge"
+   (str "'" (production-config-merge) "'")])
 
 (defn karma-test-cmd
   "Returns a command to launch karma test."

@@ -3,7 +3,8 @@
   (:require
    [malli.core                              :as m]
    [mateuszmazurczak.logging.protocol       :as p]
-   [mateuszmazurczak.logging.telemere-utils :as logging-utils]))
+   [mateuszmazurczak.logging.telemere-utils :as logging-utils]
+   [mateuszmazurczak.validation             :as validation]))
 
 (def LoggerSchema
   "Schema for logger objects - validates that it implements the protocol"
@@ -28,13 +29,22 @@
 (defn log!
   "Record system health and debugging info"
   [logger opts]
-  {:pre [(m/validate LoggerSchema logger) (m/validate log!-opts opts)]}
-  (try (p/-log! logger opts)
+  (try (validation/validate-data LoggerSchema logger "Logger inst")
+       (validation/validate-data log!-opts opts "logging opts")
+       (p/-log! logger opts)
        nil
        (catch #?(:clj Exception
                  :cljs :default)
          e
-         (throw (ex-info "Failed to log message" {:opts opts} e)))))
+         (try (p/-error! logger
+                         {:error e
+                          :msg "failed while logging"})
+              (catch #?(:clj Exception
+                        :cljs :default)
+                _
+                (prn (str "Failed while logging, opts: " (pr-str opts)
+                          " logger:" logger)
+                     (pr-str e)))))))
 
 (defn event!
   "Record business or operational events"

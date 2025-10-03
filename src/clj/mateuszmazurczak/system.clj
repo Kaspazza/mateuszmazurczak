@@ -10,6 +10,21 @@
    [mateuszmazurczak.logging.telemere    :as t]
    [mateuszmazurczak.web-server          :as web-server]))
 
+(defmethod ig/init-key :logging.adapter/telemere
+  [_ opts]
+  (t/make-logger {:level (:level opts)}))
+
+(defmethod ig/init-key :sys/logging
+  [_
+   {:keys [level adapter]
+    :as _opts}]
+  (log/init! adapter {:level level})
+  (log/log! adapter
+            {:id ::log-started
+             :level :info
+             :msg "Started log"})
+  adapter)
+
 (defmethod ig/init-key :sys/error-tracking
   [_
    {:keys [dsn env logger]
@@ -30,18 +45,6 @@
              :msg "Starting error tracking..."})
   (error-tracking/init-error-tracking! {:dsn dsn
                                         :env (name env)}))
-
-(defmethod ig/init-key :sys/logging
-  [_
-   {:keys [level]
-    :as _opts}]
-  (let [inst (t/make-logger {:level level})]
-    (log/init! inst {:level level})
-    (log/log! inst
-              {:id ::log-started
-               :level :info
-               :msg "Started log"})
-    inst))
 
 (defmethod ig/init-key :sys/http-server
   [_

@@ -4,9 +4,12 @@
  :http-server {:port #or [#env PORT 8080]
                :url "https://mateuszmazurczak.com"}
  :log {:level :info
-       :sentry {:backend {:dsn #or [#env SENTRY_BACKEND_DSN #secrets [:sentry :backend :dsn]]}
-                :frontend {:dsn #or [#env SENTRY_FRONTEND_DSN #secrets [:sentry :frontend :dsn]]}}}
- :system {:sys/db-conn {:db-uri #ref [:db :uri]
+       :sentry {:backend {:dsn #or [#env SENTRY_BACKEND_DSN
+                                    #secrets [:sentry :backend :dsn]]}
+                :frontend {:dsn #or [#env SENTRY_FRONTEND_DSN
+                                     #secrets [:sentry :frontend :dsn]]}}}
+ :system {:logging.adapter/telemere {:level #ref [:log :level]}
+          :sys/db-conn {:db-uri #ref [:db :uri]
                         :logger #ig/ref :sys/logging}
           :sys/error-tracking {:dsn #ref [:log :sentry :backend :dsn]
                                :env #ref [:env]
@@ -17,6 +20,7 @@
           :sys/http-server {:handler #ig/ref :sys/handler
                             :http-port #ref [:http-server :port]
                             :logger #ig/ref :sys/logging}
-          :sys/logging {:level #ref [:log :level]}
+          :sys/logging {:adapter #ig/ref :logging.adapter/telemere
+                        :level #ref [:log :level]}
           :sys/translator {:debug? false
                            :logger #ig/ref :sys/logging}}}

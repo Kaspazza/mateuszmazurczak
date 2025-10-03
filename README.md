@@ -214,9 +214,9 @@ Current state of code contains:
 - Frontend logic and data manged with reagent/re-frame
 - Portfolio setup for frontend development
 - User error monitoring (with sentry)
+- Logs
 
 TODO as features:
-- Logs  (directly in the app like telmere, sentry, connecting to things like google logs etc.)
 - Chat to speak to - so instead of saying contact me at *this-email*, just open chat option that sends email or smth
 - Realtime module with information that the page has been updated, so user can click and hard-refresh
 - UI theme

@@ -1,14 +1,10 @@
 (ns mateuszmazurczak.frontend-system
   "Frontend Integrant system configuration"
   (:require
-   ["@sentry/react"                           :as Sentry]
-   ["react-router-dom"                        :refer (useLocation
-                                                      useNavigationType
-                                                      createRoutesFromChildren
-                                                      matchRoutes)]
    [day8.re-frame.tracing                     :refer [fn-traced]]
    [integrant.core                            :as ig]
    [mateuszmazurczak.config                   :as conf]
+   [mateuszmazurczak.error-tracking           :as error-tracking]
    [mateuszmazurczak.i18n.adapters.tempura    :as i18n-tempura]
    [mateuszmazurczak.i18n.dict.resources      :as mm-i18n-dict-res]
    [mateuszmazurczak.i18n.dict.text           :as mm-i18n-dict-txt]
@@ -18,8 +14,7 @@
    [mateuszmazurczak.navigation.core          :as nav]
    [mateuszmazurczak.navigation.router.reitit :as router-reitit]
    [mateuszmazurczak.navigation.routes        :as mm-fe-routes]
-   [re-frame.core                             :as rf]
-   [react                                     :as react]))
+   [re-frame.core                             :as rf]))
 
 (defmethod ig/init-key :frontend/router
   [_ {:keys [routes logger]}]
@@ -77,27 +72,6 @@
 
 (defmethod ig/halt-key! :frontend/app-db [_ _] (rf/clear-subscription-cache!))
 
-(defn- init-sentry!
-  "Initialize sentry for react, which is recording react errors that happens inside the components and enables to send events.
-  'development' as an environment is ignored, so no event is sent from it."
-  [{:keys [dsn traced-website env]}]
-  (.init Sentry
-         #js {:dsn dsn
-              :environment env
-              :integrations #js [(.reactRouterV6BrowserTracingIntegration
-                                  Sentry
-                                  #js {:useEffect react/useEffect
-                                       :useLocation useLocation
-                                       :useNavigationType useNavigationType
-                                       :createRoutesFromChildren
-                                       createRoutesFromChildren
-                                       :matchRoutes matchRoutes})
-                                 (.replayIntegration Sentry)]
-              :replaysSessionSampleRate 0
-              :replaysOnErrorSampleRate 0
-              :tracesSampleRate 1.0
-              :tracePropagationTargets #js ["localhost" traced-website]}))
-
 (defmethod ig/init-key :frontend/error-tracking
   [_ {:keys [dsn traced-website env logger]}]
   (when-not dsn
@@ -114,9 +88,9 @@
             {:id ::error-tracking-initialized
              :level :info
              :msg "Error tracking initialized"})
-  (init-sentry! {:dsn dsn
-                 :traced-website traced-website
-                 :env env}))
+  (error-tracking/init! {:dsn dsn
+                         :traced-website traced-website
+                         :env env}))
 
 (defmethod ig/halt-key! :frontend/error-tracking [_ _] nil)
 
@@ -157,7 +131,8 @@
 (defmethod ig/halt-key! :frontend/translator [_ _] nil)
 
 (def frontend-config
-  {:logging.adapter/telemere {:level (if (= "development" conf/ENV) :debug :info)}
+  {:logging.adapter/telemere {:level
+                              (if (= "development" conf/ENV) :debug :info)}
    :frontend/logging {:level (if (= "development" conf/ENV) :debug :info)
                       :adapter (ig/ref :logging.adapter/telemere)}
    :frontend/error-tracking {:dsn conf/LOG_SENTRY_DNS

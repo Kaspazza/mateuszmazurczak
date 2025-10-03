@@ -6,7 +6,9 @@
 
 (def TranslatorSchema
   "Schema for translator objects - validates that it implements the protocol"
-  [:fn (fn [translator] (and (some? translator) (satisfies? p/Translator translator)))])
+  [:fn
+   (fn [translator]
+     (and (some? translator) (satisfies? p/Translator translator)))])
 
 (defn tr
   "Translate a key to text in the given language.
@@ -18,7 +20,6 @@
   
   Returns: translated string"
   [translator language id]
-  {:pre
-   [(or (keyword? language) (vector? language)) (keyword? id)]}
+  {:pre [(or (keyword? language) (vector? language)) (keyword? id)]}
   (validation/validate-data TranslatorSchema translator "Translator inst")
   (p/-translate translator language id))

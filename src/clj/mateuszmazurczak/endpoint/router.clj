@@ -4,6 +4,7 @@
    [malli.core                           :as malli]
    [mateuszmazurczak.endpoint.error-page :as error-page]
    [mateuszmazurczak.endpoint.middleware :as mm-middleware]
+   [mateuszmazurczak.i18n                :as i18n]
    [mateuszmazurczak.logging             :as logging]
    [muuntaja.core                        :as m]
    [reitit.coercion                      :as coercion]
@@ -72,11 +73,11 @@
   "Ring handler for web pages of mateuszmazurczak app
   Params:
   * `routes` - application routes
-  * `translator` - translator function
+  * `translator` - translator instance
   * `logger` - logger instance"
   [routes translator logger]
   {:pre [(vector? routes)
-         (fn? translator)
+         (malli/validate i18n/TranslatorSchema translator)
          (malli/validate logging/LoggerSchema logger)]}
   (try (reitit-ring/ring-handler
         (router routes mm-middleware/web-middleware)
@@ -92,10 +93,10 @@
   Transform an http request in an http response
   Params:
   * `routes` - application routes
-  * `translator` - translator function
+  * `translator` - translator instance
   * `logger` - logger instance"
   [routes translator logger]
   {:pre [(vector? routes)
-         (fn? translator)
+         (malli/validate i18n/TranslatorSchema translator)
          (malli/validate logging/LoggerSchema logger)]}
   (fn [http-req] ((ring-handler routes translator logger) http-req)))

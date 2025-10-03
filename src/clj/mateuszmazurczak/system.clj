@@ -1,18 +1,26 @@
 (ns mateuszmazurczak.system
   (:require
-   [integrant.core                       :as ig]
-   [mateuszmazurczak.database            :as database]
-   [mateuszmazurczak.database.migrations :as migrations]
-   [mateuszmazurczak.endpoint.router     :as mm-endpoint-router]
-   [mateuszmazurczak.error-tracking.core :as error-tracking]
-   [mateuszmazurczak.i18n                :as i18n]
-   [mateuszmazurczak.logging             :as log]
-   [mateuszmazurczak.logging.telemere    :as t]
-   [mateuszmazurczak.web-server          :as web-server]))
+   [integrant.core                         :as ig]
+   [mateuszmazurczak.database              :as database]
+   [mateuszmazurczak.database.migrations   :as migrations]
+   [mateuszmazurczak.endpoint.router       :as mm-endpoint-router]
+   [mateuszmazurczak.error-tracking.core   :as error-tracking]
+   [mateuszmazurczak.i18n.adapters.tempura :as i18n-tempura]
+   [mateuszmazurczak.i18n.dict.resources   :as mm-i18n-dict-res]
+   [mateuszmazurczak.i18n.dict.text        :as mm-i18n-dict-txt]
+   [mateuszmazurczak.logging               :as log]
+   [mateuszmazurczak.logging.telemere      :as t]
+   [mateuszmazurczak.web-server            :as web-server]))
 
 (defmethod ig/init-key :logging.adapter/telemere
   [_ opts]
   (t/make-logger {:level (:level opts)}))
+
+(defmethod ig/init-key :i18n.adapter/tempura
+  [_ {:keys [debug?]}]
+  (i18n-tempura/make-translator debug?
+                                mm-i18n-dict-txt/dict
+                                mm-i18n-dict-res/dict))
 
 (defmethod ig/init-key :sys/logging
   [_
@@ -23,6 +31,14 @@
             {:id ::log-started
              :level :info
              :msg "Started log"})
+  adapter)
+
+(defmethod ig/init-key :sys/translator
+  [_ {:keys [adapter logger]}]
+  (log/log! logger
+            {:id ::translator-started
+             :level :info
+             :msg "Translator started"})
   adapter)
 
 (defmethod ig/init-key :sys/error-tracking
@@ -116,10 +132,4 @@
                           :db-uri db-uri}
                          e)))))
 
-(defmethod ig/init-key :sys/translator
-  [_ {:keys [debug? logger]}]
-  (log/log! logger
-            {:id ::translator-started
-             :level :info
-             :msg (str "Starting translator with debug=" debug?)})
-  (i18n/create-translator debug?))
+

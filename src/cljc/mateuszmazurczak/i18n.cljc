@@ -1,41 +1,24 @@
 (ns mateuszmazurczak.i18n
   "I18n port - public API for translation functionality"
   (:require
-   [mateuszmazurczak.i18n.dict.resources :as mm-i18n-dict-res]
-   [mateuszmazurczak.i18n.dict.text      :as mm-i18n-dict-txt]
-   [mateuszmazurczak.i18n.tempura        :as i18n-tempura]
-   [taoensso.tempura                     :as tempura]))
+   [mateuszmazurczak.i18n.protocol :as p]
+   [mateuszmazurczak.validation    :as validation]))
 
-(defn create-translator
-  "Creates a translator function configured for the environment.
-  Uses tempura adapter internally.
-  Params:
-  * `debug?` - boolean indicating whether to enable debug mode (no caching)"
-  [debug?]
-  {:pre [(boolean? debug?)]}
-  (try (let [translation-opts (i18n-tempura/create-opts debug?
-                                                        mm-i18n-dict-txt/dict
-                                                        mm-i18n-dict-res/dict)]
-         (partial tempura/tr translation-opts))
-       (catch #?(:clj Exception
-                 :cljs :default)
-         e
-         (throw (ex-info "Failed to create translator" {:debug? debug?} e)))))
+(def TranslatorSchema
+  "Schema for translator objects - validates that it implements the protocol"
+  [:fn (fn [translator] (and (some? translator) (satisfies? p/Translator translator)))])
 
 (defn tr
-  "Helper function for using a translator with common pattern.
+  "Translate a key to text in the given language.
+  
   Params:
-  * `translator` - translator function created by create-translator
-  * `language` - keyword or vector of language fallbacks  
-  * `id` - translation key"
+  * `translator` - translator instance implementing Translator protocol
+  * `language` - keyword or vector of language fallbacks
+  * `id` - translation key (keyword)
+  
+  Returns: translated string"
   [translator language id]
   {:pre
-   [(fn? translator) (or (keyword? language) (vector? language)) (keyword? id)]}
-  (try (translator (if (vector? language) language [language]) [id])
-       (catch #?(:clj Exception
-                 :cljs :default)
-         e
-         (throw (ex-info "Failed to translate text"
-                         {:language language
-                          :id id}
-                         e)))))
+   [(or (keyword? language) (vector? language)) (keyword? id)]}
+  (validation/validate-data TranslatorSchema translator "Translator inst")
+  (p/-translate translator language id))

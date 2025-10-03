@@ -9,6 +9,7 @@
                 :frontend {:dsn #or [#env SENTRY_FRONTEND_DSN
                                      #secrets [:sentry :frontend :dsn]]}}}
  :system {:logging.adapter/telemere {:level #ref [:log :level]}
+          :i18n.adapter/tempura {:debug? false}
           :sys/db-conn {:db-uri #ref [:db :uri]
                         :logger #ig/ref :sys/logging}
           :sys/error-tracking {:dsn #ref [:log :sentry :backend :dsn]
@@ -22,5 +23,5 @@
                             :logger #ig/ref :sys/logging}
           :sys/logging {:adapter #ig/ref :logging.adapter/telemere
                         :level #ref [:log :level]}
-          :sys/translator {:debug? false
+          :sys/translator {:adapter #ig/ref :i18n.adapter/tempura
                            :logger #ig/ref :sys/logging}}}

@@ -9,7 +9,9 @@
    [day8.re-frame.tracing                     :refer [fn-traced]]
    [integrant.core                            :as ig]
    [mateuszmazurczak.config                   :as conf]
-   [mateuszmazurczak.i18n                     :as mm-i18n]
+   [mateuszmazurczak.i18n.adapters.tempura    :as i18n-tempura]
+   [mateuszmazurczak.i18n.dict.resources      :as mm-i18n-dict-res]
+   [mateuszmazurczak.i18n.dict.text           :as mm-i18n-dict-txt]
    [mateuszmazurczak.i18n.translate           :as mm-i18n-translate]
    [mateuszmazurczak.logging                  :as log]
    [mateuszmazurczak.logging.telemere         :as t]
@@ -118,15 +120,18 @@
 
 (defmethod ig/halt-key! :frontend/error-tracking [_ _] nil)
 
-(defmethod ig/init-key :frontend/logging
+(defmethod ig/init-key :logging.adapter/telemere
   [_ {:keys [level]}]
-  (let [logger (t/make-logger {:level level})]
-    (log/init! logger {:level level})
-    (log/log! logger
-              {:id ::frontend-logging-started
-               :level :info
-               :msg "Frontend logging system initialized"})
-    logger))
+  (t/make-logger {:level level}))
+
+(defmethod ig/init-key :frontend/logging
+  [_ {:keys [level adapter]}]
+  (log/init! adapter {:level level})
+  (log/log! adapter
+            {:id ::frontend-logging-started
+             :level :info
+             :msg "Frontend logging system initialized"})
+  adapter)
 
 (defmethod ig/halt-key! :frontend/logging
   [_ logger]
@@ -135,23 +140,32 @@
              :level :info
              :msg "Frontend logging system stopped"}))
 
+(defmethod ig/init-key :i18n.adapter/tempura
+  [_ {:keys [debug?]}]
+  (i18n-tempura/make-translator debug?
+                                mm-i18n-dict-txt/dict
+                                mm-i18n-dict-res/dict))
+
 (defmethod ig/init-key :frontend/translator
-  [_ {:keys [debug? logger]}]
+  [_ {:keys [adapter logger]}]
   (log/log! logger
             {:id ::translator-started
              :level :info
-             :msg (str "Translator started with debug=" debug?)})
-  (mm-i18n/create-translator debug?))
+             :msg "Translator started"})
+  adapter)
 
 (defmethod ig/halt-key! :frontend/translator [_ _] nil)
 
 (def frontend-config
-  {:frontend/logging {:level (if (= "development" conf/ENV) :debug :info)}
+  {:logging.adapter/telemere {:level (if (= "development" conf/ENV) :debug :info)}
+   :frontend/logging {:level (if (= "development" conf/ENV) :debug :info)
+                      :adapter (ig/ref :logging.adapter/telemere)}
    :frontend/error-tracking {:dsn conf/LOG_SENTRY_DNS
                              :traced-website #"^https://mateuszmazurczak\.com/"
                              :env conf/ENV
                              :logger (ig/ref :frontend/logging)}
-   :frontend/translator {:debug? (= "development" conf/ENV)
+   :i18n.adapter/tempura {:debug? (= "development" conf/ENV)}
+   :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
                          :logger (ig/ref :frontend/logging)}
    :frontend/app-db {:init-db-event ::initialize-db
                      :translator (ig/ref :frontend/translator)

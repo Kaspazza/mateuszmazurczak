@@ -101,13 +101,15 @@ These are set via closure-defines with environment-specific overrides:
  {:db {:uri "./storage/datalevin/dev-db"}
   :sentry 
   {:backend {:dsn "https://..."}
-   :frontend {:dsn "https://..."}}}
+   :frontend {:dsn "https://..."}}
+  :posthog {:api-key "phc_..."}}
    
  :production  
  {:db {:uri "/app/data/db"}
   :sentry
   {:backend {:dsn "https://..."}
-   :frontend {:dsn "https://..."}}}}
+   :frontend {:dsn "https://..."}}
+  :posthog {:api-key "phc_..."}}}
 ```
 
 #### Example Configuration Usage

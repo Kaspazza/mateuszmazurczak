@@ -3,6 +3,7 @@
   (:require
    [day8.re-frame.tracing                     :refer [fn-traced]]
    [integrant.core                            :as ig]
+   [mateuszmazurczak.analytics                :as analytics]
    [mateuszmazurczak.config                   :as conf]
    [mateuszmazurczak.error-tracking           :as error-tracking]
    [mateuszmazurczak.i18n.adapters.tempura    :as i18n-tempura]
@@ -94,6 +95,28 @@
 
 (defmethod ig/halt-key! :frontend/error-tracking [_ _] nil)
 
+(defmethod ig/init-key :frontend/analytics
+  [_ {:keys [api-key api-host person-profiles logger]}]
+  (when-not api-key
+    (log/log! logger
+              {:level :warn
+               :id ::analytics-missing-api-key
+               :msg "api-key is missing in analytics initialization"}))
+  (when-not api-host
+    (log/log! logger
+              {:level :warn
+               :id ::analytics-missing-api-host
+               :msg "api-host is missing in analytics initialization"}))
+  (log/log! logger
+            {:id ::analytics-initialized
+             :level :info
+             :msg "Analytics initialized"})
+  (analytics/init! {:api-key api-key
+                    :api-host api-host
+                    :person-profiles person-profiles}))
+
+(defmethod ig/halt-key! :frontend/analytics [_ _] nil)
+
 (defmethod ig/init-key :logging.adapter/telemere
   [_ {:keys [level]}]
   (t/make-logger {:level level}))
@@ -130,16 +153,11 @@
 
 (defmethod ig/halt-key! :frontend/translator [_ _] nil)
 
-(def frontend-config
-  {:logging.adapter/telemere {:level
-                              (if (= "development" conf/ENV) :debug :info)}
-   :frontend/logging {:level (if (= "development" conf/ENV) :debug :info)
+(def development-config
+  {:logging.adapter/telemere {:level :debug}
+   :frontend/logging {:level :debug
                       :adapter (ig/ref :logging.adapter/telemere)}
-   :frontend/error-tracking {:dsn conf/LOG_SENTRY_DNS
-                             :traced-website #"^https://mateuszmazurczak\.com/"
-                             :env conf/ENV
-                             :logger (ig/ref :frontend/logging)}
-   :i18n.adapter/tempura {:debug? (= "development" conf/ENV)}
+   :i18n.adapter/tempura {:debug? true}
    :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
                          :logger (ig/ref :frontend/logging)}
    :frontend/app-db {:init-db-event ::initialize-db
@@ -150,6 +168,33 @@
    :frontend/history {:router (ig/ref :frontend/router)
                       :app-db (ig/ref :frontend/app-db)
                       :logger (ig/ref :frontend/logging)}})
+
+(def production-config
+  {:logging.adapter/telemere {:level :info}
+   :frontend/logging {:level :info
+                      :adapter (ig/ref :logging.adapter/telemere)}
+   :frontend/error-tracking {:dsn conf/LOG_SENTRY_DNS
+                             :traced-website #"^https://mateuszmazurczak\.com/"
+                             :env conf/ENV
+                             :logger (ig/ref :frontend/logging)}
+   :frontend/analytics {:api-key conf/POSTHOG_API_KEY
+                        :api-host "https://eu.i.posthog.com"
+                        :person-profiles "identified_only"
+                        :logger (ig/ref :frontend/logging)}
+   :i18n.adapter/tempura {:debug? false}
+   :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
+                         :logger (ig/ref :frontend/logging)}
+   :frontend/app-db {:init-db-event ::initialize-db
+                     :translator (ig/ref :frontend/translator)
+                     :logger (ig/ref :frontend/logging)}
+   :frontend/router {:routes mm-fe-routes/routes
+                     :logger (ig/ref :frontend/logging)}
+   :frontend/history {:router (ig/ref :frontend/router)
+                      :app-db (ig/ref :frontend/app-db)
+                      :logger (ig/ref :frontend/logging)}})
+
+(def frontend-config
+  (if (= "development" conf/ENV) development-config production-config))
 
 (defonce system (atom nil))
 

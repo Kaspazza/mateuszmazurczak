@@ -48,12 +48,13 @@
   (let [config-path ".secrets.edn"
         config (:edn (file/read-edn config-path))
         sentry-dsn (get-in config [env-profile :sentry :frontend :dsn])
+        loki (get-in config [env-profile :loki :endpoint])
         posthog-api-key (get-in config [env-profile :posthog :api-key])]
-    {:closure-defines {'mateuszmazurczak.config/ENV (name env-profile)
-                       'mateuszmazurczak.config/LOG_SENTRY_DNS (or sentry-dsn
-                                                                   "")
-                       'mateuszmazurczak.config/POSTHOG_API_KEY
-                       (or posthog-api-key "")}}))
+    {:closure-defines
+     {'mateuszmazurczak.config/ENV (name env-profile)
+      'mateuszmazurczak.config/LOG_SENTRY_DNS (or sentry-dsn "")
+      'mateuszmazurczak.config/POSTHOG_API_KEY (or posthog-api-key "")
+      'mateuszmazurczak.config/LOKI_ENDPOINT (or loki "")}}))
 
 (defn production-config-merge
   "Generate config-merge string for production builds"

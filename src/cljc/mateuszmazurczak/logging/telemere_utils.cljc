@@ -164,3 +164,44 @@
          "Creates directory `dir` if not already existing."
          [path]
          (when-not (is-existing-dir? path) (create-dirs path)))))
+
+#?(:cljs (defn format-log-line
+           "Format a Telemere signal into a plain text log line for Loki"
+           [{:keys [inst msg_ level error id]}]
+           (str (format-time inst)
+                "|"
+                level
+                (when (= (count (name level)) 4) " ")
+                "|"
+                (format-id id)
+                (when-let [msg (force msg_)] (str "| " msg))
+                (when error
+                  (if (string? error)
+                    (str "| " error)
+                    (str "| " (pprint error)))))))
+
+#?(:cljs
+     (defn send-to-loki!
+       "Send log line to Loki endpoint via HTTP POST"
+       [endpoint log-line]
+       (when-not (str/blank? endpoint)
+         (try (.catch (js/fetch endpoint
+                                (clj->js {:method "POST"
+                                          :headers {"Content-Type" "text/plain"}
+                                          :body log-line
+                                          :mode "cors"}))
+                      (fn [err] (prn "Failed because..." (pr-str err)) nil))
+              (catch :default e (prn "Failed because..." (pr-str e)) nil)))))
+
+#?(:cljs
+     (defn handler:loki
+       "Creates a Telemere handler that sends logs to Loki via Grafana Alloy.
+        
+        Options:
+        - :endpoint - Loki endpoint URL (e.g., 'http://your-server:9000/loki/api/v1/raw')"
+       [{:keys [endpoint]}]
+       (fn [signal]
+         (when endpoint
+           (let [log-line (format-log-line signal)]
+             (send-to-loki! endpoint log-line)))
+         nil)))

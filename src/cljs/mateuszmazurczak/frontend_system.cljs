@@ -74,24 +74,17 @@
 (defmethod ig/halt-key! :frontend/app-db [_ _] (rf/clear-subscription-cache!))
 
 (defmethod ig/init-key :frontend/error-tracking
-  [_ {:keys [dsn traced-website env logger]}]
-  (when-not dsn
+  [_ opts]
+  (let [logger (:logger opts)]
     (log/log! logger
-              {:level :warn
-               :id ::error-tracking-missing-dsn
-               :msg "dsn is missing in error tracking initialization"}))
-  (when-not env
+              {:id ::error-tracking-initializing
+               :level :info
+               :msg "Initializing error tracking..."})
+    (error-tracking/init! opts)
     (log/log! logger
-              {:level :warn
-               :id ::error-tracking-missing-env
-               :msg "env is missing in error tracking initialization"}))
-  (log/log! logger
-            {:id ::error-tracking-initialized
-             :level :info
-             :msg "Error tracking initialized"})
-  (error-tracking/init! {:dsn dsn
-                         :traced-website traced-website
-                         :env env}))
+              {:id ::error-tracking-initialized
+               :level :info
+               :msg "Error tracking initialized"})))
 
 (defmethod ig/halt-key! :frontend/error-tracking [_ _] nil)
 
@@ -162,6 +155,7 @@
   {:logging.adapter/telemere {:level :debug}
    :frontend/logging {:level :debug
                       :adapter (ig/ref :logging.adapter/telemere)}
+   :frontend/error-tracking {:logger (ig/ref :frontend/logging)}
    :i18n.adapter/tempura {:debug? true}
    :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
                          :logger (ig/ref :frontend/logging)}
@@ -178,10 +172,7 @@
   {:logging.adapter/telemere {:level :info}
    :frontend/logging {:level :info
                       :adapter (ig/ref :logging.adapter/telemere)}
-   :frontend/error-tracking {:dsn conf/LOG_SENTRY_DNS
-                             :traced-website #"^https://mateuszmazurczak\.com/"
-                             :env conf/ENV
-                             :logger (ig/ref :frontend/logging)}
+   :frontend/error-tracking {:logger (ig/ref :frontend/logging)}
    :frontend/analytics {:api-key conf/POSTHOG_API_KEY
                         :api-host "https://eu.i.posthog.com"
                         :person-profiles "always"

@@ -1,16 +1,16 @@
 (ns mateuszmazurczak.system
   (:require
-   [integrant.core                       :as ig]
-   [mateuszmazurczak.database            :as database]
-   [mateuszmazurczak.database.migrations :as migrations]
-   [mateuszmazurczak.endpoint.router     :as mm-endpoint-router]
-   [mateuszmazurczak.error-tracking      :as error-tracking]
-   [mateuszmazurczak.i18n.adapters.tempura          :as i18n-tempura]
-   [mateuszmazurczak.i18n.dict.resources            :as mm-i18n-dict-res]
-   [mateuszmazurczak.i18n.dict.text                 :as mm-i18n-dict-txt]
-   [mateuszmazurczak.logging                        :as log]
-   [mateuszmazurczak.logging.telemere               :as t]
-   [mateuszmazurczak.web-server                     :as web-server]))
+   [integrant.core                         :as ig]
+   [mateuszmazurczak.database              :as database]
+   [mateuszmazurczak.database.migrations   :as migrations]
+   [mateuszmazurczak.endpoint.router       :as mm-endpoint-router]
+   [mateuszmazurczak.error-tracking        :as error-tracking]
+   [mateuszmazurczak.i18n.adapters.tempura :as i18n-tempura]
+   [mateuszmazurczak.i18n.dict.resources   :as mm-i18n-dict-res]
+   [mateuszmazurczak.i18n.dict.text        :as mm-i18n-dict-txt]
+   [mateuszmazurczak.logging               :as log]
+   [mateuszmazurczak.logging.telemere      :as t]
+   [mateuszmazurczak.web-server            :as web-server]))
 
 (defmethod ig/init-key :logging.adapter/telemere
   [_ opts]
@@ -42,29 +42,17 @@
   adapter)
 
 (defmethod ig/init-key :sys/error-tracking
-  [_
-   {:keys [dsn env logger]
-    :as _opts}]
-  (when-not dsn
+  [_ opts]
+  (let [logger (:logger opts)]
     (log/log! logger
-              {:id ::error-tracking-missing-param
-               :level :warn
-               :msg "dsn is missing in error-tracking init"}))
-  (when-not env
+              {:id ::error-tracking-init
+               :level :debug
+               :msg "Initializing error tracking..."})
+    (error-tracking/init! opts)
     (log/log! logger
-              {:id ::error-tracking-missing-param
-               :level :warn
-               :msg "env is missing in error-tracking init"}))
-  (log/log! logger
-            {:id ::error-tracking-init
-             :level :info
-             :msg "Initializing error tracking..."})
-  (error-tracking/init! {:dsn dsn
-                         :env (name env)})
-  (log/log! logger
-            {:id ::error-tracking-started
-             :level :info
-             :msg "Error tracking initialized"}))
+              {:id ::error-tracking-started
+               :level :info
+               :msg "Error tracking initialized"})))
 
 (defmethod ig/init-key :sys/http-server
   [_

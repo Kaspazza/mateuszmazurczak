@@ -1,10 +1,11 @@
 (ns mateuszmazurczak.logging
   "Api to logging"
   (:require
-   [malli.core                              :as m]
-   [mateuszmazurczak.logging.protocol       :as p]
-   [mateuszmazurczak.logging.telemere-utils :as logging-utils]
-   [mateuszmazurczak.validation             :as validation]))
+   [malli.core                        :as m]
+   [mateuszmazurczak.logging.protocol :as p]
+   [mateuszmazurczak.logging.telemere :as t]
+   [mateuszmazurczak.utils.macro      :as utils-macro]
+   [mateuszmazurczak.validation       :as validation]))
 
 (def LoggerSchema
   "Schema for logger objects - validates that it implements the protocol"
@@ -80,12 +81,12 @@
 (defmacro ->log!
   "Same as `log!` but returns value."
   [value opts-or-msg]
-  `(do ~(logging-utils/keep-callsite `(t/log! ~opts-or-msg)) ~value))
+  `(do ~(utils-macro/keep-callsite `(t/log! ~opts-or-msg)) ~value))
 
 (defmacro ->>log!
   "Same as `log!` but returns value."
   [opts-or-msg value]
-  `(do ~(logging-utils/keep-callsite `(t/log! ~opts-or-msg)) ~value))
+  `(do ~(utils-macro/keep-callsite `(t/log! ~opts-or-msg)) ~value))
 
 (defn init!
   "Initialize the logging system"

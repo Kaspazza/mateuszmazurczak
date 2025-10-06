@@ -3,6 +3,46 @@ This is a private project representing www.mateuszmazurczak.com (and .pl)
 
 ## Architecture
 
+**Hexagonal architecture (ports/adapters)** - infrastructure is split into:
+- **Port** - API namespace defining interface (e.g., `mateuszmazurczak.database`, `mateuszmazurczak.logging`)
+- **Adapters** - Concrete implementations in subdirectories (e.g., `database/adapters/datomic.clj`, `logging/telemere.cljc`)
+
+### Port/Adapter Implementation Patterns
+
+Three patterns based on how well requirements are known:
+
+**1. Protocol-based (Full Implementation)**
+- Port defines `defprotocol` interface, adapters implement via `defrecord`
+- Use when: **Requirements are well-known and stable**
+- Clean separation, easy to swap implementations
+- Example: `logging/protocol.cljc` + `logging/telemere.cljc`
+
+**2. Hybrid (Function Namespace)**
+- Port namespace provides API functions + directly uses one adapter implementation
+- Use when: **Requirements are unclear or still evolving**
+- Less ceremony, easier to change as requirements become clear
+- Namespace acts as Application Service layer
+
+**3. Minimal (No Port)**
+- Single implementation, no abstraction layer
+- Use when: No variation expected or needed
+
+### System Composition
+
+Infrastructure is wired together using **Integrant** with configuration from `env/*/config.edn`. 
+
+**System files** (`system.clj` for backend, `frontend_system.cljs` for frontend):
+- Define Integrant lifecycle methods (`ig/init-key`, `ig/halt-key!`) for each component
+- Import and wire specific adapters to the system
+- Choose which adapter to use based on config values
+
+**Key principle:** 
+- Port namespaces **never import adapters** - only define interfaces
+- System files **do import adapters** - that's their job as the composition root
+- Adapters stay pure - no Integrant dependency, just constructors and protocol implementation
+- Adding new adapter = edit system.clj (add defmethod wrapper)
+- Switching between adapters = config change only 
+
 ### Configuration System
 
 The application uses **Integrant** with **Aero**. 
@@ -19,7 +59,6 @@ Main point of any used env variables or externally driven config is read from co
 **Environment-specific config files:**
 - `env/development/config.edn` - Development environment 
 - `env/production/config.edn` - Production environment
-- `env/la/config.edn` - LA staging environment
 
 **Secrets file:**
 - `.secrets.edn` - Contains sensitive configuration for all environments (not in version control)
@@ -61,13 +100,15 @@ These are set via closure-defines with environment-specific overrides:
  {:db {:uri "./storage/datalevin/dev-db"}
   :sentry 
   {:backend {:dsn "https://..."}
-   :frontend {:dsn "https://..."}}}
+   :frontend {:dsn "https://..."}}
+  :posthog {:api-key "phc_..."}}
    
  :production  
  {:db {:uri "/app/data/db"}
   :sentry
   {:backend {:dsn "https://..."}
-   :frontend {:dsn "https://..."}}}}
+   :frontend {:dsn "https://..."}}
+  :posthog {:api-key "phc_..."}}}
 ```
 
 #### Example Configuration Usage
@@ -174,15 +215,14 @@ Current state of code contains:
 - Frontend logic and data manged with reagent/re-frame
 - Portfolio setup for frontend development
 - User error monitoring (with sentry)
+- Logs
+- Frontend analysis tooling, heatmaps, users on the page etc. 
 
 TODO as features:
-- Logs  (directly in the app like telmere, sentry, connecting to things like google logs etc.)
 - Chat to speak to - so instead of saying contact me at *this-email*, just open chat option that sends email or smth
-- UI theme
 - Realtime module with information that the page has been updated, so user can click and hard-refresh
+- UI theme
 - describe testing FE/BE/E2E/ab
-- Frontend analysis tooling, heatmaps, users on the page etc. 
-- Database integration
 - Auth (and feature-flags)
 - Versioning (low priority)
 

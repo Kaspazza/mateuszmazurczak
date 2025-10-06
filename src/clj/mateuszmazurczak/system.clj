@@ -1,47 +1,58 @@
 (ns mateuszmazurczak.system
   (:require
-   [integrant.core                       :as ig]
-   [mateuszmazurczak.database            :as database]
-   [mateuszmazurczak.database.migrations :as migrations]
-   [mateuszmazurczak.endpoint.router     :as mm-endpoint-router]
-   [mateuszmazurczak.error-tracking.core :as error-tracking]
-   [mateuszmazurczak.i18n                :as i18n]
-   [mateuszmazurczak.logging             :as log]
-   [mateuszmazurczak.logging.telemere    :as t]
-   [mateuszmazurczak.web-server          :as web-server]))
+   [integrant.core                         :as ig]
+   [mateuszmazurczak.database              :as database]
+   [mateuszmazurczak.database.migrations   :as migrations]
+   [mateuszmazurczak.endpoint.router       :as mm-endpoint-router]
+   [mateuszmazurczak.error-tracking        :as error-tracking]
+   [mateuszmazurczak.i18n.adapters.tempura :as i18n-tempura]
+   [mateuszmazurczak.i18n.dict.resources   :as mm-i18n-dict-res]
+   [mateuszmazurczak.i18n.dict.text        :as mm-i18n-dict-txt]
+   [mateuszmazurczak.logging               :as log]
+   [mateuszmazurczak.logging.telemere      :as t]
+   [mateuszmazurczak.web-server            :as web-server]))
 
-(defmethod ig/init-key :sys/error-tracking
-  [_
-   {:keys [dsn env logger]
-    :as _opts}]
-  (when-not dsn
-    (log/log! logger
-              {:id ::error-tracking-missing-param
-               :level :warn
-               :msg "dsn is missing in init-error-tracking!"}))
-  (when-not env
-    (log/log! logger
-              {:id ::error-tracking-missing-param
-               :level :warn
-               :msg "env is missing in init-error-tracking!"}))
-  (log/log! logger
-            {:id ::error-tracking
-             :level :info
-             :msg "Starting error tracking..."})
-  (error-tracking/init-error-tracking! {:dsn dsn
-                                        :env (name env)}))
+(defmethod ig/init-key :logging.adapter/telemere
+  [_ opts]
+  (t/make-logger {:level (:level opts)}))
+
+(defmethod ig/init-key :i18n.adapter/tempura
+  [_ {:keys [debug?]}]
+  (i18n-tempura/make-translator debug?
+                                mm-i18n-dict-txt/dict
+                                mm-i18n-dict-res/dict))
 
 (defmethod ig/init-key :sys/logging
   [_
-   {:keys [level]
+   {:keys [level adapter]
     :as _opts}]
-  (let [inst (t/make-logger {:level level})]
-    (log/init! inst {:level level})
-    (log/log! inst
-              {:id ::log-started
+  (log/init! adapter {:level level})
+  (log/log! adapter
+            {:id ::log-started
+             :level :info
+             :msg "Started log"})
+  adapter)
+
+(defmethod ig/init-key :sys/translator
+  [_ {:keys [adapter logger]}]
+  (log/log! logger
+            {:id ::translator-started
+             :level :info
+             :msg "Translator started"})
+  adapter)
+
+(defmethod ig/init-key :sys/error-tracking
+  [_ opts]
+  (let [logger (:logger opts)]
+    (log/log! logger
+              {:id ::error-tracking-init
+               :level :debug
+               :msg "Initializing error tracking..."})
+    (error-tracking/init! opts)
+    (log/log! logger
+              {:id ::error-tracking-started
                :level :info
-               :msg "Started log"})
-    inst))
+               :msg "Error tracking initialized"})))
 
 (defmethod ig/init-key :sys/http-server
   [_
@@ -113,10 +124,4 @@
                           :db-uri db-uri}
                          e)))))
 
-(defmethod ig/init-key :sys/translator
-  [_ {:keys [debug? logger]}]
-  (log/log! logger
-            {:id ::translator-started
-             :level :info
-             :msg (str "Starting translator with debug=" debug?)})
-  (i18n/create-translator debug?))
+

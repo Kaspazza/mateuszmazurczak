@@ -56,4 +56,4 @@
                        {:error e
                         :id ::app-init-failed
                         :data {:stage "initialization"}}))
-         (throw (ex-info "App init has failed" {:error e})))))
+         (js/console.error "System initialization failed:" e))))

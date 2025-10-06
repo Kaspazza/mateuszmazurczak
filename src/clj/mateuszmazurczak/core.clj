@@ -1,10 +1,9 @@
 (ns mateuszmazurczak.core
   "Gather all components to start production app"
   (:require
-   [integrant.core                    :as ig]
-   [mateuszmazurczak.config           :as config]
-   [mateuszmazurczak.logging          :as logging]
-   [mateuszmazurczak.logging.telemere :as t]
+   [integrant.core           :as ig]
+   [mateuszmazurczak.config  :as config]
+   [mateuszmazurczak.logging :as logging]
    [mateuszmazurczak.system])
   (:gen-class))
 
@@ -36,14 +35,7 @@
 (comment
   (require '[integrant.repl.state :as state] '[aero.core])
   (aero.core/read-config "env/development/config.edn")
-  (tap> "hello")
-  (def logger (t/make-logger {:level :trace}))
-  (logging/init! logger {:level :trace})
   state/config
-  (logging/log! logger
-                {:level :debug
-                 :id ::login
-                 :data {:user-id 1234}
-                 :msg "what's up"})
+  (tap> "hello")
   ;
 )

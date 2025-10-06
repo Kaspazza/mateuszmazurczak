@@ -1,5 +1,6 @@
 (ns mateuszmazurczak.logging.telemere
   (:require
+   #?@(:cljs [[clojure.string :as str]])
    [mateuszmazurczak.logging.protocol       :as p]
    [mateuszmazurczak.logging.telemere-utils :as logging-utils]
    [taoensso.telemere                       :as t])
@@ -41,13 +42,16 @@
                         (t/handler:file {:path (str path "/logs.log")}))))
    :cljs (defn init!
            ([] (init! {:level :info}))
-           ([{:keys [level]}]
+           ([{:keys [level loki-endpoint]}]
             (set-min-level! level)
             (t/remove-handler! :default/console)
             (t/add-handler! :console-handler
                             (t/handler:console
-                             {:output-fn
-                              logging-utils/format:console-minimal})))))
+                             {:output-fn logging-utils/format:console-minimal}))
+            (when (and loki-endpoint (not (str/blank? loki-endpoint)))
+              (t/add-handler! :loki-handler
+                              (logging-utils/handler:loki {:endpoint
+                                                           loki-endpoint}))))))
 
 
 (defrecord TelemereLogger [base-context]

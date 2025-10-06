@@ -59,7 +59,6 @@ Main point of any used env variables or externally driven config is read from co
 **Environment-specific config files:**
 - `env/development/config.edn` - Development environment 
 - `env/production/config.edn` - Production environment
-- `env/la/config.edn` - LA staging environment
 
 **Secrets file:**
 - `.secrets.edn` - Contains sensitive configuration for all environments (not in version control)

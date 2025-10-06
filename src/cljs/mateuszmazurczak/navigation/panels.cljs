@@ -20,6 +20,14 @@
 
 (defmethod panels :panels/pending [_] [:div [mm-ui-spinner/spinner]])
 
+(defmethod panels :panels/system-error
+  [_]
+  [mm-ui-errors/internal-error
+   {:title "System Initialization Failed"
+    :description
+    "We encountered an error while starting the application. Please refresh the page or contact support if the problem persists."
+    :back-home-text "Refresh Page"}])
+
 (defmethod panels :panels/home
   [_]
   [mm-ui-structure/mateuszmazurczak-page-structure [mm-home/home]])

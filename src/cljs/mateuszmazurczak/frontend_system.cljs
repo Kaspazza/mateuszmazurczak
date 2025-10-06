@@ -10,6 +10,7 @@
    [mateuszmazurczak.i18n.dict.resources      :as mm-i18n-dict-res]
    [mateuszmazurczak.i18n.dict.text           :as mm-i18n-dict-txt]
    [mateuszmazurczak.i18n.translate           :as mm-i18n-translate]
+   [mateuszmazurczak.integrant-utils          :as ig-utils]
    [mateuszmazurczak.logging                  :as log]
    [mateuszmazurczak.logging.telemere         :as t]
    [mateuszmazurczak.navigation.core          :as nav]
@@ -60,6 +61,13 @@
                  (fn-traced [db [_ translator]]
                             (assoc db :translator translator)))
 
+(rf/reg-event-db ::system-failed
+                 (fn-traced [db [_ error]]
+                            (assoc db
+                                   :current-route {:panel-id
+                                                   :panels/system-error}
+                                   :system-error error)))
+
 (defmethod ig/init-key :frontend/app-db
   [_ {:keys [init-db-event translator logger]}]
   (log/log! logger
@@ -68,7 +76,6 @@
              :msg "App-db initialized"})
   (rf/clear-subscription-cache!)
   (rf/dispatch-sync [init-db-event])
-  ;; Store translator in app-db
   (rf/dispatch-sync [::store-translator translator]))
 
 (defmethod ig/halt-key! :frontend/app-db [_ _] (rf/clear-subscription-cache!))
@@ -76,42 +83,50 @@
 (defmethod ig/init-key :frontend/error-tracking
   [_ opts]
   (let [logger (:logger opts)]
-    (log/log! logger
-              {:id ::error-tracking-initializing
-               :level :info
-               :msg "Initializing error tracking..."})
-    (error-tracking/init! opts)
-    (log/log! logger
-              {:id ::error-tracking-initialized
-               :level :info
-               :msg "Error tracking initialized"})))
+    (ig-utils/optional-component
+     (fn []
+       (log/log! logger
+                 {:id ::error-tracking-initializing
+                  :level :info
+                  :msg "Initializing error tracking..."})
+       (error-tracking/init! opts)
+       (log/log! logger
+                 {:id ::error-tracking-initialized
+                  :level :info
+                  :msg "Error tracking initialized"}))
+     logger
+     :frontend/error-tracking)))
 
 (defmethod ig/halt-key! :frontend/error-tracking [_ _] nil)
 
 (defmethod ig/init-key :frontend/analytics
   [_ {:keys [api-key api-host person-profiles logger]}]
-  (when-not api-key
-    (log/log! logger
-              {:level :warn
-               :id ::analytics-missing-api-key
-               :msg "api-key is missing in analytics initialization"}))
-  (when-not api-host
-    (log/log! logger
-              {:level :warn
-               :id ::analytics-missing-api-host
-               :msg "api-host is missing in analytics initialization"}))
-  (log/log! logger
-            {:id ::analytics-initialization
-             :level :debug
-             :msg "Analytics starting..."})
-  (let [analytics (analytics/init! {:api-key api-key
-                                    :api-host api-host
-                                    :person-profiles person-profiles})]
-    (log/log! logger
-              {:id ::analytics-initialized
-               :level :info
-               :msg "Analytics started"})
-    analytics))
+  (ig-utils/optional-component
+   (fn []
+     (when-not api-key
+       (log/log! logger
+                 {:level :warn
+                  :id ::analytics-missing-api-key
+                  :msg "api-key is missing in analytics initialization"}))
+     (when-not api-host
+       (log/log! logger
+                 {:level :warn
+                  :id ::analytics-missing-api-host
+                  :msg "api-host is missing in analytics initialization"}))
+     (log/log! logger
+               {:id ::analytics-initialization
+                :level :debug
+                :msg "Analytics starting..."})
+     (let [analytics (analytics/init! {:api-key api-key
+                                       :api-host api-host
+                                       :person-profiles person-profiles})]
+       (log/log! logger
+                 {:id ::analytics-initialized
+                  :level :info
+                  :msg "Analytics started"})
+       analytics))
+   logger
+   :frontend/analytics))
 
 (defmethod ig/halt-key! :frontend/analytics [_ _] nil)
 
@@ -120,8 +135,8 @@
   (t/make-logger {:level level}))
 
 (defmethod ig/init-key :frontend/logging
-  [_ {:keys [level adapter]}]
-  (log/init! adapter {:level level})
+  [_ {:keys [level adapter loki-endpoint]}]
+  (log/init! adapter {:level level :loki-endpoint loki-endpoint})
   (log/log! adapter
             {:id ::frontend-logging-started
              :level :info
@@ -195,9 +210,23 @@
 (defonce system (atom nil))
 
 (defn start-system!
+  "Start the integrant system and dispatch failure event on error.
+   
+   Returns the initialized system on success, throws on critical failures."
   []
-  (when-not @system (reset! system (ig/init frontend-config))))
+  (when-not @system
+    (try (let [sys (ig/init frontend-config)]
+           (reset! system sys)
+           sys)
+         (catch :default e
+           ;; Dispatch failure event so UI shows error page instead of spinner.
+           (rf/dispatch-sync [::system-failed e])
+           (throw e)))))
 
 (defn stop-system! [] (when @system (ig/halt! @system) (reset! system nil)))
 
-(defn restart-system! [] (stop-system!) (start-system!))
+(defn restart-system!
+  []
+  (stop-system!)
+  (rf/dispatch-sync [::initialize-db])
+  (start-system!))

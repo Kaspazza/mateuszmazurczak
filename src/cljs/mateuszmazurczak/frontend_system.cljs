@@ -108,12 +108,17 @@
                :id ::analytics-missing-api-host
                :msg "api-host is missing in analytics initialization"}))
   (log/log! logger
-            {:id ::analytics-initialized
-             :level :info
-             :msg "Analytics initialized"})
-  (analytics/init! {:api-key api-key
-                    :api-host api-host
-                    :person-profiles person-profiles}))
+            {:id ::analytics-initialization
+             :level :debug
+             :msg "Analytics starting..."})
+  (let [analytics (analytics/init! {:api-key api-key
+                                    :api-host api-host
+                                    :person-profiles person-profiles})]
+    (log/log! logger
+              {:id ::analytics-initialized
+               :level :info
+               :msg "Analytics started"})
+    analytics))
 
 (defmethod ig/halt-key! :frontend/analytics [_ _] nil)
 
@@ -179,7 +184,7 @@
                              :logger (ig/ref :frontend/logging)}
    :frontend/analytics {:api-key conf/POSTHOG_API_KEY
                         :api-host "https://eu.i.posthog.com"
-                        :person-profiles "identified_only"
+                        :person-profiles "always"
                         :logger (ig/ref :frontend/logging)}
    :i18n.adapter/tempura {:debug? false}
    :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)

@@ -31,29 +31,3 @@
   [event-data]
   {:pre [(map? event-data)]}
   (posthog/capture-event! event-data))
-
-(defn identify!
-  "Identify the current user with a unique identifier.
-   
-   Identity data map:
-   - :user-id - unique user identifier
-   - :properties - optional map of user properties
-   
-   Returns nil."
-  [identity-data]
-  {:pre [(map? identity-data)]}
-  (posthog/identify! identity-data))
-
-(defn page-view!
-  "Manually capture a page view event.
-   
-   Page data map (optional):
-   - :path - page path
-   - :properties - additional properties
-   
-   Returns nil."
-  ([]
-   (posthog/page-view! {}))
-  ([page-data]
-   {:pre [(map? page-data)]}
-   (posthog/page-view! page-data)))

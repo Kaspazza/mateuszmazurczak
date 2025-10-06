@@ -217,13 +217,13 @@ Current state of code contains:
 - Portfolio setup for frontend development
 - User error monitoring (with sentry)
 - Logs
+- Frontend analysis tooling, heatmaps, users on the page etc. 
 
 TODO as features:
 - Chat to speak to - so instead of saying contact me at *this-email*, just open chat option that sends email or smth
 - Realtime module with information that the page has been updated, so user can click and hard-refresh
 - UI theme
 - describe testing FE/BE/E2E/ab
-- Frontend analysis tooling, heatmaps, users on the page etc. 
 - Auth (and feature-flags)
 - Versioning (low priority)
 

@@ -20,6 +20,13 @@
   
   Returns: translated string"
   [translator language id]
-  {:pre [(or (keyword? language) (vector? language)) (keyword? id)]}
+  (when-not (or (keyword? language) (vector? language))
+    (throw (ex-info "Language must be a keyword or vector"
+                    {:type ::invalid-language
+                     :provided language})))
+  (when-not (keyword? id)
+    (throw (ex-info "Translation ID must be a keyword"
+                    {:type ::invalid-id
+                     :provided id})))
   (validation/validate-data TranslatorSchema translator "Translator inst")
   (p/-translate translator language id))

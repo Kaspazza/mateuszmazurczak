@@ -116,7 +116,14 @@
   "Get list of migrations that haven't been applied yet.
    Validates inputs and ensures registry integrity."
   [applied-migration-ids]
-  {:pre [(coll? applied-migration-ids) (every? string? applied-migration-ids)]}
+  (when-not (coll? applied-migration-ids)
+    (throw (ex-info "Applied migration IDs must be a collection"
+                    {:type ::invalid-applied-ids
+                     :provided applied-migration-ids})))
+  (when-not (every? string? applied-migration-ids)
+    (throw (ex-info "All migration IDs must be strings"
+                    {:type ::invalid-migration-id-types
+                     :provided applied-migration-ids})))
   (try
     (validation/validate-data MigrationRegistry migrations "migration registry")
     (validate-migration-id-chronology migrations)
@@ -136,7 +143,14 @@
   "Validate that applied migrations match their expected checksums.
    Also validates input data structure."
   [applied-migrations registry-migrations]
-  {:pre [(coll? applied-migrations) (coll? registry-migrations)]}
+  (when-not (coll? applied-migrations)
+    (throw (ex-info "Applied migrations must be a collection"
+                    {:type ::invalid-applied-migrations
+                     :provided applied-migrations})))
+  (when-not (coll? registry-migrations)
+    (throw (ex-info "Registry migrations must be a collection"
+                    {:type ::invalid-registry-migrations
+                     :provided registry-migrations})))
   (try (doseq [applied applied-migrations]
          (when-not (and (:migration/id applied) (:migration/checksum applied))
            (throw (ex-info "Invalid applied migration structure"

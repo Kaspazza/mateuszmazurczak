@@ -1,7 +1,6 @@
 (ns mateuszmazurczak.frontend-system
   "Frontend Integrant system configuration"
   (:require
-   [day8.re-frame.tracing                     :refer [fn-traced]]
    [integrant.core                            :as ig]
    [mateuszmazurczak.analytics                :as analytics]
    [mateuszmazurczak.config                   :as conf]
@@ -14,9 +13,7 @@
    [mateuszmazurczak.logging                  :as log]
    [mateuszmazurczak.logging.telemere         :as t]
    [mateuszmazurczak.navigation.core          :as nav]
-   [mateuszmazurczak.navigation.router.reitit :as router-reitit]
-   [mateuszmazurczak.navigation.routes        :as mm-fe-routes]
-   [re-frame.core                             :as rf]))
+   [mateuszmazurczak.navigation.router.reitit :as router-reitit]))
 
 (defmethod ig/init-key :frontend/router
   [_ {:keys [routes logger]}]
@@ -44,41 +41,18 @@
   [_ history]
   (when history (nav/stop-history! history) (nav/set-history! nil)))
 
-(def default-db
-  "Default value for front end state"
+(defmethod ig/init-key :frontend/state
+  [_ {:keys [translator logger]}]
+  (log/log! logger
+            {:id ::state-initialized
+             :level :info
+             :msg "Frontend state initialized"})
   {:name "mateuszmazurczak"
    :current-route {:panel-id :panels/pending}
-   :lang (mm-i18n-translate/language-strategy)})
+   :lang (mm-i18n-translate/language-strategy)
+   :translator translator})
 
-(rf/reg-event-db ::initialize-db
-                 (fn-traced [_ _]
-                            ;; Intentionally not using
-                            ;; previous value of db, as it is
-                            ;; an init
-                            default-db))
-
-(rf/reg-event-db ::store-translator
-                 (fn-traced [db [_ translator]]
-                            (assoc db :translator translator)))
-
-(rf/reg-event-db ::system-failed
-                 (fn-traced [db [_ error]]
-                            (assoc db
-                                   :current-route {:panel-id
-                                                   :panels/system-error}
-                                   :system-error error)))
-
-(defmethod ig/init-key :frontend/app-db
-  [_ {:keys [init-db-event translator logger]}]
-  (log/log! logger
-            {:id ::app-db-initialized
-             :level :info
-             :msg "App-db initialized"})
-  (rf/clear-subscription-cache!)
-  (rf/dispatch-sync [init-db-event])
-  (rf/dispatch-sync [::store-translator translator]))
-
-(defmethod ig/halt-key! :frontend/app-db [_ _] (rf/clear-subscription-cache!))
+(defmethod ig/halt-key! :frontend/state [_ _] nil)
 
 (defmethod ig/init-key :frontend/error-tracking
   [_ opts]
@@ -168,69 +142,19 @@
 
 (defmethod ig/halt-key! :frontend/translator [_ _] nil)
 
-(def development-config
-  {:logging.adapter/telemere {:level :debug}
-   :frontend/logging {:level :debug
-                      :adapter (ig/ref :logging.adapter/telemere)
-                      :loki-endpoint conf/LOKI_ENDPOINT}
-   :frontend/error-tracking {:logger (ig/ref :frontend/logging)}
-   :i18n.adapter/tempura {:debug? true}
-   :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
-                         :logger (ig/ref :frontend/logging)}
-   :frontend/app-db {:init-db-event ::initialize-db
-                     :translator (ig/ref :frontend/translator)
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/router {:routes mm-fe-routes/routes
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/history {:router (ig/ref :frontend/router)
-                      :app-db (ig/ref :frontend/app-db)
-                      :logger (ig/ref :frontend/logging)}})
-
-(def production-config
-  {:logging.adapter/telemere {:level :info}
-   :frontend/logging {:level :info
-                      :adapter (ig/ref :logging.adapter/telemere)
-                      :loki-endpoint conf/LOKI_ENDPOINT}
-   :frontend/error-tracking {:logger (ig/ref :frontend/logging)}
-   :frontend/analytics {:api-key conf/POSTHOG_API_KEY
-                        :api-host "https://eu.i.posthog.com"
-                        :person-profiles "always"
-                        :logger (ig/ref :frontend/logging)}
-   :i18n.adapter/tempura {:debug? false}
-   :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
-                         :logger (ig/ref :frontend/logging)}
-   :frontend/app-db {:init-db-event ::initialize-db
-                     :translator (ig/ref :frontend/translator)
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/router {:routes mm-fe-routes/routes
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/history {:router (ig/ref :frontend/router)
-                      :app-db (ig/ref :frontend/app-db)
-                      :logger (ig/ref :frontend/logging)}})
-
-(def frontend-config
-  (if (= "development" conf/ENV) development-config production-config))
-
 (defonce system (atom nil))
 
 (defn start-system!
-  "Start the integrant system and dispatch failure event on error.
+  "Start the integrant system.
    
-   Returns the initialized system on success, throws on critical failures."
+   Returns the initialized system on success, throws on critical failures.
+   Callers are responsible for handling system initialization errors."
   []
   (when-not @system
-    (try (let [sys (ig/init frontend-config)]
-           (reset! system sys)
-           sys)
-         (catch :default e
-           ;; Dispatch failure event so UI shows error page instead of spinner.
-           (rf/dispatch-sync [::system-failed e])
-           (throw e)))))
+    (let [sys (ig/init conf/frontend-config)]
+      (reset! system sys)
+      sys)))
 
 (defn stop-system! [] (when @system (ig/halt! @system) (reset! system nil)))
 
-(defn restart-system!
-  []
-  (stop-system!)
-  (rf/dispatch-sync [::initialize-db])
-  (start-system!))
+(defn restart-system! [] (stop-system!) (start-system!))

@@ -5,6 +5,7 @@
    [mateuszmazurczak.logging         :as log]
    [mateuszmazurczak.main            :as lm]
    [mateuszmazurczak.navigation.core]
+   [mateuszmazurczak.state           :as state]
    [reagent.dom.client               :as rdc]))
 
 (defn render-id
@@ -19,8 +20,13 @@
 (defn ^:after-load re-render
   []
   (try (.unmount @*root)
+       ;; Reset application state
+       (state/reset-app-db!)
        ;; Restart system on hot reload
        (sys/restart-system!)
+       ;; Re-initialize state with fresh data from system
+       (when-let [initial-state (get @sys/system :frontend/state)]
+         (state/init-app-db! initial-state))
        (reset! *root (render-id "app" [lm/main-component]))
        (when-let [logger (get @sys/system :frontend/logging)]
          (log/log! logger
@@ -48,12 +54,20 @@
 
 (defn ^:export init!
   []
-  (try (sys/start-system!)
-       (mount-root)
-       (catch :default e
-         (when-let [logger (get @sys/system :frontend/logging)]
-           (log/error! logger
-                       {:error e
-                        :id ::app-init-failed
-                        :data {:stage "initialization"}}))
-         (js/console.error "System initialization failed:" e))))
+  (try
+    ;; Start the Integrant system
+    (sys/start-system!)
+    ;; Initialize application state with data from the system
+    (when-let [initial-state (get @sys/system :frontend/state)]
+      (state/init-app-db! initial-state))
+    ;; Mount the React root
+    (mount-root)
+    (catch :default e
+      ;; Show error UI if system initialization failed
+      (state/handle-system-error! e)
+      (when-let [logger (get @sys/system :frontend/logging)]
+        (log/error! logger
+                    {:error e
+                     :id ::app-init-failed
+                     :data {:stage "initialization"}}))
+      (js/console.error "System initialization failed:" e))))

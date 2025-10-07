@@ -15,6 +15,9 @@
    
    Returns nil."
   [config]
-  {:pre [(map? config)]}
+  (when-not (map? config)
+    (throw (ex-info "Error tracking config must be a map"
+                    {:type ::invalid-config
+                     :provided config})))
   (logging/init! config))
 

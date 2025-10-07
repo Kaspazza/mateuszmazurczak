@@ -8,6 +8,16 @@ FROM babashka/babashka:1.12.208-alpine AS babashka
 # === Stage 3: Build stage ===
 FROM clojure:temurin-21-tools-deps-bullseye-slim AS build
 
+# Accept build-time secrets as build args (for frontend compilation)
+ARG POSTHOG_API_KEY=""
+ARG SENTRY_FRONTEND_DSN=""
+ARG LOKI_ENDPOINT=""
+
+# Make them available as ENV vars during build (needed by bb build-jar)
+ENV POSTHOG_API_KEY=${POSTHOG_API_KEY} \
+    SENTRY_FRONTEND_DSN=${SENTRY_FRONTEND_DSN} \
+    LOKI_ENDPOINT=${LOKI_ENDPOINT}
+
 WORKDIR /build
 
 # Copy Node.js and npm from official Node image

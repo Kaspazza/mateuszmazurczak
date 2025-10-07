@@ -22,7 +22,16 @@
    - Result of init-fn on success
    - nil on failure (after logging)"
   [init-fn logger component-name]
-  {:pre [(fn? init-fn) (some? logger) (keyword? component-name)]}
+  (when-not (fn? init-fn)
+    (throw (ex-info "init-fn must be a function"
+                    {:type ::invalid-init-fn
+                     :provided init-fn})))
+  (when-not (some? logger)
+    (throw (ex-info "logger must be provided" {:type ::missing-logger})))
+  (when-not (keyword? component-name)
+    (throw (ex-info "component-name must be a keyword"
+                    {:type ::invalid-component-name
+                     :provided component-name})))
   (try (init-fn)
        (catch :default e
          (log/error!

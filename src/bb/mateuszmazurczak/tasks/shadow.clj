@@ -43,18 +43,31 @@
   (reduce conj ["npx" "shadow-cljs" "compile"] builds))
 
 (defn resolve-frontend-config
-  "Resolve frontend config using the same Aero system as backend"
+  "Resolve frontend config using .secrets.edn with ENV variable fallback
+   
+   Priority order:
+   1. .secrets.edn file (for local development)
+   2. Environment variables (for CI/Docker builds)
+   3. Empty strings (graceful degradation)
+   
+   This allows builds to work both locally and in containerized environments."
   [env-profile]
   (let [config-path ".secrets.edn"
-        config (:edn (file/read-edn config-path))
-        sentry-dsn (get-in config [env-profile :sentry :frontend :dsn])
-        loki (get-in config [env-profile :loki :endpoint])
-        posthog-api-key (get-in config [env-profile :posthog :api-key])]
-    {:closure-defines
-     {'mateuszmazurczak.config/ENV (name env-profile)
-      'mateuszmazurczak.config/LOG_SENTRY_DNS (or sentry-dsn "")
-      'mateuszmazurczak.config/POSTHOG_API_KEY (or posthog-api-key "")
-      'mateuszmazurczak.config/LOKI_ENDPOINT (or loki "")}}))
+        config-exists? (fs/exists? config-path)
+        config (when config-exists? (:edn (file/read-edn config-path)))
+        sentry-dsn (or (get-in config [env-profile :sentry :frontend :dsn])
+                       (System/getenv "SENTRY_FRONTEND_DSN")
+                       "")
+        loki (or (get-in config [env-profile :loki :endpoint])
+                 (System/getenv "LOKI_ENDPOINT")
+                 "")
+        posthog-api-key (or (get-in config [env-profile :posthog :api-key])
+                            (System/getenv "POSTHOG_API_KEY")
+                            "")]
+    {:closure-defines {'mateuszmazurczak.config/ENV (name env-profile)
+                       'mateuszmazurczak.config/LOG_SENTRY_DNS sentry-dsn
+                       'mateuszmazurczak.config/POSTHOG_API_KEY posthog-api-key
+                       'mateuszmazurczak.config/LOKI_ENDPOINT loki}}))
 
 (defn production-config-merge
   "Generate config-merge string for production builds"

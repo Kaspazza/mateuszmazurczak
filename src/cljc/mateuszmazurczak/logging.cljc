@@ -50,7 +50,14 @@
 (defn event!
   "Record business or operational events"
   [logger event-data]
-  {:pre [(m/validate LoggerSchema logger) (m/validate event!-opts event-data)]}
+  (when-not (m/validate LoggerSchema logger)
+    (throw (ex-info "Invalid logger instance"
+                    {:type ::invalid-logger
+                     :provided logger})))
+  (when-not (m/validate event!-opts event-data)
+    (throw (ex-info "Invalid event data"
+                    {:type ::invalid-event-data
+                     :provided event-data})))
   (try (p/-event! logger event-data)
        nil
        (catch #?(:clj Exception
@@ -61,7 +68,14 @@
 (defn error!
   "Record error occurrences"
   [logger error-data]
-  {:pre [(m/validate LoggerSchema logger) (map? error-data)]}
+  (when-not (m/validate LoggerSchema logger)
+    (throw (ex-info "Invalid logger instance"
+                    {:type ::invalid-logger
+                     :provided logger})))
+  (when-not (map? error-data)
+    (throw (ex-info "Error data must be a map"
+                    {:type ::invalid-error-data
+                     :provided error-data})))
   (try (p/-error! logger error-data)
        (catch #?(:clj Exception
                  :cljs :default)

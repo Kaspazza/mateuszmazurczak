@@ -136,7 +136,9 @@
 
 (defmethod ig/init-key :frontend/logging
   [_ {:keys [level adapter loki-endpoint]}]
-  (log/init! adapter {:level level :loki-endpoint loki-endpoint})
+  (log/init! adapter
+             {:level level
+              :loki-endpoint loki-endpoint})
   (log/log! adapter
             {:id ::frontend-logging-started
              :level :info

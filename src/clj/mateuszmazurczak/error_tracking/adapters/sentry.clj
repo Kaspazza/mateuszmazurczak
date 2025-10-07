@@ -70,7 +70,8 @@
 
 (defn init!
   "Initialize Sentry with configuration"
-  [{:keys [dsn env] :as config}]
+  [{:keys [dsn env]
+    :as config}]
   {:pre [(map? config)
          (validation/valid-non-empty-string? dsn)
          (validation/valid-non-empty-string? env)]}
@@ -82,7 +83,9 @@
 
 (defn capture-error!
   "Capture error in Sentry"
-  [{:keys [message level data silent?] :or {silent? false} :as error-data}]
+  [{:keys [message level data silent?]
+    :or {silent? false}
+    :as error-data}]
   {:pre [(map? error-data)]}
   (try
     ;; If silent, add as breadcrumb (won't show in Sentry until next real error)

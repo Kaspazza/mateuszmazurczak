@@ -13,7 +13,12 @@
    Returns nil."
   [{:keys [logger]
     :as config}]
-  {:pre [(map? config) (some? logger)]}
+  (when-not (map? config)
+    (throw (ex-info "Error tracking config must be a map"
+                    {:type ::invalid-config
+                     :provided config})))
+  (when-not (some? logger)
+    (throw (ex-info "Logger must be provided" {:type ::missing-logger})))
   (set! (.-onerror js/window)
         (fn [message source lineno colno error]
           (log/error! logger

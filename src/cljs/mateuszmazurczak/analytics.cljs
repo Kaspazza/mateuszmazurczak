@@ -17,7 +17,10 @@
    
    Returns nil."
   [config]
-  {:pre [(map? config)]}
+  (when-not (map? config)
+    (throw (ex-info "Analytics config must be a map"
+                    {:type ::invalid-config
+                     :provided config})))
   (posthog/init! config))
 
 (defn capture-event!
@@ -29,5 +32,8 @@
    
    Returns nil."
   [event-data]
-  {:pre [(map? event-data)]}
+  (when-not (map? event-data)
+    (throw (ex-info "Event data must be a map"
+                    {:type ::invalid-event-data
+                     :provided event-data})))
   (posthog/capture-event! event-data))

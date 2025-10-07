@@ -33,7 +33,8 @@
                                           day8.re-frame.tracing-stubs}}
              :closure-defines {mateuszmazurczak.config/ENV "production"
                                mateuszmazurczak.config/LOG_SENTRY_DNS ""
-                               mateuszmazurczak.config/LOKI_ENDPOINT ""}
+                               mateuszmazurczak.config/LOKI_ENDPOINT ""
+                               mateuszmazurczak.config/POSTHOG_API_KEY ""}
              :compiler-options {:optimizations :advanced
                                 :portfolio false}}
    :target :browser}}

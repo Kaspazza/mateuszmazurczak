@@ -56,7 +56,10 @@
   * `debug?` - boolean indicating whether to enable debug mode (no caching)
   * `dicts` - variable number of dictionaries to merge"
   [debug? & dicts]
-  {:pre [(boolean? debug?)]}
+  (when-not (boolean? debug?)
+    (throw (ex-info "debug? must be a boolean"
+                    {:type ::invalid-debug-flag
+                     :provided debug?})))
   (try (let [translation-opts (apply create-tempura-opts debug? dicts)]
          (->TempuraTranslator translation-opts))
        (catch #?(:clj Exception

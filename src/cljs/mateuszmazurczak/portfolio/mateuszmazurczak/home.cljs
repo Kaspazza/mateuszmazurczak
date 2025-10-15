@@ -10,4 +10,4 @@
                    :title "Mateuszmazurczak page"})
 
 #_{:clj-kondo/ignore [:clojure-lsp/unused-public-var]}
-(defscene home (mm-portfolio-utils/wrap-component [sut/mateuszmazurczak-page]))
+(defscene home (mm-portfolio-utils/wrap-component [sut/home]))

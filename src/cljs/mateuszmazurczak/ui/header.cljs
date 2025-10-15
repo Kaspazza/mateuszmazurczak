@@ -1,11 +1,10 @@
 (ns mateuszmazurczak.ui.header
   (:require
    [clojure.string                     :as str]
+   [mateuszmazurczak.frontend-i18n     :as fi18n]
    [mateuszmazurczak.i18n.language     :as mm-i18n-lang]
-   [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
    [mateuszmazurczak.navigation.core   :as navigation]
    [mateuszmazurczak.navigation.routes :as mm-routes]
-   [re-frame.core                      :as rf]
    [reagent.core                       :as r]))
 
 (defn string-to-id
@@ -140,11 +139,10 @@
                                                 ui-text]))))
 (defn lang-select
   []
-  (let [selected-value @(rf/subscribe [::mm-i18n-translate/lang-str])]
+  (let [selected-value (fi18n/current-language-str)]
     [simple-select {:id "lang"
                     :name "lang"
-                    :on-change #(rf/dispatch [::mm-i18n-translate/change-lang
-                                              %])
+                    :on-change fi18n/change-language!
                     :value selected-value
                     :options languages-options}]))
 
@@ -181,5 +179,5 @@
                                     :right-section [lang-select]}
                        {:title "Mateusz Mazurczak"
                         :href (navigation/href ::mm-routes/home)}
-                       {:title (mm-i18n-translate/tr :articles)
+                       {:title (fi18n/tr :articles)
                         :href (navigation/href ::mm-routes/articles)}])}))

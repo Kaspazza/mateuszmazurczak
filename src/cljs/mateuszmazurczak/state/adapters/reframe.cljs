@@ -9,12 +9,8 @@
  (fn [_db [_ initial-state]]
    initial-state))
 
-(rf/reg-event-db
- ::system-failed
- (fn [db [_ error]]
-   (assoc db
-          :current-route {:panel-id :panels/system-error}
-          :system-error error)))
+;; Subscription registrations
+(rf/reg-sub :logger (fn [db _] (:logger db)))
 
 ;; Public adapter API
 
@@ -30,7 +26,10 @@
   []
   (rf/clear-subscription-cache!))
 
-(defn dispatch-system-error!
-  "Dispatch a system error event to update state."
-  [error]
-  (rf/dispatch-sync [::system-failed error]))
+(defn get-dispatch-fn
+  "Returns the re-frame dispatch function.
+   
+   This is used by the state port to wire up the dispatch mechanism
+   during system initialization."
+  []
+  rf/dispatch)

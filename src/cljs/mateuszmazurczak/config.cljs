@@ -4,6 +4,11 @@
    [mateuszmazurczak.navigation.routes :as mm-fe-routes]))
 
 (goog-define ENV "")
+
+(defn development? [] (= "development" ENV))
+
+(defn production? [] (= "production" ENV))
+
 (goog-define LOG_SENTRY_DNS "")
 (goog-define POSTHOG_API_KEY "")
 (goog-define LOKI_ENDPOINT "")
@@ -15,14 +20,25 @@
                       :loki-endpoint LOKI_ENDPOINT}
    :frontend/error-tracking {:logger (ig/ref :frontend/logging)}
    :i18n.adapter/tempura {:debug? true}
+   :i18n.adapter/reframe {:logger (ig/ref :frontend/logging)}
+   :frontend/i18n {:translator-adapter (ig/ref :i18n.adapter/tempura)
+                   :state-adapter (ig/ref :i18n.adapter/reframe)
+                   :logger (ig/ref :frontend/logging)}
    :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
                          :logger (ig/ref :frontend/logging)}
+   :events.adapter/reframe {:logger (ig/ref :frontend/logging)}
+   :frontend/events {:adapter (ig/ref :events.adapter/reframe)
+                     :logger (ig/ref :frontend/logging)}
    :frontend/state {:translator (ig/ref :frontend/translator)
+                    :i18n (ig/ref :frontend/i18n)
                     :logger (ig/ref :frontend/logging)}
+   :nav.adapter/reframe {:logger (ig/ref :frontend/logging)}
    :frontend/router {:routes mm-fe-routes/routes
                      :logger (ig/ref :frontend/logging)}
    :frontend/history {:router (ig/ref :frontend/router)
                       :app-db (ig/ref :frontend/state)
+                      :events (ig/ref :frontend/events)
+                      :nav-adapter (ig/ref :nav.adapter/reframe)
                       :logger (ig/ref :frontend/logging)}})
 
 (def production-config
@@ -36,14 +52,25 @@
                         :person-profiles "always"
                         :logger (ig/ref :frontend/logging)}
    :i18n.adapter/tempura {:debug? false}
+   :i18n.adapter/reframe {:logger (ig/ref :frontend/logging)}
+   :frontend/i18n {:translator-adapter (ig/ref :i18n.adapter/tempura)
+                   :state-adapter (ig/ref :i18n.adapter/reframe)
+                   :logger (ig/ref :frontend/logging)}
    :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
                          :logger (ig/ref :frontend/logging)}
+   :events.adapter/reframe {:logger (ig/ref :frontend/logging)}
+   :frontend/events {:adapter (ig/ref :events.adapter/reframe)
+                     :logger (ig/ref :frontend/logging)}
    :frontend/state {:translator (ig/ref :frontend/translator)
+                    :i18n (ig/ref :frontend/i18n)
                     :logger (ig/ref :frontend/logging)}
+   :nav.adapter/reframe {:logger (ig/ref :frontend/logging)}
    :frontend/router {:routes mm-fe-routes/routes
                      :logger (ig/ref :frontend/logging)}
    :frontend/history {:router (ig/ref :frontend/router)
                       :app-db (ig/ref :frontend/state)
+                      :events (ig/ref :frontend/events)
+                      :nav-adapter (ig/ref :nav.adapter/reframe)
                       :logger (ig/ref :frontend/logging)}})
 
 (def frontend-config

@@ -92,6 +92,34 @@
   [logger context]
   (p/-with-context logger context))
 
+(defn safe-error!
+  "Record error with fallback to console if logger is unavailable.
+   
+   Use this for critical error logging during system initialization/shutdown
+   where the logger might not be available. Falls back to console.error if:
+   - logger is nil
+   - logger is invalid
+   - logging itself fails
+   
+   Arguments:
+   - logger: Logger instance (can be nil)
+   - error-data: Map with error information"
+  [logger error-data]
+  (if (and logger (m/validate LoggerSchema logger))
+    (try (p/-error! logger error-data)
+         (catch #?(:clj Exception
+                   :cljs :default)
+           e
+           #?(:clj (println "Logging failed, falling back to print:"
+                            (pr-str error-data) "\n" (pr-str e))
+              :cljs (js/console.error "Logging failed, falling back to console:"
+                                      (clj->js error-data) e))))
+    ;; Logger unavailable, fall back to console
+    #?(:clj (println "Logger unavailable, falling back to print:"
+                     (pr-str error-data))
+       :cljs (js/console.error "Logger unavailable, falling back to console:"
+                               (clj->js error-data)))))
+
 (defmacro ->log!
   "Same as `log!` but returns value."
   [value opts-or-msg]

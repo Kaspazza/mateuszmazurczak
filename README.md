@@ -41,7 +41,96 @@ Infrastructure is wired together using **Integrant** with configuration from `en
 - System files **do import adapters** - that's their job as the composition root
 - Adapters stay pure - no Integrant dependency, just constructors and protocol implementation
 - Adding new adapter = edit system.clj (add defmethod wrapper)
-- Switching between adapters = config change only 
+- Switching between adapters = config change only
+
+### Event System (Frontend)
+
+The frontend uses **registry-based event architecture** to decouple UI from state management implementation.
+
+**Core Components:**
+
+1. **Event Registry** (`events/registry.cljs`)
+   - Single source of truth defining ALL application events
+   - Each event specifies:
+     - `:category` - Logical grouping (`:navigation`, `:page`, `:i18n`)
+     - `:description` - What the event does (behavior, not implementation)
+     - `:schema` - Malli schema for validation
+     - `:handler-type` - `:fx` (side-effects) or `:db` (pure state update)
+
+2. **Event Port** (`events.cljs`)
+   - Public API for event dispatching
+   - Validates adapter completeness (all registry events implemented)
+   - Validates adapter correctness (no unknown events)
+   - **UI code only imports this namespace, never adapters**
+
+3. **Event Adapter** (`events/adapters/reframe/`)
+   - Re-frame implementation of registry contract
+   - Organized by domain: `navigation.cljs`, `i18n.cljs`, `pages/*.cljs`
+   - Exports three things:
+     - `handlers` - Map of `{event-id handler-fn}`
+     - `register-fns` - Map of `{:db reg-event-db, :fx reg-event-fx}`
+     - `get-dispatch-fn` - Returns `re-frame.core/dispatch`
+
+**System Wiring** (`frontend_system.cljs`):
+
+```clojure
+;; 1. Initialize adapter (effects, subscriptions, etc.)
+(defmethod ig/init-key :events.adapter/reframe [_]
+  (events-reframe/init!)  ; Adapter-specific setup
+  {:handlers (events-reframe/handlers)
+   :register-fn (events-reframe/register-fns)
+   :dispatch-fn (events-reframe/get-dispatch-fn)})
+
+;; 2. Wire adapter to event port
+(defmethod ig/init-key :frontend/events [_ {:keys [adapter]}]
+  (events/wire! (:handlers adapter) (:register-fn adapter))
+  (events/set-dispatch! (:dispatch-fn adapter)))
+```
+
+**For UI Developers:**
+
+```clojure
+(require '[mateuszmazurczak.events :as events])
+
+;; Direct dispatch
+(events/dispatch! [:nav/navigate ::routes/home])
+
+;; Or dispatch markers for data-driven UI
+(def data {:on-click [:dispatch [:nav/navigate ::routes/home]]})
+
+;; Convert markers to functions
+(events/dispatch-tree data)
+;; => {:on-click #(events/dispatch! [:nav/navigate ::routes/home])}
+```
+
+**Route Controllers:**
+
+Events integrate with routing via controller pattern (`:controllers` in `routes.cljs`):
+
+```clojure
+["/home" 
+ {:name ::home
+  :panel-id :panels/home
+  :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
+```
+
+When route is entered, controller dispatches page event to load data.
+
+**For Adapter Implementers:**
+
+To replace re-frame with another state management library:
+
+1. **Check registry** - All events in `events/registry.cljs` must be implemented
+2. **Create adapter namespace** - e.g., `events/adapters/xyz/core.cljs`
+3. **Export three things:**
+   - `handlers` - Map of `{event-id handler-fn}` for all registry events
+   - `register-fns` - Map of `{:db your-reg-fn, :fx your-reg-fn}` matching handler types
+   - `get-dispatch-fn` - Returns your dispatch function
+4. **Implement `init!`** - Setup if needed for starting the library  
+5. **Wire in `frontend_system.cljs`** - Create new component for your adapter
+6. **Update config** - Point `:events.adapter` to your new adapter
+
+The port validates everything at system startup (fail-fast), so missing events are caught immediately. 
 
 ### Configuration System
 

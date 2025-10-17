@@ -1,18 +1,18 @@
 (ns mateuszmazurczak.ui.pages.articles
   (:require
    [mateuszmazurczak.articles.core     :as articles]
-   [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
+   [mateuszmazurczak.events            :as events]
+   [mateuszmazurczak.frontend-i18n     :as fi18n]
    [mateuszmazurczak.navigation.routes :as-alias mm-routes]
    [mateuszmazurczak.ui.articles       :as ui-articles]
    [mateuszmazurczak.ui.comments       :as ui-comments]
-   [re-frame.core                      :as rf]
    [reagent.core                       :as r]))
 
 (defn articles-page
   []
   [:div {:class ["mt-12"]}
    [:h1 {:class ["text-4xl/7 font-bold ml-4 mb-8"]}
-    (mm-i18n-translate/tr :articles)]
+    (fi18n/tr :articles)]
    [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
     (doall (for [{:keys [title id]
                   :as article}
@@ -20,9 +20,9 @@
              ^{:key title}
              [ui-articles/article-card
               (merge article
-                     {:on-click #(rf/dispatch [:nav/navigate
-                                               ::mm-routes/article
-                                               {:article-id (name id)}])})]))]])
+                     {:on-click #(events/dispatch! [:nav/navigate
+                                                    ::mm-routes/article
+                                                    {:article-id (name id)}])})]))]])
 (defonce comments
   (r/atom
    [{:id 1

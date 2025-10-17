@@ -1,22 +1,23 @@
 (ns mateuszmazurczak.frontend-system
   "Frontend Integrant system configuration"
   (:require
-   [day8.re-frame.tracing                     :refer [fn-traced]]
-   [integrant.core                            :as ig]
-   [mateuszmazurczak.analytics                :as analytics]
-   [mateuszmazurczak.config                   :as conf]
-   [mateuszmazurczak.error-tracking           :as error-tracking]
-   [mateuszmazurczak.i18n.adapters.tempura    :as i18n-tempura]
-   [mateuszmazurczak.i18n.dict.resources      :as mm-i18n-dict-res]
-   [mateuszmazurczak.i18n.dict.text           :as mm-i18n-dict-txt]
-   [mateuszmazurczak.i18n.translate           :as mm-i18n-translate]
-   [mateuszmazurczak.integrant-utils          :as ig-utils]
-   [mateuszmazurczak.logging                  :as log]
-   [mateuszmazurczak.logging.telemere         :as t]
-   [mateuszmazurczak.navigation.core          :as nav]
-   [mateuszmazurczak.navigation.router.reitit :as router-reitit]
-   [mateuszmazurczak.navigation.routes        :as mm-fe-routes]
-   [re-frame.core                             :as rf]))
+   [integrant.core                                :as ig]
+   [mateuszmazurczak.analytics                    :as analytics]
+   [mateuszmazurczak.config                       :as conf]
+   [mateuszmazurczak.error-tracking               :as error-tracking]
+   [mateuszmazurczak.events                       :as events]
+   [mateuszmazurczak.events.adapters.reframe.core :as events-reframe]
+   [mateuszmazurczak.i18n.adapters.reframe        :as i18n-reframe]
+   [mateuszmazurczak.i18n.adapters.tempura        :as i18n-tempura]
+   [mateuszmazurczak.i18n.dict.resources          :as mm-i18n-dict-res]
+   [mateuszmazurczak.i18n.dict.text               :as mm-i18n-dict-txt]
+   [mateuszmazurczak.integrant-utils              :as ig-utils]
+   [mateuszmazurczak.logging                      :as log]
+   [mateuszmazurczak.logging.telemere             :as t]
+   [mateuszmazurczak.navigation.adapters.reframe  :as nav-reframe]
+   [mateuszmazurczak.navigation.core              :as nav]
+   [mateuszmazurczak.navigation.router.reitit     :as router-reitit]
+   [mateuszmazurczak.state                        :as state]))
 
 (defmethod ig/init-key :frontend/router
   [_ {:keys [routes logger]}]
@@ -31,12 +32,12 @@
 (defmethod ig/halt-key! :frontend/router [_ _router] (nav/set-router! nil))
 
 (defmethod ig/init-key :frontend/history
-  [_ {:keys [router _app-db logger]}]
+  [_ {:keys [router _app-db _events _nav-adapter logger]}]
   (log/log! logger
             {:id ::history-started
              :level :info
              :msg "History started"})
-  (let [history (nav/init-history! router)]
+  (let [history (nav/init-history! router events/dispatch!)]
     (nav/set-history! history)
     history))
 
@@ -44,41 +45,48 @@
   [_ history]
   (when history (nav/stop-history! history) (nav/set-history! nil)))
 
-(def default-db
-  "Default value for front end state"
-  {:name "mateuszmazurczak"
-   :current-route {:panel-id :panels/pending}
-   :lang (mm-i18n-translate/language-strategy)})
-
-(rf/reg-event-db ::initialize-db
-                 (fn-traced [_ _]
-                            ;; Intentionally not using
-                            ;; previous value of db, as it is
-                            ;; an init
-                            default-db))
-
-(rf/reg-event-db ::store-translator
-                 (fn-traced [db [_ translator]]
-                            (assoc db :translator translator)))
-
-(rf/reg-event-db ::system-failed
-                 (fn-traced [db [_ error]]
-                            (assoc db
-                                   :current-route {:panel-id
-                                                   :panels/system-error}
-                                   :system-error error)))
-
-(defmethod ig/init-key :frontend/app-db
-  [_ {:keys [init-db-event translator logger]}]
+(defmethod ig/init-key :events.adapter/reframe
+  [_ {:keys [logger]}]
   (log/log! logger
-            {:id ::app-db-initialized
+            {:id ::events-adapter-initializing
              :level :info
-             :msg "App-db initialized"})
-  (rf/clear-subscription-cache!)
-  (rf/dispatch-sync [init-db-event])
-  (rf/dispatch-sync [::store-translator translator]))
+             :msg "Initializing re-frame events adapter..."})
+  (events-reframe/init!)
+  (log/log! logger
+            {:id ::events-adapter-initialized
+             :level :info
+             :msg "Re-frame events adapter initialized"})
+  {:handlers events-reframe/handlers
+   :register-fn events-reframe/register-fns
+   :dispatch-fn (events-reframe/get-dispatch-fn)})
 
-(defmethod ig/halt-key! :frontend/app-db [_ _] (rf/clear-subscription-cache!))
+(defmethod ig/halt-key! :events.adapter/reframe [_ _] nil)
+
+(defmethod ig/init-key :frontend/events
+  [_ {:keys [logger adapter]}]
+  (log/log! logger
+            {:id ::events-initialized
+             :level :info
+             :msg "Frontend events initialized"})
+  (events/wire! (:handlers adapter) (:register-fn adapter))
+  (events/set-dispatch! (:dispatch-fn adapter))
+  (events/get-dispatch-fn))
+
+(defmethod ig/halt-key! :frontend/events [_ _] (events/set-dispatch! nil) nil)
+
+(defmethod ig/init-key :frontend/state
+  [_ {:keys [translator i18n logger]}]
+  (let [initial-state (state/initial-state translator logger)]
+    (log/log! logger
+              {:id ::state-initialized
+               :level :info
+               :msg "Frontend state initialized"
+               :data {:has-i18n (some? i18n)
+                      :has-translator (some? translator)}})
+    (state/init-app-db! initial-state)
+    initial-state))
+
+(defmethod ig/halt-key! :frontend/state [_ _] (state/reset-app-db!) nil)
 
 (defmethod ig/init-key :frontend/error-tracking
   [_ opts]
@@ -158,6 +166,49 @@
                                 mm-i18n-dict-txt/dict
                                 mm-i18n-dict-res/dict))
 
+(defmethod ig/init-key :i18n.adapter/reframe
+  [_ {:keys [logger]}]
+  (log/log! logger
+            {:id ::reframe-adapter-initializing
+             :level :info
+             :msg "Initializing re-frame i18n adapter..."})
+  (i18n-reframe/init!)
+  (log/log! logger
+            {:id ::reframe-adapter-initialized
+             :level :info
+             :msg "Re-frame i18n adapter initialized"})
+  nil)
+
+(defmethod ig/halt-key! :i18n.adapter/reframe [_ _] nil)
+
+(defmethod ig/init-key :nav.adapter/reframe
+  [_ {:keys [logger]}]
+  (log/log! logger
+            {:id ::nav-adapter-initializing
+             :level :info
+             :msg "Initializing re-frame navigation adapter..."})
+  (nav-reframe/init!)
+  (log/log! logger
+            {:id ::nav-adapter-initialized
+             :level :info
+             :msg "Re-frame navigation adapter initialized"})
+  nil)
+
+(defmethod ig/halt-key! :nav.adapter/reframe [_ _] nil)
+
+(defmethod ig/init-key :frontend/i18n
+  [_ {:keys [translator-adapter state-adapter logger]}]
+  (log/log! logger
+            {:id ::frontend-i18n-started
+             :level :info
+             :msg "Frontend i18n initialized"
+             :data {:translator translator-adapter
+                    :state-adapter state-adapter}})
+  ;; Returns nil - just ensures both adapters are initialized
+  nil)
+
+(defmethod ig/halt-key! :frontend/i18n [_ _] nil)
+
 (defmethod ig/init-key :frontend/translator
   [_ {:keys [adapter logger]}]
   (log/log! logger
@@ -168,69 +219,19 @@
 
 (defmethod ig/halt-key! :frontend/translator [_ _] nil)
 
-(def development-config
-  {:logging.adapter/telemere {:level :debug}
-   :frontend/logging {:level :debug
-                      :adapter (ig/ref :logging.adapter/telemere)
-                      :loki-endpoint conf/LOKI_ENDPOINT}
-   :frontend/error-tracking {:logger (ig/ref :frontend/logging)}
-   :i18n.adapter/tempura {:debug? true}
-   :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
-                         :logger (ig/ref :frontend/logging)}
-   :frontend/app-db {:init-db-event ::initialize-db
-                     :translator (ig/ref :frontend/translator)
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/router {:routes mm-fe-routes/routes
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/history {:router (ig/ref :frontend/router)
-                      :app-db (ig/ref :frontend/app-db)
-                      :logger (ig/ref :frontend/logging)}})
-
-(def production-config
-  {:logging.adapter/telemere {:level :info}
-   :frontend/logging {:level :info
-                      :adapter (ig/ref :logging.adapter/telemere)
-                      :loki-endpoint conf/LOKI_ENDPOINT}
-   :frontend/error-tracking {:logger (ig/ref :frontend/logging)}
-   :frontend/analytics {:api-key conf/POSTHOG_API_KEY
-                        :api-host "https://eu.i.posthog.com"
-                        :person-profiles "always"
-                        :logger (ig/ref :frontend/logging)}
-   :i18n.adapter/tempura {:debug? false}
-   :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
-                         :logger (ig/ref :frontend/logging)}
-   :frontend/app-db {:init-db-event ::initialize-db
-                     :translator (ig/ref :frontend/translator)
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/router {:routes mm-fe-routes/routes
-                     :logger (ig/ref :frontend/logging)}
-   :frontend/history {:router (ig/ref :frontend/router)
-                      :app-db (ig/ref :frontend/app-db)
-                      :logger (ig/ref :frontend/logging)}})
-
-(def frontend-config
-  (if (= "development" conf/ENV) development-config production-config))
-
 (defonce system (atom nil))
 
 (defn start-system!
-  "Start the integrant system and dispatch failure event on error.
+  "Start the integrant system.
    
-   Returns the initialized system on success, throws on critical failures."
+   Returns the initialized system on success, throws on critical failures.
+   Callers are responsible for handling system initialization errors."
   []
   (when-not @system
-    (try (let [sys (ig/init frontend-config)]
-           (reset! system sys)
-           sys)
-         (catch :default e
-           ;; Dispatch failure event so UI shows error page instead of spinner.
-           (rf/dispatch-sync [::system-failed e])
-           (throw e)))))
+    (let [sys (ig/init conf/frontend-config)]
+      (reset! system sys)
+      sys)))
 
 (defn stop-system! [] (when @system (ig/halt! @system) (reset! system nil)))
 
-(defn restart-system!
-  []
-  (stop-system!)
-  (rf/dispatch-sync [::initialize-db])
-  (start-system!))
+(defn restart-system! [] (stop-system!) (start-system!))

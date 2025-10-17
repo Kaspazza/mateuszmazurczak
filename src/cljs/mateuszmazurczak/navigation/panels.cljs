@@ -2,7 +2,7 @@
   "Describes the link between panel names and contents"
   (:require
    [mateuszmazurczak.articles.core     :as articles]
-   [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
+   [mateuszmazurczak.frontend-i18n     :as fi18n]
    [mateuszmazurczak.ui.errors         :as mm-ui-errors]
    [mateuszmazurczak.ui.pages.articles :as pages-articles]
    [mateuszmazurczak.ui.pages.home     :as mm-home]
@@ -13,10 +13,9 @@
 
 (defmethod panels :default
   [_]
-  [mm-ui-errors/not-found {:title (mm-i18n-translate/tr :not-found-page)
-                           :description (mm-i18n-translate/tr
-                                         :not-found-description)
-                           :back-home-text (mm-i18n-translate/tr :back-home)}])
+  [mm-ui-errors/not-found {:title (fi18n/tr :not-found-page)
+                           :description (fi18n/tr :not-found-description)
+                           :back-home-text (fi18n/tr :back-home)}])
 
 (defmethod panels :panels/pending [_] [:div [mm-ui-spinner/spinner]])
 
@@ -29,8 +28,12 @@
     :back-home-text "Refresh Page"}])
 
 (defmethod panels :panels/home
-  [_]
-  [mm-ui-structure/mateuszmazurczak-page-structure [mm-home/home]])
+  [_
+   {:keys [loading?]
+    :as data}]
+  (if (false? loading?)
+    [mm-ui-structure/mateuszmazurczak-page-structure [mm-home/home data]]
+    [mm-ui-spinner/spinner]))
 
 (defmethod panels :panels/articles
   [_]
@@ -44,7 +47,6 @@
     (if article
       [mm-ui-structure/mateuszmazurczak-page-structure
        [pages-articles/article-page article]]
-      [mm-ui-errors/not-found
-       {:title (mm-i18n-translate/tr :not-found-page)
-        :description (mm-i18n-translate/tr :not-found-description)
-        :back-home-text (mm-i18n-translate/tr :back-home)}])))
+      [mm-ui-errors/not-found {:title (fi18n/tr :not-found-page)
+                               :description (fi18n/tr :not-found-description)
+                               :back-home-text (fi18n/tr :back-home)}])))

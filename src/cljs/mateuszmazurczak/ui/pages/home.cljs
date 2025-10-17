@@ -1,19 +1,11 @@
 (ns mateuszmazurczak.ui.pages.home
   "Customer app home page assembly"
   (:require
-   [mateuszmazurczak.articles.core     :as articles]
-   [mateuszmazurczak.i18n.translate    :as mm-i18n-translate]
-   [mateuszmazurczak.navigation.core   :as navigation]
-   [mateuszmazurczak.navigation.routes :as mm-routes]
-   [mateuszmazurczak.ui.articles       :as ui-articles]
-   [mateuszmazurczak.ui.navigation     :as mm-ui-navigation]
-   [re-frame.core                      :as rf]))
-
-
-
+   [mateuszmazurczak.ui.articles   :as ui-articles]
+   [mateuszmazurczak.ui.navigation :as mm-ui-navigation]))
 
 (defn about-me
-  []
+  [{:keys [welcome-text description contact-info]}]
   [:div {:class "hero-content flex-col lg:flex-row max-w-screen justify-evenly"
          :style {:background
                  "linear-gradient(85deg, rgb(170 137 173) 41%, #fff 100%)"}}
@@ -24,35 +16,24 @@
     [:img {:src "img/mateusz_mazurczak.png"}]]
    [:div
     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold"}
-     (mm-i18n-translate/tr :hi-mati)]
+     welcome-text]
     [:p {:class "py-6 text-md md:text-xl lg:text-3xl"}
-     (mm-i18n-translate/tr :i-like-simplicity)
+     description
      [:br]]
     [:p {:class "py-6 text-md md:text-xl lg:text-3xl"}
-     (mm-i18n-translate/tr :contact-me)]]])
-
-(defn mateuszmazurczak-page
-  []
-  [:div
-   [about-me]
-   [:div {:class ["flex flex-col pt-8 p-12 lg:p-36 lg:pt-14 gap-14"]}
-    [:span {:class ["text-4xl/7 font-bold ml-4"]}
-     [mm-ui-navigation/navigation {:href (navigation/href ::mm-routes/articles)
-                                   :text (mm-i18n-translate/tr :articles)
-                                   :dark? true}]]
-    [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
-     (doall (for [{:keys [title id]
-                   :as article}
-                  articles/articles]
-              ^{:key title}
-              [ui-articles/article-card
-               (merge article
-                      {:on-click #(rf/dispatch [:nav/navigate
-                                                ::mm-routes/article
-                                                {:article-id (name
-                                                              id)}])})]))]]])
+     contact-info]]])
 
 (defn home
-  "Functional component for displaying mateuszmazurczak page sections."
-  []
-  [mateuszmazurczak-page])
+  [{:keys [about-me-section navigation articles]}]
+  [:div
+   [about-me about-me-section]
+   [:div {:class ["flex flex-col pt-8 p-12 lg:p-36 lg:pt-14 gap-14"]}
+    [:span {:class ["text-4xl/7 font-bold ml-4"]}
+     [mm-ui-navigation/navigation {:href (:href navigation)
+                                   :text (:text navigation)
+                                   :dark? (:dark-mode navigation)}]]
+    [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
+     (doall (for [{:keys [title]
+                   :as article}
+                  articles]
+              ^{:key title} [ui-articles/article-card article]))]]])

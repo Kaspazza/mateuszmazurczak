@@ -1,0 +1,2 @@
+{:log-path "/tmp/clojure-lsp.out"
+ :source-paths #{"env" "src" "test"}}

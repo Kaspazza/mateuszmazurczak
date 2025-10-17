@@ -47,6 +47,18 @@
              (throw (ex-info "Failed to translate text"
                              {:language language
                               :id id}
+                             e)))))
+    (-translate [_ language id params]
+      (try (tempura/tr translation-opts
+                       (if (vector? language) language [language])
+                       [id params])
+           (catch #?(:clj Exception
+                     :cljs :default)
+             e
+             (throw (ex-info "Failed to translate text with params"
+                             {:language language
+                              :id id
+                              :params params}
                              e))))))
 
 (defn make-translator

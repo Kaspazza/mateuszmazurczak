@@ -12,15 +12,14 @@
    :compiler-options {:infer-externs :auto
                       :optimizations :advanced}
    :dev {:compiler-options {:closure-defines
-                            {day8.re-frame.tracing.trace-enabled? true
-                             mateuszmazurczak.config/ENV "development"
-                             re-frame.trace.trace-enabled? true}}
+                            {mateuszmazurczak.config/ENV "development"
+                             "re_frame.trace.trace_enabled_QMARK_" true}}
          :modules {:portfolio {:depends-on #{:mateuszmazurczak-share}
                                :entries [mateuszmazurczak.portfolio.portfolio]
                                :init-fn
                                mateuszmazurczak.portfolio.portfolio/init}}}
    :devtools {:after-load mateuszmazurczak.frontend-core/re-render
-              :preloads [day8.re-frame-10x.preload.react-18]
+              :preloads [re-frisk.preload]
               :repl-pprint true
               :watch-dir "resources/public"}
    :modules {:mateuszmazurczak-frontend-core
@@ -28,9 +27,7 @@
               :init-fn mateuszmazurczak.frontend-core/init!}
              :mateuszmazurczak-share {:entries []}}
    :output-dir "resources/public/js/compiled"
-   :release {:build-options {:cache-level :off
-                             :ns-aliases {day8.re-frame.tracing
-                                          day8.re-frame.tracing-stubs}}
+   :release {:build-options {:cache-level :off}
              :closure-defines {mateuszmazurczak.config/ENV "production"
                                mateuszmazurczak.config/LOG_SENTRY_DNS ""
                                mateuszmazurczak.config/LOKI_ENDPOINT ""

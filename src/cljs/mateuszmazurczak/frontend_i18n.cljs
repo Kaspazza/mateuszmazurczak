@@ -2,14 +2,17 @@
   "Frontend i18n port - public API for internationalization in the browser.
   
   This is the ONLY namespace that UI components should require for i18n.
-  It extends core i18n with browser-specific functionality and hides
-  implementation details (re-frame, state management, etc.)."
+  It extends core i18n with browser-specific functionality.
+  
+  This is a hybrid port - provides API and directly uses state/events ports."
   (:require
-   [clojure.walk                           :as walk]
-   [mateuszmazurczak.i18n.adapters.reframe :as reframe-adapter]
-   [mateuszmazurczak.i18n.language         :as i18n-lang]
-   [mateuszmazurczak.utils.cookies         :as mm-cookies]
-   [mateuszmazurczak.utils.url             :as utils-url]))
+   [clojure.walk                   :as walk]
+   [mateuszmazurczak.events        :as events]
+   [mateuszmazurczak.i18n          :as i18n]
+   [mateuszmazurczak.i18n.language :as i18n-lang]
+   [mateuszmazurczak.state         :as state]
+   [mateuszmazurczak.utils.cookies :as mm-cookies]
+   [mateuszmazurczak.utils.url     :as utils-url]))
 
 ;; Language Strategy (initialization)
 
@@ -40,7 +43,7 @@
 (defn tr
   "Translate a key to text in the current language.
   
-  This is a reactive function that subscribes to the current language and translator
+  This is a reactive function that watches the current language and translator
   from the application state. Use this in Reagent components for automatic re-rendering
   when language changes.
   
@@ -54,7 +57,13 @@
     (tr :articles) ;; => \"Articles\" or \"Artykuły\" depending on current lang
     (tr :greeting {:name \"John\"}) ;; => \"Hello, John!\" with interpolation"
   ([tr-id] (tr tr-id nil))
-  ([tr-id params] (reframe-adapter/reactive-tr tr-id params)))
+  ([tr-id params]
+   (let [lang @(state/watch [:i18n/lang])
+         translator @(state/watch [:i18n/translator])]
+     (when translator
+       (if params
+         (i18n/tr translator lang tr-id params)
+         (i18n/tr translator lang tr-id))))))
 
 (defn- i18n-marker?
   "Check if a value is an i18n translation marker.
@@ -102,18 +111,18 @@
 (defn current-language
   "Get the current language as a keyword.
   
-  This is a reactive subscription - components will re-render when language changes.
+  This is a reactive watch - components will re-render when language changes.
   
   Returns: language keyword (e.g., :en, :pl)"
   []
-  (reframe-adapter/current-language))
+  @(state/watch [:i18n/lang]))
 
 (defn current-language-str
   "Get the current language as a UI string.
   
   Returns: language string (e.g., \"English\", \"Polski\")"
   []
-  (reframe-adapter/current-language-str))
+  @(state/watch [:i18n/lang-str]))
 
 (defn change-language!
   "Change the current language.
@@ -123,6 +132,6 @@
   Params:
   * `lang-evt` - DOM event from language selector (e.target.value will be used)"
   [lang-evt]
-  (reframe-adapter/change-language! lang-evt))
+  (events/dispatch! [:i18n/change-lang lang-evt]))
 
 

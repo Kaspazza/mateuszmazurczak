@@ -9,33 +9,6 @@
    [re-frame.core                    :as rf]))
 
 ;; =============================================================================
-;; Subscriptions
-;; =============================================================================
-
-(rf/reg-sub :nav/current-route (fn [db _] (:current-route db)))
-
-(rf/reg-sub :nav/current-panel
-            :<-
-            [:nav/current-route]
-            (fn [current-route] (:panel-id current-route)))
-
-(rf/reg-sub :nav/path-params
-            :<-
-            [:nav/current-route]
-            (fn [current-route _] (nav-core/path-params current-route)))
-
-(rf/reg-sub :nav/query-params
-            :<-
-            [:nav/current-route]
-            (fn [current-route _] (nav-core/query-params current-route)))
-
-(rf/reg-sub :nav/active-route?
-            :<-
-            [:nav/current-route]
-            (fn [current-route [_ route-name]]
-              (= route-name (nav-core/route-name current-route))))
-
-;; =============================================================================
 ;; Effects 
 ;; =============================================================================
 

@@ -4,12 +4,11 @@
    [mateuszmazurczak.config            :as config]
    [mateuszmazurczak.logging           :as log]
    [mateuszmazurczak.navigation.panels :as mm-nav-panels]
-   [mateuszmazurczak.pages.home.subs]
-   [re-frame.core                      :as rf]))
+   [mateuszmazurczak.state             :as state]))
 
 (defn handle-page-ex
   [page-data panel-id]
-  (let [logger @(rf/subscribe [:logger])]
+  (let [logger @(state/watch [:logger])]
     (when (and (map? page-data) (not (:valid? page-data)))
       (if (config/development?)
         (throw (ex-info "Translated home page data validation failed"
@@ -30,13 +29,15 @@
 (defn router-component
   "Component to route to the current panel based on current-route.
    
-   Subscribes to current route and fetches appropriate page data
+   Watch current route and fetches appropriate page data
    based on panel-id, then passes both to the panels multimethod."
   []
-  (let [current-route @(rf/subscribe [:nav/current-route])
+  (let [current-route @(state/watch [:nav/current-route])
         panel-id (:panel-id current-route)
-        page-data (when-let [existing-sub (rf/subscribe [panel-id])]
-                    @existing-sub)]
+        ;;TODO Other panels than home will be covered soon and this when will not be needed
+        page-data (when (and panel-id
+                             (contains? (set (keys state/watch-reg)) panel-id))
+                    @(state/watch [panel-id]))]
     (handle-page-ex page-data panel-id)
     [mm-nav-panels/panels current-route (:data page-data)]))
 

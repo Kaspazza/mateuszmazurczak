@@ -7,17 +7,17 @@
    [mateuszmazurczak.error-tracking               :as error-tracking]
    [mateuszmazurczak.events                       :as events]
    [mateuszmazurczak.events.adapters.reframe.core :as events-reframe]
-   [mateuszmazurczak.i18n.adapters.reframe        :as i18n-reframe]
+   [mateuszmazurczak.frontend-i18n                :as fi18n]
    [mateuszmazurczak.i18n.adapters.tempura        :as i18n-tempura]
    [mateuszmazurczak.i18n.dict.resources          :as mm-i18n-dict-res]
    [mateuszmazurczak.i18n.dict.text               :as mm-i18n-dict-txt]
    [mateuszmazurczak.integrant-utils              :as ig-utils]
    [mateuszmazurczak.logging                      :as log]
    [mateuszmazurczak.logging.telemere             :as t]
-   [mateuszmazurczak.navigation.adapters.reframe  :as nav-reframe]
    [mateuszmazurczak.navigation.core              :as nav]
    [mateuszmazurczak.navigation.router.reitit     :as router-reitit]
-   [mateuszmazurczak.state                        :as state]))
+   [mateuszmazurczak.state                        :as state]
+   [mateuszmazurczak.state.adapters.reframe.watch :as watch-reframe]))
 
 (defmethod ig/init-key :frontend/router
   [_ {:keys [routes logger]}]
@@ -32,7 +32,7 @@
 (defmethod ig/halt-key! :frontend/router [_ _router] (nav/set-router! nil))
 
 (defmethod ig/init-key :frontend/history
-  [_ {:keys [router _app-db _events _nav-adapter logger]}]
+  [_ {:keys [router _app-db _events logger]}]
   (log/log! logger
             {:id ::history-started
              :level :info
@@ -74,19 +74,46 @@
 
 (defmethod ig/halt-key! :frontend/events [_ _] (events/set-dispatch! nil) nil)
 
-(defmethod ig/init-key :frontend/state
-  [_ {:keys [translator i18n logger]}]
-  (let [initial-state (state/initial-state translator logger)]
-    (log/log! logger
-              {:id ::state-initialized
-               :level :info
-               :msg "Frontend state initialized"
-               :data {:has-i18n (some? i18n)
-                      :has-translator (some? translator)}})
-    (state/init-app-db! initial-state)
-    initial-state))
+(defmethod ig/init-key :watch.adapter/reframe
+  [_ {:keys [logger]}]
+  (log/log! logger
+            {:id ::watch-adapter-initializing
+             :level :info
+             :msg "Initializing re-frame watch adapter..."})
+  (watch-reframe/init!)
+  (log/log! logger
+            {:id ::watch-adapter-initialized
+             :level :info
+             :msg "Re-frame watch adapter initialized"})
+  {:watch watch-reframe/watch
+   :watch-fn (watch-reframe/get-watch-fn)})
 
-(defmethod ig/halt-key! :frontend/state [_ _] (state/reset-app-db!) nil)
+(defmethod ig/halt-key! :watch.adapter/reframe [_ _] nil)
+
+(defmethod ig/init-key :frontend/state
+  [_ {:keys [translator logger watch-adapter]}]
+  (log/log! logger
+            {:id ::state-watch-wiring
+             :level :info
+             :msg "Wiring state watch..."})
+  (state/wire-watch! (:watch watch-adapter) (:watch-fn watch-adapter))
+  (log/log! logger
+            {:id ::state-watch-wired
+             :level :info
+             :msg "State watch wired"})
+  (log/log! logger
+            {:id ::state-initialized
+             :level :info
+             :msg "Frontend state initialized"
+             :data {:has-translator (some? translator)}})
+  (state/init-app-db!
+   (state/initial-state translator logger (fi18n/language-strategy))))
+
+(defmethod ig/halt-key! :frontend/state
+  [_ _]
+  (state/set-watch-fn! nil)
+  (state/reset-app-db!)
+  nil)
 
 (defmethod ig/init-key :frontend/error-tracking
   [_ opts]
@@ -166,35 +193,7 @@
                                 mm-i18n-dict-txt/dict
                                 mm-i18n-dict-res/dict))
 
-(defmethod ig/init-key :i18n.adapter/reframe
-  [_ {:keys [logger]}]
-  (log/log! logger
-            {:id ::reframe-adapter-initializing
-             :level :info
-             :msg "Initializing re-frame i18n adapter..."})
-  (i18n-reframe/init!)
-  (log/log! logger
-            {:id ::reframe-adapter-initialized
-             :level :info
-             :msg "Re-frame i18n adapter initialized"})
-  nil)
 
-(defmethod ig/halt-key! :i18n.adapter/reframe [_ _] nil)
-
-(defmethod ig/init-key :nav.adapter/reframe
-  [_ {:keys [logger]}]
-  (log/log! logger
-            {:id ::nav-adapter-initializing
-             :level :info
-             :msg "Initializing re-frame navigation adapter..."})
-  (nav-reframe/init!)
-  (log/log! logger
-            {:id ::nav-adapter-initialized
-             :level :info
-             :msg "Re-frame navigation adapter initialized"})
-  nil)
-
-(defmethod ig/halt-key! :nav.adapter/reframe [_ _] nil)
 
 (defmethod ig/init-key :frontend/i18n
   [_ {:keys [translator-adapter state-adapter logger]}]

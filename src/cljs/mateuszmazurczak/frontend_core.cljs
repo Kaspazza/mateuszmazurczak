@@ -5,8 +5,9 @@
    [mateuszmazurczak.logging         :as log]
    [mateuszmazurczak.navigation.core]
    [mateuszmazurczak.routing         :as lm]
-   [mateuszmazurczak.state           :as state]
-   [reagent.dom.client               :as rdc]))
+   [mateuszmazurczak.ui.errors       :as mm-ui-errors]
+   [reagent.dom.client               :as rdc]
+   [reagent.dom.server               :as rds]))
 
 (defn render-id
   [app-id component]
@@ -47,10 +48,9 @@
 (defn handle-init-failure!
   "Handle system initialization failure by showing error UI.
    
-   This function:
-   1. Logs the error (falls back to console if logger unavailable)
-   2. Initializes minimal app-db with error state
-   3. Mounts the React root to show error screen
+   Bypasses the entire React/state system and uses Reagent server-side rendering
+   to convert our error page hiccup to HTML string. This ensures error screen
+   shows even if the state system is completely broken.
    
    Arguments:
    - error: The error that occurred during system initialization"
@@ -59,16 +59,16 @@
                    {:error error
                     :id ::app-init-failed
                     :data {:stage "initialization"}})
-  (try (state/init-app-db! {:current-route {:panel-id :panels/system-error}
-                            :system-error error})
-       ;; Mount the UI to show the error screen
-       (mount-root)
-       (catch :default mount-error
-         ;; In case even mounting fails
-         (log/safe-error! (get @sys/system :frontend/logging)
-                          {:error mount-error
-                           :id ::mount-error-during-init-failure
-                           :data {:original-error error}}))))
+  (when-let [app-el (js/document.getElementById "app")]
+    (set!
+     (.-innerHTML app-el)
+     (rds/render-to-static-markup
+      [mm-ui-errors/internal-error
+       {:title "System Initialization Failed"
+        :description
+        "We encountered an error while starting the application. Please refresh the page or contact support if the problem persists."
+        :back-home-text "Refresh Page"
+        :back-link "javascript:window.location.reload()"}]))))
 
 (defn ^:export init!
   []

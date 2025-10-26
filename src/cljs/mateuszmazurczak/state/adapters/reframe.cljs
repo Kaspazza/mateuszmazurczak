@@ -3,16 +3,7 @@
   (:require
    [re-frame.core :as rf]))
 
-;; Event registrations
-(rf/reg-event-db
- ::initialize-db
- (fn [_db [_ initial-state]]
-   initial-state))
-
-;; Subscription registrations
-(rf/reg-sub :logger (fn [db _] (:logger db)))
-
-;; Public adapter API
+(rf/reg-event-db ::initialize-db (fn [_db [_ initial-state]] initial-state))
 
 (defn init-db!
   "Initialize the app-db with the given initial state."

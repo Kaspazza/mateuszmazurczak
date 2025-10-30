@@ -33,10 +33,7 @@
   (when (or (not (fn? valid-fn)) (not (valid-fn (:arguments cli-opts))))
     (println "Arguments are not valid.")
     (println)
-    (println (cli-opts/print-usage-with-arguments cli-opts
-                                                  (:name current-task)
-                                                  doc-str
-                                                  message))
+    (println (cli-opts/print-usage-with-arguments cli-opts (:name current-task) doc-str message))
     (exit-codes/exit exit-codes/invalid-argument))
   (when-let [message (cli-opts/error-msg cli-opts)]
     (println message)

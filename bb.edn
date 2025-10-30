@@ -3,13 +3,11 @@
  :tasks
  {-base-deps {:doc "Dependencies for a task using bb"
               :extra-deps {org.clojure/tools.cli {:mvn/version "1.2.245"}}}
-  -dev-launch
-  {:depends [-dev-launch:css-watch -dev-launch:fe-watch -dev-launch:start-repl]}
-  -dev-launch:css-watch
-  {:doc "Watch the css modifications"
-   :enter (common/enter dev-launch/cli-opts (current-task))
-   :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
-   :task (dev-launch/css-watch)}
+  -dev-launch {:depends [-dev-launch:css-watch -dev-launch:fe-watch -dev-launch:start-repl]}
+  -dev-launch:css-watch {:doc "Watch the css modifications"
+                         :enter (common/enter dev-launch/cli-opts (current-task))
+                         :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
+                         :task (dev-launch/css-watch)}
   -dev-launch:db {:doc "Start datomic db"
                   :enter (common/enter dev-launch/cli-opts (current-task))
                   :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
@@ -17,14 +15,12 @@
   -dev-launch:fe-watch {:doc "Watch the frontend."
                         :enter (common/enter dev-launch/cli-opts (current-task))
                         :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
-                        :task (dev-launch/fe-watch
-                               [:ltest :mateuszmazurczak-app :browser-test])}
-  -dev-launch:start-repl
-  {:doc "Start the clojure REPL."
-   :enter (common/enter dev-launch/cli-opts (current-task))
-   :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
-   :task (dev-launch/start-repl
-          [:common-test :env-development-repl :1.12-storm])}
+                        :task (dev-launch/fe-watch [:ltest :mateuszmazurczak-app :browser-test])}
+  -dev-launch:start-repl {:doc "Start the clojure REPL."
+                          :enter (common/enter dev-launch/cli-opts (current-task))
+                          :requires [[mateuszmazurczak.dev-launch :as dev-launch]]
+                          :task (dev-launch/start-repl
+                                 [:common-test :env-development-repl :1.12-storm])}
   :requires [[mateuszmazurczak.common :as common]]
   article {:depends [-base-deps]
            :doc "Generate HTML from articles"
@@ -60,59 +56,44 @@
   docker-build
   {:depends [-base-deps]
    :doc "Build Docker image (requires version: bb docker-build <version>)"
-   :enter (common/enter-with-arguments docker/cli-opts
-                                       (current-task)
-                                       docker/arguments-validation)
+   :enter (common/enter-with-arguments docker/cli-opts (current-task) docker/arguments-validation)
    :extra-deps {}
    :requires [[mateuszmazurczak.tasks.docker :as docker]]
    :task (docker/run "build")}
   docker-build-push
   {:depends [-base-deps]
-   :doc
-   "Build and push Docker image (requires version: bb docker-build-push <version>)"
-   :enter (common/enter-with-arguments docker/cli-opts
-                                       (current-task)
-                                       docker/arguments-validation)
+   :doc "Build and push Docker image (requires version: bb docker-build-push <version>)"
+   :enter (common/enter-with-arguments docker/cli-opts (current-task) docker/arguments-validation)
    :extra-deps {}
    :requires [[mateuszmazurczak.tasks.docker :as docker]]
    :task (docker/run "build-push")}
   docker-push
   {:depends [-base-deps]
-   :doc
-   "Push Docker image to registry (requires version: bb docker-push <version>)"
-   :enter (common/enter-with-arguments docker/cli-opts
-                                       (current-task)
-                                       docker/arguments-validation)
+   :doc "Push Docker image to registry (requires version: bb docker-push <version>)"
+   :enter (common/enter-with-arguments docker/cli-opts (current-task) docker/arguments-validation)
    :extra-deps {}
    :requires [[mateuszmazurczak.tasks.docker :as docker]]
    :task (docker/run "push")}
   docker-run
   {:depends [-base-deps]
-   :doc
-   "Run Docker image locally with --rm (requires version: bb docker-run <version>)"
-   :enter (common/enter-with-arguments docker/cli-opts
-                                       (current-task)
-                                       docker/arguments-validation)
+   :doc "Run Docker image locally with --rm (requires version: bb docker-run <version>)"
+   :enter (common/enter-with-arguments docker/cli-opts (current-task) docker/arguments-validation)
    :extra-deps {}
    :requires [[mateuszmazurczak.tasks.docker :as docker]]
    :task (docker/run "run")}
   format {:doc "zprint format"
-          :task (try (-> (babashka.process/shell
-                          "zprint -w **/*.clj **/*.cljs **/*.cljc **/*.edn"
-                          *command-line-args*)
+          :task (try (-> (babashka.process/shell "zprint -w **/*.clj **/*.cljs **/*.cljc **/*.edn"
+                                                 *command-line-args*)
                          System/exit)
                      (catch Exception e
-                       (println "Repl failed also - error during repl startup"
-                                (ex-message e))))}
+                       (println "Repl failed also - error during repl startup" (ex-message e))))}
   lconnect {:doc "Repl in case dev-launch is failing"
-            :task (try (-> (babashka.process/shell
-                            "clojure"
-                            "-M:common-test:env-development-repl"
-                            *command-line-args*)
+            :task (try (-> (babashka.process/shell "clojure"
+                                                   "-M:common-test:env-development-repl"
+                                                   *command-line-args*)
                            System/exit)
                        (catch Exception e
-                         (println "Repl failed also - error during repl startup"
-                                  (ex-message e))))}
+                         (println "Repl failed also - error during repl startup" (ex-message e))))}
   lint {:depends [-base-deps]
         :doc "Linting"
         :enter (common/enter lint/cli-opts (current-task))

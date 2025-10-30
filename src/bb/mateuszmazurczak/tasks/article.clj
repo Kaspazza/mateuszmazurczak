@@ -11,9 +11,7 @@
 
 (def md-dir "public/article/content")
 
-(defn ensure-dir!
-  [dir]
-  (let [f (io/file dir)] (when-not (.exists f) (.mkdirs f))))
+(defn ensure-dir! [dir] (let [f (io/file dir)] (when-not (.exists f) (.mkdirs f))))
 
 (defn read-md-content
   [article]
@@ -47,23 +45,20 @@
       {:d
        "M216,148H172V108h44a12,12,0,0,0,0-24H172V40a12,12,0,0,0-24,0V84H108V40a12,12,0,0,0-24,0V84H40a12,12,0,0,0,0,24H84v40H40a12,12,0,0,0,0,24H84v44a12,12,0,0,0,24,0V172h40v44a12,12,0,0,0,24,0V172h44a12,12,0,0,0,0-24Zm-108,0V108h40v40Z"}]]]])
 
-(defn append-header-ref
-  [[htag opts text]]
-  [htag opts (header-ref (:id opts)) text])
+(defn append-header-ref [[htag opts text]] [htag opts (header-ref (:id opts)) text])
 
 
 (defn update-resource-path [s] (str "img/" s))
 
 (defn update-hiccup
   [hiccup]
-  (walk/postwalk
-   (fn [x]
-     (cond
-       (and (vector? x) (= (first x) :pre)) (into [:pre.code] (rest x))
-       (and (map? x) (:src x)) (assoc x :src (update-resource-path (:src x)))
-       (and (vector? x) (= (first x) :h2)) (append-header-ref x)
-       :else x))
-   hiccup))
+  (walk/postwalk (fn [x]
+                   (cond
+                     (and (vector? x) (= (first x) :pre)) (into [:pre.code] (rest x))
+                     (and (map? x) (:src x)) (assoc x :src (update-resource-path (:src x)))
+                     (and (vector? x) (= (first x) :h2)) (append-header-ref x)
+                     :else x))
+                 hiccup))
 
 
 (defn render-article!
@@ -74,19 +69,13 @@
         ast (md/parse md-content)
         hiccup (md/->hiccup ast)
         updated-hiccup (update-hiccup hiccup)
-        ns-name (str "mateuszmazurczak.articles." (name id))
-        clj-file-path (str "src/cljc/mateuszmazurczak/articles/"
-                           (str/replace (name id) #"-" "_")
-                           ".cljc")
-        clj-content (str "(ns "
-                         ns-name
-                         ")\n\n"
-                         "(def article-content\n"
-                         (pr-str updated-hiccup)
-                         ")\n")
+        ns-name (str "mateuszmazurczak.domain.articles." (name id))
+        clj-file-path
+        (str "src/cljc/mateuszmazurczak/articles/" (str/replace (name id) #"-" "_") ".cljc")
+        clj-content
+        (str "(ns " ns-name ")\n\n" "(def article-content\n" (pr-str updated-hiccup) ")\n")
         ;;If html is needed
-        #_#_#_#_html (str (h/html hiccup)) out-file
-          (str output-dir "/" id ".html")]
+        #_#_#_#_html (str (h/html hiccup)) out-file (str output-dir "/" id ".html")]
     (spit clj-file-path clj-content)))
 
 

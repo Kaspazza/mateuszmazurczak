@@ -14,8 +14,7 @@
 (defn is-existing-file?
   "Returns true if `filename` path already exist and is not a directory."
   [filename]
-  (when (and (is-existing-path? filename) (not (fs/directory? filename)))
-    filename))
+  (when (and (is-existing-path? filename) (not (fs/directory? filename))) filename))
 
 (defn is-existing-dir?
   "Check if this the path exist and is a directory."
@@ -51,17 +50,13 @@
   "Deletes the files which are given in the list.
   They could be regular files or directory, when so the whole subtreee will be removed"
   [file-list]
-  (normalln (str "Starting removal of cache: \n"
-                 (with-out-str (pp/pprint file-list))))
-  (try (let [removed-files (mapv (fn [file]
-                                   (let [res (delete-path file)]
-                                     (when (not (or (= res file) (nil? res)))
-                                       {file res})))
-                                 file-list)]
-         (if (every? nil? removed-files)
-           (h1-valid! "Cache cleaned")
-           (h1-error! "Removal failed for: "
-                      (with-out-str (pp/pprint (remove nil?)))
-                      removed-files)))
-       (catch Exception e
-         (h1-error! "There was a problem while removing files" e))))
+  (normalln (str "Starting removal of cache: \n" (with-out-str (pp/pprint file-list))))
+  (try
+    (let [removed-files (mapv (fn [file]
+                                (let [res (delete-path file)]
+                                  (when (not (or (= res file) (nil? res))) {file res})))
+                              file-list)]
+      (if (every? nil? removed-files)
+        (h1-valid! "Cache cleaned")
+        (h1-error! "Removal failed for: " (with-out-str (pp/pprint (remove nil?))) removed-files)))
+    (catch Exception e (h1-error! "There was a problem while removing files" e))))

@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.core
   "Gather all components to start production app"
   (:require
-   [integrant.core           :as ig]
-   [mateuszmazurczak.config  :as config]
-   [mateuszmazurczak.logging :as logging]
-   [mateuszmazurczak.system])
+   [integrant.core                 :as ig]
+   [mateuszmazurczak.config        :as config]
+   [mateuszmazurczak.ports.logging :as logging]
+   [mateuszmazurczak.system.components])
   (:gen-class))
 
 (defn -main
@@ -14,13 +14,12 @@
              full-config (config/load-config)
              system (ig/init system-config)
              logger (:sys/logging system)]
-         (logging/log!
-          logger
-          {:id ::application-started
-           :level :info
-           :msg (str "Application started successfully with environment: "
-                     (:env full-config))
-           :data {:env (:env full-config)}})
+         (logging/log! logger
+                       {:id ::application-started
+                        :level :info
+                        :msg (str "Application started successfully with environment: "
+                                  (:env full-config))
+                        :data {:env (:env full-config)}})
          system)
        (catch Throwable e
          ;; At this point logging system might not be initialized yet

@@ -3,8 +3,7 @@
    [mateuszmazurczak.portfolio.utils :as mm-portfolio-utils]
    [mateuszmazurczak.ui.pages.home   :as sut]
    [portfolio.reagent-18             :as           portfolio
-                                     :refer-macros [defscene
-                                                    configure-scenes]]))
+                                     :refer-macros [defscene configure-scenes]]))
 
 (configure-scenes {:collection :mateuszmazurczak
                    :title "Mateuszmazurczak page"})

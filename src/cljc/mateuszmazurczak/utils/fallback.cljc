@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.utils.fallback
   "Fallback utilties"
   (:require
-   [mateuszmazurczak.logging :as log])
+   [mateuszmazurczak.ports.logging :as log])
   #?(:cljs (:require-macros [mateuszmazurczak.utils.fallback])))
 
 (defn cljs-env?

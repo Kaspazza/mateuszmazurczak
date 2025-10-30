@@ -22,7 +22,6 @@
     :as project-map}]
   (let [project-config-filedesc (read-from-dir app-dir)]
     (assoc project-map
-           :project-config-filedesc (when-not (:invalid?
-                                               project-config-filedesc)
+           :project-config-filedesc (when-not (:invalid? project-config-filedesc)
                                       project-config-filedesc)
            :app-name (get-in project-config-filedesc [:edn :app-name]))))

@@ -32,10 +32,7 @@
   ([k v time] (.set (gnc/getInstance) (str k) v time "/"))
   ([k v] (.set (gnc/getInstance) (str k) v -1)))
 
-(defn get-cookie
-  "Get the the cookie map of data"
-  []
-  (parse-cookie (str (.-cookie js/document))))
+(defn get-cookie "Get the the cookie map of data" [] (parse-cookie (str (.-cookie js/document))))
 
 (defn get-cookie-val
   "Get the value of a key

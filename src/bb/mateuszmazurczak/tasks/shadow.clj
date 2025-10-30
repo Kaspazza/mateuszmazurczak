@@ -9,12 +9,10 @@
 (defn read-dir
   "Read the project `shadow-cljs.edn`, echo in terminal if an error occur."
   [project-dir]
-  (let [file-desc (file/read-edn
-                   (str project-dir fs/file-separator "shadow-cljs.edn"))
+  (let [file-desc (file/read-edn (str project-dir fs/file-separator "shadow-cljs.edn"))
         success? (not (:invalid? file-desc))]
     (when-not success?
-      (errorln
-       "Unexpected error, shadow-cljs has not been found in project `project-dir`."))
+      (errorln "Unexpected error, shadow-cljs has not been found in project `project-dir`."))
     (:edn file-desc)))
 
 (defn build
@@ -32,10 +30,7 @@
       (concat shadow-cljs-aliases)
       vec))
 
-(defn install-cmd
-  "Install components setup in `package.json`."
-  []
-  ["npm install"])
+(defn install-cmd "Install components setup in `package.json`." [] ["npm install"])
 
 (defn cljs-compile-cmd
   "Command to compile the `builds` (vector of strings)."
@@ -58,12 +53,9 @@
         sentry-dsn (or (get-in config [env-profile :sentry :frontend :dsn])
                        (System/getenv "SENTRY_FRONTEND_DSN")
                        "")
-        loki (or (get-in config [env-profile :loki :endpoint])
-                 (System/getenv "LOKI_ENDPOINT")
-                 "")
-        posthog-api-key (or (get-in config [env-profile :posthog :api-key])
-                            (System/getenv "POSTHOG_API_KEY")
-                            "")]
+        loki (or (get-in config [env-profile :loki :endpoint]) (System/getenv "LOKI_ENDPOINT") "")
+        posthog-api-key
+        (or (get-in config [env-profile :posthog :api-key]) (System/getenv "POSTHOG_API_KEY") "")]
     {:closure-defines {'mateuszmazurczak.config/ENV (name env-profile)
                        'mateuszmazurczak.config/LOG_SENTRY_DNS sentry-dsn
                        'mateuszmazurczak.config/POSTHOG_API_KEY posthog-api-key
@@ -77,12 +69,7 @@
 (defn cljs-compile-release-cmd
   "Command to compile the `builds` (vector of strings) with production config."
   [build]
-  ["npx"
-   "shadow-cljs"
-   "release"
-   build
-   "--config-merge"
-   (str "'" (production-config-merge) "'")])
+  ["npx" "shadow-cljs" "release" build "--config-merge" (str "'" (production-config-merge) "'")])
 
 (defn karma-test-cmd
   "Returns a command to launch karma test."

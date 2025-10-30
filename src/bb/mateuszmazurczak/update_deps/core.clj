@@ -4,10 +4,7 @@
    [mateuszmazurczak.update-deps.clj-deps :as build-project-clj]
    [mateuszmazurczak.update-deps.npm-deps :as build-project-npm]))
 
-(defn type-schema
-  "Type of dependency registry"
-  []
-  [:or [:clj-dep :keyword] [:npm :keyword]])
+(defn type-schema "Type of dependency registry" [] [:or [:clj-dep :keyword] [:npm :keyword]])
 
 (defn dependency-schema
   "Defines required keys for dependency update.
@@ -32,10 +29,7 @@
   [app-dir]
   (-> app-dir
       build-project-clj/clj-outdated-deps
-      (update :deps
-              #(map (fn [dep]
-                      (build-project-clj/clj-dep->dependency app-dir dep))
-                    %))))
+      (update :deps #(map (fn [dep] (build-project-clj/clj-dep->dependency app-dir dep)) %))))
 
 (defn find-outdated-npm-deps
   "Returns a map with `:deps` key and a list of outdated npm dependencies. In case of an error returns map with `:err`
@@ -43,10 +37,7 @@
   [app-dir]
   (-> app-dir
       build-project-npm/outdated-npm-deps
-      (update :deps
-              #(map (fn [dep]
-                      (build-project-npm/npm-dep->dependency app-dir dep))
-                    %))))
+      (update :deps #(map (fn [dep] (build-project-npm/npm-dep->dependency app-dir dep)) %))))
 
 (defn exclude-deps
   "Returns `deps` without those that name is in `excluded-libs-names`."

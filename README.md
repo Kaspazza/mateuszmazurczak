@@ -1,329 +1,277 @@
-# Mateusz Mazurczak website 
-This is a private project representing www.mateuszmazurczak.com (and .pl) 
+# Mateusz Mazurczak Website
+
+Personal website project for www.mateuszmazurczak.com (and .pl)
+
+Full-stack Clojure/ClojureScript web application showcasing hexagonal architecture, modern tooling, and production-ready patterns.
+
+## Quick Start
+
+```bash
+bb dev-launch    # Starts CLJ REPL (nrepl:8000), Shadow-CLJS watch, Tailwind
+```
+
+- **Tests UI**: http://localhost:8081
+- **Shadow-CLJS**: http://localhost:9630  
+- **App**: http://localhost:3000
+
+See [AGENTS.md](AGENTS.md) for comprehensive build/dev commands.
 
 ## Architecture
 
-**Hexagonal architecture (ports/adapters)** - infrastructure is split into:
-- **Port** - API namespace defining interface (e.g., `mateuszmazurczak.database`, `mateuszmazurczak.logging`)
-- **Adapters** - Concrete implementations in subdirectories (e.g., `database/adapters/datomic.clj`, `logging/telemere.cljc`)
+**Hexagonal architecture (ports/adapters/application/ui)** - explicit separation of concerns:
 
-### Port/Adapter Implementation Patterns
+### Frontend Structure (`src/cljs/mateuszmazurczak/`)
 
-Three patterns based on how well requirements are known:
+- **`ports/`** - Public APIs (analytics, events, navigation, state). Pure contracts, no adapter imports.
+- **`adapters/`** - Infrastructure implementations organized by port:
+  - `adapters/analytics/posthog.cljs`
+  - `adapters/events/reframe/*` (core, i18n, navigation, pages)
+  - `adapters/navigation/*` (reitit_history, reitit_router, routes)
+  - `adapters/state/reframe.cljs`
+  - `adapters/error_tracking/*` (logging, sentry)
+- **`application/`** - Use cases & orchestration (pages/home/data+schema, router, panels). Imports: domain/, ports/ only.
+- **`ui/`** - Presentation components (components/*, pages/*). Imports: ports/, application/. **NEVER imports adapters directly.**
+- **`system/`** - Composition root (core.cljs, config.cljs, integrant_utils.cljs). Wires everything via Integrant. **ONLY place that imports adapters.**
+- **`utils/`** - Pure utilities (cookies, dom, url). No business logic.
 
-**1. Protocol-based (Full Implementation)**
-- Port defines `defprotocol` interface, adapters implement via `defrecord`
-- Use when: **Requirements are well-known and stable**
-- Clean separation, easy to swap implementations
-- Example: `logging/protocol.cljc` + `logging/telemere.cljc`
+**Import Rules** (enforced by structure):
+- `domain/` → imports nothing (pure business logic)
+- `application/` → imports `domain/`, `ports/` only
+- `ports/` → imports nothing (just contracts/protocols)
+- `adapters/` → imports `ports/`, `domain/` (implements interfaces)
+- `ui/` → imports `ports/`, `application/`, `domain/` (never adapters)
+- `system/` → imports everything (composition root wires all layers)
 
-**2. Hybrid (Function Namespace)**
-- Port namespace provides API functions + directly uses one adapter implementation
-- Use when: **Requirements are unclear or still evolving**
-- Less ceremony, easier to change as requirements become clear
-- Namespace acts as Application Service layer
+### Backend Structure (`src/clj/mateuszmazurczak/`)
 
-**3. Minimal (No Port)**
-- Single implementation, no abstraction layer
-- Use when: No variation expected or needed
+Currently mixed, will follow same hexagonal pattern:
+- Database: `adapters/database/*` (datomic, datalevin); utils in `database/utils.clj`; port in `database.clj`
+- Error tracking: `adapters/error-tracking/*`; port in `error_tracking.cljc` (hybrid)
+
+### Port/Adapter Patterns
+
+Choose based on requirements clarity:
+
+**1. Protocol-based** - Well-known requirements
+- Port = `defprotocol` (e.g., `logging/protocol.cljc`)
+- Adapter = `defrecord` (e.g., `logging/telemere.cljc`)
+- Port NEVER imports adapters
+
+**2. Hybrid** - Evolving requirements  
+- Port provides API + uses one adapter directly (e.g., `error-tracking.cljc`)
+- Less ceremony, easier iteration
+
+**3. Minimal** - No variation expected
+- Single implementation, no port abstraction
 
 ### System Composition
 
-Infrastructure is wired together using **Integrant** with configuration from `env/*/config.edn`. 
+Infrastructure wired via **Integrant** with config from `env/*/config.edn`:
 
-**System files** (`system.clj` for backend, `frontend_system.cljs` for frontend):
-- Define Integrant lifecycle methods (`ig/init-key`, `ig/halt-key!`) for each component
-- Import and wire specific adapters to the system
-- Choose which adapter to use based on config values
+**Backend (`system.clj`)**:
+- Fail fast on init errors - broken deployment fails immediately
+- No graceful degradation
 
-**Key principle:** 
-- Port namespaces **never import adapters** - only define interfaces
-- System files **do import adapters** - that's their job as the composition root
-- Adapters stay pure - no Integrant dependency, just constructors and protocol implementation
-- Adding new adapter = edit system.clj (add defmethod wrapper)
-- Switching between adapters = config change only
+**Frontend (`system/core.cljs`)**:  
+- Use `integrant-utils/optional-component` ONLY for non-critical components (analytics, error-tracking)
+- Critical components (router, state, logging) must fail
+- On system init failure, show `:panels/system-error`
+
+**Key principles:**
+- Port namespaces NEVER import adapters - only define interfaces
+- System files DO import adapters - composition root responsibility
+- Adapters stay pure - no Integrant dependency
+- Adding adapter = edit system file (add defmethod wrapper)
+- Switching adapters = config change only
 
 ### Event System (Frontend)
 
-The frontend uses **registry-based event architecture** to decouple UI from state management implementation.
+**Registry-based event architecture** - decouples UI from state management:
 
-**Core Components:**
+**1. Event Registry** (`adapters/events/registry.cljs`)
+- Single source of truth for ALL events
+- Each event defines: `:category`, `:description`, `:schema` (Malli), `:handler-type` (`:fx` or `:db`)
+- NO event exists outside registry
 
-1. **Event Registry** (`events/registry.cljs`)
-   - Single source of truth defining ALL application events
-   - Each event specifies:
-     - `:category` - Logical grouping (`:navigation`, `:page`, `:i18n`)
-     - `:description` - What the event does (behavior, not implementation)
-     - `:schema` - Malli schema for validation
-     - `:handler-type` - `:fx` (side-effects) or `:db` (pure state update)
+**2. Event Port** (`ports/events.cljs`)
+- Public API for event dispatching  
+- Validates adapter completeness on startup (fail-fast)
+- **UI code ONLY imports this, never adapters**
 
-2. **Event Port** (`events.cljs`)
-   - Public API for event dispatching
-   - Validates adapter completeness (all registry events implemented)
-   - Validates adapter correctness (no unknown events)
-   - **UI code only imports this namespace, never adapters**
+**3. Event Adapter** (`adapters/events/reframe/`)
+- Re-frame implementation organized by domain (navigation, i18n, pages/*)
+- Exports: `handlers`, `register-fns`, `get-dispatch-fn`
 
-3. **Event Adapter** (`events/adapters/reframe/`)
-   - Re-frame implementation of registry contract
-   - Organized by domain: `navigation.cljs`, `i18n.cljs`, `pages/*.cljs`
-   - Exports three things:
-     - `handlers` - Map of `{event-id handler-fn}`
-     - `register-fns` - Map of `{:db reg-event-db, :fx reg-event-fx}`
-     - `get-dispatch-fn` - Returns `re-frame.core/dispatch`
-
-**System Wiring** (`frontend_system.cljs`):
+**Usage (UI code):**
 
 ```clojure
-;; 1. Initialize adapter (effects, subscriptions, etc.)
-(defmethod ig/init-key :events.adapter/reframe [_]
-  (events-reframe/init!)  ; Adapter-specific setup
-  {:handlers (events-reframe/handlers)
-   :register-fn (events-reframe/register-fns)
-   :dispatch-fn (events-reframe/get-dispatch-fn)})
-
-;; 2. Wire adapter to event port
-(defmethod ig/init-key :frontend/events [_ {:keys [adapter]}]
-  (events/wire! (:handlers adapter) (:register-fn adapter))
-  (events/set-dispatch! (:dispatch-fn adapter)))
-```
-
-**For UI Developers:**
-
-```clojure
-(require '[mateuszmazurczak.events :as events])
+(require '[mateuszmazurczak.ports.events :as events])
 
 ;; Direct dispatch
 (events/dispatch! [:nav/navigate ::routes/home])
 
-;; Or dispatch markers for data-driven UI
-(def data {:on-click [:dispatch [:nav/navigate ::routes/home]]})
-
-;; Convert markers to functions
-(events/dispatch-tree data)
-;; => {:on-click #(events/dispatch! [:nav/navigate ::routes/home])}
+;; Data-driven UI with dispatch markers
+(events/dispatch-tree {:on-click [:dispatch [:nav/navigate ::routes/home]]})
+;; => {:on-click #(events/dispatch! [...])}
 ```
 
-**Route Controllers:**
-
-Events integrate with routing via controller pattern (`:controllers` in `routes.cljs`):
+**Route Controllers** (`adapters/navigation/routes.cljs`):
 
 ```clojure
-["/home" 
- {:name ::home
-  :panel-id :panels/home
-  :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
+["/home" {:name ::home
+          :panel-id :panels/home
+          :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
 ```
 
-When route is entered, controller dispatches page event to load data.
-
-**For Adapter Implementers:**
-
-To replace re-frame with another state management library:
-
-1. **Check registry** - All events in `events/registry.cljs` must be implemented
-2. **Create adapter namespace** - e.g., `events/adapters/xyz/core.cljs`
-3. **Export three things:**
-   - `handlers` - Map of `{event-id handler-fn}` for all registry events
-   - `register-fns` - Map of `{:db your-reg-fn, :fx your-reg-fn}` matching handler types
-   - `get-dispatch-fn` - Returns your dispatch function
-4. **Implement `init!`** - Setup if needed for starting the library  
-5. **Wire in `frontend_system.cljs`** - Create new component for your adapter
-6. **Update config** - Point `:events.adapter` to your new adapter
-
-The port validates everything at system startup (fail-fast), so missing events are caught immediately. 
+Controllers dispatch page events to load data on route enter. Static data lives in `adapters/state/initial.cljs`, dynamic data loaded via events. NO dispatch in system init. 
 
 ### Configuration System
 
-The application uses **Integrant** with **Aero**. 
+**Integrant** + **Aero** (env/*/config.edn)
 
-#### Configuration Hierarchy
+**Precedence:**
+1. Environment Variables (`#env`)
+2. Secrets File (`.secrets.edn`)
 
-The system follows this precedence order:
-1. **Environment Variables** (highest priority - #env)
-2. **Secrets File** (`.secrets.edn` file at root #secrets)
+**Aero Readers:**
+- `#env VAR_NAME` - Environment variable
+- `#secrets [:path :to :value]` - From `.secrets.edn` (profile-based)
+- `#or [#env VAR #secrets [:path]]` - Fallback chain
+- `#ig/ref :component` - Integrant component reference
 
-#### Backend Configuration Files
-Main point of any used env variables or externally driven config is read from config.edn files and passed to integrant components defined under :system.
+**Backend:**
+- `env/development/config.edn` / `env/production/config.edn`
+- Read via Integrant system
 
-**Environment-specific config files:**
-- `env/development/config.edn` - Development environment 
-- `env/production/config.edn` - Production environment
+**Frontend:**
+- `goog-define` values in `system/config.cljs`
+- Set via `closure-defines` in `shadow-cljs.edn` (dev) or `--config-merge` (prod)
+- Build secrets (POSTHOG_API_KEY, SENTRY_FRONTEND_DSN) from `.secrets.edn` (local) or ENV (Docker/CI)
 
-**Secrets file:**
-- `.secrets.edn` - Contains sensitive configuration for all environments (not in version control)
-
-#### Configuration Readers
-
-**Aero edn readers:**
-- `#env VAR_NAME` - Read from environment variable
-- `#secrets [:sentry :backend :dsn]` - Reads from current environment profile in .secrets.edn
-- `#or [#env VAR #secrets [:path]]` - Try env var first, fall back to secrets
-- `#ref [:config :path]` - Reference other config values
-- `#ig/ref :component` - Integrant component references
-
-#### Frontend Configuration (Shadow-CLJS)
-
-Frontend configuration uses `goog-define` values in `src/cljs/mateuszmazurczak/config.cljs`:
-
-```clojure
-(goog-define ENV "")
-(goog-define LOG_SENTRY_DNS "")
-```
-
-These are set via closure-defines with environment-specific overrides:
-
-**Development:**
-- Uses default values from `shadow-cljs.edn` (under :closure-defines key)
-- ENV: `"development"`
-
-**Production:**
-- Uses `--config-merge` during release build to override closure-defines
-- Reads variables from `.secrets.edn` in build-jar task
-- ENV: `"production"`
-- Values are populated from the same Integrant configuration that drives the backend
-
-#### Secrets File Structure
+**`.secrets.edn` structure:**
 
 ```edn
-{:development
- {:db {:uri "./storage/datalevin/dev-db"}
-  :sentry 
-  {:backend {:dsn "https://..."}
-   :frontend {:dsn "https://..."}}
-  :posthog {:api-key "phc_..."}}
-   
- :production  
- {:db {:uri "/app/data/db"}
-  :sentry
-  {:backend {:dsn "https://..."}
-   :frontend {:dsn "https://..."}}
-  :posthog {:api-key "phc_..."}}}
+{:development {:db {:uri "./storage/datalevin/dev-db"}
+               :sentry {:backend {:dsn "..."} :frontend {:dsn "..."}}
+               :posthog {:api-key "phc_..."}}
+ :production  {:db {:uri "/app/data/db"}
+               :sentry {:backend {:dsn "..."} :frontend {:dsn "..."}}
+               :posthog {:api-key "phc_..."}}}
 ```
 
-#### Example Configuration Usage
+## Development
 
-```edn
-{:db {:uri #or [#env DB_URI #secrets [:db :uri]]}
- :log {:sentry {:backend {:dsn #or [#env SENTRY_BACKEND_DSN #secrets [:sentry :backend :dsn]]}}}}
+### Common Tasks
+
+```bash
+bb dev-launch           # Start dev environment (REPL, Shadow, Tailwind)
+bb test                 # Run all tests (CLJ + CLJS)
+bb test -f              # Disable frontend tests
+bb test -b              # Disable backend tests
+bb lint                 # Run clj-kondo
+bb format               # Format code with zprint
+bb article              # Generate HTML from markdown articles
+bb update-deps          # Update outdated dependencies
 ```
 
-## Set up
-Updating system variables in Mac: 
-https://phoenixnap.com/kb/set-environment-variable-mac
+### Testing
 
+**CLJ:**
+```bash
+clojure -M:common-test -n mateuszmazurczak.adapters.http.handler-test  # Single namespace
+clojure -M:common-test test/clj/path/to/file_test.clj             # Single file
+```
 
-## Running the App
-From this directory run:
-- bb dev-launch
+**CLJS (browser):**
+```bash
+bb dev-launch           # Then open http://localhost:8081 and run tests in Shadow UI
+```
 
-Tests: localhost:8081
-Shadow: localhost:9630
-App: localhost:3000
+**CLJS (Karma/CI):**
+```bash
+npx karma start --single-run --client.args '["shadow.test.karma.init","^mateuszmazurczak.namespace-test$"]'
+```
 
-After that you can connect to running repl (8000).
+### Build & Release
+
+```bash
+npx shadow-cljs release mateuszmazurczak-app  # Frontend production build
+bb build-jar                                   # Backend JAR (add -v for verbose)
+bb clean                                       # Clean build artifacts
+```
 
 ## Docker Deployment
 
-The application supports Docker-based deployment with babashka tasks for building, pushing, and running containerized versions.
+**Prerequisites:**
+- Docker installed
+- Docker Hub account (`docker login`)
+- `.secrets.edn` for local testing (prod uses ENV vars)
 
-### Prerequisites
-- Docker installed and running
-- Docker Hub account (or other registry) configured with `docker login`
-- `.secrets.edn` file for running with production configuration locally (on actual prod env variables are used)
+**Commands:**
 
-### Available Commands
-
-#### Build Docker Image
-Build a Docker image with a specific version tag:
 ```bash
-bb docker-build <version>
+bb docker-build <version>               # Build image (linux/amd64)
+bb docker-push <version>                # Push to registry
+bb docker-build-push <version>          # Build + push
+bb docker-run <version>                 # Run locally (production profile)
+bb docker-run --profile development <v> # Run with dev secrets
 ```
 
-Example:
-```bash
-bb docker-build 1.0.0
-```
-
-This creates an image: `mateuszmazurczak/personal:1.0.0` (platform: linux/amd64)
-
-#### Push Existing Image
-Push an already-built image to docker hub:
-```bash
-bb docker-push <version>
-```
-
-#### Build and Push to Registry
-Build and push in one command:
-```bash
-bb docker-build-push <version>
-```
-
-#### Run Docker Image Locally
-Run a Docker image with automatic secrets injection:
-```bash
-bb docker-run <version>                                # by default runs with "production profile"
-bb docker-run --profile development <version>          # development secrets
-```
-
-
-The `docker-run` task:
-- Runs with `--rm` flag (auto-cleanup after stop)
-- Exposes port 8080 → 8080
-- Automatically convers secrets from `.secrets.edn` based on profile to env variables
-
-### Configuration in Docker
-
-The Docker container expects configuration via:
-1. **Environment variables** (highest priority):
-   - `DB_URI` - Database path/URI
-   - `SENTRY_BACKEND_DSN` - Sentry DSN for backend errors
-   - `SENTRY_FRONTEND_DSN` - Sentry DSN for frontend errors
-
-2. **Built-in defaults**: Production config from `env/production/config.edn`
-
-The `bb docker-run` command automatically reads `.secrets.edn` and injects ENV vars, but in production you should use your orchestration tool (docker-compose, K8s secrets, etc.) to manage environment variables.
-
-### Docker Build Details
-- **Dockerfile**: `docker/build.dockerfile`
-- **Platform**: linux/amd64 (for compatibility with most cloud providers)
+**Container details:**
 - **Port**: 8080
-- **Data volume**: `/app/data` (for database persistence)
+- **Data volume**: `/app/data` (database persistence)
+- **Config**: ENV vars (DB_URI, SENTRY_BACKEND_DSN, SENTRY_FRONTEND_DSN) or `env/production/config.edn` defaults
 
-## General
-src/bb/ <- only for bb.edn, contains all useful scripts for working with this app
+`bb docker-run` auto-injects secrets from `.secrets.edn`. In production, use orchestration tool (docker-compose, K8s) for ENV vars.
 
-Code in this repo is for my personal website, and it's built in a way to cover all the web-app usefull functionalities and code separation for quick starting web projects in clojure.
+## Features
 
-Current state of code contains:
-- Scripting for simplifying work with the project
-- Configuration
-- Environments separation 
-- Translation i18n (with taoensso tempura)
-- Full-stack routing and setup (ring, reitit, shadow-cljs)
-- Basic UI with integrated hiccup, Tailwind, DaisyUI
-- Frontend logic and data manged with reagent/re-frame
-- Portfolio setup for frontend development
-- User error monitoring (with sentry)
-- Logs
-- Frontend analysis tooling, heatmaps, users on the page etc. 
+**Current:**
+- ✅ Hexagonal architecture (ports/adapters/application/ui)
+- ✅ Integrant system composition (backend + frontend)
+- ✅ Registry-based event system (re-frame adapter)
+- ✅ Full-stack routing (Ring, Reitit, Shadow-CLJS)
+- ✅ i18n (taoensso/tempura)
+- ✅ UI: Reagent, Tailwind CSS, DaisyUI
+- ✅ Component development (Portfolio)
+- ✅ Error monitoring (Sentry)
+- ✅ Logging (taoensso/telemere)
+- ✅ Analytics (PostHog)
+- ✅ Database (Datalevin)
+- ✅ Docker deployment
+- ✅ Babashka scripting (build, test, lint, format)
 
-TODO as features:
-- Chat to speak to - so instead of saying contact me at *this-email*, just open chat option that sends email or smth
-- Realtime module with information that the page has been updated, so user can click and hard-refresh
-- UI theme
-- describe testing FE/BE/E2E/ab
-- Auth (and feature-flags)
-- Versioning (low priority)
+**Planned:**
+- [ ] Contact chat (email integration)
+- [ ] Realtime page update notifications
+- [ ] UI theming
+- [ ] E2E testing documentation
+- [ ] Auth + feature flags
+- [ ] Versioning
 
-## Adding articles
-- [ ]  Write article in .md (or in Notion and convert to .md)
-- [ ]  Put it in resources/public/article/content
-- [ ]  If any imgs put them in resources/public/article/img
-- [ ]  Add article in articles.edn
-- [ ]  run bb article 
-- [ ]  add :content to your article in articles inside articles.core
-------- In future it will be moved to only html and static rendering, removing the last point ----
+## Code Style & Conventions
 
-License information can be found in [LICENSE file](LICENSE.md)
-Copyright © 2024 Mateusz Mazurczak
+- **Architecture**: Explicit hexagonal (see AGENTS.md for detailed rules)
+- **Formatting**: zprint (`.zprintrc`: community, how-to-ns, sort-require, hiccup). Run: `bb format`
+- **Naming**: kebab-case (fns/vars), CamelCase (records/types), predicates end `?`, side-effects end `!`
+- **Namespaces**: Dashes in names (`error-tracking`), map to underscores in paths (`error_tracking/`)
+- **Validation**: Malli schemas colocated (`schema.cljc`). CLJS: NEVER `:pre`/`:post` (removed in `:advanced`), use explicit `when-not` + `throw ex-info`
+- **Errors**: `ex-info` with `ex-data {:type kw :cause ...}`. Log via `taoensso.telemere` (NO `println`)
+- **Tools**: Use eca tools (`eca_read_file`, `eca_grep`, `eca_directory_tree`). NEVER `grep`/`cat`/`ls`/`head`/`tail` directly
+
+See [AGENTS.md](AGENTS.md) for comprehensive architecture guide.
+
+## Adding Articles
+
+1. Write article in `.md` (or convert from Notion)
+2. Put in `resources/public/article/content/`
+3. Add images to `resources/public/article/img/`
+4. Add entry to `articles.edn`
+5. Run `bb article` to generate HTML
+6. *(Future: static rendering only, removing manual content addition)*
+
+---
+
+**License**: [LICENSE.md](LICENSE.md)  
+**Copyright © 2024 Mateusz Mazurczak**
 

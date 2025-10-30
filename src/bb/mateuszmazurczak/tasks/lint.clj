@@ -13,10 +13,7 @@
                                           normalln
                                           print-writter]]))
 
-(def cli-opts-data
-  (concat cli-opts/help-options
-          cli-opts/verbose-options
-          cli-opts/inverse-options))
+(def cli-opts-data (concat cli-opts/help-options cli-opts/verbose-options cli-opts/inverse-options))
 
 (def cli-opts
   (-> cli-opts-data
@@ -46,8 +43,7 @@
   (h1 "Linter")
   (let [s (build-writter)
         lint-cmd (lint-cmd verbose paths)
-        {:keys [out err exit]}
-        (binding [*out* s] (blocking-cmd ["lint"] lint-cmd "" "" verbose))]
+        {:keys [out err exit]} (binding [*out* s] (blocking-cmd ["lint"] lint-cmd "" "" verbose))]
     (cond
       (zero? exit) (h1-valid "Linter ok")
       (re-find #"linting took \d*ms, errors: \d*, warnings: \d*" (str out))

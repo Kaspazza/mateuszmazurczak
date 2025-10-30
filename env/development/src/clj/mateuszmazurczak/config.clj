@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.config
   "Development environment configuration"
   (:require
-   [mateuszmazurczak.configuration :as conf]))
+   [mateuszmazurczak.system.config :as conf]))
 
 (def config-path "env/development/config.edn")
 

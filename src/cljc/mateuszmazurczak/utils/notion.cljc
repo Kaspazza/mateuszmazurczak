@@ -11,10 +11,7 @@
        (reduce (fn [acc val]
                  (let [[key value] val]
                    (assoc acc
-                          (str/replace key
-                                       #"-."
-                                       (fn [css]
-                                         (str (get (str/upper-case css) 1))))
+                          (str/replace key #"-." (fn [css] (str (get (str/upper-case css) 1))))
                           value)))
                {})))
 
@@ -32,9 +29,7 @@
                       {:special-char special-char-found})))
     replaced-x))
 
-(defn append-header-ref
-  [[htag opts text]]
-  [htag opts (ui-articles/header-ref (:id opts)) text])
+(defn append-header-ref [[htag opts text]] [htag opts (ui-articles/header-ref (:id opts)) text])
 
 (defn update-hiccup
   [hiccup]

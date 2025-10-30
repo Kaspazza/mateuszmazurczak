@@ -1,12 +1,11 @@
 (ns mateuszmazurczak.ui.structure
   (:require
-   [mateuszmazurczak.ui.footer :as mm-ui-footer]
-   [mateuszmazurczak.ui.header :as mm-ui-headers]))
+   [mateuszmazurczak.ui.components.footer :as mm-ui-footer]
+   [mateuszmazurczak.ui.components.header :as mm-ui-headers]))
 
 (defn structure
   [{:keys [header footer class]} & components]
-  [:div {:class (vec (concat class
-                             ["h-fit min-h-screen flex flex-col relative"]))}
+  [:div {:class (vec (concat class ["h-fit min-h-screen flex flex-col relative"]))}
    header
    (into [:div {:class ["grow"]}]
          (for [comp components] comp))

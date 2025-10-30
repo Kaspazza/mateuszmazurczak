@@ -6,13 +6,13 @@
   
   This is a hybrid port - provides API and directly uses state/events ports."
   (:require
-   [clojure.walk                   :as walk]
-   [mateuszmazurczak.events        :as events]
-   [mateuszmazurczak.i18n          :as i18n]
-   [mateuszmazurczak.i18n.language :as i18n-lang]
-   [mateuszmazurczak.state         :as state]
-   [mateuszmazurczak.utils.cookies :as mm-cookies]
-   [mateuszmazurczak.utils.url     :as utils-url]))
+   [clojure.walk                          :as walk]
+   [mateuszmazurczak.domain.i18n.language :as i18n-lang]
+   [mateuszmazurczak.ports.events         :as events]
+   [mateuszmazurczak.ports.i18n           :as i18n]
+   [mateuszmazurczak.ports.state          :as state]
+   [mateuszmazurczak.utils.cookies        :as mm-cookies]
+   [mateuszmazurczak.utils.url            :as utils-url]))
 
 ;; Language Strategy (initialization)
 
@@ -61,9 +61,7 @@
    (let [lang @(state/watch [:i18n/lang])
          translator @(state/watch [:i18n/translator])]
      (when translator
-       (if params
-         (i18n/tr translator lang tr-id params)
-         (i18n/tr translator lang tr-id))))))
+       (if params (i18n/tr translator lang tr-id params) (i18n/tr translator lang tr-id))))))
 
 (defn- i18n-marker?
   "Check if a value is an i18n translation marker.

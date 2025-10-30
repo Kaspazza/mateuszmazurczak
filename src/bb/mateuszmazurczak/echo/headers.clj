@@ -43,11 +43,7 @@
   (pure-printing texts)
   (print echo-text/font-default))
 
-(defn exceptionln
-  "Display exception `e`."
-  [e]
-  (errorln (ex-cause e))
-  (normalln (pr-str e)))
+(defn exceptionln "Display exception `e`." [e] (errorln (ex-cause e)) (normalln (pr-str e)))
 
 (defn print-exec-cmd-str
   "Prints the execution of command string `cmd-str` with the `prefixs` added."
@@ -187,15 +183,9 @@
 ;; Formatting helpers functions.
 (defn pprint-str "Pretty print `data`" [data] (echo-common/pprint-str data))
 
-(defn uri-str
-  "Returns the string of the `uri`."
-  [uri]
-  (echo-common/uri-str uri))
+(defn uri-str "Returns the string of the `uri`." [uri] (echo-common/uri-str uri))
 
-(defn current-time-str
-  "Returns current time string."
-  []
-  (echo-common/current-time-str))
+(defn current-time-str "Returns current time string." [] (echo-common/current-time-str))
 
 (def clear-prev-line (str echo-text/move-oneup echo-text/clear-eol))
 

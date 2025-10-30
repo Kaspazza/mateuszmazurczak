@@ -126,9 +126,7 @@
         svg [:svg {:stroke "currentColor"
                    :href href
                    :fill fill-color
-                   :class (vec (concat ["relative"
-                                        (when hover? "svg-hover-orange")]
-                                       class))
+                   :class (vec (concat ["relative" (when hover? "svg-hover-orange")] class))
                    :aria-hidden "true"
                    :height (str (* 1 size) "em")
                    :view-box (str "0 0 " original-width " " original-height)

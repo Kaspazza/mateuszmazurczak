@@ -1,14 +1,13 @@
 (ns mateuszmazurczak.ui.pages.home
   "Customer app home page assembly"
   (:require
-   [mateuszmazurczak.ui.articles   :as ui-articles]
-   [mateuszmazurczak.ui.navigation :as mm-ui-navigation]))
+   [mateuszmazurczak.ui.articles              :as ui-articles]
+   [mateuszmazurczak.ui.components.navigation :as mm-ui-navigation]))
 
 (defn about-me
   [{:keys [welcome-text description contact-info]}]
   [:div {:class "hero-content flex-col lg:flex-row max-w-screen justify-evenly"
-         :style {:background
-                 "linear-gradient(85deg, rgb(170 137 173) 41%, #fff 100%)"}}
+         :style {:background "linear-gradient(85deg, rgb(170 137 173) 41%, #fff 100%)"}}
    [:div {:style {:height "100%"
                   :position "relative"
                   :background-color "#bea5c2 "}}]

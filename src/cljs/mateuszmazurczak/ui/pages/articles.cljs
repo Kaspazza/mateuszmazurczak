@@ -1,12 +1,12 @@
 (ns mateuszmazurczak.ui.pages.articles
   (:require
-   [mateuszmazurczak.articles.core     :as articles]
-   [mateuszmazurczak.events            :as events]
-   [mateuszmazurczak.frontend-i18n     :as fi18n]
-   [mateuszmazurczak.navigation.routes :as-alias mm-routes]
-   [mateuszmazurczak.ui.articles       :as ui-articles]
-   [mateuszmazurczak.ui.comments       :as ui-comments]
-   [reagent.core                       :as r]))
+   [mateuszmazurczak.adapters.navigation.routes :as-alias mm-routes]
+   [mateuszmazurczak.domain.articles.core       :as articles]
+   [mateuszmazurczak.frontend-i18n              :as fi18n]
+   [mateuszmazurczak.ports.events               :as events]
+   [mateuszmazurczak.ui.articles                :as ui-articles]
+   [mateuszmazurczak.ui.comments                :as ui-comments]
+   [reagent.core                                :as r]))
 
 (defn articles-page
   []
@@ -65,9 +65,7 @@
   (r/atom {:content ""
            :name ""}))
 
-(defn handle-content-change
-  [e]
-  (swap! form-state assoc :content (.. e -target -value)))
+(defn handle-content-change [e] (swap! form-state assoc :content (.. e -target -value)))
 
 (defn handle-submit
   [e]
@@ -89,8 +87,7 @@
   [comments]
   (let [by-parent (group-by :parent-id comments)
         nest (fn nest [parent-id]
-               (mapv #(assoc % :replies (vec (nest (:id %))))
-                     (get by-parent parent-id)))]
+               (mapv #(assoc % :replies (vec (nest (:id %)))) (get by-parent parent-id)))]
     (nest nil)))
 
 ;;TODO - move to reframe

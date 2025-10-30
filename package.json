@@ -32,6 +32,6 @@
         "tailwindcss": "^4.1.14"
     },
     "devDependenciesComments": {
-        "marked": "marked can't be updated to 7.0.1 or higher, untill this issue is done in closure-compiler: https://github.com/google/closure-compiler/issues/2731"
+        "marked": "marked can't be updated to 7.0.1 or higher, untill this issue is done in closure-compiler: https://github.com/google/closure-compiler/issues/2731. TODO: they rolled our it as an experimental feature for closure compiler, it can be enabled with this config, to try it out :js-options {:output-feature-set :es-unsupported :language-in :unsupported}"
     }
 }

@@ -7,10 +7,10 @@
   This is a hybrid port - provides API and directly uses state/events ports."
   (:require
    [clojure.walk                   :as walk]
-   [mateuszmazurczak.events        :as events]
+   [mateuszmazurczak.ports.events  :as events]
    [mateuszmazurczak.i18n          :as i18n]
    [mateuszmazurczak.i18n.language :as i18n-lang]
-   [mateuszmazurczak.state         :as state]
+   [mateuszmazurczak.ports.state   :as state]
    [mateuszmazurczak.utils.cookies :as mm-cookies]
    [mateuszmazurczak.utils.url     :as utils-url]))
 

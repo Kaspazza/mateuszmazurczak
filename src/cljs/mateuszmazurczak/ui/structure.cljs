@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.ui.structure
   (:require
-   [mateuszmazurczak.ui.footer :as mm-ui-footer]
-   [mateuszmazurczak.ui.header :as mm-ui-headers]))
+   [mateuszmazurczak.ui.components.footer :as mm-ui-footer]
+   [mateuszmazurczak.ui.components.header :as mm-ui-headers]))
 
 (defn structure
   [{:keys [header footer class]} & components]

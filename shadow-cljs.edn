@@ -9,11 +9,9 @@
   :mateuszmazurczak-app
   {:asset-path "js/compiled"
    :build-options {:ns-aliases {cljsjs.marked cljsjs.highlight}}
-   :compiler-options {:infer-externs :auto
-                      :optimizations :advanced}
-   :dev {:compiler-options {:closure-defines
-                            {mateuszmazurczak.config/ENV "development"
-                             "re_frame.trace.trace_enabled_QMARK_" true}}
+   :dev {:closure-defines {mateuszmazurczak.system.config/ENV "development"
+                           "re_frame.trace.trace_enabled_QMARK_" true}
+         :compiler-options {:infer-externs :auto}
          :modules {:portfolio {:depends-on #{:mateuszmazurczak-share}
                                :entries [mateuszmazurczak.portfolio.portfolio]
                                :init-fn
@@ -28,10 +26,11 @@
              :mateuszmazurczak-share {:entries []}}
    :output-dir "resources/public/js/compiled"
    :release {:build-options {:cache-level :off}
-             :closure-defines {mateuszmazurczak.config/ENV "production"
-                               mateuszmazurczak.config/LOG_SENTRY_DNS ""
-                               mateuszmazurczak.config/LOKI_ENDPOINT ""
-                               mateuszmazurczak.config/POSTHOG_API_KEY ""}
+             :closure-defines {mateuszmazurczak.system.config/ENV "production"
+                               mateuszmazurczak.system.config/LOG_SENTRY_DNS ""
+                               mateuszmazurczak.system.config/LOKI_ENDPOINT ""
+                               mateuszmazurczak.system.config/POSTHOG_API_KEY
+                               ""}
              :compiler-options {:optimizations :advanced
                                 :portfolio false}}
    :target :browser}}

@@ -7,8 +7,8 @@
    
    No protocol abstraction since requirements are still evolving."
   (:require
-   #?(:clj [mateuszmazurczak.error-tracking.adapters.logging :as logging]
-      :cljs [mateuszmazurczak.error-tracking.adapters.logging :as logging])))
+   #?(:clj [mateuszmazurczak.adapters.error-tracking.logging :as logging]
+      :cljs [mateuszmazurczak.adapters.error-tracking.logging :as logging])))
 
 (defn init!
   "Initialize error tracking system with configuration.

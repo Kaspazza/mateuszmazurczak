@@ -38,7 +38,9 @@
           logger
           {:error e
            :id ::optional-component-failed
-           :data {:component component-name
-                  :mode :degraded
-                  :message "Non-critical component failed, continuing in degraded mode"}})
+           :data
+           {:component component-name
+            :mode :degraded
+            :message
+            "Non-critical component failed, continuing in degraded mode"}})
          nil)))

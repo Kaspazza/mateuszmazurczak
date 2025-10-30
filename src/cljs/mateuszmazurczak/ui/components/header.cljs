@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.ui.components.header
   (:require
    [clojure.string                              :as str]
-   [mateuszmazurczak.frontend-i18n              :as fi18n]
-   [mateuszmazurczak.domain.i18n.language              :as mm-i18n-lang]
-   [mateuszmazurczak.ports.navigation           :as navigation]
    [mateuszmazurczak.adapters.navigation.routes :as mm-routes]
+   [mateuszmazurczak.domain.i18n.language       :as mm-i18n-lang]
+   [mateuszmazurczak.frontend-i18n              :as fi18n]
+   [mateuszmazurczak.ports.navigation           :as navigation]
    [reagent.core                                :as r]))
 
 (defn string-to-id

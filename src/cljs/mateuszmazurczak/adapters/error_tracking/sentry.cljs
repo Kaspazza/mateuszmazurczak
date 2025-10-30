@@ -1,12 +1,12 @@
 (ns mateuszmazurczak.adapters.error-tracking.sentry
   "Sentry adapter for error tracking (CLJS)"
   (:require
-   ["@sentry/react"             :as Sentry]
-   ["react"                     :as react]
-   ["react-router-dom"          :refer (createRoutesFromChildren
-                                        matchRoutes
-                                        useLocation
-                                        useNavigationType)]
+   ["@sentry/react"                   :as Sentry]
+   ["react"                           :as react]
+   ["react-router-dom"                :refer (createRoutesFromChildren
+                                              matchRoutes
+                                              useLocation
+                                              useNavigationType)]
    [mateuszmazurczak.utils.validation :as validation]))
 
 (defn- keyword->level

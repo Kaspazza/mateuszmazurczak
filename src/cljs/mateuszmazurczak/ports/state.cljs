@@ -9,10 +9,10 @@
    - State queries (watch) - reactive reads from state
    - State lifecycle (reset-app-db!)"
   (:require
-   [clojure.set                               :as set]
-   [mateuszmazurczak.system.config            :as config]
+   [clojure.set                                  :as set]
+   [mateuszmazurczak.adapters.state.reframe      :as reframe-adapter]
    [mateuszmazurczak.application.pages.home.data :as home-data]
-   [mateuszmazurczak.adapters.state.reframe   :as reframe-adapter]))
+   [mateuszmazurczak.system.config               :as config]))
 
 
 ;; =============================================================================

@@ -1,13 +1,13 @@
 (ns mateuszmazurczak.adapters.http.pages
   "Web handlers implementations"
   (:require
-   [clojure.string                           :as str]
+   [clojure.string                            :as str]
    [mateuszmazurczak.adapters.http.error-page :as error-page]
-   [mateuszmazurczak.adapters.http.handler   :as handler-utils]
-   [mateuszmazurczak.domain.articles.core    :as articles]
-   [mateuszmazurczak.ui.spinner          :as mm-spinner]
-   [mateuszmazurczak.utils.fallback      :as fallback]
-   [ring.util.http-response              :as http-response]))
+   [mateuszmazurczak.adapters.http.handler    :as handler-utils]
+   [mateuszmazurczak.domain.articles.core     :as articles]
+   [mateuszmazurczak.ui.spinner               :as mm-spinner]
+   [mateuszmazurczak.utils.fallback           :as fallback]
+   [ring.util.http-response                   :as http-response]))
 
 (defn article-page
   [{:keys [tr logger]

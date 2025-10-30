@@ -1,17 +1,16 @@
 (ns mateuszmazurczak.system.components
   (:require
-   [integrant.core                            :as ig]
-
-   [mateuszmazurczak.adapters.http.router     :as mm-http-router]
+   [integrant.core                                :as ig]
+   [mateuszmazurczak.adapters.http.router         :as mm-http-router]
    [mateuszmazurczak.adapters.i18n.dict.resources :as mm-i18n-dict-res]
-   [mateuszmazurczak.adapters.i18n.dict.text  :as mm-i18n-dict-txt]
-   [mateuszmazurczak.adapters.i18n.tempura    :as i18n-tempura]
-   [mateuszmazurczak.adapters.logging.telemere :as t]
+   [mateuszmazurczak.adapters.i18n.dict.text      :as mm-i18n-dict-txt]
+   [mateuszmazurczak.adapters.i18n.tempura        :as i18n-tempura]
+   [mateuszmazurczak.adapters.logging.telemere    :as t]
    [mateuszmazurczak.adapters.web-server.http-kit :as web-server]
-   [mateuszmazurczak.domain.database.migrations :as migrations]
-   [mateuszmazurczak.ports.database           :as database]
-   [mateuszmazurczak.ports.error-tracking     :as error-tracking]
-   [mateuszmazurczak.ports.logging            :as log]))
+   [mateuszmazurczak.domain.database.migrations   :as migrations]
+   [mateuszmazurczak.ports.database               :as database]
+   [mateuszmazurczak.ports.error-tracking         :as error-tracking]
+   [mateuszmazurczak.ports.logging                :as log]))
 
 (defmethod ig/init-key :logging.adapter/telemere
   [_ opts]

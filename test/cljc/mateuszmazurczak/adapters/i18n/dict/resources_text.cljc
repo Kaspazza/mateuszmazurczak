@@ -2,8 +2,8 @@
   (:require
    #?(:clj [clojure.test :refer [deftest is testing]]
       :cljs [cljs.test :refer [deftest is testing] :include-macros true])
-   [clojure.set                          :as set]
-   [clojure.walk                         :as walk]
+   [clojure.set                                   :as set]
+   [clojure.walk                                  :as walk]
    [mateuszmazurczak.adapters.i18n.dict.resources :as mm-i18n-dict-res]))
 
 

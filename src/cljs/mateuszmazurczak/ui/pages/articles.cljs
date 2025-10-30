@@ -1,12 +1,12 @@
 (ns mateuszmazurczak.ui.pages.articles
   (:require
-   [mateuszmazurczak.domain.articles.core  :as articles]
-   [mateuszmazurczak.ports.events          :as events]
-   [mateuszmazurczak.frontend-i18n         :as fi18n]
    [mateuszmazurczak.adapters.navigation.routes :as-alias mm-routes]
-   [mateuszmazurczak.ui.articles           :as ui-articles]
-   [mateuszmazurczak.ui.comments           :as ui-comments]
-   [reagent.core                           :as r]))
+   [mateuszmazurczak.domain.articles.core       :as articles]
+   [mateuszmazurczak.frontend-i18n              :as fi18n]
+   [mateuszmazurczak.ports.events               :as events]
+   [mateuszmazurczak.ui.articles                :as ui-articles]
+   [mateuszmazurczak.ui.comments                :as ui-comments]
+   [reagent.core                                :as r]))
 
 (defn articles-page
   []
@@ -22,7 +22,8 @@
               (merge article
                      {:on-click #(events/dispatch! [:nav/navigate
                                                     ::mm-routes/article
-                                                    {:article-id (name id)}])})]))]])
+                                                    {:article-id (name
+                                                                  id)}])})]))]])
 (defonce comments
   (r/atom
    [{:id 1

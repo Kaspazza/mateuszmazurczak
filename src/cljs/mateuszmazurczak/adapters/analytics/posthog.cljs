@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.adapters.analytics.posthog
   "PostHog adapter for web analytics (CLJS)"
   (:require
-   ["posthog-js"                :default posthog]
+   ["posthog-js"                      :default posthog]
    [mateuszmazurczak.utils.validation :as validation]))
 
 (defn init!

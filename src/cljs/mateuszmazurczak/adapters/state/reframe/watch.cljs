@@ -7,11 +7,11 @@
    - `get-watch-fn` returns re-frame's subscribe function
    - `init!` provides explicit initialization hook for system wiring but it's not necessairily needed for reframe, this ns just needs to be compiled"
   (:require
-   [mateuszmazurczak.ports.events                  :as events]
-   [mateuszmazurczak.frontend-i18n                 :as fi18n]
-   [mateuszmazurczak.domain.i18n.language                 :as i18n-lang]
-   [mateuszmazurczak.ports.navigation              :as nav-core]
    [mateuszmazurczak.application.pages.home.schema :as home-schema]
+   [mateuszmazurczak.domain.i18n.language          :as i18n-lang]
+   [mateuszmazurczak.frontend-i18n                 :as fi18n]
+   [mateuszmazurczak.ports.events                  :as events]
+   [mateuszmazurczak.ports.navigation              :as nav-core]
    [re-frame.core                                  :as rf]))
 
 ;; =============================================================================

@@ -1,9 +1,9 @@
 (ns mateuszmazurczak.application.pages.home.data
   "Home page data builders and transformations"
   (:require
-   [mateuszmazurczak.domain.articles.core         :as articles]
-   [mateuszmazurczak.ports.navigation             :as navigation]
-   [mateuszmazurczak.adapters.navigation.routes   :as-alias mm-routes]))
+   [mateuszmazurczak.adapters.navigation.routes :as-alias mm-routes]
+   [mateuszmazurczak.domain.articles.core       :as articles]
+   [mateuszmazurczak.ports.navigation           :as navigation]))
 
 (defn- transform-articles
   "Transform articles data for home page display"

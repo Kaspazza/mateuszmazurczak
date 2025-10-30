@@ -1,12 +1,12 @@
 (ns mateuszmazurczak.frontend-core
   "Entry point for customer app frontend"
   (:require
-   [mateuszmazurczak.system.core      :as sys]
-   [mateuszmazurczak.ports.logging    :as log]
    [mateuszmazurczak.application.router :as lm]
-   [mateuszmazurczak.ui.errors        :as mm-ui-errors]
-   [reagent.dom.client                :as rdc]
-   [reagent.dom.server                :as rds]))
+   [mateuszmazurczak.ports.logging      :as log]
+   [mateuszmazurczak.system.core        :as sys]
+   [mateuszmazurczak.ui.errors          :as mm-ui-errors]
+   [reagent.dom.client                  :as rdc]
+   [reagent.dom.server                  :as rds]))
 
 (defn render-id
   [app-id component]

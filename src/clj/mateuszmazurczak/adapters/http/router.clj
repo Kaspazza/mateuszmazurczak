@@ -1,15 +1,15 @@
 (ns mateuszmazurczak.adapters.http.router
   "Create web routers"
   (:require
-   [malli.core                               :as malli]
+   [malli.core                                :as malli]
    [mateuszmazurczak.adapters.http.error-page :as error-page]
    [mateuszmazurczak.adapters.http.middleware :as mm-middleware]
-   [mateuszmazurczak.ports.i18n              :as i18n]
-   [mateuszmazurczak.ports.logging           :as logging]
-   [muuntaja.core                        :as m]
-   [reitit.coercion                      :as coercion]
-   [reitit.ring                          :as reitit-ring]
-   [ring.util.http-response              :as http-response]))
+   [mateuszmazurczak.ports.i18n               :as i18n]
+   [mateuszmazurczak.ports.logging            :as logging]
+   [muuntaja.core                             :as m]
+   [reitit.coercion                           :as coercion]
+   [reitit.ring                               :as reitit-ring]
+   [ring.util.http-response                   :as http-response]))
 
 (defn not-found-handler
   [request]

@@ -1,6 +1,7 @@
 (ns mateuszmazurczak.adapters.http.routes
   (:require
-   [mateuszmazurczak.adapters.http.pages :refer [article-page mateuszmazurczak-page]]
+   [mateuszmazurczak.adapters.http.pages :refer [article-page
+                                                 mateuszmazurczak-page]]
    [mateuszmazurczak.env                 :as mm-env]))
 
 (def routes

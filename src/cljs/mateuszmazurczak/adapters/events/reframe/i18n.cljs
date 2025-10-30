@@ -5,7 +5,7 @@
    This is INTERNAL adapter code - UI components should dispatch via events/dispatch!"
   (:require
    [mateuszmazurczak.domain.i18n.language :as i18n-lang]
-   [re-frame.core                  :as rf]))
+   [re-frame.core                         :as rf]))
 
 (rf/reg-fx ::set-cookie
            (fn [[_key lang-id]]

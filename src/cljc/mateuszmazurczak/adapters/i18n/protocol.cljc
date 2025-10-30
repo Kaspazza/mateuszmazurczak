@@ -2,7 +2,8 @@
 
 (defprotocol Translator
   "Translation abstraction for hexagonal architecture"
-  (-translate [translator language id] [translator language id params]
+  (-translate [translator language id]
+              [translator language id params]
    "Translate a key to text in the given language, optionally with interpolation params.
     
     Params:

@@ -2,12 +2,12 @@
   "Describes the link between panel names and contents"
   (:require
    [mateuszmazurczak.domain.articles.core :as articles]
-   [mateuszmazurczak.frontend-i18n     :as fi18n]
-   [mateuszmazurczak.ui.errors         :as mm-ui-errors]
-   [mateuszmazurczak.ui.pages.articles :as pages-articles]
-   [mateuszmazurczak.ui.pages.home     :as mm-home]
-   [mateuszmazurczak.ui.spinner        :as mm-ui-spinner]
-   [mateuszmazurczak.ui.structure      :as mm-ui-structure]))
+   [mateuszmazurczak.frontend-i18n        :as fi18n]
+   [mateuszmazurczak.ui.errors            :as mm-ui-errors]
+   [mateuszmazurczak.ui.pages.articles    :as pages-articles]
+   [mateuszmazurczak.ui.pages.home        :as mm-home]
+   [mateuszmazurczak.ui.spinner           :as mm-ui-spinner]
+   [mateuszmazurczak.ui.structure         :as mm-ui-structure]))
 
 (defmulti panels :panel-id)
 

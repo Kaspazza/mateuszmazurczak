@@ -1,11 +1,11 @@
 (ns mateuszmazurczak.ports.logging
   "Api to logging"
   (:require
-   [malli.core                              :as m]
+   [malli.core                                 :as m]
    [mateuszmazurczak.adapters.logging.protocol :as p]
    [mateuszmazurczak.adapters.logging.telemere :as t]
-   [mateuszmazurczak.utils.macro            :as utils-macro]
-   [mateuszmazurczak.utils.validation       :as validation]))
+   [mateuszmazurczak.utils.macro               :as utils-macro]
+   [mateuszmazurczak.utils.validation          :as validation]))
 
 (def LoggerSchema
   "Schema for logger objects - validates that it implements the protocol"
@@ -111,9 +111,11 @@
                    :cljs :default)
            e
            #?(:clj (println "Logging failed, falling back to print:"
-                            (pr-str error-data) "\n" (pr-str e))
+                            (pr-str error-data)
+                            "\n" (pr-str e))
               :cljs (js/console.error "Logging failed, falling back to console:"
-                                      (clj->js error-data) e))))
+                                      (clj->js error-data)
+                                      e))))
     ;; Logger unavailable, fall back to console
     #?(:clj (println "Logger unavailable, falling back to print:"
                      (pr-str error-data))

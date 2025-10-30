@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.adapters.error-tracking.sentry
   "Sentry adapter for error tracking (CLJ)"
   (:require
-   [clojure.pprint              :as pp]
-   [clojure.walk                :as walk]
+   [clojure.pprint                    :as pp]
+   [clojure.walk                      :as walk]
    [mateuszmazurczak.utils.validation :as validation]
-   [sentry-clj.core             :as sentry])
+   [sentry-clj.core                   :as sentry])
   (:import [io.sentry Breadcrumb Sentry SentryLevel]
            [java.util Date HashMap Map]))
 

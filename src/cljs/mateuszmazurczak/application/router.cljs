@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.application.router
   "Entry point to mateuszmazurczak app"
   (:require
-   [mateuszmazurczak.system.config       :as config]
-   [mateuszmazurczak.ports.logging       :as log]
-   [mateuszmazurczak.application.panels  :as mm-nav-panels]
-   [mateuszmazurczak.ports.state         :as state]))
+   [mateuszmazurczak.application.panels :as mm-nav-panels]
+   [mateuszmazurczak.ports.logging      :as log]
+   [mateuszmazurczak.ports.state        :as state]
+   [mateuszmazurczak.system.config      :as config]))
 
 (defn handle-page-ex
   [page-data panel-id]
@@ -24,8 +24,9 @@
                                       :panel-id panel-id})
                      :id (get-in page-data [:error :id] ::router-page-data)
                      :data {:panel-id panel-id
-                            :validation-error (if-let [error-data (get-in page-data
-                                                                          [:error :data])]
+                            :validation-error (if-let [error-data
+                                                       (get-in page-data
+                                                               [:error :data])]
                                                 error-data
                                                 page-data)}})))))
 

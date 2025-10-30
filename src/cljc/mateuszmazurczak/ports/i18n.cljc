@@ -20,8 +20,7 @@
   * `params` - optional map of parameters for interpolation (defaults to nil)
   
   Returns: translated string"
-  ([translator language id]
-   (tr translator language id nil))
+  ([translator language id] (tr translator language id nil))
   ([translator language id params]
    (when-not (or (keyword? language) (vector? language))
      (throw (ex-info "Language must be a keyword or vector"

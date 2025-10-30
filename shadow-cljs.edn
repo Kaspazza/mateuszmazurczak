@@ -14,28 +14,24 @@
          :compiler-options {:infer-externs :auto}
          :modules {:portfolio {:depends-on #{:mateuszmazurczak-share}
                                :entries [mateuszmazurczak.portfolio.portfolio]
-                               :init-fn
-                               mateuszmazurczak.portfolio.portfolio/init}}}
+                               :init-fn mateuszmazurczak.portfolio.portfolio/init}}}
    :devtools {:after-load mateuszmazurczak.frontend-core/re-render
               :preloads [re-frisk.preload]
               :repl-pprint true
               :watch-dir "resources/public"}
-   :modules {:mateuszmazurczak-frontend-core
-             {:depends-on #{:mateuszmazurczak-share}
-              :init-fn mateuszmazurczak.frontend-core/init!}
+   :modules {:mateuszmazurczak-frontend-core {:depends-on #{:mateuszmazurczak-share}
+                                              :init-fn mateuszmazurczak.frontend-core/init!}
              :mateuszmazurczak-share {:entries []}}
    :output-dir "resources/public/js/compiled"
    :release {:build-options {:cache-level :off}
              :closure-defines {mateuszmazurczak.system.config/ENV "production"
                                mateuszmazurczak.system.config/LOG_SENTRY_DNS ""
                                mateuszmazurczak.system.config/LOKI_ENDPOINT ""
-                               mateuszmazurczak.system.config/POSTHOG_API_KEY
-                               ""}
+                               mateuszmazurczak.system.config/POSTHOG_API_KEY ""}
              :compiler-options {:optimizations :advanced
                                 :portfolio false}}
    :target :browser}}
  :deps {:aliases [:cljs-deps :cljs-dev-deps]}
  :dev-http {8081 [".shadow-cljs/target/browser-test"]}
- :nrepl {:middleware [cider.nrepl/cider-middleware
-                      refactor-nrepl.middleware/wrap-refactor]
+ :nrepl {:middleware [cider.nrepl/cider-middleware refactor-nrepl.middleware/wrap-refactor]
          :port 8777}}

@@ -106,31 +106,25 @@
              :level :info
              :msg "Frontend state initialized"
              :data {:has-translator (some? translator)}})
-  (state/init-app-db!
-   (state/initial-state translator logger (fi18n/language-strategy))))
+  (state/init-app-db! (state/initial-state translator logger (fi18n/language-strategy))))
 
-(defmethod ig/halt-key! :frontend/state
-  [_ _]
-  (state/set-watch-fn! nil)
-  (state/reset-app-db!)
-  nil)
+(defmethod ig/halt-key! :frontend/state [_ _] (state/set-watch-fn! nil) (state/reset-app-db!) nil)
 
 (defmethod ig/init-key :frontend/error-tracking
   [_ opts]
   (let [logger (:logger opts)]
-    (ig-utils/optional-component
-     (fn []
-       (log/log! logger
-                 {:id ::error-tracking-initializing
-                  :level :info
-                  :msg "Initializing error tracking..."})
-       (error-tracking/init! opts)
-       (log/log! logger
-                 {:id ::error-tracking-initialized
-                  :level :info
-                  :msg "Error tracking initialized"}))
-     logger
-     :frontend/error-tracking)))
+    (ig-utils/optional-component (fn []
+                                   (log/log! logger
+                                             {:id ::error-tracking-initializing
+                                              :level :info
+                                              :msg "Initializing error tracking..."})
+                                   (error-tracking/init! opts)
+                                   (log/log! logger
+                                             {:id ::error-tracking-initialized
+                                              :level :info
+                                              :msg "Error tracking initialized"}))
+                                 logger
+                                 :frontend/error-tracking)))
 
 (defmethod ig/halt-key! :frontend/error-tracking [_ _] nil)
 
@@ -165,9 +159,7 @@
 
 (defmethod ig/halt-key! :frontend/analytics [_ _] nil)
 
-(defmethod ig/init-key :logging.adapter/telemere
-  [_ {:keys [level]}]
-  (t/make-logger {:level level}))
+(defmethod ig/init-key :logging.adapter/telemere [_ {:keys [level]}] (t/make-logger {:level level}))
 
 (defmethod ig/init-key :frontend/logging
   [_ {:keys [level adapter loki-endpoint]}]
@@ -189,9 +181,7 @@
 
 (defmethod ig/init-key :i18n.adapter/tempura
   [_ {:keys [debug?]}]
-  (i18n-tempura/make-translator debug?
-                                mm-i18n-dict-txt/dict
-                                mm-i18n-dict-res/dict))
+  (i18n-tempura/make-translator debug? mm-i18n-dict-txt/dict mm-i18n-dict-res/dict))
 
 
 

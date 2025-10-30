@@ -10,25 +10,22 @@
 (defn prefixify-map
   [prefix thing]
   (if (map? thing)
-    (set/rename-keys
-     thing
-     (->> (keys thing)
-          (map (fn [k] [k (keyword (str (name prefix) "." (name k)))]))
-          (into {})))
+    (set/rename-keys thing
+                     (->> (keys thing)
+                          (map (fn [k] [k (keyword (str (name prefix) "." (name k)))]))
+                          (into {})))
     thing))
 
 (defn prefixify-vec
   [prefix thing]
-  (let [rename
-        (fn [el]
-          (if (map? el)
-            (seq (set/rename-keys
-                  el
-                  (->> (keys el)
-                       (map
-                        (fn [k] [k (keyword (str (name prefix) "." (name k)))]))
-                       (into {}))))
-            el))]
+  (let [rename (fn [el]
+                 (if (map? el)
+                   (seq (set/rename-keys
+                         el
+                         (->> (keys el)
+                              (map (fn [k] [k (keyword (str (name prefix) "." (name k)))]))
+                              (into {}))))
+                   el))]
     (if (vector? thing)
       (let [maps (filter map? thing)
             non-maps (remove map? thing)]
@@ -46,8 +43,7 @@
     (->> thing
          (map (fn [[k v]]
                 (cond
-                  (map? v) (let [prefixed (prefixify-map k v)]
-                             (if (map? prefixed) prefixed {k v}))
+                  (map? v) (let [prefixed (prefixify-map k v)] (if (map? prefixed) prefixed {k v}))
                   (vector? v) (let [prefixed (prefixify-vec k v)]
                                 (if (map? prefixed) prefixed {k v}))
                   :else {k v})))
@@ -70,8 +66,7 @@
     (apply merge-with
            set/union
            (map (fn [[language dict-map]]
-                  (into {}
-                        (map (fn [v] [v #{language}]) (keys (crush dict-map)))))
+                  (into {} (map (fn [v] [v #{language}]) (keys (crush dict-map)))))
                 filtered-dictionary))))
 
 (defn key-with-missing-languages
@@ -80,18 +75,13 @@
   `expected-languages` is the languages the report is limited to"
   [dictionary expected-languages key-exceptions]
   (let [key-set-exceptions (into #{} key-exceptions)]
-    (filter (fn [[k v]]
-              (and (not (contains? key-set-exceptions k))
-                   (not= v expected-languages)))
+    (filter (fn [[k v]] (and (not (contains? key-set-exceptions k)) (not= v expected-languages)))
             (language-report dictionary expected-languages))))
 
 (def languages (into #{} (keys mm-i18n-dict-res/dict)))
 
 (deftest mateuszmazurczak-dictionary
-  (testing
-    (apply
-     str
-     "Dictionary is matching all expecting languages, list all languages, expect "
-     languages)
-    (is (= []
-           (key-with-missing-languages mm-i18n-dict-res/dict languages #{})))))
+  (testing (apply str
+                  "Dictionary is matching all expecting languages, list all languages, expect "
+                  languages)
+    (is (= [] (key-with-missing-languages mm-i18n-dict-res/dict languages #{})))))

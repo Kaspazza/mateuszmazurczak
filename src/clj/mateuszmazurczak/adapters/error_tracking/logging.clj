@@ -13,13 +13,13 @@
   [{:keys [logger]
     :as config}]
   {:pre [(map? config) (some? logger)]}
-  (Thread/setDefaultUncaughtExceptionHandler
-   (reify
-    Thread$UncaughtExceptionHandler
-      (uncaughtException [_ thread ex]
-        (log/error! logger
-                    {:error ex
-                     :id ::uncaught-exception
-                     :data {:thread-name (.getName thread)
-                            :thread-id (.getId thread)}}))))
+  (Thread/setDefaultUncaughtExceptionHandler (reify
+                                              Thread$UncaughtExceptionHandler
+                                                (uncaughtException [_ thread ex]
+                                                  (log/error! logger
+                                                              {:error ex
+                                                               :id ::uncaught-exception
+                                                               :data {:thread-name (.getName thread)
+                                                                      :thread-id (.getId
+                                                                                  thread)}}))))
   nil)

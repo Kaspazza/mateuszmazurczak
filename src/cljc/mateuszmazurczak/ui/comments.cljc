@@ -87,14 +87,12 @@
            replies
            parent?
            border-top?]}]
-  [:article {:class
-             (into
-              ["p-2" "text-base" "bg-white" "rounded-lg" "dark:bg-gray-900"]
-              (cond-> []
-                parent? identity
-                (seq replies) (conj "mb-3")
-                border-top?
-                (conj "border-t" "border-gray-200" "dark:border-gray-700")))}
+  [:article {:class (into ["p-2" "text-base" "bg-white" "rounded-lg" "dark:bg-gray-900"]
+                          (cond-> []
+                            parent? identity
+                            (seq replies) (conj "mb-3")
+                            border-top?
+                            (conj "border-t" "border-gray-200" "dark:border-gray-700")))}
    [:footer {:class ["flex" "justify-between" "items-center" "mb-2"]}
     [:div {:class ["flex" "items-center"]}
      [:p {:class ["inline-flex"
@@ -144,8 +142,7 @@
      "Reply"]]
    (when (seq replies)
      [:div {:class ["mt-4"]}
-      (for [reply replies]
-        ^{:key (:id reply)} [comment-card (assoc reply :parent? true)])])])
+      (for [reply replies] ^{:key (:id reply)} [comment-card (assoc reply :parent? true)])])])
 
 (defn comment-form
   [{:keys [content on-content-change on-submit]}]
@@ -199,13 +196,10 @@
 
 (defn comments-section
   [{:keys [comments count add-comment-props on-reply]}]
-  [:section {:class
-             ["bg-white" "dark:bg-gray-900" "py-8" "lg:py-16" "antialiased"]}
+  [:section {:class ["bg-white" "dark:bg-gray-900" "py-8" "lg:py-16" "antialiased"]}
    [:div {:class ["max-w-2xl" "mx-auto" "px-4"]}
     [:div {:class ["flex" "justify-between" "items-center" "mb-6"]}
-     [:h2
-      {:class
-       ["text-lg" "lg:text-2xl" "font-bold" "text-gray-900" "dark:text-white"]}
+     [:h2 {:class ["text-lg" "lg:text-2xl" "font-bold" "text-gray-900" "dark:text-white"]}
       (str "Discussion (" (or count (count comments)) ")")]]
     [comment-form add-comment-props]
     (doall (map-indexed (fn [idx

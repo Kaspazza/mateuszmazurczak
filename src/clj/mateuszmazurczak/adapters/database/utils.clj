@@ -11,16 +11,15 @@
                        :value (f)}
                       (catch Exception e
                         (if (< attempt n)
-                          (log/log! logger
-                                    {:level :warn
-                                     :id ::database-retry-attempt-failed
-                                     :msg (str "Database connection attempt "
-                                               attempt
-                                               " failed, retrying...")
-                                     :data {:attempt attempt
-                                            :max-attempts n
-                                            :delay-ms delay-ms
-                                            :error-message (.getMessage e)}})
+                          (log/log!
+                           logger
+                           {:level :warn
+                            :id ::database-retry-attempt-failed
+                            :msg (str "Database connection attempt " attempt " failed, retrying...")
+                            :data {:attempt attempt
+                                   :max-attempts n
+                                   :delay-ms delay-ms
+                                   :error-message (.getMessage e)}})
                           (log/error! logger
                                       {:error e
                                        :id ::database-all-retry-attempts-failed

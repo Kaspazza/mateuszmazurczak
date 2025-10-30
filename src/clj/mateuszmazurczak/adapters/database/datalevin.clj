@@ -13,31 +13,30 @@
   "Convert our schema format to Datalevin schema format."
   []
   (let [attrs (apply merge schema/entities)]
-    (reduce-kv
-     (fn [acc attr-kw attr-def]
-       (let [datalevin-attr
-             (cond-> {}
-               (:attr attr-def) (assoc :db/valueType
-                                       (case (:attr attr-def)
-                                         :keyword :db.type/keyword
-                                         :string :db.type/string
-                                         :uuid :db.type/uuid
-                                         :instant :db.type/instant
-                                         :db.type/string))
-               (:enum attr-def) (assoc :db/valueType :db.type/keyword)
-               (:ref attr-def) (assoc :db/valueType :db.type/ref)
-               (:ref-many attr-def) (assoc :db/valueType :db.type/ref
-                                           :db/cardinality :db.cardinality/many)
-               (:unique attr-def) (assoc :db/unique
-                                         (case (:unique attr-def)
-                                           :identity :db.unique/identity
-                                           :value :db.unique/value
-                                           :db.unique/value))
-               (:index attr-def) (assoc :db/index true)
-               (:doc attr-def) (assoc :db/doc (:doc attr-def)))]
-         (assoc acc attr-kw datalevin-attr)))
-     {}
-     attrs)))
+    (reduce-kv (fn [acc attr-kw attr-def]
+                 (let [datalevin-attr (cond-> {}
+                                        (:attr attr-def) (assoc :db/valueType
+                                                                (case (:attr attr-def)
+                                                                  :keyword :db.type/keyword
+                                                                  :string :db.type/string
+                                                                  :uuid :db.type/uuid
+                                                                  :instant :db.type/instant
+                                                                  :db.type/string))
+                                        (:enum attr-def) (assoc :db/valueType :db.type/keyword)
+                                        (:ref attr-def) (assoc :db/valueType :db.type/ref)
+                                        (:ref-many attr-def) (assoc :db/valueType :db.type/ref
+                                                                    :db/cardinality
+                                                                    :db.cardinality/many)
+                                        (:unique attr-def) (assoc :db/unique
+                                                                  (case (:unique attr-def)
+                                                                    :identity :db.unique/identity
+                                                                    :value :db.unique/value
+                                                                    :db.unique/value))
+                                        (:index attr-def) (assoc :db/index true)
+                                        (:doc attr-def) (assoc :db/doc (:doc attr-def)))]
+                   (assoc acc attr-kw datalevin-attr)))
+               {}
+               attrs)))
 
 
 
@@ -131,9 +130,7 @@
 (defn- apply-migration!
   "Apply a single migration to Datalevin database using its powerful update-schema capabilities."
   [conn migration logger]
-  {:pre [conn
-         (m/validate log/LoggerSchema logger)
-         (m/validate migrations/Migration migration)]}
+  {:pre [conn (m/validate log/LoggerSchema logger) (m/validate migrations/Migration migration)]}
   (let [{:keys [migration/id migration/up migration/checksum]} migration]
     (try (log/log! logger
                    {:id ::migration-applying
@@ -147,13 +144,8 @@
            (cond
              ;; Schema update using Datalevin's update-schema
              (and (map? result)
-                  (or (:schema-update result)
-                      (:del-attrs result)
-                      (:rename-map result)))
-             (d/update-schema conn
-                              (:schema-update result)
-                              (:del-attrs result)
-                              (:rename-map result))
+                  (or (:schema-update result) (:del-attrs result) (:rename-map result)))
+             (d/update-schema conn (:schema-update result) (:del-attrs result) (:rename-map result))
              ;; Traditional transaction data
              (sequential? result) (when (seq result) (d/transact! conn result))
              ;; Migration handled everything internally
@@ -187,25 +179,19 @@
   (when (seq pending-migrations)
     (try (log/log! logger
                    {:id ::migrations-starting
-                    :msg (str "Running "
-                              (count pending-migrations)
-                              " pending migrations")})
+                    :msg (str "Running " (count pending-migrations) " pending migrations")})
          (migrations/validate-migration-registry!)
          (let [applied-migrations (get-applied-migrations conn)]
-           (migrations/validate-migration-integrity applied-migrations
-                                                    migrations/migrations))
-         (doseq [migration pending-migrations]
-           (apply-migration! conn migration logger))
-         (log/log!
-          logger
-          {:id ::migrations-completed
-           :msg (str "Completed " (count pending-migrations) " migrations")})
+           (migrations/validate-migration-integrity applied-migrations migrations/migrations))
+         (doseq [migration pending-migrations] (apply-migration! conn migration logger))
+         (log/log! logger
+                   {:id ::migrations-completed
+                    :msg (str "Completed " (count pending-migrations) " migrations")})
          (catch Exception e
            (log/error! logger
                        {:error e
                         :id ::migrations-failed
-                        :data {:pending-migrations-count (count
-                                                          pending-migrations)}})
+                        :data {:pending-migrations-count (count pending-migrations)}})
            (throw (ex-info "Failed to run migrations"
                            {:type ::migrations-failed
                             :pending-migrations-count (count pending-migrations)

@@ -13,14 +13,10 @@
    - router: The router instance
    - dispatch-fn: Function to dispatch route change events (e.g., state/dispatch!)"
   [router dispatch-fn]
-  (history-reitit/start-history!
-   router
-   (fn [route-data] (dispatch-fn [:nav/route-changed route-data]))))
+  (history-reitit/start-history! router
+                                 (fn [route-data] (dispatch-fn [:nav/route-changed route-data]))))
 
-(defn stop-history!
-  "Stop history tracking"
-  [history]
-  (history-reitit/stop-history! history))
+(defn stop-history! "Stop history tracking" [history] (history-reitit/stop-history! history))
 
 ;; Global state - to be initialized by the system
 (defonce ^:private router-instance (atom nil))
@@ -40,10 +36,7 @@
 
 (defn get-history "Get the current history instance" [] @history-instance)
 
-(defn route-name
-  "Get the name of the current route"
-  [current-route]
-  (:route-name current-route))
+(defn route-name "Get the name of the current route" [current-route] (:route-name current-route))
 
 (defn path-params
   "Get path parameters from current route"
@@ -77,9 +70,7 @@
   "Change only query-params"
   ([query-params] (change-query-parameters! query-params true))
   ([query-params preserve-history?]
-   (history-reitit/set-query! (get-history)
-                              query-params
-                              (not preserve-history?))))
+   (history-reitit/set-query! (get-history) query-params (not preserve-history?))))
 
 (defn navigate!
   "Navigate to URL, with optional history preservation"

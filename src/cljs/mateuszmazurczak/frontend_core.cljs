@@ -71,6 +71,4 @@
 
 (defn ^:export init!
   []
-  (try (sys/start-system!)
-       (mount-root)
-       (catch :default e (handle-init-failure! e))))
+  (try (sys/start-system!) (mount-root) (catch :default e (handle-init-failure! e))))

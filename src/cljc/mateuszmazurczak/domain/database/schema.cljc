@@ -4,10 +4,9 @@
    [mateuszmazurczak.domain.database.migrations :as migrations]))
 
 (def article
-  {:article/id
-   {:doc "Unique identificator for the article which main SOT is articles.edn"
-    :attr :keyword
-    :unique :identity}})
+  {:article/id {:doc "Unique identificator for the article which main SOT is articles.edn"
+                :attr :keyword
+                :unique :identity}})
 
 (def author
   {:author/id {:doc "Unique ID for the author"

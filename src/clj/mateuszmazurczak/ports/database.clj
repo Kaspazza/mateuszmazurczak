@@ -83,10 +83,7 @@
                           :args args}
                          e)))))
 
-(defn find-entity
-  "Find entity by id."
-  [conn entity-id]
-  (adapter/entity conn entity-id))
+(defn find-entity "Find entity by id." [conn entity-id] (adapter/entity conn entity-id))
 
 (defn pull-entity
   "Pull entity data by pattern."

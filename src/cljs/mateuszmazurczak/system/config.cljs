@@ -63,6 +63,4 @@
                       :events (ig/ref :frontend/events)
                       :logger (ig/ref :frontend/logging)}})
 
-(defn frontend-config
-  []
-  (if (development?) development-config production-config))
+(defn frontend-config [] (if (development?) development-config production-config))

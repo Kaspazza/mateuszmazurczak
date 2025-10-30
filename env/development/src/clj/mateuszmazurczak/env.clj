@@ -34,10 +34,7 @@
      (try (edn/read-string edn-content) (catch Exception e nil))))
   ([edn-filename] (read-edn edn-filename read-file)))
 
-(defn load-deps
-  "Load the current project `deps.edn` files"
-  []
-  (read-edn deps-edn))
+(defn load-deps "Load the current project `deps.edn` files" [] (read-edn deps-edn))
 
 (defn extract-paths
   "Extracts the `:paths` and `:extra-paths` from a given `deps.edn`
@@ -49,11 +46,9 @@
      :as _deps-edn}
     excluded-aliases]
    (let [selected-aliases (apply dissoc aliases excluded-aliases)
-         alias-paths
-         (mapcat (fn [[_alias-name paths]]
-                   (apply concat
-                          (vals (select-keys paths [:extra-paths :paths]))))
-          selected-aliases)]
+         alias-paths (mapcat (fn [[_alias-name paths]]
+                               (apply concat (vals (select-keys paths [:extra-paths :paths]))))
+                      selected-aliases)]
      (->> alias-paths
           (concat paths)
           sort
@@ -85,12 +80,10 @@
                                            [:div ""]
                                            [:script {:type "text/javascript"
                                                      :src share-js}]
-                                           [:script
-                                            {:type "text/javascript"
-                                             :src "/js/compiled/portfolio.js"}])
+                                           [:script {:type "text/javascript"
+                                                     :src "/js/compiled/portfolio.js"}])
                 http-response/ok
-                (assoc-in [:headers "content-type"]
-                          "text/html;charset=utf8")))}]))
+                (assoc-in [:headers "content-type"] "text/html;charset=utf8")))}]))
 
 ;; Redefined on purpose, as we are loading either dev or prod.
 (defn route

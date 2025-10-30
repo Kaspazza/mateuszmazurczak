@@ -6,9 +6,7 @@
 
 (def TranslatorSchema
   "Schema for translator objects - validates that it implements the protocol"
-  [:fn
-   (fn [translator]
-     (and (some? translator) (satisfies? p/Translator translator)))])
+  [:fn (fn [translator] (and (some? translator) (satisfies? p/Translator translator)))])
 
 (defn tr
   "Translate a key to text in the given language, optionally with interpolation params.
@@ -35,6 +33,4 @@
                      {:type ::invalid-params
                       :provided params})))
    (validation/validate-data TranslatorSchema translator "Translator inst")
-   (if params
-     (p/-translate translator language id params)
-     (p/-translate translator language id))))
+   (if params (p/-translate translator language id params) (p/-translate translator language id))))

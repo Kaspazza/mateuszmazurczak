@@ -30,17 +30,14 @@
           (swap! controllers-state (fn [old-state]
                                      (assoc match
                                             :controllers
-                                            (apply-controllers (:controllers
-                                                                old-state)
-                                                               match)))))
-        transformed-route
-        (when match-with-controllers
-          {:route-name (get-in match-with-controllers [:data :name])
-           :panel-id
-           (get-in match-with-controllers [:data :panel-id] :panels/not-found)
-           :path-parameters (:path-params match-with-controllers)
-           :query-parameters (:query-params match-with-controllers)
-           :fragment (:fragment match-with-controllers)})]
+                                            (apply-controllers (:controllers old-state) match)))))
+        transformed-route (when match-with-controllers
+                            {:route-name (get-in match-with-controllers [:data :name])
+                             :panel-id
+                             (get-in match-with-controllers [:data :panel-id] :panels/not-found)
+                             :path-parameters (:path-params match-with-controllers)
+                             :query-parameters (:query-params match-with-controllers)
+                             :fragment (:fragment match-with-controllers)})]
     ;; Dispatch route change event with processed and transformed match
     (dispatch-fn transformed-route)))
 
@@ -48,8 +45,7 @@
   "Start history with controller management"
   [router on-route-change-fn]
   (reitit-fe-history/start! router
-                            (fn [match _history]
-                              (process-route-change match on-route-change-fn))
+                            (fn [match _history] (process-route-change match on-route-change-fn))
                             {:use-fragment false}))
 
 (defn stop-history! "Stop history" [history] (reitit-fe-history/stop! history))

@@ -21,10 +21,7 @@
 
 (defn kill [process] (cmds/kill process))
 
-(defn success
-  "Returns `true` if the result is a success"
-  [result]
-  (cmds/success result))
+(defn success "Returns `true` if the result is a success" [result] (cmds/success result))
 
 (defn clj-parameterize
   "Turns `par` into a parameter understood by a clojure `cli`."
@@ -70,8 +67,7 @@
 
   Print the command `cmd` if verbose is `true`, and execute `cmd` in directory `dir`.
   The `prefixs` are added, the `err-message` also if an error occur."
-  ([prefixs cmd dir err-message]
-   (blocking-cmd prefixs cmd dir err-message false))
+  ([prefixs cmd dir err-message] (blocking-cmd prefixs cmd dir err-message false))
   ([prefixs cmd dir err-message verbose?]
    (let [dir (cmds/defaulting-dir dir)
          cmd-str (cmds/to-str cmd)]
@@ -93,37 +89,32 @@
   (let [dir (cmds/defaulting-dir dir)
         cmd-str (cmds/to-str cmd)]
     (when verbose? (print-exec-cmd-str prefixs cmd-str dir))
-    (try
-      (let [proc (cmds/create-process cmd dir)]
-        (future (cmds/log-stream
-                 proc
-                 :out
-                 (fn [l] (when (out-filter-fn l) (normalln prefixs l)))
-                 (fn []
-                   (when verbose?
-                     (normalln "Execution of"
-                               (cmd-str cmd)
-                               "ended, out listener is killed.")))
-                 refresh-delay
-                 (partial errorln prefixs)))
-        (future (cmds/log-stream
-                 proc
-                 :err
-                 (fn [l] (when (err-filter-fn l) (normalln prefixs l)))
-                 (fn []
-                   (when verbose?
-                     (normalln "Execution of"
-                               (cmd-str cmd)
-                               "ended, err listener is killed.")))
-                 refresh-delay
-                 (partial errorln prefixs)))
-        (cmds/exec proc)
-        ;; Without this pause, some messages are lost
-        (Thread/sleep 100)
-        {:dir dir
-         :cmd-str cmd-str
-         :proc proc})
-      (catch Exception e
-        {:e e
-         :dir dir
-         :cmd-str cmd-str}))))
+    (try (let [proc (cmds/create-process cmd dir)]
+           (future (cmds/log-stream
+                    proc
+                    :out
+                    (fn [l] (when (out-filter-fn l) (normalln prefixs l)))
+                    (fn []
+                      (when verbose?
+                        (normalln "Execution of" (cmd-str cmd) "ended, out listener is killed.")))
+                    refresh-delay
+                    (partial errorln prefixs)))
+           (future (cmds/log-stream
+                    proc
+                    :err
+                    (fn [l] (when (err-filter-fn l) (normalln prefixs l)))
+                    (fn []
+                      (when verbose?
+                        (normalln "Execution of" (cmd-str cmd) "ended, err listener is killed.")))
+                    refresh-delay
+                    (partial errorln prefixs)))
+           (cmds/exec proc)
+           ;; Without this pause, some messages are lost
+           (Thread/sleep 100)
+           {:dir dir
+            :cmd-str cmd-str
+            :proc proc})
+         (catch Exception e
+           {:e e
+            :dir dir
+            :cmd-str cmd-str}))))

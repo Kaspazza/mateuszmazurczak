@@ -25,22 +25,13 @@
                   [:meta {:charset "utf-8"}]
                   [:meta {:content "width=device-width,initial-scale=1"
                           :name "viewport"}]
-                  (when head-elements
-                    (for [header-el head-elements] header-el))]
+                  (when head-elements (for [header-el head-elements] header-el))]
                  [:body (for [el body] el)]]))
 
 (defn build
   "Build a webpage header"
   [{:keys [header-elements meta-tags]} & body]
-  (let [{:keys [image
-                description
-                title
-                type
-                url
-                twitter-content
-                twitter-site
-                author
-                icon]
+  (let [{:keys [image description title type url twitter-content twitter-site author icon]
          :or {icon "/favicon.ico"}}
         meta-tags
         meta-title [:meta {:name "title"

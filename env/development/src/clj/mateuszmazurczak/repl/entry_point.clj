@@ -8,8 +8,7 @@
    [mateuszmazurczak.ports.logging :as log]
    [mateuszmazurczak.system.components]
    [mateuszmazurczak.system.config]
-   [nrepl.server                   :refer
-                                   [default-handler start-server stop-server]])
+   [nrepl.server                   :refer [default-handler start-server stop-server]])
   (:gen-class))
 
 
@@ -35,9 +34,7 @@
 
 (defn- force-option?
   [args]
-  (and args
-       (seq args)
-       (filter some? (map #(contains? #{"-f" "--force"} %) args))))
+  (and args (seq args) (filter some? (map #(contains? #{"-f" "--force"} %) args))))
 
 (defn default-middleware
   []
@@ -52,16 +49,9 @@
 (def repl "Store the repl instance in the atom" (atom {}))
 
 
-(defn get-active-nrepl-port
-  "Retrieve the nrepl port, available for REPL"
-  []
-  (:nrepl-port @repl))
+(defn get-active-nrepl-port "Retrieve the nrepl port, available for REPL" [] (:nrepl-port @repl))
 
-(defn- stop-repl
-  "Stop the repl"
-  []
-  (stop-server (:repl @repl))
-  (reset! repl {}))
+(defn- stop-repl "Stop the repl" [] (stop-server (:repl @repl)) (reset! repl {}))
 
 
 
@@ -78,17 +68,14 @@
          (println "-> Starting REPL on port:" nrepl-port)
          (reset! repl {:nrepl-port nrepl-port
                        :repl (start-server :port nrepl-port
-                                           :handler (apply
-                                                     default-handler
-                                                     (default-middleware)))})
+                                           :handler (apply default-handler (default-middleware)))})
          (println "-> REPL started successfully on port:" nrepl-port)
-         (.addShutdownHook
-          (Runtime/getRuntime)
-          (Thread. #(do (println "SHUTDOWN in progress, stopping REPL on port:"
-                                 nrepl-port)
-                        (shutdown-agents)
-                        (stop-repl)
-                        (println "SHUTDOWN completed successfully"))))
+         (.addShutdownHook (Runtime/getRuntime)
+                           (Thread. #(do (println "SHUTDOWN in progress, stopping REPL on port:"
+                                                  nrepl-port)
+                                         (shutdown-agents)
+                                         (stop-repl)
+                                         (println "SHUTDOWN completed successfully"))))
          (integrant.repl/set-prep! #(ig/expand (:system conf))))
        (when-not (force-option? args)
          (main-fn)
@@ -101,16 +88,12 @@
        :started
        (catch Exception e
          ;; At this point we might not have logger available yet
-         (println "Failed to start REPL, relaunch with -force option. Error:"
-                  (.getMessage e))
+         (println "Failed to start REPL, relaunch with -force option. Error:" (.getMessage e))
          (.printStackTrace e)
          (throw e))))
 
 
-(defn -main
-  "Main entry point for repl"
-  [& args]
-  (start-repl args (default-middleware) go))
+(defn -main "Main entry point for repl" [& args] (start-repl args (default-middleware) go))
 
 (comment
   (require '[mateuszmazurczak.system :as sys])

@@ -62,8 +62,7 @@
     (when message (.setMessage breadcrumb message))
     (when category (.setCategory breadcrumb category))
     (when data
-      (doseq [[k v] (map-util-hashmappify-vals data #(HashMap. ^Map %))]
-        (.setData breadcrumb k v)))
+      (doseq [[k v] (map-util-hashmappify-vals data #(HashMap. ^Map %))] (.setData breadcrumb k v)))
     breadcrumb))
 
 ;;; Public API
@@ -99,6 +98,4 @@
                           :extra data}))
     nil
     (catch Exception e
-      (throw (ex-info "Failed to capture error in Sentry"
-                      {:error-data error-data}
-                      e)))))
+      (throw (ex-info "Failed to capture error in Sentry" {:error-data error-data} e)))))

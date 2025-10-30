@@ -10,9 +10,7 @@
 (defn clj-outdated-deps
   [app-dir]
   (try
-    (let [res (blocking-cmd
-               ["clojure" "-M:antq" "--reporter=edn" "--no-changes"]
-               app-dir)
+    (let [res (blocking-cmd ["clojure" "-M:antq" "--reporter=edn" "--no-changes"] app-dir)
           deps (edn/read-string (str (:out res)))]
       (if deps
         (-> res
@@ -45,8 +43,7 @@
        "--force"
        "--no-changes"
        "--focus="
-       (str (:name dependency)
-            (when (:version dependency) (str "@" (:version dependency))))]
+       (str (:name dependency) (when (:version dependency) (str "@" (:version dependency))))]
       (blocking-cmd (:path dependency))))
 
 
@@ -55,16 +52,10 @@
   ([dir target-dir deps]
    (let [cmd (cond-> ["clojure" "-M:antq" "--upgrade" "--no-changes" "--force"]
                (and deps (not-empty deps))
-               (concat (mapv #(str "--focus="
-                                   (:name %)
-                                   (when (:version %) (str "@" (:version %))))
+               (concat (mapv #(str "--focus=" (:name %) (when (:version %) (str "@" (:version %))))
                              deps))
                (some? target-dir) (concat ["-d" target-dir]))
-         res (echo-cmds/blocking-cmd ["deps-update"]
-                                     cmd
-                                     dir
-                                     "Antq update failed"
-                                     false)]
+         res (echo-cmds/blocking-cmd ["deps-update"] cmd dir "Antq update failed" false)]
      (when-not (= 0 (:exit res))
        {:error (:err res)
         :data res})))

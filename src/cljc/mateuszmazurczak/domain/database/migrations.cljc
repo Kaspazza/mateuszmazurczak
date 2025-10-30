@@ -23,9 +23,7 @@
 
 (def MigrationFunction
   "Schema for migration up/down functions"
-  [:fn
-   (fn [f]
-     (and (fn? f) (= 2 (.. ^clojure.lang.AFunction f getRequiredArity))))])
+  [:fn (fn [f] (and (fn? f) (= 2 (.. ^clojure.lang.AFunction f getRequiredArity))))])
 
 (def Migration
   "Schema for a single migration map"
@@ -38,9 +36,7 @@
    [:migration/down MigrationFunction]
    [:migration/checksum [:int {:min 0}]]])
 
-(def ^:private MigrationRegistry
-  "Schema for the entire migration registry"
-  [:sequential Migration])
+(def ^:private MigrationRegistry "Schema for the entire migration registry" [:sequential Migration])
 
 
 
@@ -69,22 +65,19 @@
                            :db/valueType :db.type/string
                            :db/doc "JSON string of reaction types to counts"}])
                        (fn [conn _logger]
-                         (throw (ex-info
-                                 "Cannot rollback schema additions"
-                                 {:migration-id
-                                  "20241201-120000-add-comment-reactions"}))))
+                         (throw (ex-info "Cannot rollback schema additions"
+                                         {:migration-id "20241201-120000-add-comment-reactions"}))))
    ;; 2. Datalevin-specific: Using update-schema for complex changes
-   #_(create-migration
-      "20241202-130000-rename-comment-content"
-      "Rename comment/content to comment/text for better naming"
-      (fn [conn _logger]
-        ;; Return map for d/update-schema - Datalevin only
-        {:schema-update {:comment/text {:doc "Comment text content"
-                                        :attr :string}}
-         :rename-map {:comment/content :comment/text}})
-      (fn [conn _logger]
-        ;; Reverse the rename
-        {:rename-map {:comment/text :comment/content}}))
+   #_(create-migration "20241202-130000-rename-comment-content"
+                       "Rename comment/content to comment/text for better naming"
+                       (fn [conn _logger]
+                         ;; Return map for d/update-schema - Datalevin only
+                         {:schema-update {:comment/text {:doc "Comment text content"
+                                                         :attr :string}}
+                          :rename-map {:comment/content :comment/text}})
+                       (fn [conn _logger]
+                         ;; Reverse the rename
+                         {:rename-map {:comment/text :comment/content}}))
    ;; 3. Data migration with schema change
    #_(create-migration
       "20241203-140000-normalize-author-names"
@@ -95,21 +88,17 @@
                          {:author/first-name {:attr :string}
                           :author/last-name {:attr :string}})
         ;; Then migrate existing data
-        (let [authors (d/q '[:find ?e ?name :where [?e :author/name ?name]]
-                           (d/db conn))]
+        (let [authors (d/q '[:find ?e ?name :where [?e :author/name ?name]] (d/db conn))]
           (doseq [[author-id full-name] authors]
-            (let [[first-name last-name]
-                  (clojure.string/split full-name #"\s+" 2)]
-              (d/transact!
-               conn
-               [[:db/add author-id :author/first-name (or first-name "")]
-                [:db/add author-id :author/last-name (or last-name "")]]))))
+            (let [[first-name last-name] (clojure.string/split full-name #"\s+" 2)]
+              (d/transact! conn
+                           [[:db/add author-id :author/first-name (or first-name "")]
+                            [:db/add author-id :author/last-name (or last-name "")]]))))
         ;; Return nil since we handled everything
         nil)
       (fn [conn _logger]
         (throw (ex-info "Cannot rollback data migration"
-                        {:migration-id
-                         "20241203-140000-normalize-author-names"}))))
+                        {:migration-id "20241203-140000-normalize-author-names"}))))
    ;; TODO I will need to choose one schema for migrations to be analyzed and applied by adapters, but that will be done when I change the schema
   ])
 
@@ -125,20 +114,18 @@
     (throw (ex-info "All migration IDs must be strings"
                     {:type ::invalid-migration-id-types
                      :provided applied-migration-ids})))
-  (try
-    (validation/validate-data MigrationRegistry migrations "migration registry")
-    (validate-migration-id-chronology migrations)
-    (let [applied-set (set applied-migration-ids)]
-      (remove (fn [migration] (contains? applied-set (:migration/id migration)))
-              migrations))
-    (catch #?(:clj Exception
-              :cljs :default)
-      e
-      (throw (ex-info "Failed to get pending migrations"
-                      {:type ::get-pending-migrations-error
-                       :cause e
-                       :applied-migration-ids applied-migration-ids}
-                      e)))))
+  (try (validation/validate-data MigrationRegistry migrations "migration registry")
+       (validate-migration-id-chronology migrations)
+       (let [applied-set (set applied-migration-ids)]
+         (remove (fn [migration] (contains? applied-set (:migration/id migration))) migrations))
+       (catch #?(:clj Exception
+                 :cljs :default)
+         e
+         (throw (ex-info "Failed to get pending migrations"
+                         {:type ::get-pending-migrations-error
+                          :cause e
+                          :applied-migration-ids applied-migration-ids}
+                         e)))))
 
 (defn validate-migration-integrity
   "Validate that applied migrations match their expected checksums.
@@ -175,12 +162,10 @@
                     :applied-checksum applied-checksum
                     :expected-checksum expected-checksum})))))
          (when (seq @mismatches)
-           (throw
-            (ex-info
-             "Migration integrity check failed - checksum mismatches detected"
-             {:type ::integrity-check-failed
-              :mismatches @mismatches
-              :total-mismatches (count @mismatches)}))))
+           (throw (ex-info "Migration integrity check failed - checksum mismatches detected"
+                           {:type ::integrity-check-failed
+                            :mismatches @mismatches
+                            :total-mismatches (count @mismatches)}))))
        (catch #?(:clj Exception
                  :cljs :default)
          e
@@ -197,39 +182,36 @@
   "Validate the entire migration registry for structural integrity.
    Throws descriptive errors for any issues found."
   []
-  (try
-    (validation/validate-data MigrationRegistry migrations "migration registry")
-    (validate-migration-id-chronology migrations)
-    (let [ids (map :migration/id migrations)
-          unique-ids (set ids)]
-      (when (not= (count ids) (count unique-ids))
-        (let [duplicates (->> ids
-                              (frequencies)
-                              (filter #(> (second %) 1))
-                              (map first))]
-          (throw (ex-info "Duplicate migration IDs found"
-                          {:type ::duplicate-migration-ids
-                           :duplicates duplicates})))))
-    (let [checksums (map :migration/checksum migrations)
-          unique-checksums (set checksums)]
-      (when (not= (count checksums) (count unique-checksums))
-        (let [duplicate-checksums (->> checksums
-                                       (frequencies)
-                                       (filter #(> (second %) 1))
-                                       (map first))]
-          (throw
-           (ex-info
-            "Duplicate migration checksums found - possible copy-paste error"
-            {:type ::duplicate-migration-checksums
-             :duplicate-checksums duplicate-checksums})))))
-    (catch #?(:clj Exception
-              :cljs :default)
-      e
-      (throw (ex-info "Migration registry validation failed"
-                      {:type ::registry-validation-error
-                       :total-migrations (count migrations)
-                       :cause e}
-                      e)))))
+  (try (validation/validate-data MigrationRegistry migrations "migration registry")
+       (validate-migration-id-chronology migrations)
+       (let [ids (map :migration/id migrations)
+             unique-ids (set ids)]
+         (when (not= (count ids) (count unique-ids))
+           (let [duplicates (->> ids
+                                 (frequencies)
+                                 (filter #(> (second %) 1))
+                                 (map first))]
+             (throw (ex-info "Duplicate migration IDs found"
+                             {:type ::duplicate-migration-ids
+                              :duplicates duplicates})))))
+       (let [checksums (map :migration/checksum migrations)
+             unique-checksums (set checksums)]
+         (when (not= (count checksums) (count unique-checksums))
+           (let [duplicate-checksums (->> checksums
+                                          (frequencies)
+                                          (filter #(> (second %) 1))
+                                          (map first))]
+             (throw (ex-info "Duplicate migration checksums found - possible copy-paste error"
+                             {:type ::duplicate-migration-checksums
+                              :duplicate-checksums duplicate-checksums})))))
+       (catch #?(:clj Exception
+                 :cljs :default)
+         e
+         (throw (ex-info "Migration registry validation failed"
+                         {:type ::registry-validation-error
+                          :total-migrations (count migrations)
+                          :cause e}
+                         e)))))
 
 (defn create-migration
   "Create a migration map with required metadata.

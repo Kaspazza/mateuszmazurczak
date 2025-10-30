@@ -26,19 +26,14 @@
     :handler-type :fx}
    :nav/navigate-no-history
    {:category :navigation
-    :description
-    "Navigate to a route without adding to browser history (replace current entry)."
-    :schema [:cat
-             [:= :nav/navigate-no-history]
-             keyword?
-             [:? [:maybe map?]]
-             [:? [:maybe map?]]]
+    :description "Navigate to a route without adding to browser history (replace current entry)."
+    :schema [:cat [:= :nav/navigate-no-history] keyword? [:? [:maybe map?]] [:? [:maybe map?]]]
     :handler-type :fx}
-   :nav/change-query-parameters!
-   {:category :navigation
-    :description "Update only query parameters without changing route or path."
-    :schema [:cat [:= :nav/change-query-parameters!] map?]
-    :handler-type :fx}
+   :nav/change-query-parameters! {:category :navigation
+                                  :description
+                                  "Update only query parameters without changing route or path."
+                                  :schema [:cat [:= :nav/change-query-parameters!] map?]
+                                  :handler-type :fx}
    :nav/route-changed
    {:category :navigation
     :description
@@ -62,18 +57,16 @@
     "Controller event: dispatched when home route is entered. Loads/refreshes home page data."
     :schema [:cat [:= :home/on-route-enter]]
     :handler-type :fx}
-   :home/refresh
-   {:category :page
-    :description
-    "Rebuild home page data (e.g., when articles are updated). Pure state update."
-    :schema [:cat [:= :home/refresh]]
-    :handler-type :db}
-   :i18n/change-lang
-   {:category :i18n
-    :description
-    "Change application language. Takes DOM event from language selector."
-    :schema [:cat [:= :i18n/change-lang] [:or "PL" "EN"]]
-    :handler-type :fx}})
+   :home/refresh {:category :page
+                  :description
+                  "Rebuild home page data (e.g., when articles are updated). Pure state update."
+                  :schema [:cat [:= :home/refresh]]
+                  :handler-type :db}
+   :i18n/change-lang {:category :i18n
+                      :description
+                      "Change application language. Takes DOM event from language selector."
+                      :schema [:cat [:= :i18n/change-lang] [:or "PL" "EN"]]
+                      :handler-type :fx}})
 
 (defn events-by-category
   "Get events grouped by category (:navigation, :page, :i18n).

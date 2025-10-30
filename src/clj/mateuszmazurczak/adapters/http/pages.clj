@@ -23,31 +23,27 @@
            http-response/not-found
            handler-utils/web-page)
       (-> (handler-utils/build
-           (merge
-            http-request
-            {:meta-tags
-             {:description (cond
-                             (keyword? description) (fallback/always-return
-                                                     #(tr description)
-                                                     (str description)
-                                                     logger)
-                             (string? description) description
-                             :else "Just my website hanging in the web")
-              :image (str "https://mateuszmazurczak.com/"
-                          (cond
-                            (keyword? img)
-                            (fallback/always-return #(tr img) (str img) logger)
-                            (string? img) img
-                            :else "img/preview/en.png"))
-              :title (cond
-                       (keyword? img)
-                       (fallback/always-return #(tr title) (str title) logger)
-                       (string? img) img
-                       :else "Mateusz Mazurczak website")
-              :author (or author "Mateusz Mazurczak")
-              :url (str/join "/" ["https://mateuszmazurczak.com" path])
-              :twitter-content (or twitter-content "sumary_large_image")
-              :type "website"}})
+           (merge http-request
+                  {:meta-tags
+                   {:description (cond
+                                   (keyword? description) (fallback/always-return #(tr description)
+                                                                                  (str description)
+                                                                                  logger)
+                                   (string? description) description
+                                   :else "Just my website hanging in the web")
+                    :image (str "https://mateuszmazurczak.com/"
+                                (cond
+                                  (keyword? img) (fallback/always-return #(tr img) (str img) logger)
+                                  (string? img) img
+                                  :else "img/preview/en.png"))
+                    :title (cond
+                             (keyword? img) (fallback/always-return #(tr title) (str title) logger)
+                             (string? img) img
+                             :else "Mateusz Mazurczak website")
+                    :author (or author "Mateusz Mazurczak")
+                    :url (str/join "/" ["https://mateuszmazurczak.com" path])
+                    :twitter-content (or twitter-content "sumary_large_image")
+                    :type "website"}})
            [:div {:id "app"
                   :class ["h-full"]}
             (mm-spinner/spinner)]
@@ -67,15 +63,13 @@
     :as http-request}]
   (-> (handler-utils/build
        (merge http-request
-              {:meta-tags {:description (fallback/always-return
-                                         #(tr :consulting)
-                                         "Software development consulting"
-                                         logger)
+              {:meta-tags {:description (fallback/always-return #(tr :consulting)
+                                                                "Software development consulting"
+                                                                logger)
                            ;;TODO add preview
                            #_#_:image
                              (str "https://mateuszmazurczak.com/"
-                                  (fallback/always-return #(tr :page-preview)
-                                                          "img/preview/en.png"))
+                                  (fallback/always-return #(tr :page-preview) "img/preview/en.png"))
                            :title "Mateuszmazurczak"
                            :author "Mateuszmazurczak"
                            :url "https://mateuszmazurczak.com/"

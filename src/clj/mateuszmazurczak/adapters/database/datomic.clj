@@ -44,10 +44,7 @@
   (let [_created? (d/create-database uri)
         conn (d/connect uri)
         schema-tx (datofu-all/schema-tx)
-        _initial-mig (datofu-migration/install-and-migrate!
-                      conn
-                      schema-tx
-                      [(initial-migration)])]
+        _initial-mig (datofu-migration/install-and-migrate! conn schema-tx [(initial-migration)])]
     conn))
 
 (defn start
@@ -137,9 +134,7 @@
 (defn- apply-migration!
   "Apply a single migration to Datomic database."
   [conn migration logger]
-  {:pre [conn
-         (m/validate log/LoggerSchema logger)
-         (m/validate migrations/Migration migration)]}
+  {:pre [conn (m/validate log/LoggerSchema logger) (m/validate migrations/Migration migration)]}
   (let [{:keys [migration/id migration/up migration/checksum]} migration]
     (try (log/log! logger
                    {:id ::migration-applying
@@ -177,25 +172,19 @@
   (when (seq pending-migrations)
     (try (log/log! logger
                    {:id ::migrations-starting
-                    :msg (str "Running "
-                              (count pending-migrations)
-                              " pending migrations")})
+                    :msg (str "Running " (count pending-migrations) " pending migrations")})
          (migrations/validate-migration-registry!)
          (let [applied-migrations (get-applied-migrations conn)]
-           (migrations/validate-migration-integrity applied-migrations
-                                                    migrations/migrations))
-         (doseq [migration pending-migrations]
-           (apply-migration! conn migration logger))
-         (log/log!
-          logger
-          {:id ::migrations-completed
-           :msg (str "Completed " (count pending-migrations) " migrations")})
+           (migrations/validate-migration-integrity applied-migrations migrations/migrations))
+         (doseq [migration pending-migrations] (apply-migration! conn migration logger))
+         (log/log! logger
+                   {:id ::migrations-completed
+                    :msg (str "Completed " (count pending-migrations) " migrations")})
          (catch Exception e
            (log/error! logger
                        {:error e
                         :id ::migrations-failed
-                        :data {:pending-migrations-count (count
-                                                          pending-migrations)}})
+                        :data {:pending-migrations-count (count pending-migrations)}})
            (throw (ex-info "Failed to run migrations"
                            {:type ::migrations-failed
                             :pending-migrations-count (count pending-migrations)

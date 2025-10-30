@@ -45,10 +45,9 @@
    (dispatch! [:nav/navigate ::routes/home])"
   [event-vector]
   (when-not @dispatch-fn
-    (throw (ex-info
-            "Dispatch function not initialized. Ensure the system is started."
-            {:type :events/dispatch-not-initialized
-             :event event-vector})))
+    (throw (ex-info "Dispatch function not initialized. Ensure the system is started."
+                    {:type :events/dispatch-not-initialized
+                     :event event-vector})))
   (@dispatch-fn event-vector))
 
 (defn dispatch-tree
@@ -60,11 +59,10 @@
    {:on-click #(mateuszmazurczak.events/dispatch! [:nav/navigate ::routes/home])}
    "
   [coll]
-  (walk/prewalk
-   #(if (and (vector? %) (= :dispatch (first %)) (vector? (second %)))
-      (fn [] (dispatch! (second %)))
-      %)
-   coll))
+  (walk/prewalk #(if (and (vector? %) (= :dispatch (first %)) (vector? (second %)))
+                   (fn [] (dispatch! (second %)))
+                   %)
+                coll))
 
 ;; Adapter wiring (port/application service layer)
 
@@ -81,8 +79,7 @@
   [adapter-map]
   (let [required-event-ids (set (keys registry/events))
         implemented-event-ids (set (keys adapter-map))
-        missing-event-ids (set/difference required-event-ids
-                                          implemented-event-ids)]
+        missing-event-ids (set/difference required-event-ids implemented-event-ids)]
     (when (seq missing-event-ids)
       (throw
        (ex-info
@@ -109,13 +106,10 @@
         adapter-event-ids (set (keys adapter-map))
         unknown-event-ids (set/difference adapter-event-ids registry-event-ids)]
     (when (seq unknown-event-ids)
-      (throw
-       (ex-info
-        "Adapter implements events not in registry"
-        {:type :wiring/unknown-events
-         :unknown unknown-event-ids
-         :hint
-         "Add these events to events/registry.cljs or remove from adapter"})))))
+      (throw (ex-info "Adapter implements events not in registry"
+                      {:type :wiring/unknown-events
+                       :unknown unknown-event-ids
+                       :hint "Add these events to events/registry.cljs or remove from adapter"})))))
 
 (defn- validate-register-fns
   "Validate that register-fns map is complete and correct.
@@ -134,15 +128,13 @@
         provided-types (set (keys register-fns))
         missing-types (set/difference required-types provided-types)]
     (when (seq missing-types)
-      (throw
-       (ex-info
-        "Register-fns missing required handler types"
-        {:type :wiring/incomplete-register-fns
-         :missing-types missing-types
-         :required-types required-types
-         :provided-types provided-types
-         :hint
-         "Adapter must provide register-fns for all handler types used in registry"})))
+      (throw (ex-info
+              "Register-fns missing required handler types"
+              {:type :wiring/incomplete-register-fns
+               :missing-types missing-types
+               :required-types required-types
+               :provided-types provided-types
+               :hint "Adapter must provide register-fns for all handler types used in registry"})))
     (doseq [[handler-type register-fn] register-fns]
       (when-not (fn? register-fn)
         (throw (ex-info "Register function is not callable"

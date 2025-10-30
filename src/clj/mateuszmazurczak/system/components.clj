@@ -12,15 +12,11 @@
    [mateuszmazurczak.ports.error-tracking         :as error-tracking]
    [mateuszmazurczak.ports.logging                :as log]))
 
-(defmethod ig/init-key :logging.adapter/telemere
-  [_ opts]
-  (t/make-logger {:level (:level opts)}))
+(defmethod ig/init-key :logging.adapter/telemere [_ opts] (t/make-logger {:level (:level opts)}))
 
 (defmethod ig/init-key :i18n.adapter/tempura
   [_ {:keys [debug?]}]
-  (i18n-tempura/make-translator debug?
-                                mm-i18n-dict-txt/dict
-                                mm-i18n-dict-res/dict))
+  (i18n-tempura/make-translator debug? mm-i18n-dict-txt/dict mm-i18n-dict-res/dict))
 
 (defmethod ig/init-key :sys/logging
   [_

@@ -22,8 +22,7 @@
               (merge article
                      {:on-click #(events/dispatch! [:nav/navigate
                                                     ::mm-routes/article
-                                                    {:article-id (name
-                                                                  id)}])})]))]])
+                                                    {:article-id (name id)}])})]))]])
 (defonce comments
   (r/atom
    [{:id 1
@@ -66,9 +65,7 @@
   (r/atom {:content ""
            :name ""}))
 
-(defn handle-content-change
-  [e]
-  (swap! form-state assoc :content (.. e -target -value)))
+(defn handle-content-change [e] (swap! form-state assoc :content (.. e -target -value)))
 
 (defn handle-submit
   [e]
@@ -90,8 +87,7 @@
   [comments]
   (let [by-parent (group-by :parent-id comments)
         nest (fn nest [parent-id]
-               (mapv #(assoc % :replies (vec (nest (:id %))))
-                     (get by-parent parent-id)))]
+               (mapv #(assoc % :replies (vec (nest (:id %)))) (get by-parent parent-id)))]
     (nest nil)))
 
 ;;TODO - move to reframe

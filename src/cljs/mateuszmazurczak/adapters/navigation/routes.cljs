@@ -8,13 +8,11 @@
   [[""
     {:name ::root
      :panel-id :panels/home
-     :controllers [{:start (fn [_]
-                             (events/dispatch! [:home/on-route-enter]))}]}]
+     :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
    ["/"
     {:name ::home ;; Important for history as browser adds systematically that `/`
      :panel-id :panels/home
-     :controllers [{:start (fn [_]
-                             (events/dispatch! [:home/on-route-enter]))}]}]
+     :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
    ["/articles"
     {:name ::articles
      :panel-id :panels/articles}]

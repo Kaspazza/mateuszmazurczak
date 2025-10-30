@@ -42,8 +42,7 @@
   "Extract the directory path to the `filename`."
   [filename]
   (when-not (str/blank? filename)
-    (if (or (fs/directory? filename)
-            (= fs/file-separator (str (last filename))))
+    (if (or (fs/directory? filename) (= fs/file-separator (str (last filename))))
       filename
       (let [filepath (->> filename
                           fs/components
@@ -51,8 +50,7 @@
                           (mapv str))]
         (cond
           (= [] filepath) ""
-          (absolute? filename)
-          (apply create-dir-path fs/file-separator filepath)
+          (absolute? filename) (apply create-dir-path fs/file-separator filepath)
           :else (apply create-dir-path filepath))))))
 
 (defn read-file

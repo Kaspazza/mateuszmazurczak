@@ -38,8 +38,7 @@
 (rf/reg-sub :nav/active-route?
             :<-
             [:nav/current-route]
-            (fn [current-route [_ route-name]]
-              (= route-name (nav-core/route-name current-route))))
+            (fn [current-route [_ route-name]] (= route-name (nav-core/route-name current-route))))
 
 ;; =============================================================================
 ;; Page watch
@@ -61,8 +60,7 @@
                   {:data processed-data
                    :valid? valid?
                    :error {:id ::home-translation-failed
-                           :data (home-schema/explain-home-page-data
-                                  processed-data)
+                           :data (home-schema/explain-home-page-data processed-data)
                            :actual-data processed-data}}))))
 
 ;; =============================================================================
@@ -94,9 +92,8 @@
   "Set of all watch-ids implemented by this adapter.
    
    Used by the port for validation during system wiring."
-  #{:nav/current-route :nav/current-panel :nav/path-params :nav/query-params
-    :nav/active-route? :panels/home :home/raw-data :logger :i18n/lang
-    :i18n/translator :i18n/lang-str})
+  #{:nav/current-route :nav/current-panel :nav/path-params :nav/query-params :nav/active-route?
+    :panels/home :home/raw-data :logger :i18n/lang :i18n/translator :i18n/lang-str})
 
 (defn get-watch-fn
   "Returns the re-frame subscribe function.

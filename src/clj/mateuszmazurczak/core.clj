@@ -14,13 +14,12 @@
              full-config (config/load-config)
              system (ig/init system-config)
              logger (:sys/logging system)]
-         (logging/log!
-          logger
-          {:id ::application-started
-           :level :info
-           :msg (str "Application started successfully with environment: "
-                     (:env full-config))
-           :data {:env (:env full-config)}})
+         (logging/log! logger
+                       {:id ::application-started
+                        :level :info
+                        :msg (str "Application started successfully with environment: "
+                                  (:env full-config))
+                        :data {:env (:env full-config)}})
          system)
        (catch Throwable e
          ;; At this point logging system might not be initialized yet

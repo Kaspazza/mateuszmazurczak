@@ -18,23 +18,21 @@
                (let [element-id (->> fragment
                                      js/CSS.escape
                                      (str "#"))]
-                 (utils-dom/delay-page-load
-                  #(utils-dom/on-element-exist
-                    element-id
-                    (fn [el]
-                      ;; Wait one more frame to ensure all layout is stable
-                      (js/requestAnimationFrame
-                       (.scrollIntoView el
-                                        (clj->js {:behavior "smooth"
-                                                  :block "start"})))))))
+                 (utils-dom/delay-page-load #(utils-dom/on-element-exist
+                                              element-id
+                                              (fn [el]
+                                                ;; Wait one more frame to ensure all layout is stable
+                                                (js/requestAnimationFrame
+                                                 (.scrollIntoView el
+                                                                  (clj->js {:behavior "smooth"
+                                                                            :block "start"})))))))
                (.scrollTo js/window
                           (clj->js {:top 0
                                     :left 0
                                     :behavior "smooth"})))))
 
 (rf/reg-fx ::change-query-parameters
-           (fn [[query-params]]
-             (nav-core/change-query-parameters! query-params)))
+           (fn [[query-params]] (nav-core/change-query-parameters! query-params)))
 
 (rf/reg-fx ::navigate
            (fn [[route-name path-params query-params]]
@@ -68,15 +66,13 @@
    :nav/change-query-parameters! (fn [_cofx [_ query-params]]
                                    {::change-query-parameters [query-params]})
    :nav/navigate-no-history (fn [_ [_ route-name path-params query-params]]
-                              {::navigate-no-history
-                               [route-name path-params query-params]})
-   :nav/route-changed
-   (fn [{:keys [db]} [_ route-data]]
-     (let [route-lang (get-in route-data [:query-parameters :lang])]
-       (merge {:db (assoc db :current-route route-data)
-               ::handle-fragment-scroll (:fragment route-data)}
-              (when-not route-lang
-                {::change-query-parameters [{:lang (:lang db)}]}))))})
+                              {::navigate-no-history [route-name path-params query-params]})
+   :nav/route-changed (fn [{:keys [db]} [_ route-data]]
+                        (let [route-lang (get-in route-data [:query-parameters :lang])]
+                          (merge {:db (assoc db :current-route route-data)
+                                  ::handle-fragment-scroll (:fragment route-data)}
+                                 (when-not route-lang
+                                   {::change-query-parameters [{:lang (:lang db)}]}))))})
 
 ;; =============================================================================
 ;; Initialization (for effects and subscriptions)

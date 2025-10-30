@@ -25,15 +25,14 @@
    Handler signature:
    - :db handlers: (fn [db event-vec] new-db)
    - :fx handlers: (fn [cofx event-vec] effects-map)"
-  {:i18n/change-lang
-   (fn [{:keys [db]} [_ lang-evt]]
-     (let [lang (-> lang-evt
-                    .-target
-                    .-value
-                    i18n-lang/ui-str-to-id)]
-       {:db (assoc db :lang lang)
-        ::set-cookie ["lang" lang]
-        :fx [[:dispatch [:nav/change-query-parameters! {:lang lang}]]]}))})
+  {:i18n/change-lang (fn [{:keys [db]} [_ lang-evt]]
+                       (let [lang (-> lang-evt
+                                      .-target
+                                      .-value
+                                      i18n-lang/ui-str-to-id)]
+                         {:db (assoc db :lang lang)
+                          ::set-cookie ["lang" lang]
+                          :fx [[:dispatch [:nav/change-query-parameters! {:lang lang}]]]}))})
 
 (defn init!
   "Initialize i18n effects.

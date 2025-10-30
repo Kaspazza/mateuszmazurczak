@@ -43,8 +43,7 @@
               (catch #?(:clj Exception
                         :cljs :default)
                 _
-                (prn (str "Failed while logging, opts: " (pr-str opts)
-                          " logger:" logger)
+                (prn (str "Failed while logging, opts: " (pr-str opts) " logger:" logger)
                      (pr-str e)))))))
 
 (defn event!
@@ -110,15 +109,13 @@
          (catch #?(:clj Exception
                    :cljs :default)
            e
-           #?(:clj (println "Logging failed, falling back to print:"
-                            (pr-str error-data)
+           #?(:clj (println "Logging failed, falling back to print:" (pr-str error-data)
                             "\n" (pr-str e))
               :cljs (js/console.error "Logging failed, falling back to console:"
                                       (clj->js error-data)
                                       e))))
     ;; Logger unavailable, fall back to console
-    #?(:clj (println "Logger unavailable, falling back to print:"
-                     (pr-str error-data))
+    #?(:clj (println "Logger unavailable, falling back to print:" (pr-str error-data))
        :cljs (js/console.error "Logger unavailable, falling back to console:"
                                (clj->js error-data)))))
 
@@ -132,12 +129,6 @@
   [opts-or-msg value]
   `(do ~(utils-macro/keep-callsite `(t/log! ~opts-or-msg)) ~value))
 
-(defn init!
-  "Initialize the logging system"
-  [logger config]
-  (p/-init! logger config))
+(defn init! "Initialize the logging system" [logger config] (p/-init! logger config))
 
-(defn shutdown!
-  "Shutdown the logging system"
-  [logger system]
-  (p/-shutdown! logger system))
+(defn shutdown! "Shutdown the logging system" [logger system] (p/-shutdown! logger system))

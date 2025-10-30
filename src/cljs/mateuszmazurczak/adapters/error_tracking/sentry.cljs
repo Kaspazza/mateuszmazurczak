@@ -3,10 +3,9 @@
   (:require
    ["@sentry/react"                   :as Sentry]
    ["react"                           :as react]
-   ["react-router-dom"                :refer (createRoutesFromChildren
-                                              matchRoutes
-                                              useLocation
-                                              useNavigationType)]
+   ["react-router-dom"                :refer (createRoutesFromChildren matchRoutes
+                                                                       useLocation
+                                                                       useNavigationType)]
    [mateuszmazurczak.utils.validation :as validation]))
 
 (defn- keyword->level
@@ -46,18 +45,16 @@
                                        #js {:useEffect react/useEffect
                                             :useLocation useLocation
                                             :useNavigationType useNavigationType
-                                            :createRoutesFromChildren
-                                            createRoutesFromChildren
+                                            :createRoutesFromChildren createRoutesFromChildren
                                             :matchRoutes matchRoutes})
                                       (.replayIntegration Sentry)]
                    :replaysSessionSampleRate 0
                    :replaysOnErrorSampleRate 0
                    :tracesSampleRate 1.0
-                   :tracePropagationTargets
-                   #js ["localhost"
-                        (if (regexp? traced-website)
-                          traced-website
-                          #"^https://mateuszmazurczak\.com/")]})
+                   :tracePropagationTargets #js ["localhost"
+                                                 (if (regexp? traced-website)
+                                                   traced-website
+                                                   #"^https://mateuszmazurczak\.com/")]})
        (catch :default e
          (throw (ex-info "Failed to initialize Sentry error tracking"
                          {:config (dissoc config :dsn)} ; Don't log DSN for security
@@ -85,6 +82,4 @@
                                :extra (clj->js data)}))
        nil
        (catch :default e
-         (throw (ex-info "Failed to capture error in Sentry"
-                         {:error-data error-data}
-                         e)))))
+         (throw (ex-info "Failed to capture error in Sentry" {:error-data error-data} e)))))

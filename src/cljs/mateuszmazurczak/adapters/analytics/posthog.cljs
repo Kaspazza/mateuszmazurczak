@@ -48,14 +48,10 @@
     (throw (ex-info "Event name must be a non-empty string"
                     {:type ::invalid-event-name
                      :provided event})))
-  (try (if properties
-         (.capture posthog event (clj->js properties))
-         (.capture posthog event))
+  (try (if properties (.capture posthog event (clj->js properties)) (.capture posthog event))
        nil
        (catch :default e
-         (throw (ex-info "Failed to capture event in PostHog"
-                         {:event-data event-data}
-                         e)))))
+         (throw (ex-info "Failed to capture event in PostHog" {:event-data event-data} e)))))
 
 (defn identify!
   "Identify user in PostHog"
@@ -69,9 +65,7 @@
     (throw (ex-info "User ID must be a non-empty string"
                     {:type ::invalid-user-id
                      :provided user-id})))
-  (try (if properties
-         (.identify posthog user-id (clj->js properties))
-         (.identify posthog user-id))
+  (try (if properties (.identify posthog user-id (clj->js properties)) (.identify posthog user-id))
        nil
        (catch :default e
          (throw (ex-info "Failed to identify user in PostHog"
@@ -86,14 +80,11 @@
     (throw (ex-info "Page data must be a map"
                     {:type ::invalid-page-data
                      :provided page-data})))
-  (try (let [opts (cond-> {}
-                    path (assoc :path path)
-                    properties (assoc :properties properties))]
-         (if (seq opts)
-           (.capture posthog "$pageview" (clj->js opts))
-           (.capture posthog "$pageview")))
-       nil
-       (catch :default e
-         (throw (ex-info "Failed to capture page view in PostHog"
-                         {:page-data page-data}
-                         e)))))
+  (try
+    (let [opts (cond-> {}
+                 path (assoc :path path)
+                 properties (assoc :properties properties))]
+      (if (seq opts) (.capture posthog "$pageview" (clj->js opts)) (.capture posthog "$pageview")))
+    nil
+    (catch :default e
+      (throw (ex-info "Failed to capture page view in PostHog" {:page-data page-data} e)))))

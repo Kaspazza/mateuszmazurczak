@@ -1,2 +1,1 @@
-{:datomic-transactor-properties-path
- "datomic-pro/1.0.7364/config/transactor.properties"}
+{:datomic-transactor-properties-path "datomic-pro/1.0.7364/config/transactor.properties"}

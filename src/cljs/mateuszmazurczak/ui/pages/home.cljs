@@ -7,8 +7,7 @@
 (defn about-me
   [{:keys [welcome-text description contact-info]}]
   [:div {:class "hero-content flex-col lg:flex-row max-w-screen justify-evenly"
-         :style {:background
-                 "linear-gradient(85deg, rgb(170 137 173) 41%, #fff 100%)"}}
+         :style {:background "linear-gradient(85deg, rgb(170 137 173) 41%, #fff 100%)"}}
    [:div {:style {:height "100%"
                   :position "relative"
                   :background-color "#bea5c2 "}}]

@@ -41,8 +41,7 @@
 
 (defn roundn
   ^double [precision n]
-  (let [p (Math/pow 10.0 (long precision))]
-    (/ (double (Math/round (* (double n) p))) p)))
+  (let [p (Math/pow 10.0 (long precision))] (/ (double (Math/round (* (double n) p))) p)))
 
 (defn fmt-num
   [precision n]
@@ -52,25 +51,21 @@
         n-abs (Math/abs n)
         n-int-part (long n-abs)
         fmt-opts *fmt-opts*]
-    (str
-     (when neg? "-")
-     (->> (str n-int-part)
-          (reverse)
-          (partition 3 3 "")
-          (mapv str/join)
-          (str/join (get fmt-opts :thousands-separator))
-          (str/reverse))
-     (when-let [n-dec-part (and (pos? (long precision)) (- n-abs n-int-part))]
-       (str (get fmt-opts :decimal-separator)
-            (encore/substr (str n-dec-part "000000") :by-len 2 precision))))))
+    (str (when neg? "-")
+         (->> (str n-int-part)
+              (reverse)
+              (partition 3 3 "")
+              (mapv str/join)
+              (str/join (get fmt-opts :thousands-separator))
+              (str/reverse))
+         (when-let [n-dec-part (and (pos? (long precision)) (- n-abs n-int-part))]
+           (str (get fmt-opts :decimal-separator)
+                (encore/substr (str n-dec-part "000000") :by-len 2 precision))))))
 
 #?(:clj (defn format-time
           [^java.time.Instant inst]
-          (let [formatter (java.time.format.DateTimeFormatter/ofPattern
-                           "HH:mm:ss.SSSSSSX")
-                utc-time (java.time.ZonedDateTime/ofInstant
-                          inst
-                          java.time.ZoneOffset/UTC)]
+          (let [formatter (java.time.format.DateTimeFormatter/ofPattern "HH:mm:ss.SSSSSSX")
+                utc-time (java.time.ZonedDateTime/ofInstant inst java.time.ZoneOffset/UTC)]
             (.format formatter utc-time)))
    :cljs (defn format-time [date] date))
 
@@ -104,10 +99,7 @@
                     "|"
                     (format-id id)
                     (when-let [msg (force msg_)] (str "| " msg))
-                    (when error
-                      (if (string? error)
-                        (str "| " error)
-                        (str "| \n" (pprint error))))
+                    (when error (if (string? error) (str "| " error) (str "| \n" (pprint error))))
                     "\n")]
       (colorize-level level line))))
 
@@ -124,8 +116,7 @@
                       "|" (format-id id)
                       "|" (str "Finish "
                                (when (and data (:msg data)) (str (:msg data)))
-                               (when run-nsecs
-                                 (str " (time: " (fmt-nsecs run-nsecs) ")"))))
+                               (when run-nsecs (str " (time: " (fmt-nsecs run-nsecs) ")"))))
         (assoc-in signal [:kvs :ignore-console] true))
     signal))
 
@@ -135,14 +126,11 @@
          ^Path [path]
          (if (instance? Path path)
            path
-           (if (instance? URI path)
-             (java.nio.file.Paths/get ^URI path)
-             (.toPath (io/file path)))))
+           (if (instance? URI path) (java.nio.file.Paths/get ^URI path) (.toPath (io/file path)))))
        (defn exists?
          "Returns true if f exists."
          [f]
-         (try (Files/exists (as-path f) (into-array LinkOption []))
-              (catch Exception _e false)))
+         (try (Files/exists (as-path f) (into-array LinkOption [])) (catch Exception _e false)))
        (defn is-existing-path?
          "Returns true if `filename` path already exist."
          [path]
@@ -175,23 +163,19 @@
                 "|"
                 (format-id id)
                 (when-let [msg (force msg_)] (str "| " msg))
-                (when error
-                  (if (string? error)
-                    (str "| " error)
-                    (str "| " (pprint error)))))))
+                (when error (if (string? error) (str "| " error) (str "| " (pprint error)))))))
 
-#?(:cljs
-     (defn send-to-loki!
-       "Send log line to Loki endpoint via HTTP POST"
-       [endpoint log-line]
-       (when-not (str/blank? endpoint)
-         (try (.catch (js/fetch endpoint
-                                (clj->js {:method "POST"
-                                          :headers {"Content-Type" "text/plain"}
-                                          :body log-line
-                                          :mode "cors"}))
-                      (fn [err] (prn "Failed because..." (pr-str err)) nil))
-              (catch :default e (prn "Failed because..." (pr-str e)) nil)))))
+#?(:cljs (defn send-to-loki!
+           "Send log line to Loki endpoint via HTTP POST"
+           [endpoint log-line]
+           (when-not (str/blank? endpoint)
+             (try (.catch (js/fetch endpoint
+                                    (clj->js {:method "POST"
+                                              :headers {"Content-Type" "text/plain"}
+                                              :body log-line
+                                              :mode "cors"}))
+                          (fn [err] (prn "Failed because..." (pr-str err)) nil))
+                  (catch :default e (prn "Failed because..." (pr-str e)) nil)))))
 
 #?(:cljs
      (defn handler:loki
@@ -201,7 +185,5 @@
         - :endpoint - Loki endpoint URL (e.g., 'http://your-server:9000/loki/api/v1/raw')"
        [{:keys [endpoint]}]
        (fn [signal]
-         (when endpoint
-           (let [log-line (format-log-line signal)]
-             (send-to-loki! endpoint log-line)))
+         (when endpoint (let [log-line (format-log-line signal)] (send-to-loki! endpoint log-line)))
          nil)))

@@ -8,7 +8,5 @@
   [& maps]
   (apply merge-with
          (fn [& args]
-           (if (every? #(or (map? %) (nil? %)) args)
-             (apply deep-merge args)
-             (last args)))
+           (if (every? #(or (map? %) (nil? %)) args) (apply deep-merge args) (last args)))
          maps))

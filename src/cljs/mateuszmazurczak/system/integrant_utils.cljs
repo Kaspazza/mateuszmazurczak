@@ -26,21 +26,18 @@
     (throw (ex-info "init-fn must be a function"
                     {:type ::invalid-init-fn
                      :provided init-fn})))
-  (when-not (some? logger)
-    (throw (ex-info "logger must be provided" {:type ::missing-logger})))
+  (when-not (some? logger) (throw (ex-info "logger must be provided" {:type ::missing-logger})))
   (when-not (keyword? component-name)
     (throw (ex-info "component-name must be a keyword"
                     {:type ::invalid-component-name
                      :provided component-name})))
   (try (init-fn)
        (catch :default e
-         (log/error!
-          logger
-          {:error e
-           :id ::optional-component-failed
-           :data
-           {:component component-name
-            :mode :degraded
-            :message
-            "Non-critical component failed, continuing in degraded mode"}})
+         (log/error! logger
+                     {:error e
+                      :id ::optional-component-failed
+                      :data {:component component-name
+                             :mode :degraded
+                             :message
+                             "Non-critical component failed, continuing in degraded mode"}})
          nil)))

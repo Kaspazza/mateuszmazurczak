@@ -51,8 +51,7 @@
    [:pre.code
     [:code.language-visual-basic
      "GET /trending HTTP/1.1\nHost: [www.github.com](http://www.github.com)\n"]]
-   [:p
-    "This kind of request is called GET request (as it expects to retrieve data)."]
+   [:p "This kind of request is called GET request (as it expects to retrieve data)."]
    [:h2 {:id "2.-dns"}
     [:a {:href "#2.-dns"
          :class "no-underline"}
@@ -97,8 +96,7 @@
     "So when you buy a domain from service providers like OVH, they have registered their nameservers in those services, so when the DNS resolver asks, OVH it will answer - oh yeah I know that domain name! This is the IP for it."]
    [:p "And that’s the first part of the diagram"]
    [:p
-    [:img {:src
-           "img/Big%20picture%201bb0109e113180bf89cfdd873a04069f/image%201.png"
+    [:img {:src "img/Big%20picture%201bb0109e113180bf89cfdd873a04069f/image%201.png"
            :title nil
            :alt "image.png"}]]
    [:h2 {:id "3.-server"}
@@ -118,8 +116,7 @@
         {:d
          "M216,148H172V108h44a12,12,0,0,0,0-24H172V40a12,12,0,0,0-24,0V84H108V40a12,12,0,0,0-24,0V84H40a12,12,0,0,0,0,24H84v40H40a12,12,0,0,0,0,24H84v44a12,12,0,0,0,24,0V172h40v44a12,12,0,0,0,24,0V172h44a12,12,0,0,0,0-24Zm-108,0V108h40v40Z"}]]]]
     "3. Server"]
-   [:p
-    "So now that we know the IP of the computer under that domain, the request is sent there."]
+   [:p "So now that we know the IP of the computer under that domain, the request is sent there."]
    [:p
     [:img
      {:src
@@ -128,8 +125,7 @@
       :alt "image.png"}]]
    [:p
     "And once it reaches your IP address (which is either it’s your local machine that has ports open or most likely remote machine (web-cloud e.g. AWS, gcloud, Hertz, digitalocean) where your app is deployed."]
-   [:p
-    "The Server itself just needs to forward that request to your running application backend."]
+   [:p "The Server itself just needs to forward that request to your running application backend."]
    [:p
     [:img
      {:src
@@ -159,13 +155,11 @@
     "4. Your app"]
    [:p
     "Finally! The request reaches your app! If all the previous steps went succesfully, your app will receive that request and decide what to do next and what "
-    [:a {:href
-         "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"}
+    [:a {:href "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status"}
      "response"]
     " to give back!"]
    [:p
-    [:img {:src
-           "img/Big%20picture%201bb0109e113180bf89cfdd873a04069f/image%202.png"
+    [:img {:src "img/Big%20picture%201bb0109e113180bf89cfdd873a04069f/image%202.png"
            :title nil
            :alt "image.png"}]]
    [:p "The response will look like this:"]

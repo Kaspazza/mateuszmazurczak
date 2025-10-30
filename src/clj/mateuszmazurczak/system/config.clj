@@ -7,20 +7,17 @@
 (defn- resolve-symbol
   [qualified-sym]
   (or (requiring-resolve qualified-sym)
-      (throw (ex-info (str "Could not resolve symbol: " qualified-sym)
-                      {:symbol qualified-sym}))))
+      (throw (ex-info (str "Could not resolve symbol: " qualified-sym) {:symbol qualified-sym}))))
 
 (defmethod aero.core/reader 'ig/ref [_ _ value] (ig/ref value))
 
 (defmethod aero.core/reader 'var
   [_ _ value]
-  (let [parsed (if (string? value) (symbol value) value)]
-    (var-get (resolve-symbol parsed))))
+  (let [parsed (if (string? value) (symbol value) value)] (var-get (resolve-symbol parsed))))
 
 (defmethod aero.core/reader 'var-ref
   [_ _ value]
-  (let [parsed (if (string? value) (symbol value) value)]
-    (resolve-symbol parsed)))
+  (let [parsed (if (string? value) (symbol value) value)] (resolve-symbol parsed)))
 
 (defonce ^:private secrets-cache (atom nil))
 
@@ -36,8 +33,7 @@
 (defmethod aero.core/reader 'secrets
   [{:keys [env]} _ path]
   (when-let [secrets (load-secrets)]
-    (let [env-profile (or env :development)]
-      (get-in secrets (into [env-profile] path)))))
+    (let [env-profile (or env :development)] (get-in secrets (into [env-profile] path)))))
 
 (defn read-config
   "Read config from file system or JAR resources"

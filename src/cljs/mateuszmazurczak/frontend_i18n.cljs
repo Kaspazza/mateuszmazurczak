@@ -61,9 +61,7 @@
    (let [lang @(state/watch [:i18n/lang])
          translator @(state/watch [:i18n/translator])]
      (when translator
-       (if params
-         (i18n/tr translator lang tr-id params)
-         (i18n/tr translator lang tr-id))))))
+       (if params (i18n/tr translator lang tr-id params) (i18n/tr translator lang tr-id))))))
 
 (defn- i18n-marker?
   "Check if a value is an i18n translation marker.

@@ -84,8 +84,7 @@
   (when secrets
     (validate-secrets-coverage secrets profile runtime-secrets-env-mapping)
     (vec (mapcat (fn [[env-var path]]
-                   (when-let [value (get-in secrets path)]
-                     ["-e" (str (name env-var) "=" value)]))
+                   (when-let [value (get-in secrets path)] ["-e" (str (name env-var) "=" value)]))
           runtime-secrets-env-mapping))))
 
 (defn- secrets->build-args
@@ -132,19 +131,11 @@
          secrets (load-secrets-for-env profile)
          build-args (secrets->build-args secrets profile)
          image-tag (str image-name ":" tag)
-         base-cmd ["docker"
-                   "build"
-                   "--platform"
-                   "linux/amd64"
-                   "-f"
-                   dockerfile
-                   "-t"
-                   image-tag]
+         base-cmd ["docker" "build" "--platform" "linux/amd64" "-f" dockerfile "-t" image-tag]
          cmd (vec (concat base-cmd build-args ["."]))]
      (normalln "Building Docker image:" image-tag)
      (normalln "Using environment profile:" profile)
-     (when (seq build-args)
-       (normalln "Injecting build-time secrets from .secrets.edn"))
+     (when (seq build-args) (normalln "Injecting build-time secrets from .secrets.edn"))
      (let [{:keys [proc]
             :as _result}
            (long-living-cmd ["docker-build"]
@@ -174,37 +165,27 @@
          secrets (load-secrets-for-env profile)
          env-args (secrets->runtime-env-args secrets profile)
          current-dir (System/getProperty "user.dir")
-         base-cmd
-         ["docker"
-          "run"
-          "--mount"
-          (str "type=bind,source=" current-dir "/docker/db,target=/app/data/db")
-          "-p"
-          "8080:8080"
-          "--platform"
-          "linux/amd64"
-          "--rm"]
+         base-cmd ["docker"
+                   "run"
+                   "--mount"
+                   (str "type=bind,source=" current-dir "/docker/db,target=/app/data/db")
+                   "-p"
+                   "8080:8080"
+                   "--platform"
+                   "linux/amd64"
+                   "--rm"]
          cmd (vec (concat base-cmd env-args [image-tag]))]
      (normalln "Running Docker image:" image-tag)
      (normalln "Using environment profile:" profile)
-     (when (seq env-args)
-       (normalln "Injecting runtime environment variables from .secrets.edn"))
-     (long-living-cmd ["docker-run"]
-                      cmd
-                      "."
-                      100
-                      verbose
-                      (constantly true)
-                      (constantly true)))))
+     (when (seq env-args) (normalln "Injecting runtime environment variables from .secrets.edn"))
+     (long-living-cmd ["docker-run"] cmd "." 100 verbose (constantly true) (constantly true)))))
 
 (defn build-and-push
   "Build and push Docker image"
   ([tag] (build-and-push default-image-name tag))
   ([image-name tag]
    (let [build-result (build-image image-name tag)]
-     (if (= :success (:status build-result))
-       (push-image image-name tag)
-       build-result))))
+     (if (= :success (:status build-result)) (push-image image-name tag) build-result))))
 
 (defn run
   "Run Docker task - entry point for all docker commands

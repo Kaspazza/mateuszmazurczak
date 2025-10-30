@@ -4,18 +4,15 @@
  :http-server {:port #or [#env PORT 8080]
                :url "https://mateuszmazurczak.com"}
  :log {:level :info
-       :sentry {:backend {:dsn #or [#env SENTRY_BACKEND_DSN
-                                    #secrets [:sentry :backend :dsn]]}
-                :frontend {:dsn #or [#env SENTRY_FRONTEND_DSN
-                                     #secrets [:sentry :frontend :dsn]]}}}
+       :sentry {:backend {:dsn #or [#env SENTRY_BACKEND_DSN #secrets [:sentry :backend :dsn]]}
+                :frontend {:dsn #or [#env SENTRY_FRONTEND_DSN #secrets [:sentry :frontend :dsn]]}}}
  :system {:i18n.adapter/tempura {:debug? false}
           :logging.adapter/telemere {:level #ref [:log :level]}
           :sys/db-conn {:db-uri #ref [:db :uri]
                         :logger #ig/ref :sys/logging}
           :sys/error-tracking {:logger #ig/ref :sys/logging}
           :sys/handler {:logger #ig/ref :sys/logging
-                        :routes #var
-                                 mateuszmazurczak.adapters.http.routes/routes
+                        :routes #var mateuszmazurczak.adapters.http.routes/routes
                         :translator #ig/ref :sys/translator}
           :sys/http-server {:handler #ig/ref :sys/handler
                             :http-port #ref [:http-server :port]

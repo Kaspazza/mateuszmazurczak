@@ -8,9 +8,7 @@
 
 (def ^:private tempura-missing-text
   "Necessary for tempura, a missing key is expected for all languages marked with `:core-dict?`"
-  {:en
-   {:missing
-    "The text is missing! :( Please let me know at mateusz.mazurczak.dev@gmail.com"}
+  {:en {:missing "The text is missing! :( Please let me know at mateusz.mazurczak.dev@gmail.com"}
    :pl
    {:missing
     "Brakuje tłumaczenia tego tekstu! :( Jeśli widzisz tę wiadomość proszę napisz na mateusz.mazurczak.dev@gmail.com"}})
@@ -38,9 +36,7 @@
 (defrecord TempuraTranslator [translation-opts]
   p/Translator
     (-translate [_ language id]
-      (try (tempura/tr translation-opts
-                       (if (vector? language) language [language])
-                       [id])
+      (try (tempura/tr translation-opts (if (vector? language) language [language]) [id])
            (catch #?(:clj Exception
                      :cljs :default)
              e
@@ -49,9 +45,7 @@
                               :id id}
                              e)))))
     (-translate [_ language id params]
-      (try (tempura/tr translation-opts
-                       (if (vector? language) language [language])
-                       [id params])
+      (try (tempura/tr translation-opts (if (vector? language) language [language]) [id params])
            (catch #?(:clj Exception
                      :cljs :default)
              e

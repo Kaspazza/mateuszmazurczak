@@ -46,11 +46,10 @@
   * `handler` handler to wrap
   * `middlewares` is a collection of middlewares, could be a function or compile middlewares"
   [handler middlewares]
-  (reduce
-   (fn [handler middleware]
-     (if (fn? middleware) (middleware handler) ((:wrap middleware) handler)))
-   handler
-   middlewares))
+  (reduce (fn [handler middleware]
+            (if (fn? middleware) (middleware handler) ((:wrap middleware) handler)))
+          handler
+          middlewares))
 
 (defn default-handlers
   [{:keys [not-found not-allowed not-acceptable]
@@ -65,10 +64,9 @@
 
 (defn router
   [web-routes web-middleware]
-  (reitit-ring/router
-   (vec (concat web-routes [{:compile coercion/compile-request-coercers}]))
-   {:data {:muuntaja m/instance
-           :middleware web-middleware}}))
+  (reitit-ring/router (vec (concat web-routes [{:compile coercion/compile-request-coercers}]))
+                      {:data {:muuntaja m/instance
+                              :middleware web-middleware}}))
 (defn ring-handler
   "Ring handler for web pages of mateuszmazurczak app
   Params:
@@ -79,14 +77,13 @@
   {:pre [(vector? routes)
          (malli/validate i18n/TranslatorSchema translator)
          (malli/validate logging/LoggerSchema logger)]}
-  (try (reitit-ring/ring-handler
-        (router routes mm-middleware/web-middleware)
-        (reitit-ring/routes (resource-handler {}) (default-handlers nil []))
-        {:middleware (mm-middleware/global-middlewares translator logger)
-         :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
-        })
-       (catch Exception e
-         (throw (ex-info "Failed to create ring handler" {:routes routes} e)))))
+  (try (reitit-ring/ring-handler (router routes mm-middleware/web-middleware)
+                                 (reitit-ring/routes (resource-handler {})
+                                                     (default-handlers nil []))
+                                 {:middleware (mm-middleware/global-middlewares translator logger)
+                                  :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
+                                 })
+       (catch Exception e (throw (ex-info "Failed to create ring handler" {:routes routes} e)))))
 
 (defn get-app
   "Web application,

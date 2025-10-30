@@ -4,9 +4,8 @@
    [mateuszmazurczak.adapters.logging.protocol       :as p]
    [mateuszmazurczak.adapters.logging.telemere-utils :as logging-utils]
    [taoensso.telemere                                :as t])
-  #?(:cljs (:require-macros [mateuszmazurczak.adapters.logging.telemere
-                             :refer
-                             [set-min-level! with-min-level!]])))
+  #?(:cljs (:require-macros
+            [mateuszmazurczak.adapters.logging.telemere :refer [set-min-level! with-min-level!]])))
 
 
 ;;Configuration
@@ -21,37 +20,32 @@
   `(t/with-min-level ~@args))
 
 
-#?(:clj
-     (defn init!
-       "Initialize logging, contains defaults on handling the logs and it's level"
-       ([]
-        (init! {;; :console-default true
-                :level :debug}))
-       ([{:keys [console-default level path]
-          :or {path "log"}}]
-        (set-min-level! level)
-        (t/set-kind-filter! {:disallow :slf4j})
-        (when-not console-default
-          (t/remove-handler! :default/console)
-          (t/add-handler! :console-handler
-                          (t/handler:console
-                           {:output-fn logging-utils/format:console-minimal})))
-        (t/set-xfn! logging-utils/middleware:console-run-time)
-        (logging-utils/ensure-dir-exists path)
-        (t/add-handler! :file-handler
-                        (t/handler:file {:path (str path "/logs.log")}))))
+#?(:clj (defn init!
+          "Initialize logging, contains defaults on handling the logs and it's level"
+          ([]
+           (init! {;; :console-default true
+                   :level :debug}))
+          ([{:keys [console-default level path]
+             :or {path "log"}}]
+           (set-min-level! level)
+           (t/set-kind-filter! {:disallow :slf4j})
+           (when-not console-default
+             (t/remove-handler! :default/console)
+             (t/add-handler! :console-handler
+                             (t/handler:console {:output-fn logging-utils/format:console-minimal})))
+           (t/set-xfn! logging-utils/middleware:console-run-time)
+           (logging-utils/ensure-dir-exists path)
+           (t/add-handler! :file-handler (t/handler:file {:path (str path "/logs.log")}))))
    :cljs (defn init!
            ([] (init! {:level :info}))
            ([{:keys [level loki-endpoint]}]
             (set-min-level! level)
             (t/remove-handler! :default/console)
             (t/add-handler! :console-handler
-                            (t/handler:console
-                             {:output-fn logging-utils/format:console-minimal}))
+                            (t/handler:console {:output-fn logging-utils/format:console-minimal}))
             (when (and loki-endpoint (not (str/blank? loki-endpoint)))
               (t/add-handler! :loki-handler
-                              (logging-utils/handler:loki {:endpoint
-                                                           loki-endpoint}))))))
+                              (logging-utils/handler:loki {:endpoint loki-endpoint}))))))
 
 
 (defrecord TelemereLogger [base-context]
@@ -81,8 +75,7 @@
                :data (merge (:data base-context) (:data opts))
                :id (:id opts)}
               form))
-    (-with-context [this new-context]
-      (assoc this :base-context (merge base-context new-context))))
+    (-with-context [this new-context] (assoc this :base-context (merge base-context new-context))))
 
 (defn make-logger
   "Create a new Telemere logger instance"

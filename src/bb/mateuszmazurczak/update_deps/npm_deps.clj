@@ -21,9 +21,7 @@
                  "install"
                  "--prefix"
                  (or target-dir ".")
-                 (str/join " "
-                           (mapv (fn [dep] (str (:name dep) "@" (:version dep)))
-                                 deps))]
+                 (str/join " " (mapv (fn [dep] (str (:name dep) "@" (:version dep))) deps))]
                 dir)]
        (when-not (= 0 (:exit res))
          {:error (:err res)

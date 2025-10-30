@@ -46,8 +46,7 @@
                      :headers
                      (get "host")
                      extract-tld-from-host)]
-    (some (fn [[id {:keys [tld]}]] (when (= user-tld tld) id))
-          lang-web/web-languages)))
+    (some (fn [[id {:keys [tld]}]] (when (= user-tld tld) id)) lang-web/web-languages)))
 
 (defn accepted-languages
   "Return the accepted languages in the http request
@@ -88,9 +87,8 @@
        (catch Exception e
          (let [error-data {:request-uri (:uri request)
                            :request-method (:request-method request)
-                           :request-headers (select-keys
-                                             (:headers request)
-                                             ["host" "user-agent" "referer"])
+                           :request-headers (select-keys (:headers request)
+                                                         ["host" "user-agent" "referer"])
                            :error-type (-> e
                                            ex-data
                                            :type)
@@ -127,21 +125,18 @@
                              :name)
           route-template (some-> match
                                  :template)]
-      (log/log!
-       logger
-       {:level :debug
-        :id ::incoming-request
-        :msg
-        (str method " " uri (when route-name (str " [" (name route-name) "]")))
-        :data {:method method
-               :uri uri
-               :route-name route-name
-               :route-template route-template
-               :query-params (:query-params request)
-               :path-params (some-> match
-                                    :path-params)
-               :headers (select-keys (:headers request)
-                                     ["host" "user-agent" "referer"])}})
+      (log/log! logger
+                {:level :debug
+                 :id ::incoming-request
+                 :msg (str method " " uri (when route-name (str " [" (name route-name) "]")))
+                 :data {:method method
+                        :uri uri
+                        :route-name route-name
+                        :route-template route-template
+                        :query-params (:query-params request)
+                        :path-params (some-> match
+                                             :path-params)
+                        :headers (select-keys (:headers request) ["host" "user-agent" "referer"])}})
       (let [response (handler request)
             elapsed-ms (long (/ (- (System/nanoTime) start) 1e6))
             status (:status response)
@@ -156,8 +151,7 @@
                              " " uri
                              " " status
                              " (" elapsed-ms
-                             "ms)" (when route-name
-                                     (str " [" (name route-name) "]")))
+                             "ms)" (when route-name (str " [" (name route-name) "]")))
                    :data {:method method
                           :uri uri
                           :status status
@@ -172,29 +166,27 @@
 (def web-middleware
   "Midllewares for web pages"
   (vec
-   (concat
-    [(fn [handler]
-       (ring-session/wrap-session handler
-                                  {:store (ring-memory/memory-store (atom {}))
-                                   :cookies-attrs {:http-only true}}))
-     ring-anti-forgery/wrap-anti-forgery
-     (fn [handler]
-       (ring-cors/wrap-cors handler
-                            :access-control-allow-origin
-                            (concat (cors-domain-routes "mateuszmazurczak")
-                                    ;;TODO make sure this provider is okay after deploy
-                                    [#".*my-provider.domain$"])
-                            :access-control-allow-methods
-                            [:get :post :put :delete]
-                            :access-control-allow-credentials "true"))
-     ring-content-type/wrap-content-type
-     rrc/coerce-exceptions-middleware
-     rrc/coerce-request-middleware
-     rrc/coerce-response-middleware
-     rrmm/format-negotiate-middleware
-     rrmm/format-response-middleware
-     rrmm/format-request-middleware]
-    mm-env/env-middlewares)))
+   (concat [(fn [handler]
+              (ring-session/wrap-session handler
+                                         {:store (ring-memory/memory-store (atom {}))
+                                          :cookies-attrs {:http-only true}}))
+            ring-anti-forgery/wrap-anti-forgery
+            (fn [handler]
+              (ring-cors/wrap-cors handler
+                                   :access-control-allow-origin (concat (cors-domain-routes
+                                                                         "mateuszmazurczak")
+                                                                        ;;TODO make sure this provider is okay after deploy
+                                                                        [#".*my-provider.domain$"])
+                                   :access-control-allow-methods [:get :post :put :delete]
+                                   :access-control-allow-credentials "true"))
+            ring-content-type/wrap-content-type
+            rrc/coerce-exceptions-middleware
+            rrc/coerce-request-middleware
+            rrc/coerce-response-middleware
+            rrmm/format-negotiate-middleware
+            rrmm/format-response-middleware
+            rrmm/format-request-middleware]
+           mm-env/env-middlewares)))
 
 (defn params-lang
   [http-request]

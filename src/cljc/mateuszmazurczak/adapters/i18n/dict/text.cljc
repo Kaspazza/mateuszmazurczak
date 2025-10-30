@@ -15,8 +15,7 @@
     :hi-mati "Hi, I'm Mati!"
     :i-like-simplicity
     "I just like to write simple code in parenthesis or write about writing code."
-    :contact-me
-    "Feel free to message me for consulting or to share insights and ideas!"}
+    :contact-me "Feel free to message me for consulting or to share insights and ideas!"}
    :pl
    {:homepage "Główna"
     :articles "Artykuły"
@@ -29,5 +28,4 @@
     :back-home "Do strony głównej"
     :hi-mati "Cześć, jestem Mati!"
     :i-like-simplicity "Lubię pisać kod w nawiasach albo pisać o pisaniu kodu."
-    :contact-me
-    "Jeśli potrzebujesz konsultacji albo chcesz się podzielić rozkminą pisz śmiało!"}})
+    :contact-me "Jeśli potrzebujesz konsultacji albo chcesz się podzielić rozkminą pisz śmiało!"}})

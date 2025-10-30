@@ -12,10 +12,8 @@
               :as article}]
           (-> article
               (select-keys [:id :title :description :date :tags :img])
-              (assoc
-               :on-click
-               [:dispatch
-                [:nav/navigate ::mm-routes/article {:article-id (name id)}]])))
+              (assoc :on-click
+                     [:dispatch [:nav/navigate ::mm-routes/article {:article-id (name id)}]])))
         articles-data))
 
 (defn build-home-page-data

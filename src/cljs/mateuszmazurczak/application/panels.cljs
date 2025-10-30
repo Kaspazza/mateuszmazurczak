@@ -37,16 +37,14 @@
 
 (defmethod panels :panels/articles
   [_]
-  [mm-ui-structure/mateuszmazurczak-page-structure
-   [pages-articles/articles-page]])
+  [mm-ui-structure/mateuszmazurczak-page-structure [pages-articles/articles-page]])
 
 (defmethod panels :panels/article
   [route-data]
   (let [article-id (keyword (get-in route-data [:path-parameters :article-id]))
         article (articles/article article-id)]
     (if article
-      [mm-ui-structure/mateuszmazurczak-page-structure
-       [pages-articles/article-page article]]
+      [mm-ui-structure/mateuszmazurczak-page-structure [pages-articles/article-page article]]
       [mm-ui-errors/not-found {:title (fi18n/tr :not-found-page)
                                :description (fi18n/tr :not-found-description)
                                :back-home-text (fi18n/tr :back-home)}])))

@@ -13,8 +13,7 @@
       (if (config/development?)
         (throw (ex-info "Translated home page data validation failed"
                         {:id (get-in page-data [:error :id] ::router-page-data)
-                         :context (if-let [error-data (get-in page-data
-                                                              [:error])]
+                         :context (if-let [error-data (get-in page-data [:error])]
                                     error-data
                                     page-data)
                          :panel-id panel-id}))
@@ -24,9 +23,7 @@
                                       :panel-id panel-id})
                      :id (get-in page-data [:error :id] ::router-page-data)
                      :data {:panel-id panel-id
-                            :validation-error (if-let [error-data
-                                                       (get-in page-data
-                                                               [:error :data])]
+                            :validation-error (if-let [error-data (get-in page-data [:error :data])]
                                                 error-data
                                                 page-data)}})))))
 
@@ -39,8 +36,7 @@
   (let [current-route @(state/watch [:nav/current-route])
         panel-id (:panel-id current-route)
         ;;TODO Other panels than home will be covered soon and this when will not be needed
-        page-data (when (and panel-id
-                             (contains? (set (keys state/watch-reg)) panel-id))
+        page-data (when (and panel-id (contains? (set (keys state/watch-reg)) panel-id))
                     @(state/watch [panel-id]))]
     (handle-page-ex page-data panel-id)
     [mm-nav-panels/panels current-route (:data page-data)]))

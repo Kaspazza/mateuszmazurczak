@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.application.panels
   "Describes the link between panel names and contents"
   (:require
-   [mateuszmazurczak.articles.core     :as articles]
+   [mateuszmazurczak.domain.articles.core :as articles]
    [mateuszmazurczak.frontend-i18n     :as fi18n]
    [mateuszmazurczak.ui.errors         :as mm-ui-errors]
    [mateuszmazurczak.ui.pages.articles :as pages-articles]

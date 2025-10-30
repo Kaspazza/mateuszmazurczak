@@ -2,13 +2,14 @@
   "REPL entry point"
   (:require
    [aero.core]
-   [integrant.core           :as ig]
-   [integrant.repl           :refer [go halt init prep reset]]
-   [integrant.repl.state     :as state]
-   [mateuszmazurczak.configuration]
-   [mateuszmazurczak.logging :as log]
-   [mateuszmazurczak.system]
-   [nrepl.server             :refer [default-handler start-server stop-server]])
+   [integrant.core                 :as ig]
+   [integrant.repl                 :refer [go halt init prep reset]]
+   [integrant.repl.state           :as state]
+   [mateuszmazurczak.ports.logging :as log]
+   [mateuszmazurczak.system.components]
+   [mateuszmazurczak.system.config]
+   [nrepl.server                   :refer
+                                   [default-handler start-server stop-server]])
   (:gen-class))
 
 

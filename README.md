@@ -178,7 +178,7 @@ bb update-deps          # Update outdated dependencies
 
 **CLJ:**
 ```bash
-clojure -M:common-test -n mateuszmazurczak.endpoint.handler-test  # Single namespace
+clojure -M:common-test -n mateuszmazurczak.adapters.http.handler-test  # Single namespace
 clojure -M:common-test test/clj/path/to/file_test.clj             # Single file
 ```
 

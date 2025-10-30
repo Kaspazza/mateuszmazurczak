@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.adapters.error-tracking.logging
   "Logging adapter - logs uncaught exceptions via logging system"
   (:require
-   [mateuszmazurczak.logging :as log]))
+   [mateuszmazurczak.ports.logging :as log]))
 
 (defn init!
   "Install global uncaught exception handler that logs via logging system.

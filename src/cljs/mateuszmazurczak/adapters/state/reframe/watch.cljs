@@ -9,7 +9,7 @@
   (:require
    [mateuszmazurczak.ports.events                  :as events]
    [mateuszmazurczak.frontend-i18n                 :as fi18n]
-   [mateuszmazurczak.i18n.language                 :as i18n-lang]
+   [mateuszmazurczak.domain.i18n.language                 :as i18n-lang]
    [mateuszmazurczak.ports.navigation              :as nav-core]
    [mateuszmazurczak.application.pages.home.schema :as home-schema]
    [re-frame.core                                  :as rf]))

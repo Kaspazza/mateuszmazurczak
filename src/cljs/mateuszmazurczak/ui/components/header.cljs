@@ -2,7 +2,7 @@
   (:require
    [clojure.string                              :as str]
    [mateuszmazurczak.frontend-i18n              :as fi18n]
-   [mateuszmazurczak.i18n.language              :as mm-i18n-lang]
+   [mateuszmazurczak.domain.i18n.language              :as mm-i18n-lang]
    [mateuszmazurczak.ports.navigation           :as navigation]
    [mateuszmazurczak.adapters.navigation.routes :as mm-routes]
    [reagent.core                                :as r]))

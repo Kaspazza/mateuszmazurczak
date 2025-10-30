@@ -3,7 +3,7 @@
   (:require
    [clojure.pprint              :as pp]
    [clojure.walk                :as walk]
-   [mateuszmazurczak.validation :as validation]
+   [mateuszmazurczak.utils.validation :as validation]
    [sentry-clj.core             :as sentry])
   (:import [io.sentry Breadcrumb Sentry SentryLevel]
            [java.util Date HashMap Map]))

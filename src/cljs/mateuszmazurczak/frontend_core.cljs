@@ -2,7 +2,7 @@
   "Entry point for customer app frontend"
   (:require
    [mateuszmazurczak.system.core      :as sys]
-   [mateuszmazurczak.logging          :as log]
+   [mateuszmazurczak.ports.logging    :as log]
    [mateuszmazurczak.application.router :as lm]
    [mateuszmazurczak.ui.errors        :as mm-ui-errors]
    [reagent.dom.client                :as rdc]

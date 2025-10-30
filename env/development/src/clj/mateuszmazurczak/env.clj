@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.env
   "Define dev specific behavior for customer app"
   (:require
-   [clojure.edn                       :as edn]
-   [mateuszmazurczak.endpoint.handler :as mm-endpoint-handler]
-   [ring.middleware.reload            :as mr]
-   [ring.util.http-response           :as http-response]))
+   [clojure.edn                            :as edn]
+   [mateuszmazurczak.adapters.http.handler :as mm-endpoint-handler]
+   [ring.middleware.reload                 :as mr]
+   [ring.util.http-response                :as http-response]))
 
 (def deps-edn "deps.edn")
 

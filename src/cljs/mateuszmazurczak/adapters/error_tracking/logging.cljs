@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.adapters.error-tracking.logging
   "Logging adapter - logs uncaught exceptions via logging system (CLJS)"
   (:require
-   [mateuszmazurczak.logging :as log]))
+   [mateuszmazurczak.ports.logging :as log]))
 
 (defn init!
   "Install global uncaught exception handlers for browser environment.

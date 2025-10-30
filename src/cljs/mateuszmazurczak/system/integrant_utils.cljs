@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.system.integrant-utils
   "Utilities for frontend Integrant component lifecycle management."
   (:require
-   [mateuszmazurczak.logging :as log]))
+   [mateuszmazurczak.ports.logging :as log]))
 
 (defn optional-component
   "Wraps a frontend component initialization function to make it optional.

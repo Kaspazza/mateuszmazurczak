@@ -2,7 +2,7 @@
   "PostHog adapter for web analytics (CLJS)"
   (:require
    ["posthog-js"                :default posthog]
-   [mateuszmazurczak.validation :as validation]))
+   [mateuszmazurczak.utils.validation :as validation]))
 
 (defn init!
   "Initialize PostHog with configuration"

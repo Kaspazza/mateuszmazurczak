@@ -7,7 +7,7 @@
                                         matchRoutes
                                         useLocation
                                         useNavigationType)]
-   [mateuszmazurczak.validation :as validation]))
+   [mateuszmazurczak.utils.validation :as validation]))
 
 (defn- keyword->level
   "Converts keyword into Sentry event level string"

@@ -1,6 +1,6 @@
 (ns mateuszmazurczak.ui.pages.articles
   (:require
-   [mateuszmazurczak.articles.core         :as articles]
+   [mateuszmazurczak.domain.articles.core  :as articles]
    [mateuszmazurczak.ports.events          :as events]
    [mateuszmazurczak.frontend-i18n         :as fi18n]
    [mateuszmazurczak.adapters.navigation.routes :as-alias mm-routes]

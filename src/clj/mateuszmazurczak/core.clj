@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.core
   "Gather all components to start production app"
   (:require
-   [integrant.core           :as ig]
-   [mateuszmazurczak.config  :as config]
-   [mateuszmazurczak.logging :as logging]
-   [mateuszmazurczak.system])
+   [integrant.core                 :as ig]
+   [mateuszmazurczak.config        :as config]
+   [mateuszmazurczak.ports.logging :as logging]
+   [mateuszmazurczak.system.components])
   (:gen-class))
 
 (defn -main

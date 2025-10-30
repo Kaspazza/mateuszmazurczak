@@ -2,7 +2,7 @@
   "Entry point to mateuszmazurczak app"
   (:require
    [mateuszmazurczak.system.config       :as config]
-   [mateuszmazurczak.logging             :as log]
+   [mateuszmazurczak.ports.logging       :as log]
    [mateuszmazurczak.application.panels  :as mm-nav-panels]
    [mateuszmazurczak.ports.state         :as state]))
 

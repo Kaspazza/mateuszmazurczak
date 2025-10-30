@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.application.pages.home.data
   "Home page data builders and transformations"
   (:require
-   [mateuszmazurczak.articles.core                :as articles]
+   [mateuszmazurczak.domain.articles.core         :as articles]
    [mateuszmazurczak.ports.navigation             :as navigation]
    [mateuszmazurczak.adapters.navigation.routes   :as-alias mm-routes]))
 

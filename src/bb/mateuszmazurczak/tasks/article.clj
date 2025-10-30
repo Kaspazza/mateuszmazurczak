@@ -74,7 +74,7 @@
         ast (md/parse md-content)
         hiccup (md/->hiccup ast)
         updated-hiccup (update-hiccup hiccup)
-        ns-name (str "mateuszmazurczak.articles." (name id))
+        ns-name (str "mateuszmazurczak.domain.articles." (name id))
         clj-file-path (str "src/cljc/mateuszmazurczak/articles/"
                            (str/replace (name id) #"-" "_")
                            ".cljc")

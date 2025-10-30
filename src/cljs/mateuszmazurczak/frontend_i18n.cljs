@@ -8,8 +8,8 @@
   (:require
    [clojure.walk                   :as walk]
    [mateuszmazurczak.ports.events  :as events]
-   [mateuszmazurczak.i18n          :as i18n]
-   [mateuszmazurczak.i18n.language :as i18n-lang]
+   [mateuszmazurczak.ports.i18n    :as i18n]
+   [mateuszmazurczak.domain.i18n.language :as i18n-lang]
    [mateuszmazurczak.ports.state   :as state]
    [mateuszmazurczak.utils.cookies :as mm-cookies]
    [mateuszmazurczak.utils.url     :as utils-url]))

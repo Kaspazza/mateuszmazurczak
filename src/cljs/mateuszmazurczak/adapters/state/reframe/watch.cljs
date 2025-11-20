@@ -7,23 +7,24 @@
    - `get-watch-fn` returns re-frame's subscribe function
    - `init!` provides explicit initialization hook for system wiring but it's not necessairily needed for reframe, this ns just needs to be compiled"
   (:require
-   [mateuszmazurczak.application.pages.home.schema :as home-schema]
-   [mateuszmazurczak.domain.i18n.language          :as i18n-lang]
-   [mateuszmazurczak.frontend-i18n                 :as fi18n]
-   [mateuszmazurczak.ports.events                  :as events]
-   [mateuszmazurczak.ports.navigation              :as nav-core]
-   [re-frame.core                                  :as rf]))
+   [mateuszmazurczak.domain.i18n.language  :as i18n-lang]
+   [mateuszmazurczak.domain.pages.home     :as home-domain]
+   [mateuszmazurczak.domain.state.registry :as state-registry]
+   [mateuszmazurczak.frontend-i18n         :as fi18n]
+   [mateuszmazurczak.ports.events          :as events]
+   [mateuszmazurczak.ports.navigation      :as nav-core]
+   [re-frame.core                          :as rf]))
 
 ;; =============================================================================
 ;; Navigation watch
 ;; =============================================================================
 
-(rf/reg-sub :nav/current-route (fn [db _] (:current-route db)))
+(rf/reg-sub :nav/current-route (fn [db _] (get-in db state-registry/*current-route-path*)))
 
-(rf/reg-sub :nav/current-panel
+(rf/reg-sub :nav/current-page
             :<-
             [:nav/current-route]
-            (fn [current-route] (:panel-id current-route)))
+            (fn [current-route] (:page-id current-route)))
 
 (rf/reg-sub :nav/path-params
             :<-
@@ -44,38 +45,38 @@
 ;; Page watch
 ;; =============================================================================
 
-(rf/reg-sub :home/raw-data (fn [db _] (get-in db [:pages :home])))
+(rf/reg-sub :home/raw-data (fn [db _] (get-in db state-registry/*home-page-path*)))
 
-(rf/reg-sub :panels/home
+(rf/reg-sub :pages/home
             :<-
             [:home/raw-data]
             (fn [raw-data _]
               (let [processed-data (-> raw-data
-                                       fi18n/translate-tree
-                                       events/dispatch-tree)
-                    valid? (home-schema/valid-home-page-data? processed-data)]
+                                       fi18n/i18n-markers->translation
+                                       events/dispatch-markers->handlers)
+                    valid? (home-domain/valid-home-page-data? processed-data)]
                 (if valid?
                   {:data processed-data
                    :valid? valid?}
                   {:data processed-data
                    :valid? valid?
                    :error {:id ::home-translation-failed
-                           :data (home-schema/explain-home-page-data processed-data)
+                           :data (home-domain/explain-home-page-data processed-data)
                            :actual-data processed-data}}))))
 
 ;; =============================================================================
 ;; State watch
 ;; =============================================================================
 
-(rf/reg-sub :logger (fn [db _] (:logger db)))
+(rf/reg-sub :logger (fn [db _] (get-in db state-registry/*logger-path*)))
 
 ;; =============================================================================
 ;; i18n watch
 ;; =============================================================================
 
-(rf/reg-sub :i18n/lang (fn [db _] (:lang db)))
+(rf/reg-sub :i18n/lang (fn [db _] (get-in db state-registry/*lang-path*)))
 
-(rf/reg-sub :i18n/translator (fn [db _] (:translator db)))
+(rf/reg-sub :i18n/translator (fn [db _] (get-in db state-registry/*translator-path*)))
 
 (rf/reg-sub :i18n/lang-str
             :<-
@@ -92,8 +93,8 @@
   "Set of all watch-ids implemented by this adapter.
    
    Used by the port for validation during system wiring."
-  #{:nav/current-route :nav/current-panel :nav/path-params :nav/query-params :nav/active-route?
-    :panels/home :home/raw-data :logger :i18n/lang :i18n/translator :i18n/lang-str})
+  #{:nav/current-route :nav/current-page :nav/path-params :nav/query-params :nav/active-route?
+    :pages/home :home/raw-data :logger :i18n/lang :i18n/translator :i18n/lang-str})
 
 (defn get-watch-fn
   "Returns the re-frame subscribe function.

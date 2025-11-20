@@ -9,10 +9,11 @@
    - State queries (watch) - reactive reads from state
    - State lifecycle (reset-app-db!)"
   (:require
-   [clojure.set                                  :as set]
-   [mateuszmazurczak.adapters.state.reframe      :as reframe-adapter]
-   [mateuszmazurczak.application.pages.home.data :as home-data]
-   [mateuszmazurczak.system.config               :as config]))
+   [clojure.set                             :as set]
+   [mateuszmazurczak.adapters.state.reframe :as reframe-adapter]
+   [mateuszmazurczak.domain.pages.home      :as home-domain]
+   [mateuszmazurczak.domain.state.registry  :as state-registry]
+   [mateuszmazurczak.system.config          :as config]))
 
 
 ;; =============================================================================
@@ -56,57 +57,8 @@
 (def watch-reg
   "Registry of all application watch.
    
-   This is the single source of truth for what can be queried from the state. "
-  {:nav/current-route {:description "Returns the current route map with panel-id, path-params, etc."
-                       :input-schema [:cat [:= :nav/current-route]]
-                       :output-schema [:maybe
-                                       [:map
-                                        [:panel-id keyword?]
-                                        [:route-name {:optional true}
-                                         keyword?]
-                                        [:path-parameters {:optional true}
-                                         map?]
-                                        [:query-parameters {:optional true}
-                                         map?]
-                                        [:fragment {:optional true}
-                                         [:maybe string?]]]]}
-   :nav/current-panel {:description "Returns the current panel-id keyword"
-                       :input-schema [:cat [:= :nav/current-panel]]
-                       :output-schema [:maybe keyword?]}
-   :nav/path-params {:description "Returns path parameters map for current route"
-                     :input-schema [:cat [:= :nav/path-params]]
-                     :output-schema [:maybe map?]}
-   :nav/query-params {:description "Returns query parameters map for current route"
-                      :input-schema [:cat [:= :nav/query-params]]
-                      :output-schema [:maybe map?]}
-   :nav/active-route? {:description
-                       "Returns true if given route-name matches current route, false otherwise"
-                       :input-schema [:cat [:= :nav/active-route?] keyword?] ; [watch-id route-name]
-                       :output-schema boolean?}
-   :panels/home {:description
-                 "Returns processed home page data with translation and validation metadata"
-                 :input-schema [:cat [:= :panels/home]]
-                 :output-schema [:maybe
-                                 [:map
-                                  [:data map?]
-                                  [:valid? boolean?]
-                                  [:error {:optional true}
-                                   map?]]]}
-   :home/raw-data {:description "Returns raw (untranslated) home page data from state"
-                   :input-schema [:cat [:= :home/raw-data]]
-                   :output-schema [:maybe map?]}
-   :logger {:description "Returns the logger instance from app state"
-            :input-schema [:cat [:= :logger]]
-            :output-schema [:maybe any?]} ; Logger protocol/type would be better
-   :i18n/lang {:description "Returns current language keyword (:pl or :en)"
-               :input-schema [:cat [:= :i18n/lang]]
-               :output-schema [:maybe keyword?]}
-   :i18n/translator {:description "Returns the i18n translator instance"
-                     :input-schema [:cat [:= :i18n/translator]]
-                     :output-schema [:maybe any?]} ; Translator protocol would be better
-   :i18n/lang-str {:description "Returns current language as UI string (\"PL\" or \"EN\")"
-                   :input-schema [:cat [:= :i18n/lang-str]]
-                   :output-schema [:maybe string?]}})
+   This is the single source of truth for what can be queried from the state."
+  state-registry/watch-reg)
 
 (defn set-watch-fn!
   "Set the watch function from the adapter.
@@ -185,11 +137,11 @@
    Returns a map with the initial application state structure."
   [translator logger lang-strategy]
   {:name "mateuszmazurczak"
-   :current-route {:panel-id :panels/pending}
+   :current-route {:page-id :pages/pending}
    :lang lang-strategy
    :translator translator
    :logger logger
-   :pages {:home (home-data/initial-home-data)}})
+   :pages {:home (home-domain/initial-home-data)}})
 
 (defn init-app-db!
   "Initialize the application state with the given initial state.

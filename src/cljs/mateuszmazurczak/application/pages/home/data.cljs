@@ -1,5 +1,8 @@
 (ns mateuszmazurczak.application.pages.home.data
-  "Home page data builders and transformations"
+  "Home page application-level data builders and transformations.
+   
+   This layer orchestrates domain data (articles) with infrastructure (navigation)
+   to build the final page data structure."
   (:require
    [mateuszmazurczak.adapters.navigation.routes :as-alias mm-routes]
    [mateuszmazurczak.domain.articles.core       :as articles]
@@ -26,17 +29,3 @@
   []
   {:navigation {:href (navigation/href ::mm-routes/articles)}
    :articles (transform-articles articles/articles)})
-
-(defn initial-home-data
-  "Returns initial home page data structure for app-db initialization.
-   
-   Starts with loading state. Actual data is loaded via :home/on-route-enter event.
-   This avoids dependency on router during system initialization."
-  []
-  {:loading? true
-   :about-me-section {:welcome-text [:i18n :hi-mati]
-                      :description [:i18n :i-like-simplicity]
-                      :contact-info [:i18n :contact-me]}
-   :navigation {:text [:i18n :articles]
-                :dark-mode true}
-   :articles []})

@@ -2,12 +2,12 @@
   (:require
    [integrant.core                                :as ig]
    [mateuszmazurczak.adapters.http.router         :as mm-http-router]
-   [mateuszmazurczak.adapters.i18n.dict.resources :as mm-i18n-dict-res]
-   [mateuszmazurczak.adapters.i18n.dict.text      :as mm-i18n-dict-txt]
    [mateuszmazurczak.adapters.i18n.tempura        :as i18n-tempura]
    [mateuszmazurczak.adapters.logging.telemere    :as t]
    [mateuszmazurczak.adapters.web-server.http-kit :as web-server]
    [mateuszmazurczak.domain.database.migrations   :as migrations]
+   [mateuszmazurczak.domain.i18n.dict.resources   :as mm-i18n-dict-res]
+   [mateuszmazurczak.domain.i18n.dict.text        :as mm-i18n-dict-txt]
    [mateuszmazurczak.ports.database               :as database]
    [mateuszmazurczak.ports.error-tracking         :as error-tracking]
    [mateuszmazurczak.ports.logging                :as log]))

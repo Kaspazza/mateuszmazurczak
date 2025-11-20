@@ -36,7 +36,7 @@
   (reitit/match-by-name router route-name path-params))
 
 ;; Extraction from match functions
-(defn panel-id-from-match [match] (get-in match [:data :panel-id] :panels/not-found))
+(defn page-id-from-match [match] (get-in match [:data :page-id] :pages/not-found))
 
 (defn route-name-from-match [match] (get-in match [:data :name]))
 
@@ -45,10 +45,10 @@
 (defn query-params-from-match [match] (:query-params match))
 
 ;; Route name based functions
-(defn panel-id
-  "Get panel ID for a route"
+(defn page-id
+  "Get page ID for a route"
   [router route-name & [path-params]]
-  (let [match (match-by-name router route-name path-params)] (panel-id-from-match match)))
+  (let [match (match-by-name router route-name path-params)] (page-id-from-match match)))
 
 (defn path-params
   "Get default path parameters for a route"

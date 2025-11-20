@@ -7,15 +7,15 @@
 (def routes
   [[""
     {:name ::root
-     :panel-id :panels/home
+     :page-id :pages/home
      :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
    ["/"
     {:name ::home ;; Important for history as browser adds systematically that `/`
-     :panel-id :panels/home
+     :page-id :pages/home
      :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
    ["/articles"
     {:name ::articles
-     :panel-id :panels/articles}]
+     :page-id :pages/articles}]
    ["/article/:article-id"
     {:name ::article
-     :panel-id :panels/article}]])
+     :page-id :pages/article}]])

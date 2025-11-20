@@ -1,4 +1,4 @@
-(ns mateuszmazurczak.adapters.i18n.dict.text "Translation of text")
+(ns mateuszmazurczak.domain.i18n.dict.text "Translation of text")
 
 (def dict
   "Translation dictionary"

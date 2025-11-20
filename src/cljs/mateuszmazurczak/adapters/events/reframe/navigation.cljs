@@ -4,9 +4,10 @@
    Implements navigation events from events/registry.cljc.
    This is INTERNAL adapter code - UI components should dispatch via events/dispatch!"
   (:require
-   [mateuszmazurczak.ports.navigation :as nav-core]
-   [mateuszmazurczak.utils.dom        :as utils-dom]
-   [re-frame.core                     :as rf]))
+   [mateuszmazurczak.domain.state.registry :as state-registry]
+   [mateuszmazurczak.ports.navigation      :as nav-core]
+   [mateuszmazurczak.utils.dom             :as utils-dom]
+   [re-frame.core                          :as rf]))
 
 ;; =============================================================================
 ;; Effects 
@@ -68,11 +69,12 @@
    :nav/navigate-no-history (fn [_ [_ route-name path-params query-params]]
                               {::navigate-no-history [route-name path-params query-params]})
    :nav/route-changed (fn [{:keys [db]} [_ route-data]]
-                        (let [route-lang (get-in route-data [:query-parameters :lang])]
-                          (merge {:db (assoc db :current-route route-data)
+                        (let [route-lang (get-in route-data [:query-parameters :lang])
+                              current-lang (get-in db state-registry/*lang-path*)]
+                          (merge {:db (assoc-in db state-registry/*current-route-path* route-data)
                                   ::handle-fragment-scroll (:fragment route-data)}
                                  (when-not route-lang
-                                   {::change-query-parameters [{:lang (:lang db)}]}))))})
+                                   {::change-query-parameters [{:lang current-lang}]}))))})
 
 ;; =============================================================================
 ;; Initialization (for effects and subscriptions)

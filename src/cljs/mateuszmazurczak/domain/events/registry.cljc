@@ -1,4 +1,4 @@
-(ns mateuszmazurczak.adapters.events.registry
+(ns mateuszmazurczak.domain.events.registry
   "Event registry - defines ALL events in the system.
    
    This is the CONTRACT that any state management adapter must implement.
@@ -42,7 +42,7 @@
              [:= :nav/route-changed]
              [:map
               [:route-name keyword?]
-              [:panel-id keyword?]
+              [:page-id keyword?]
               [:path-parameters {:optional true}
                map?]
               [:query-parameters {:optional true}
@@ -87,4 +87,3 @@
    Returns: Malli schema or nil if event not found"
   [event-id]
   (get-in events [event-id :schema]))
-

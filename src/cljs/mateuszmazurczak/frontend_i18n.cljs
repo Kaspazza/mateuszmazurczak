@@ -85,7 +85,7 @@
   [[_i18n-kw translation-key params]]
   (if params (tr translation-key params) (tr translation-key)))
 
-(defn translate-tree
+(defn i18n-markers->translation
   "Walk a data structure and translate all [:i18n ...] markers.
    
    Translation markers follow the pattern:

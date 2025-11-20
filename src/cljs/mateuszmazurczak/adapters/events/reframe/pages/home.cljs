@@ -5,6 +5,7 @@
    This is INTERNAL adapter code - UI components should dispatch via events/dispatch!"
   (:require
    [mateuszmazurczak.application.pages.home.data :as home-data]
+   [mateuszmazurczak.domain.state.registry       :as state-registry]
    [mateuszmazurczak.utils.map                   :as utils-map]))
 
 ;; =============================================================================
@@ -19,7 +20,7 @@
    registered as :db or :fx handler."
   {:home/refresh (fn [db [_]]
                    (update-in db
-                              [:pages :home]
+                              state-registry/*home-page-path*
                               utils-map/deep-merge
                               (home-data/build-home-page-data)
                               {:loading? false}))

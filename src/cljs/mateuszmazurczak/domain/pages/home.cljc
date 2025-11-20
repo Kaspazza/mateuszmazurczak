@@ -1,8 +1,9 @@
-(ns mateuszmazurczak.application.pages.home.schema
-  "Malli schema for home page data structure"
+(ns mateuszmazurczak.domain.pages.home
+  "Home page domain: data structures, schemas, and builders"
   (:require
-   [malli.core  :as m]
-   [malli.error :as me]))
+   [malli.core                          :as m]
+   [malli.error                         :as me]
+   [mateuszmazurczak.domain.i18n.schema :as i18n-schema]))
 
 (def ArticleCard
   "Schema for a single article card displayed on home page"
@@ -15,16 +16,12 @@
    [:img :string]
    [:on-click [:maybe fn?]]])
 
-(def I18nMarker
-  "Schema for i18n translation marker: [:i18n :translation-key] or [:i18n :key {:params}]"
-  [:or [:tuple [:= :i18n] :keyword] [:tuple [:= :i18n] :keyword :map]])
-
 (def RawAboutMeSection
   "Schema for raw about me section (i18n markers)"
   [:map {:closed true}
-   [:welcome-text I18nMarker]
-   [:description I18nMarker]
-   [:contact-info I18nMarker]])
+   [:welcome-text i18n-schema/I18nMarker]
+   [:description i18n-schema/I18nMarker]
+   [:contact-info i18n-schema/I18nMarker]])
 
 (def AboutMeSection
   "Schema for translated about me section"
@@ -36,8 +33,7 @@
 (def RawNavigation
   "Schema for raw navigation section (i18n markers)"
   [:map {:closed true}
-   [:text I18nMarker]
-   [:href :string]
+   [:text i18n-schema/I18nMarker]
    [:dark-mode :boolean]])
 
 (def Navigation
@@ -90,3 +86,18 @@
   "Explain validation errors for translated home page data"
   [data]
   (me/humanize (m/explain HomePageData data)))
+
+
+(defn initial-home-data
+  "Returns initial home page data structure for app-db initialization.
+   
+   Starts with loading state. Actual data is loaded via :home/on-route-enter event.
+   This avoids dependency on router during system initialization."
+  []
+  {:loading? true
+   :about-me-section {:welcome-text [:i18n :hi-mati]
+                      :description [:i18n :i-like-simplicity]
+                      :contact-info [:i18n :contact-me]}
+   :navigation {:text [:i18n :articles]
+                :dark-mode true}
+   :articles []})

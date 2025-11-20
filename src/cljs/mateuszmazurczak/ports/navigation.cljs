@@ -53,7 +53,7 @@
   [path]
   (when-let [match (router-reitit/match-by-path (get-router) path)]
     {:route-name (router-reitit/route-name-from-match match)
-     :panel-id (router-reitit/panel-id-from-match match)
+     :page-id (router-reitit/page-id-from-match match)
      :path-parameters (router-reitit/path-params-from-match match)
      :query-parameters (router-reitit/query-params-from-match match)}))
 

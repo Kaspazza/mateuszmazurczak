@@ -9,9 +9,9 @@
    - Orchestrates handoff to adapter-specific registration"
   (:refer-clojure :exclude [dispatch-fn])
   (:require
-   [clojure.set                               :as set]
-   [clojure.walk                              :as walk]
-   [mateuszmazurczak.adapters.events.registry :as registry]))
+   [clojure.set                             :as set]
+   [clojure.walk                            :as walk]
+   [mateuszmazurczak.domain.events.registry :as registry]))
 
 ;; For system layer, when stable won't be needed as will be replaced by protocol
 (defonce ^:private dispatch-fn (atom nil))
@@ -50,7 +50,7 @@
                      :event event-vector})))
   (@dispatch-fn event-vector))
 
-(defn dispatch-tree
+(defn dispatch-markers->handlers
   "Convert [:dispatch event-vector] markers into actual dispatch functions.
    
    Example transformation:

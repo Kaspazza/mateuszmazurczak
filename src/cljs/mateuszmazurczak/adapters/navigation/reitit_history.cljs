@@ -33,8 +33,8 @@
                                             (apply-controllers (:controllers old-state) match)))))
         transformed-route (when match-with-controllers
                             {:route-name (get-in match-with-controllers [:data :name])
-                             :panel-id
-                             (get-in match-with-controllers [:data :panel-id] :panels/not-found)
+                             :page-id
+                             (get-in match-with-controllers [:data :page-id] :pages/not-found)
                              :path-parameters (:path-params match-with-controllers)
                              :query-parameters (:query-params match-with-controllers)
                              :fragment (:fragment match-with-controllers)})]

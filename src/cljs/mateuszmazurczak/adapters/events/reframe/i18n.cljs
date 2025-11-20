@@ -4,8 +4,9 @@
    Implements i18n events from events/registry.cljc.
    This is INTERNAL adapter code - UI components should dispatch via events/dispatch!"
   (:require
-   [mateuszmazurczak.domain.i18n.language :as i18n-lang]
-   [re-frame.core                         :as rf]))
+   [mateuszmazurczak.domain.i18n.language  :as i18n-lang]
+   [mateuszmazurczak.domain.state.registry :as state-registry]
+   [re-frame.core                          :as rf]))
 
 (rf/reg-fx ::set-cookie
            (fn [[_key lang-id]]
@@ -30,7 +31,7 @@
                                       .-target
                                       .-value
                                       i18n-lang/ui-str-to-id)]
-                         {:db (assoc db :lang lang)
+                         {:db (assoc-in db state-registry/*lang-path* lang)
                           ::set-cookie ["lang" lang]
                           :fx [[:dispatch [:nav/change-query-parameters! {:lang lang}]]]}))})
 

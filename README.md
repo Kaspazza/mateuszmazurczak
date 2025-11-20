@@ -29,7 +29,7 @@ See [AGENTS.md](AGENTS.md) for comprehensive build/dev commands.
   - `adapters/navigation/*` (reitit_history, reitit_router, routes)
   - `adapters/state/reframe.cljs`
   - `adapters/error_tracking/*` (logging, sentry)
-- **`application/`** - Use cases & orchestration (pages/home/data+schema, router, panels). Imports: domain/, ports/ only.
+- **`application/`** - Use cases & orchestration (pages/home/data+schema, router, pages). Imports: domain/, ports/ only.
 - **`ui/`** - Presentation components (components/*, pages/*). Imports: ports/, application/. **NEVER imports adapters directly.**
 - **`system/`** - Composition root (core.cljs, config.cljs, integrant_utils.cljs). Wires everything via Integrant. **ONLY place that imports adapters.**
 - **`utils/`** - Pure utilities (cookies, dom, url). No business logic.
@@ -75,7 +75,7 @@ Infrastructure wired via **Integrant** with config from `env/*/config.edn`:
 **Frontend (`system/core.cljs`)**:  
 - Use `integrant-utils/optional-component` ONLY for non-critical components (analytics, error-tracking)
 - Critical components (router, state, logging) must fail
-- On system init failure, show `:panels/system-error`
+- On system init failure, show `:pages/system-error`
 
 **Key principles:**
 - Port namespaces NEVER import adapters - only define interfaces
@@ -119,7 +119,7 @@ Infrastructure wired via **Integrant** with config from `env/*/config.edn`:
 
 ```clojure
 ["/home" {:name ::home
-          :panel-id :panels/home
+          :page-id :pages/home
           :controllers [{:start (fn [_] (events/dispatch! [:home/on-route-enter]))}]}]
 ```
 

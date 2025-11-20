@@ -2,6 +2,8 @@
   "Frontend Integrant system configuration"
   (:require
    [integrant.core                                     :as ig]
+   [mateuszmazurczak.adapters.cache.local-storage      :as local-storage]
+   [mateuszmazurczak.adapters.cache.state-persistence  :as state-persistence]
    [mateuszmazurczak.adapters.events.reframe.core      :as events-reframe]
    [mateuszmazurczak.adapters.i18n.tempura             :as i18n-tempura]
    [mateuszmazurczak.adapters.logging.telemere         :as t]
@@ -11,6 +13,7 @@
    [mateuszmazurczak.domain.i18n.dict.text             :as mm-i18n-dict-txt]
    [mateuszmazurczak.frontend-i18n                     :as fi18n]
    [mateuszmazurczak.ports.analytics                   :as analytics]
+   [mateuszmazurczak.ports.cache                       :as cache]
    [mateuszmazurczak.ports.error-tracking              :as error-tracking]
    [mateuszmazurczak.ports.events                      :as events]
    [mateuszmazurczak.ports.logging                     :as log]
@@ -44,6 +47,40 @@
 (defmethod ig/halt-key! :frontend/history
   [_ history]
   (when history (nav/stop-history! history) (nav/set-history! nil)))
+
+(defmethod ig/init-key :cache.adapter/local-storage
+  [_ {:keys [logger]}]
+  (log/log! logger
+            {:id ::cache-adapter-initialized
+             :level :info
+             :msg "LocalStorage cache adapter initialized"})
+  local-storage/adapter)
+
+(defmethod ig/init-key :frontend/cache
+  [_ {:keys [adapter logger]}]
+  (log/log! logger
+            {:id ::cache-initializing
+             :level :info
+             :msg "Initializing cache..."})
+  (cache/set-adapter! adapter)
+  (cache/set-persistence-ops! state-persistence/ops)
+  (log/log! logger
+            {:id ::cache-initialized
+             :level :info
+             :msg "Cache initialized"})
+  (let [persisted-state (cache/load-persisted)]
+    (log/log! logger
+              {:id ::cache-loaded-persisted
+               :level :info
+               :msg "Loaded persisted state"
+               :data {:has-data (seq persisted-state)}})
+    persisted-state))
+
+(defmethod ig/halt-key! :frontend/cache
+  [_ _]
+  (cache/set-adapter! nil)
+  (cache/set-persistence-ops! nil)
+  nil)
 
 (defmethod ig/init-key :events.adapter/reframe
   [_ {:keys [logger]}]
@@ -91,7 +128,7 @@
 (defmethod ig/halt-key! :watch.adapter/reframe [_ _] nil)
 
 (defmethod ig/init-key :frontend/state
-  [_ {:keys [translator logger watch-adapter]}]
+  [_ {:keys [translator logger watch-adapter persisted-cache]}]
   (log/log! logger
             {:id ::state-watch-wiring
              :level :info
@@ -101,12 +138,15 @@
             {:id ::state-watch-wired
              :level :info
              :msg "State watch wired"})
-  (log/log! logger
-            {:id ::state-initialized
-             :level :info
-             :msg "Frontend state initialized"
-             :data {:has-translator (some? translator)}})
-  (state/init-app-db! (state/initial-state translator logger (fi18n/language-strategy))))
+  (let [initial-state (state/initial-state translator logger (fi18n/language-strategy))
+        merged-state (merge initial-state persisted-cache)]
+    (log/log! logger
+              {:id ::state-initialized
+               :level :info
+               :msg "Frontend state initialized"
+               :data {:has-translator (some? translator)
+                      :has-cached-data (seq persisted-cache)}})
+    (state/init-app-db! merged-state)))
 
 (defmethod ig/halt-key! :frontend/state [_ _] (state/set-watch-fn! nil) (state/reset-app-db!) nil)
 

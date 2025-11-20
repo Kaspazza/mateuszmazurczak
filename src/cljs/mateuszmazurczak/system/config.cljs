@@ -22,12 +22,16 @@
    :i18n.adapter/tempura {:debug? true}
    :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
                          :logger (ig/ref :frontend/logging)}
+   :cache.adapter/local-storage {:logger (ig/ref :frontend/logging)}
+   :frontend/cache {:adapter (ig/ref :cache.adapter/local-storage)
+                    :logger (ig/ref :frontend/logging)}
    :events.adapter/reframe {:logger (ig/ref :frontend/logging)}
    :frontend/events {:adapter (ig/ref :events.adapter/reframe)
                      :logger (ig/ref :frontend/logging)}
    :watch.adapter/reframe {:logger (ig/ref :frontend/logging)}
    :frontend/state {:translator (ig/ref :frontend/translator)
                     :watch-adapter (ig/ref :watch.adapter/reframe)
+                    :persisted-cache (ig/ref :frontend/cache)
                     :logger (ig/ref :frontend/logging)}
    :frontend/router {:routes mm-fe-routes/routes
                      :logger (ig/ref :frontend/logging)}
@@ -49,12 +53,16 @@
    :i18n.adapter/tempura {:debug? false}
    :frontend/translator {:adapter (ig/ref :i18n.adapter/tempura)
                          :logger (ig/ref :frontend/logging)}
+   :cache.adapter/local-storage {:logger (ig/ref :frontend/logging)}
+   :frontend/cache {:adapter (ig/ref :cache.adapter/local-storage)
+                    :logger (ig/ref :frontend/logging)}
    :events.adapter/reframe {:logger (ig/ref :frontend/logging)}
    :frontend/events {:adapter (ig/ref :events.adapter/reframe)
                      :logger (ig/ref :frontend/logging)}
    :watch.adapter/reframe {:logger (ig/ref :frontend/logging)}
    :frontend/state {:translator (ig/ref :frontend/translator)
                     :watch-adapter (ig/ref :watch.adapter/reframe)
+                    :persisted-cache (ig/ref :frontend/cache)
                     :logger (ig/ref :frontend/logging)}
    :frontend/router {:routes mm-fe-routes/routes
                      :logger (ig/ref :frontend/logging)}

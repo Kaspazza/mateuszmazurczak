@@ -4,10 +4,11 @@
    Implements navigation events from events/registry.cljc.
    This is INTERNAL adapter code - UI components should dispatch via events/dispatch!"
   (:require
-   [mateuszmazurczak.domain.state.registry :as state-registry]
-   [mateuszmazurczak.ports.navigation      :as nav-core]
-   [mateuszmazurczak.utils.dom             :as utils-dom]
-   [re-frame.core                          :as rf]))
+   [mateuszmazurczak.adapters.events.reframe.cache :as-alias cache-events]
+   [mateuszmazurczak.domain.state.registry         :as state-registry]
+   [mateuszmazurczak.ports.navigation              :as nav-core]
+   [mateuszmazurczak.utils.dom                     :as utils-dom]
+   [re-frame.core                                  :as rf]))
 
 ;; =============================================================================
 ;; Effects 
@@ -70,9 +71,13 @@
                               {::navigate-no-history [route-name path-params query-params]})
    :nav/route-changed (fn [{:keys [db]} [_ route-data]]
                         (let [route-lang (get-in route-data [:query-parameters :lang])
-                              current-lang (get-in db state-registry/*lang-path*)]
-                          (merge {:db (assoc-in db state-registry/*current-route-path* route-data)
-                                  ::handle-fragment-scroll (:fragment route-data)}
+                              current-lang (get-in db state-registry/*lang-path*)
+                              new-db (assoc-in db state-registry/*current-route-path* route-data)]
+                          (merge {:db new-db
+                                  ::handle-fragment-scroll (:fragment route-data)
+                                  ;;TODO this persist-state should not be here as adapter has caching adapter logic, so if new adapter would be implemented this would be missing.
+                                  ;;But there is maybe the same problem with "handle-fragment-scroll" tbh
+                                  ::cache-events/persist-state new-db}
                                  (when-not route-lang
                                    {::change-query-parameters [{:lang current-lang}]}))))})
 

@@ -1,6 +1,7 @@
 (ns mateuszmazurczak.adapters.events.reframe.core
   "Re-frame event adapter - implements events/registry.cljs contract."
   (:require
+   [mateuszmazurczak.adapters.events.reframe.cache      :as cache-events]
    [mateuszmazurczak.adapters.events.reframe.i18n       :as i18n-events]
    [mateuszmazurczak.adapters.events.reframe.navigation :as nav-events]
    [mateuszmazurczak.adapters.events.reframe.pages.home :as home-events]
@@ -34,6 +35,7 @@
   []
   (nav-events/init!)
   (i18n-events/init!)
+  (cache-events/init!)
   nil)
 
 (defn get-dispatch-fn

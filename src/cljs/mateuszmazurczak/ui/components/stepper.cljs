@@ -7,12 +7,12 @@
   - UI copied 1:1 from shadcn/ui stepper example
   - Purely presentational: parent manages current-step state"
   (:require
-   ["react"                   :as react]
+   ["react"                               :as react]
    [mateuszmazurczak.ui.components.button :as ui-button]
-   [ui.utils.styles         :refer [merge-classes]]
-   [reagent.core              :as    r
-                              :refer [defc]]
-   [reagent.hooks             :as rhooks]))
+   [mateuszmazurczak.utils.styles         :refer [merge-classes]]
+   [reagent.core                          :as    r
+                                          :refer [defc]]
+   [reagent.hooks                         :as rhooks]))
 
 (def ^:private stepper-context (react/createContext nil))
 
@@ -61,7 +61,8 @@
            [:div {:data-component "stepper"
                   :data-variant (name variant)
                   :data-label-orientation (name label-orientation)
-                  :class (merge-classes "w-full" class)}]] children)))
+                  :class (merge-classes "w-full" class)}]]
+          children)))
 
 (defn stepper-title
   "Title component for step labels.
@@ -72,7 +73,8 @@
   Children: Title text or elements"
   [{:keys [class]} & children]
   (into [:h4 {:data-component "stepper-step-title"
-              :class (merge-classes "text-base font-medium" class)}] children))
+              :class (merge-classes "text-base font-medium" class)}]
+        children))
 
 (defn stepper-description
   "Description component for step labels.
@@ -83,7 +85,8 @@
   Children: Description text or elements"
   [{:keys [class]} & children]
   (into [:span {:data-component "stepper-step-description"
-                :class (merge-classes "text-sm text-muted-foreground" class)}] children))
+                :class (merge-classes "text-sm text-muted-foreground" class)}]
+        children))
 
 (defn stepper-controls
   "Navigation controls container for prev/next buttons.
@@ -94,7 +97,8 @@
   Children: Button components or other navigation controls"
   [{:keys [class]} & children]
   (into [:div {:data-component "stepper-controls"
-               :class (merge-classes "flex justify-end gap-4" class)}] children))
+               :class (merge-classes "flex justify-end gap-4" class)}]
+        children))
 
 ;; =============================================================================
 ;; Internal UI components (private helpers)
@@ -148,22 +152,24 @@
   [{:keys [orientation label-orientation state disabled? is-last?]}]
   (when-not is-last?
     [:div
-     (cond->
-      {:data-component "stepper-separator"
-       :data-orientation orientation
-       :data-state state
-       :role "separator"
-       :tab-index -1
-       :class (merge-classes "bg-muted" "data-[state=completed]:bg-primary"
-               "data-[disabled]:opacity-50" "transition-all duration-300 ease-in-out"
+     (cond-> {:data-component "stepper-separator"
+              :data-orientation orientation
+              :data-state state
+              :role "separator"
+              :tab-index -1
+              :class
+              (merge-classes
+               "bg-muted"
+               "data-[state=completed]:bg-primary"
+               "data-[disabled]:opacity-50"
+               "transition-all duration-300 ease-in-out"
                (case (keyword orientation)
                  :horizontal "h-0.5 flex-1"
                  :vertical "h-full w-0.5"
                  "h-0.5 flex-1")
                (when (= label-orientation "vertical")
                  "absolute left-[calc(50%+30px)] right-[calc(-50%+20px)] top-5 block shrink-0"))}
-      disabled?
-      (assoc :data-disabled true))]))
+       disabled? (assoc :data-disabled true))]))
 
 (defc stepper-step
  "Individual step button/indicator. Receives index/total from navigation.
@@ -192,43 +198,45 @@
      ;; Circle variant: render all steps, but only show active one
      [:li {:data-component "stepper-step"
            :class (merge-classes "flex shrink-0 items-center gap-4 rounded-md"
-                   "transition-opacity duration-100 ease-in-out"
-                   (if active? "opacity-100" "opacity-0 absolute") class)}
+                                 "transition-opacity duration-100 ease-in-out"
+                                 (if active? "opacity-100" "opacity-0 absolute")
+                                 class)}
       [circle-step-indicator {:current-step (inc current-idx)
                               :total-steps total}]
       (into [:div {:data-component "stepper-step-content"
-                   :class "flex flex-col items-start gap-1"}] children)]
+                   :class "flex flex-col items-start gap-1"}]
+            children)]
      ;; Horizontal/vertical variants
      [:<>
       [:li
-       (cond->
-        {:data-component "stepper-step"
-         :class (merge-classes "group peer relative flex items-center gap-2 cursor-pointer"
-                 "data-[variant=vertical]:flex-row" "data-[label-orientation=vertical]:w-full"
-                 "data-[label-orientation=vertical]:flex-col"
-                 "data-[label-orientation=vertical]:justify-center" class)
-         :data-variant variant
-         :data-label-orientation label-orientation
-         :data-state state
-         :on-click #(when (and (not disabled?) on-step-change) (on-step-change id))}
-        disabled?
-        (assoc :data-disabled true))
+       (cond-> {:data-component "stepper-step"
+                :class (merge-classes "group peer relative flex items-center gap-2 cursor-pointer"
+                                      "data-[variant=vertical]:flex-row"
+                                      "data-[label-orientation=vertical]:w-full"
+                                      "data-[label-orientation=vertical]:flex-col"
+                                      "data-[label-orientation=vertical]:justify-center" class)
+                :data-variant variant
+                :data-label-orientation label-orientation
+                :data-state state
+                :on-click #(when (and (not disabled?) on-step-change) (on-step-change id))}
+         disabled? (assoc :data-disabled true))
        (ui-button/button {:id (str "step-" id)
-                            :data-component "stepper-step-indicator"
-                            :type "button"
-                            :role "tab"
-                            :tab-index (if (not= state "inactive") 0 -1)
-                            :class "rounded-full"
-                            :variant (if (not= state "inactive") :default :secondary)
-                            :size :icon
-                            :disabled disabled?
-                            :aria-controls (str "step-panel-" id)
-                            :aria-current (when active? "step")
-                            :aria-posinset (inc index)
-                            :aria-setsize total
-                            :aria-selected active?
-                            :on-click #(when (and (not disabled?) on-step-change)
-                                         (on-step-change id))} (or icon (inc index)))
+                          :data-component "stepper-step-indicator"
+                          :type "button"
+                          :role "tab"
+                          :tab-index (if (not= state "inactive") 0 -1)
+                          :class "rounded-full"
+                          :variant (if (not= state "inactive") :default :secondary)
+                          :size :icon
+                          :disabled disabled?
+                          :aria-controls (str "step-panel-" id)
+                          :aria-current (when active? "step")
+                          :aria-posinset (inc index)
+                          :aria-setsize total
+                          :aria-selected active?
+                          :on-click #(when (and (not disabled?) on-step-change)
+                                       (on-step-change id))}
+                         (or icon (inc index)))
        (when (and (= variant "horizontal") (= label-orientation "vertical"))
          [stepper-separator {:orientation "horizontal"
                              :label-orientation label-orientation
@@ -236,7 +244,8 @@
                              :disabled? disabled?
                              :is-last? is-last?}])
        (into [:div {:data-component "stepper-step-content"
-                    :class "flex flex-col items-start"}] children)]
+                    :class "flex flex-col items-start"}]
+             children)]
       ;; Horizontal separator (outside li)
       (when (and (= variant "horizontal") (= label-orientation "horizontal"))
         [stepper-separator {:orientation "horizontal"
@@ -261,20 +270,18 @@
 (defn- flatten-children
   "Flatten children to handle both direct children and sequences from for/map."
   [children]
-  (reduce
-   (fn [acc child]
-     (cond
-       ;; It's a stepper-step vector
-       (and
-        (vector? child)
-        (or (identical? (first child) stepper-step) (= (first child) stepper-step)))
-       (conj acc child)
-       ;; It's a sequence (from for/map) - flatten it
-       (sequential? child) (into acc (flatten-children child))
-       ;; Something else, keep it
-       :else (conj acc child)))
-   []
-   children))
+  (reduce (fn [acc child]
+            (cond
+              ;; It's a stepper-step vector
+              (and (vector? child)
+                   (or (identical? (first child) stepper-step) (= (first child) stepper-step)))
+              (conj acc child)
+              ;; It's a sequence (from for/map) - flatten it
+              (sequential? child) (into acc (flatten-children child))
+              ;; Something else, keep it
+              :else (conj acc child)))
+          []
+          children))
 
 (defc stepper-navigation
  "Navigation container for steps. Auto-numbers steps and injects context.
@@ -290,36 +297,37 @@
        ;; Flatten children to handle for/map sequences
        flat-children (flatten-children children)
        step-ids (keep (fn [child]
-                        (when
-                          (and (vector? child) (or (identical? (first child) stepper-step)
-                                                (= (first child) stepper-step)))
+                        (when (and (vector? child)
+                                   (or (identical? (first child) stepper-step)
+                                       (= (first child) stepper-step)))
                           (let [props (second child)] (when (map? props) (:id props)))))
-                 flat-children)
+                      flat-children)
        current-idx
        (if current-step (first (keep-indexed #(when (= %2 current-step) %1) step-ids)) -1)
        total (count step-ids)
-       numbered-children (map-indexed (fn [idx child]
-                                        (if
-                                          (and (vector? child) (or (identical? (first child)
-                                                                    stepper-step) (= (first child)
-                                                                                   stepper-step)))
-                                          (let [[component props & rest] child
-                                                props (if (map? props) props {})]
-                                            (into [component
-                                                   (assoc props :index idx :total total :current-idx
-                                                    current-idx)] rest))
-                                          child)) flat-children)]
+       numbered-children
+       (map-indexed
+        (fn [idx child]
+          (if (and (vector? child)
+                   (or (identical? (first child) stepper-step) (= (first child) stepper-step)))
+            (let [[component props & rest] child
+                  props (if (map? props) props {})]
+              (into [component (assoc props :index idx :total total :current-idx current-idx)]
+                    rest))
+            child))
+        flat-children)]
    [:nav {:data-component "stepper-navigation"
           :aria-label "Stepper Navigation"
           :role "tablist"
           :class class}
     (into [:ol {:data-component "stepper-navigation-list"
                 :class (merge-classes "flex gap-2"
-                        (case variant
-                          "horizontal" "flex-row items-center justify-between"
-                          "vertical" "flex-col"
-                          "circle" "flex-row items-center justify-between"
-                          "flex-row items-center justify-between"))}] numbered-children)]))
+                                      (case variant
+                                        "horizontal" "flex-row items-center justify-between"
+                                        "vertical" "flex-col"
+                                        "circle" "flex-row items-center justify-between"
+                                        "flex-row items-center justify-between"))}]
+          numbered-children)]))
 
 (defc stepper-panel
  "Panel component for step content. Only renders if this is the active step.
@@ -337,4 +345,5 @@
                   :data-component "stepper-step-panel"
                   :role "tabpanel"
                   :aria-labelledby (str "step-" id)
-                  :class class}] children))))
+                  :class class}]
+           children))))

@@ -6,8 +6,8 @@
   
   Docs: https://www.radix-ui.com/docs/primitives/components/separator"
   (:require
-   ["@radix-ui/react-separator" :as SeparatorPrimitive]
-   [ui.utils.styles           :refer [merge-classes]]))
+   ["@radix-ui/react-separator"   :as SeparatorPrimitive]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn separator
   "Renders a visual separator line (horizontal or vertical).
@@ -66,13 +66,13 @@
   [:>
    (.-Root SeparatorPrimitive)
    (-> props
-    (assoc
-     :data-slot "separator"
-     :orientation (name orientation)
-     :decorative decorative
-     :class (merge-classes "shrink-0 bg-border" (case orientation
-                                                  :horizontal "h-[1px] w-full"
-                                                  :vertical "h-full w-px"
-                                                  "h-[1px] w-full") ; fallback to horizontal
-             class))
-    (dissoc :class-name))])
+       (assoc :data-slot "separator"
+              :orientation (name orientation)
+              :decorative decorative
+              :class (merge-classes "shrink-0 bg-border"
+                                    (case orientation
+                                      :horizontal "h-[1px] w-full"
+                                      :vertical "h-full w-px"
+                                      "h-[1px] w-full") ; fallback to horizontal
+                                    class))
+       (dissoc :class-name))])

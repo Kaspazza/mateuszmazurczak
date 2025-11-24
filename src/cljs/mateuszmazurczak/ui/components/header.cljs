@@ -1,178 +1,178 @@
 (ns mateuszmazurczak.ui.components.header
+  "Header component with support for dark/light theme and language selection."
   (:require
-   [clojure.string                              :as str]
    [mateuszmazurczak.adapters.navigation.routes :as mm-routes]
    [mateuszmazurczak.domain.i18n.language       :as mm-i18n-lang]
    [mateuszmazurczak.frontend-i18n              :as fi18n]
    [mateuszmazurczak.ports.navigation           :as navigation]
+   [mateuszmazurczak.ui.components.select       :as ui-select]
+   [mateuszmazurczak.ui.components.theme-toggle :as theme-toggle]
+   [mateuszmazurczak.utils.styles               :refer [merge-classes]]
    [reagent.core                                :as r]))
 
-(defn string-to-id
-  "Transform what is not alphanumerical to an id
-  If `txt` is an empty string, a uuid turned into a string is returned
-  Params:
-  * `txt` text to transform"
-  [txt]
-  (if (str/blank? txt)
-    (-> (random-uuid)
-        str)
-    (-> txt
-        str
-        (str/replace #"[^\w]" "-")
-        str/lower-case)))
 
-(defn reagent-option
-  "Return the option of an existing reagent object
-  Manages both case where the option map is already existing or not
-  Params:
-  * `comp` reagent component to update "
-  [component]
-  (let [maybe-opt (second component)] (if (map? maybe-opt) maybe-opt {})))
-
-
-(defn- update-select-options
-  "Add options to select options components.
-  Generate a key based on `select-id` and `opt-value`"
-  [{:keys [opt-value key]
-    :as opt}
-   select-id]
-  (assoc opt :key (or key (str select-id "-" (string-to-id opt-value)))))
-
-(defn update-reagent-options
-  "Update the reagent component to insert `options`
-  Manage both cases where the option map already exist or not
-  Params:
-  * `options` reagent options to be inserted
-  * `component` reagent component to update"
-  [options component]
-  (let [[comp-key & comp-rest] component
-        maybe-opt (first comp-rest)
-        updated-options (if (map? maybe-opt)
-                          (apply vector comp-key options (rest comp-rest))
-                          (apply vector comp-key options comp-rest))]
-    updated-options))
-
-(defn simple-select
-  "Simple html select
-
-  Params:
-  * `props` properties to tweak the selector
-      * `id` Optional (default to string-to-id of html-name) is the html id of the component
-      * `html-name` name to represent the data stored if that data are POSTed in a form
-      * `class`  css attributes to add to default presentation
-      * `value` is a currently selected value
-      * `on-change` method to call on change of the value, typically dispatch an event
-      * `options` a list of option, as `options-arg`, easier to use if you already handle a collection of options
-  * `options-arg` options should be a collection of [:option] html tags. This value is useful to directly pass options as a variadic arguments. It's superseeding `options` keyword."
-  [{:keys [id html-name class on-change value options]
-    :as _props}
-   &
-   options-arg]
-  (let [options (for [select-option (or options-arg options)]
-                  (-> select-option
-                      reagent-option
-                      (update-select-options id)
-                      (update-reagent-options select-option)))]
-    (fn [] [:select {:id id
-                     :name html-name
-                     :default-value value
-                     :class (vec (concat ["block"
-                                          "w-full"
-                                          "rounded-md"
-                                          "border-0"
-                                          "py-1"
-                                          "pl-3"
-                                          "pr-10"
-                                          "text-gray-900"
-                                          "ring-1"
-                                          "ring-inset"
-                                          "ring-gray-300"
-                                          "focus:ring-2"
-                                          "focus:ring-indigo-600"
-                                          "sm:text-sm"
-                                          "sm:leading-6"]
-                                         class))
-                     :on-change on-change}
-            options])))
 
 (defn- base-header
-  [{:keys [size sticky? border?]} content]
-  [:header {:class [(if sticky? "sticky" "absolute")
-                    (when border? "border border-solid border-b-theme-dark bg-theme-light")
-                    "inset-x-0 top-0"
-                    "py-2"
-                    (if (= :full size) "w-full" "w-full lg:w-1/2")]}
+  "Base header component with common layout and styling.
+  
+  Props:
+  - :size (:full | :half) - Header width (default: :full)
+  - :sticky? (boolean) - Whether header is sticky or absolute
+  - :border? (boolean) - Whether to show border
+  - :class - Additional CSS classes"
+  [{:keys [size sticky? border? class]} content]
+  [:header
+   {:class
+    (merge-classes
+     (if sticky? "sticky" "absolute")
+     (when border?
+       "border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60")
+     "inset-x-0"
+     "top-0"
+     "z-50"
+     "py-2"
+     (if (= :full size) "w-full" "w-full lg:w-1/2")
+     class)}
    content])
 
 (defn transparent-header-comp
-  [{:keys [size sticky? border? logo right-section]}]
+  "Transparent header component without menu items.
+  
+  Props:
+  - :size (:full | :half) - Header width
+  - :sticky? (boolean) - Sticky positioning
+  - :border? (boolean) - Show border
+  - :logo - Logo component/hiccup
+  - :right-section - Right section component/hiccup
+  - :class - Additional CSS classes"
+  [{:keys [size sticky? border? logo right-section class]}]
   [base-header {:size size
                 :sticky? sticky?
-                :border? border?}
-   [:nav {:class ["flex items-center content-between justify-between px-6 lg:px-8"]}
+                :border? border?
+                :class class}
+   [:nav {:class (merge-classes "flex" "items-center" "justify-between" "px-6" "lg:px-8")}
     logo
-    [:div right-section]]])
+    [:div {:class (merge-classes "flex" "items-center" "gap-4")}
+     right-section]]])
 
 
 (defn header-comp
-  [{:keys [size logo sticky? border? right-section]} & menu-items]
+  "Header component with menu items.
+  
+  Props:
+  - :size (:full | :half) - Header width
+  - :sticky? (boolean) - Sticky positioning
+  - :border? (boolean) - Show border
+  - :logo - Logo component/hiccup
+  - :right-section - Right section component/hiccup
+  - :class - Additional CSS classes
+  - menu-items - Collection of menu item maps with :title and :href"
+  [{:keys [size logo sticky? border? right-section class]} & menu-items]
   [base-header {:size size
                 :sticky? sticky?
-                :border? border?}
-   [:nav {:class ["flex items-center content-between justify-between px-6 lg:px-8"]}
+                :border? border?
+                :class class}
+   [:nav {:class (merge-classes "flex" "items-center" "justify-between" "px-6" "lg:px-8")}
     logo
-    [:div {:class ["hidden lg:flex lg:gap-x-12"]}
+    [:div {:class (merge-classes "hidden" "lg:flex" "lg:gap-x-12")}
      (for [{:keys [title href]} menu-items]
        ^{:key (str title href)}
        [:a {:href href
-            :class ["text-sm font-semibold leading-6 text-gray-900"]}
+            :class (merge-classes "text-sm" "font-semibold"
+                                  "leading-6" "text-foreground"
+                                  "hover:text-foreground/80" "transition-colors")}
         title])]
-    [:div right-section]]])
+    [:div {:class (merge-classes "flex" "items-center" "gap-4")}
+     right-section]]])
 
 
-(def languages-options
-  (->> mm-i18n-lang/web-languages
-       (map (fn [[_lang-id {:keys [ui-text]}]] [:option {:value ui-text}
-                                                ui-text]))))
 (defn lang-select
+  "Language selection dropdown using Radix UI select component.
+  
+  Displays available languages and allows users to switch between them.
+  Uses the modern select component with dark mode support."
   []
-  (let [selected-value (fi18n/current-language-str)]
-    [simple-select {:id "lang"
-                    :name "lang"
-                    :on-change fi18n/change-language!
-                    :value selected-value
-                    :options languages-options}]))
+  (let [selected-value (fi18n/current-language-str)
+        languages mm-i18n-lang/web-languages]
+    [ui-select/select {:value selected-value
+                       :on-value-change fi18n/change-language!}
+     [ui-select/select-trigger {:size "sm"
+                                :class "min-w-[100px]"}
+      [ui-select/select-value {:placeholder "Language"}]]
+     [ui-select/select-content {}
+      (for [[_lang-id {:keys [ui-text]}] languages]
+        ^{:key ui-text}
+        [ui-select/select-item {:value ui-text}
+         ui-text])]]))
 
 (defn transparent-header
-  [{:keys [size border? sticky?]}]
+  "Transparent header with theme toggle and language selector.
+  
+  Props:
+  - :size (:full | :half) - Header width (default: :full)
+  - :border? (boolean) - Show border (default: false)
+  - :sticky? (boolean) - Sticky positioning (default: true)
+  - :class - Additional CSS classes
+  
+  Example:
+  [transparent-header {:size :full :border? true :sticky? true}]"
+  [{:keys [size border? sticky? class]}]
   [transparent-header-comp {:size size
                             :sticky? sticky?
                             :border? border?
-                            :right-section [lang-select]}])
+                            :class class
+                            :right-section [:<> [theme-toggle/theme-toggle] [lang-select]]}])
 
-(defn toggle-header-border
+(defn- toggle-header-border
+  "Toggle header border based on scroll position.
+  
+  Shows/hides border when scrolling past 50px threshold.
+  This is used in lifecycle methods to add dynamic scroll behavior."
   [_]
   (let [scroll-y (.-scrollY js/window)
-        header-css-list (.-classList (.querySelector js/document "header"))
-        border-none? (.contains header-css-list "border-none!")]
-    (cond
-      (and (< scroll-y 50) (true? border-none?))
-      (.remove header-css-list "border-none!" "hidden" "md:block")
-      (and (> scroll-y 50) (false? border-none?))
-      (.add header-css-list "border-none!" "hidden" "md:block")
-      :else nil)))
+        header-el (.querySelector js/document "header")]
+    (when header-el
+      (let [header-css-list (.-classList header-el)
+            has-border? (.contains header-css-list "border-b")]
+        (cond
+          ;; Scrolled down - remove border
+          (and (> scroll-y 50) has-border?) (.remove header-css-list "border-b")
+          ;; Scrolled up - add border
+          (and (<= scroll-y 50) (not has-border?)) (.add header-css-list "border-b")
+          :else nil)))))
 
 (defn header
-  [{:keys [_size _border? _sticky?]}]
+  "Main header component with navigation menu, theme toggle, and language selector.
+  
+  Includes scroll-based border toggling for a dynamic appearance.
+  The border appears/disappears based on scroll position.
+  
+  Props:
+  - :size (:full | :half) - Header width (default: :full)
+  - :border? (boolean) - Initial border state (default: true)
+  - :sticky? (boolean) - Sticky positioning (default: true)
+  - :class - Additional CSS classes
+  
+  Menu items:
+  - Mateusz Mazurczak (home)
+  - Articles
+  - AoC Solutions
+  
+  Example:
+  [header {:size :full :border? true :sticky? true}]"
+  [{:keys [_size _border? _sticky? _class]}]
   (r/create-class
    {:component-did-mount (fn [_] (.addEventListener js/window "scroll" toggle-header-border))
     :component-will-unmount (fn [_] (.removeEventListener js/window "scroll" toggle-header-border))
-    :reagent-render (fn [{:keys [size border? sticky?]}] [header-comp {:size size
-                                                                       :sticky? sticky?
-                                                                       :border? border?
-                                                                       :right-section [lang-select]}
-                                                          {:title "Mateusz Mazurczak"
-                                                           :href (navigation/href ::mm-routes/home)}
-                                                          {:title (fi18n/tr :articles)
-                                                           :href (navigation/href
-                                                                  ::mm-routes/articles)}])}))
+    :reagent-render (fn [{:keys [size border? sticky? class]}]
+                      [header-comp {:size size
+                                    :sticky? sticky?
+                                    :border? border?
+                                    :class class
+                                    :right-section [:<> [theme-toggle/theme-toggle] [lang-select]]}
+                       {:title "Mateusz Mazurczak"
+                        :href (navigation/href ::mm-routes/home)}
+                       {:title (fi18n/tr :articles)
+                        :href (navigation/href ::mm-routes/articles)}
+                       {:title "AoC Solutions"
+                        :href (navigation/href ::mm-routes/aoc)}])}))

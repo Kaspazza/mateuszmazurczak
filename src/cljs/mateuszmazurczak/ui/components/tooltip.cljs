@@ -88,8 +88,8 @@
                          (reset! open? %))}]])
   ```"
   (:require
-   ["@radix-ui/react-tooltip" :as TooltipPrimitive]
-   [ui.utils.styles         :refer [merge-classes]]))
+   ["@radix-ui/react-tooltip"     :as TooltipPrimitive]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 ;;
 ;; Internal Radix primitives (not exported)
@@ -228,40 +228,31 @@
    [:>
     tooltip-root
     (cond-> {}
-     (some? open)
-     (assoc :open open)
-     (some? default-open)
-     (assoc :defaultOpen default-open)
-     on-open-change
-     (assoc :onOpenChange on-open-change))
+      (some? open) (assoc :open open)
+      (some? default-open) (assoc :defaultOpen default-open)
+      on-open-change (assoc :onOpenChange on-open-change))
     ;; Trigger
     [:> tooltip-trigger {:asChild trigger-as-child?} trigger]
     ;; Content
     [:>
      tooltip-content-primitive
-     (cond->
-      {:sideOffset side-offset
-       :className (merge-classes
-                   (str "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 "
+     (cond-> {:sideOffset side-offset
+              :className
+              (merge-classes
+               (str "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 "
                     "text-sm text-popover-foreground shadow-md " "animate-in fade-in-0 zoom-in-95 "
                     "data-[state=closed]:animate-out " "data-[state=closed]:fade-out-0 "
                     "data-[state=closed]:zoom-out-95 " "data-[side=bottom]:slide-in-from-top-2 "
                     "data-[side=left]:slide-in-from-right-2 "
                     "data-[side=right]:slide-in-from-left-2 "
                     "data-[side=top]:slide-in-from-bottom-2 "
-                    "origin-[--radix-tooltip-content-transform-origin]") content-class)}
-      side
-      (assoc :side (name side))
-      align
-      (assoc :align (name align))
-      align-offset
-      (assoc :alignOffset align-offset)
-      collision-padding
-      (assoc :collisionPadding collision-padding)
-      (some? avoid-collisions?)
-      (assoc :avoidCollisions avoid-collisions?)
-      sticky
-      (assoc :sticky (name sticky))
-      (some? content-hidden?)
-      (assoc :hidden content-hidden?))
+                    "origin-[--radix-tooltip-content-transform-origin]")
+               content-class)}
+       side (assoc :side (name side))
+       align (assoc :align (name align))
+       align-offset (assoc :alignOffset align-offset)
+       collision-padding (assoc :collisionPadding collision-padding)
+       (some? avoid-collisions?) (assoc :avoidCollisions avoid-collisions?)
+       sticky (assoc :sticky (name sticky))
+       (some? content-hidden?) (assoc :hidden content-hidden?))
      content]]])

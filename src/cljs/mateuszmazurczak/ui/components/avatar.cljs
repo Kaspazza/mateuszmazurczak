@@ -1,8 +1,8 @@
 (ns mateuszmazurczak.ui.components.avatar
   "https://www.radix-ui.com/primitives/docs/components/avatar"
   (:require
-   ["@radix-ui/react-avatar" :as RadixAvatar]
-   [ui.utils.styles          :refer [merge-classes]]))
+   ["@radix-ui/react-avatar"      :as RadixAvatar]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn avatar
   "Avatar root component. Displays an image or fallback for a user/entity.

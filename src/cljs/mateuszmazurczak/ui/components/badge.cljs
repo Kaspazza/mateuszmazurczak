@@ -2,8 +2,8 @@
   "Badge component with support for multiple variants.
   Supports polymorphic rendering via :as-child prop."
   (:require
-   ["@radix-ui/react-slot" :refer [Slot]]
-   [ui.utils.styles      :refer [merge-classes]]))
+   ["@radix-ui/react-slot"        :refer [Slot]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn- variant-classes
   "Returns Tailwind classes for the given variant.
@@ -62,5 +62,6 @@
     (into [:>
            component
            (-> props
-            (assoc :data-slot "badge" :class combined-classes)
-            (dissoc :class-name :variant :as-child))] children)))
+               (assoc :data-slot "badge" :class combined-classes)
+               (dissoc :class-name :variant :as-child))]
+          children)))

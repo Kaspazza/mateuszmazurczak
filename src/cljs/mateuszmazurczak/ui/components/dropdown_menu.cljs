@@ -4,7 +4,7 @@
   (:require
    ["@radix-ui/react-dropdown-menu" :as DropdownMenuPrimitive]
    ["lucide-react"                  :refer [Check ChevronRight Circle]]
-   [ui.utils.styles               :refer [merge-classes]]
+   [mateuszmazurczak.utils.styles   :refer [merge-classes]]
    [reagent.core                    :as r]))
 
 ;; ============================================================================
@@ -33,10 +33,9 @@
   (into [:>
          (.-Root DropdownMenuPrimitive)
          (cond-> props
-          class
-          (assoc :class class)
-          true
-          (assoc :data-slot "dropdown-menu"))] children))
+           class (assoc :class class)
+           true (assoc :data-slot "dropdown-menu"))]
+        children))
 
 (defn dropdown-menu-trigger
   "Dropdown menu trigger component. The button that opens the menu.
@@ -55,8 +54,9 @@
   (into [:>
          (.-Trigger DropdownMenuPrimitive)
          (-> props
-          (assoc :data-slot "dropdown-menu-trigger" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dropdown-menu-trigger" :class class)
+             (dissoc :class-name))]
+        children))
 
 (defn dropdown-menu-group
   "Dropdown menu group component. Groups related menu items.
@@ -76,8 +76,9 @@
   (into [:>
          (.-Group DropdownMenuPrimitive)
          (-> props
-          (assoc :data-slot "dropdown-menu-group" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dropdown-menu-group" :class class)
+             (dissoc :class-name))]
+        children))
 
 (defn dropdown-menu-portal
   "Dropdown menu portal component. Renders content in a portal (outside DOM hierarchy).
@@ -96,8 +97,9 @@
   (into [:>
          (.-Portal DropdownMenuPrimitive)
          (-> props
-          (assoc :data-slot "dropdown-menu-portal" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dropdown-menu-portal" :class class)
+             (dissoc :class-name))]
+        children))
 
 (defn dropdown-menu-sub
   "Dropdown menu sub component. Root for submenu (nested menu).
@@ -119,8 +121,9 @@
   (into [:>
          (.-Sub DropdownMenuPrimitive)
          (-> props
-          (assoc :data-slot "dropdown-menu-sub" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dropdown-menu-sub" :class class)
+             (dissoc :class-name))]
+        children))
 
 (defn dropdown-menu-radio-group
   "Dropdown menu radio group component. Groups radio items for single selection.
@@ -141,8 +144,9 @@
   (into [:>
          (.-RadioGroup DropdownMenuPrimitive)
          (-> props
-          (assoc :data-slot "dropdown-menu-radio-group" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dropdown-menu-radio-group" :class class)
+             (dissoc :class-name))]
+        children))
 
 ;; ============================================================================
 ;; Styled Components
@@ -169,13 +173,17 @@
   (into
    [:>
     (.-SubTrigger DropdownMenuPrimitive)
-    (-> props
-     (assoc :data-slot "dropdown-menu-sub-trigger" :class
-      (merge-classes
-       "flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
-       (when inset "pl-8") class))
-     (dissoc :class-name :inset))] (concat children [(r/as-element
-                                                      [:> ChevronRight {:class "ml-auto"}])])))
+    (->
+      props
+      (assoc
+       :data-slot "dropdown-menu-sub-trigger"
+       :class
+       (merge-classes
+        "flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+        (when inset "pl-8")
+        class))
+      (dissoc :class-name :inset))]
+   (concat children [(r/as-element [:> ChevronRight {:class "ml-auto"}])])))
 
 (defn dropdown-menu-sub-content
   "Dropdown menu sub-content component. Content of a submenu with animations.
@@ -194,12 +202,16 @@
   (into
    [:>
     (.-SubContent DropdownMenuPrimitive)
-    (-> props
-     (assoc :data-slot "dropdown-menu-sub-content" :class
-      (merge-classes
-       "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]"
-       class))
-     (dissoc :class-name))] children))
+    (->
+      props
+      (assoc
+       :data-slot "dropdown-menu-sub-content"
+       :class
+       (merge-classes
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]"
+        class))
+      (dissoc :class-name))]
+   children))
 
 (defn dropdown-menu-content
   "Dropdown menu content component. The main content container with animations.
@@ -226,12 +238,17 @@
    (into
     [:>
      (.-Content DropdownMenuPrimitive)
-     (-> props
-      (assoc :side-offset side-offset :data-slot "dropdown-menu-content" :class
-       (merge-classes
-        "z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]"
-        class))
-      (dissoc :class-name :side-offset))] children)])
+     (->
+       props
+       (assoc
+        :side-offset side-offset
+        :data-slot "dropdown-menu-content"
+        :class
+        (merge-classes
+         "z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]"
+         class))
+       (dissoc :class-name :side-offset))]
+    children)])
 
 (defn dropdown-menu-item
   "Dropdown menu item component. A selectable menu item.
@@ -256,12 +273,17 @@
   (into
    [:>
     (.-Item DropdownMenuPrimitive)
-    (-> props
-     (assoc :data-slot "dropdown-menu-item" :class
-      (merge-classes
-       "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
-       (when inset "pl-8") class))
-     (dissoc :class-name :inset))] children))
+    (->
+      props
+      (assoc
+       :data-slot "dropdown-menu-item"
+       :class
+       (merge-classes
+        "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
+        (when inset "pl-8")
+        class))
+      (dissoc :class-name :inset))]
+   children))
 
 (defn dropdown-menu-checkbox-item
   "Dropdown menu checkbox item component. A menu item with checkbox state.
@@ -284,15 +306,19 @@
   (into
    [:>
     (.-CheckboxItem DropdownMenuPrimitive)
-    (-> props
-     (assoc :checked checked :data-slot "dropdown-menu-checkbox-item" :class
-      (merge-classes
-       "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-       class))
-     (dissoc :class-name))]
+    (->
+      props
+      (assoc
+       :checked checked
+       :data-slot "dropdown-menu-checkbox-item"
+       :class
+       (merge-classes
+        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+        class))
+      (dissoc :class-name))]
    (cons [:span {:class "absolute left-2 flex h-3.5 w-3.5 items-center justify-center"}
           [:> (.-ItemIndicator DropdownMenuPrimitive) (r/as-element [:> Check {:class "h-4 w-4"}])]]
-    children)))
+         children)))
 
 (defn dropdown-menu-radio-item
   "Dropdown menu radio item component. A menu item for radio group selection.
@@ -314,16 +340,20 @@
   (into
    [:>
     (.-RadioItem DropdownMenuPrimitive)
-    (-> props
-     (assoc :data-slot "dropdown-menu-radio-item" :class
-      (merge-classes
-       "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-       class))
-     (dissoc :class-name))]
+    (->
+      props
+      (assoc
+       :data-slot "dropdown-menu-radio-item"
+       :class
+       (merge-classes
+        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+        class))
+      (dissoc :class-name))]
    (cons [:span {:class "absolute left-2 flex h-3.5 w-3.5 items-center justify-center"}
           [:>
            (.-ItemIndicator DropdownMenuPrimitive)
-           (r/as-element [:> Circle {:class "h-2 w-2 fill-current"}])]] children)))
+           (r/as-element [:> Circle {:class "h-2 w-2 fill-current"}])]]
+         children)))
 
 (defn dropdown-menu-label
   "Dropdown menu label component. A non-interactive label for menu sections.
@@ -342,9 +372,11 @@
   (into [:>
          (.-Label DropdownMenuPrimitive)
          (-> props
-          (assoc :data-slot "dropdown-menu-label" :class
-           (merge-classes "px-2 py-1.5 text-sm font-semibold" (when inset "pl-8") class))
-          (dissoc :class-name :inset))] children))
+             (assoc :data-slot "dropdown-menu-label"
+                    :class
+                    (merge-classes "px-2 py-1.5 text-sm font-semibold" (when inset "pl-8") class))
+             (dissoc :class-name :inset))]
+        children))
 
 (defn dropdown-menu-separator
   "Dropdown menu separator component. A visual separator between menu sections.
@@ -361,10 +393,9 @@
   [:>
    (.-Separator DropdownMenuPrimitive)
    (-> props
-    (assoc
-     :data-slot "dropdown-menu-separator"
-     :class (merge-classes "-mx-1 my-1 h-px bg-muted" class))
-    (dissoc :class-name))])
+       (assoc :data-slot "dropdown-menu-separator"
+              :class (merge-classes "-mx-1 my-1 h-px bg-muted" class))
+       (dissoc :class-name))])
 
 (defn dropdown-menu-shortcut
   "Dropdown menu shortcut component. Displays keyboard shortcuts (non-interactive).
@@ -382,6 +413,7 @@
    children]
   (into [:span
          (-> props
-          (assoc :data-slot "dropdown-menu-shortcut" :class
-           (merge-classes "ml-auto text-xs tracking-widest opacity-60" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dropdown-menu-shortcut"
+                    :class (merge-classes "ml-auto text-xs tracking-widest opacity-60" class))
+             (dissoc :class-name))]
+        children))

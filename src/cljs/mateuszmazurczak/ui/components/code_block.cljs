@@ -3,8 +3,8 @@
   (:require
    ["react-syntax-highlighter"                      :refer [Light]]
    ["react-syntax-highlighter/dist/esm/styles/hljs" :refer [paraisoDark paraisoLight]]
-   [reagent.core                                     :refer [defc]]
-   [reagent.hooks                                    :as hooks]))
+   [reagent.core                                    :refer [defc]]
+   [reagent.hooks                                   :as hooks]))
 
 (defn- copy-to-clipboard!
   "Copy text to clipboard."

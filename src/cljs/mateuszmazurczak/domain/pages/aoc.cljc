@@ -1,6 +1,7 @@
 (ns mateuszmazurczak.domain.pages.aoc
   "Advent of Code domain - schemas and pure functions."
   (:require
+   [clojure.string                      :as str]
    [malli.core                          :as m]
    [malli.error                         :as me]
    [mateuszmazurczak.domain.i18n.schema :as i18n-schema]))
@@ -268,8 +269,7 @@
    nil -> nil"
   [github-profile]
   (when github-profile
-    (when-let [username (last (clojure.string/split github-profile #"/"))]
-      (str "(@" username ")"))))
+    (when-let [username (last (str/split github-profile #"/"))] (str "(@" username ")"))))
 
 (defn enrich-solution-with-github-username
   "Add formatted github-username to solution if github-profile exists."

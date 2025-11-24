@@ -10,6 +10,13 @@
    [mateuszmazurczak.ports.logging         :as log]
    [re-frame.core                          :as rf]))
 
+(defn get-anti-forgery-token
+  "Extract the anti-forgery token from the DOM.
+   Returns nil if token element not found."
+  []
+  (when-let [token-el (.getElementById js/document "__anti-forgery-token")]
+    (.getAttribute token-el "data-anti-forgery-token")))
+
 (rf/reg-event-fx ::on-failure
                  (fn [{:keys [db]} event]
                    ;; event => [::on-failure [:any/custom-fx ...] result]
@@ -66,16 +73,23 @@
    - :url - Request URL
    - :params - Request parameters
    - :event/on-success - Callback function for success
-   - :event/on-error - Callback function for error"
+   - :event/on-error - Callback function for error
+   
+   Automatically includes anti-forgery token for POST/PUT/DELETE/PATCH requests."
   [{:keys [method url params]
     :event/keys [on-success on-error]}]
-  ((ajax-method method)
-   url
-   (cond-> {:format (ajax/json-request-format {})
-            :response-format (ajax/json-response-format {:keywords? true})
-            :handler on-success
-            :error-handler on-error}
-     params (assoc :params params))))
+  (let [needs-csrf? (contains? #{:post :put :delete :patch}
+                               (some-> method name string/lower-case keyword))
+        csrf-token (when needs-csrf? (get-anti-forgery-token))]
+    ((ajax-method method)
+     url
+     (cond-> {:format (ajax/json-request-format {})
+              :response-format (ajax/json-response-format {:keywords? true})
+              :handler on-success
+              :error-handler on-error}
+       params (assoc :params params)
+       csrf-token (assoc :headers {"X-CSRF-Token" csrf-token
+                                    "X-Requested-With" "XMLHttpRequest"})))))
 
 (defn init-effects!
   "Register all HTTP effects for re-frame.

@@ -1,5 +1,6 @@
 (ns mateuszmazurczak.adapters.http.routes
   (:require
+   [mateuszmazurczak.adapters.http.api   :as api]
    [mateuszmazurczak.adapters.http.pages :refer [article-page mateuszmazurczak-page]]
    [mateuszmazurczak.env                 :as mm-env]))
 
@@ -18,5 +19,12 @@
            :get mateuszmazurczak-page}]
          ["/article/:article-name"
           {:name ::article
-           :get article-page}]]
+           :get article-page}]
+         ["/aoc"
+          {:name ::aoc
+           :get mateuszmazurczak-page}]
+         ["/api/aoc/solutions"
+          {:name ::api-aoc-solutions
+           :get api/get-solutions
+           :post api/post-solution}]]
         (mm-env/route)))

@@ -57,10 +57,14 @@
    {:on-click [:dispatch [:nav/navigate ::routes/home]]}
    =>
    {:on-click #(mateuszmazurczak.events/dispatch! [:nav/navigate ::routes/home])}
+   
+   {:on-update-form [:dispatch [:aoc/update-form]]}
+   =>
+   {:on-update-form (fn [field value] (dispatch! [:aoc/update-form field value]))}
    "
   [coll]
   (walk/prewalk #(if (and (vector? %) (= :dispatch (first %)) (vector? (second %)))
-                   (fn [] (dispatch! (second %)))
+                   (fn [& args] (dispatch! (into (second %) args)))
                    %)
                 coll))
 

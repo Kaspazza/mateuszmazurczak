@@ -7,7 +7,7 @@
 
 (def ArticleCard
   "Schema for a single article card displayed on home page"
-  [:map {:closed true}
+  [:map
    [:id :keyword]
    [:title :string]
    [:description :string]
@@ -101,3 +101,46 @@
    :navigation {:text [:i18n :articles]
                 :dark-mode true}
    :articles []})
+
+(defn build-raw-home-data
+  "Build raw home page data structure (without handlers/navigation).
+   
+   Returns pure data that can be enhanced at the application layer
+   with infrastructure concerns (navigation, event handlers)."
+  [articles-data]
+  {:about-me-section {:welcome-text [:i18n :hi-mati]
+                      :description [:i18n :i-like-simplicity]
+                      :contact-info [:i18n :contact-me]}
+   :navigation {:text [:i18n :articles]
+                :dark-mode true}
+   :articles articles-data})
+
+(defn add-navigation-click-handlers
+  "Add navigation click handlers to articles.
+   
+   Takes articles and a route-id+params builder function,
+   returns articles with :on-click dispatch markers."
+  [articles-data]
+  (mapv (fn [article]
+          (assoc article
+                 :on-click
+                 [:dispatch
+                  [:nav/navigate
+                   :mateuszmazurczak.adapters.navigation.routes/article
+                   {:article-id (name (:id article))}]]))
+        articles-data))
+
+(defn build-home-page-data
+  "Build complete home page data with navigation and handlers.
+   
+   Takes:
+   - articles-data: collection of article entities
+   - navigation-href: href string for articles navigation
+   - route-builder-fn: fn that takes article and returns [event-id params] vector
+   
+   Returns complete home page data ready for app-db."
+  [articles-data navigation-href]
+  (let [raw-data (build-raw-home-data articles-data)]
+    (-> raw-data
+        (assoc-in [:navigation :href] navigation-href)
+        (update :articles add-navigation-click-handlers))))

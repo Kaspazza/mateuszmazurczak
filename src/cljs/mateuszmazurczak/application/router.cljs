@@ -39,6 +39,6 @@
         page-data (when (and page-id (contains? (set (keys state/watch-reg)) page-id))
                     @(state/watch [page-id]))]
     (handle-page-ex page-data page-id)
-    [mm-nav-pages/pages current-route (:data page-data)]))
+    [mm-nav-pages/pages current-route page-data]))
 
 (defn main-component "Main component replacing app" [] [router-component])

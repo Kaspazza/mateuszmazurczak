@@ -12,7 +12,7 @@
 (def version
   "Current cache version. Increment when making breaking changes to state structure.
    On version mismatch, all cached data is cleared and re-initialized."
-  1)
+  2)
 
 (def domains
   "Map of domain-id to persistence configuration.

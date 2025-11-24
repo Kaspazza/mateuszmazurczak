@@ -18,4 +18,8 @@
      :page-id :pages/articles}]
    ["/article/:article-id"
     {:name ::article
-     :page-id :pages/article}]])
+     :page-id :pages/article}]
+   ["/aoc"
+    {:name ::aoc
+     :page-id :pages/aoc
+     :controllers [{:start (fn [_] (events/dispatch! [:aoc/on-route-enter]))}]}]])

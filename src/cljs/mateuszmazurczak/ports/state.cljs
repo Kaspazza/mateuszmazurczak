@@ -13,6 +13,7 @@
    [mateuszmazurczak.adapters.state.reframe :as reframe-adapter]
    [mateuszmazurczak.domain.pages.home      :as home-domain]
    [mateuszmazurczak.domain.state.registry  :as state-registry]
+   [mateuszmazurczak.domain.theme.schema    :as theme-schema]
    [mateuszmazurczak.system.config          :as config]))
 
 
@@ -139,6 +140,7 @@
   {:name "mateuszmazurczak"
    :current-route {:page-id :pages/pending}
    :lang lang-strategy
+   :theme theme-schema/default-theme
    :translator translator
    :logger logger
    :pages {:home (home-domain/initial-home-data)}})

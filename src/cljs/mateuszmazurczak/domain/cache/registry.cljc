@@ -26,6 +26,8 @@
   {:route {:key (str "mateuszmazurczak-v" version "-route")
            :path state-reg/*current-route-path*}
    :lang {:key (str "mateuszmazurczak-v" version "-lang")
-          :path state-reg/*lang-path*}})
+          :path state-reg/*lang-path*}
+   :theme {:key (str "mateuszmazurczak-v" version "-theme")
+           :path state-reg/*theme-path*}})
 
 (def version-key "localStorage key for storing version number" "mateuszmazurczak-cache-version")

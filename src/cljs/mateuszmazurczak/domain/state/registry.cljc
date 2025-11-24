@@ -8,6 +8,7 @@
 ;;
 ;; {:name "mateuszmazurczak"           ; Application name
 ;;  :lang :en                           ; Current language (:en | :pl)
+;;  :theme :light                       ; Current theme (:light | :dark)
 ;;  :current-route {...}                ; Current route data from reitit
 ;;  :translator <translator-instance>   ; i18n translator service
 ;;  :logger <logger-instance>           ; Logging service
@@ -26,6 +27,7 @@
 
 
 (def ^:dynamic *lang-path* [:lang])
+(def ^:dynamic *theme-path* [:theme])
 (def ^:dynamic *current-route-path* [:current-route])
 (def ^:dynamic *translator-path* [:translator])
 (def ^:dynamic *logger-path* [:logger])

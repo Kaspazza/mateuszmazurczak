@@ -162,14 +162,12 @@
                                                :path-params)}})
         response))))
 
+(def session-store (ring-memory/memory-store))
 
 (def web-middleware
   "Midllewares for web pages"
   (vec
-   (concat [(fn [handler]
-              (ring-session/wrap-session handler
-                                         {:store (ring-memory/memory-store (atom {}))
-                                          :cookies-attrs {:http-only true}}))
+   (concat [(fn [handler] (ring-session/wrap-session handler {:store session-store}))
             ring-anti-forgery/wrap-anti-forgery
             (fn [handler]
               (ring-cors/wrap-cors handler
@@ -221,16 +219,18 @@
           (assoc :tr (fn ([tr-id] (i18n/tr translator lang tr-id))))
           handler))))
 
+
 (defn global-middlewares
   "Middleware for the whole app
   Params:
   * `translator` - translator function from the system
-  * `logger` - logger instance from the system"
-  [translator logger]
+  * `logger` - logger instance from the system
+  * `database` - database connection from the system"
+  [translator logger database]
   [ring-cookies/wrap-cookies ;; It's important to have cookies before translator to allow strategy based on cookie lang
    rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
-   (fn [handler] (fn [request] (handler (assoc request :logger logger)))) ;; Add logger to request
+   (fn [handler] (fn [request] (handler (assoc request :logger logger :database database)))) ;; Add logger and database directly to request
    (fn [handler] (wrap-translation handler translator))
    ;; (fn [handler] (wrap-request-logging handler logger))
    (partial wrap-exception-handling logger)])

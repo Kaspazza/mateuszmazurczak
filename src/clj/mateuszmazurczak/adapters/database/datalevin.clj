@@ -7,7 +7,7 @@
    [mateuszmazurczak.domain.database.migrations :as migrations]
    [mateuszmazurczak.domain.database.schema     :as schema]
    [mateuszmazurczak.ports.logging              :as log])
-  (:import [java.time Instant]))
+  (:import [java.util Date]))
 
 (defn- build-datalevin-schema
   "Convert our schema format to Datalevin schema format."
@@ -21,6 +21,8 @@
                                                                   :string :db.type/string
                                                                   :uuid :db.type/uuid
                                                                   :instant :db.type/instant
+                                                                  :int :db.type/long
+                                                                  :long :db.type/long
                                                                   :db.type/string))
                                         (:enum attr-def) (assoc :db/valueType :db.type/keyword)
                                         (:ref attr-def) (assoc :db/valueType :db.type/ref)
@@ -153,7 +155,7 @@
          ;; Record migration as applied
          (d/transact! conn
                       [{:migration/id id
-                        :migration/applied-at (Instant/now)
+                        :migration/applied-at (Date.)
                         :migration/checksum checksum}])
          (log/log! logger
                    {:id ::migration-applied

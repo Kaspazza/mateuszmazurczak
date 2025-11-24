@@ -6,6 +6,26 @@
    [malli.error                         :as me]
    [mateuszmazurczak.domain.i18n.schema :as i18n-schema]))
 
+;; =============================================================================
+;; State Paths
+;; =============================================================================
+
+(def ^:dynamic *aoc-page-path* [:pages :aoc])
+(def ^:dynamic *aoc-selected-year-path* [:pages :aoc :selected-year])
+(def ^:dynamic *aoc-selected-challenge-path* [:pages :aoc :selected-challenge])
+(def ^:dynamic *aoc-selected-part-path* [:pages :aoc :selected-part])
+(def ^:dynamic *aoc-challenges-options-path* [:pages :aoc :challenges-options])
+(def ^:dynamic *aoc-solution-ids-path* [:pages :aoc :solution-ids])
+(def ^:dynamic *aoc-loading-path* [:pages :aoc :loading?])
+(def ^:dynamic *aoc-modal-open-path* [:pages :aoc :modal-open?])
+(def ^:dynamic *aoc-form-path* [:pages :aoc :form])
+(def ^:dynamic *aoc-form-errors-path* [:pages :aoc :form-errors])
+(def ^:dynamic *aoc-submitting-path* [:pages :aoc :submitting?])
+
+;; =============================================================================
+;; Domain Data
+;; =============================================================================
+
 (def years (vec (range 2015 2026)))
 
 (defn challenges-for-year
@@ -50,6 +70,23 @@
 
 (def valid-solution-form? (m/validator SolutionForm))
 
+(defn validate-solution-form
+  "Validate solution form and return field-level errors.
+   
+   Returns nil if valid, or a map of field -> error message if invalid.
+   
+   Example return value:
+   {:author-name \"Name is required\"
+    :content \"Content is required\"}"
+  [form]
+  (when-not (valid-solution-form? form)
+    (let [errors {}
+          author-name (:author-name form)
+          content (:content form)]
+      (cond-> errors
+        (or (nil? author-name) (str/blank? author-name)) (assoc :author-name "Name is required")
+        (or (nil? content) (str/blank? content)) (assoc :content "Content is required")))))
+
 (def YearOption
   [:map {:closed true}
    [:value Year]
@@ -80,6 +117,8 @@
      [:github-profile :string]
      [:content-type ContentType]
      [:content :string]]]
+   [:form-errors {:optional true}
+    [:maybe [:map-of :keyword :string]]]
    [:submitting? :boolean]
    [:text [:map-of :keyword i18n-schema/I18nMarker]]
    [:handlers {:optional true}
@@ -114,6 +153,8 @@
      [:github-profile :string]
      [:content-type ContentType]
      [:content :string]]]
+   [:form-errors {:optional true}
+    [:maybe [:map-of :keyword :string]]]
    [:submitting? :boolean]
    [:text [:map-of :keyword :string]]
    [:handlers {:optional true}
@@ -178,6 +219,7 @@
           :github-profile ""
           :content-type :code-snippet
           :content ""}
+   :form-errors nil
    :submitting? false
    :text {:advent-of-code-solutions [:i18n :advent-of-code-solutions]
           :share-and-explore-solutions [:i18n :share-and-explore-solutions]

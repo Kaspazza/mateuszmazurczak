@@ -72,17 +72,19 @@
   Params:
   * `routes` - application routes
   * `translator` - translator instance
-  * `logger` - logger instance"
-  [routes translator logger]
+  * `logger` - logger instance
+  * `database` - database connection"
+  [routes translator logger database]
   {:pre [(vector? routes)
          (malli/validate i18n/TranslatorSchema translator)
-         (malli/validate logging/LoggerSchema logger)]}
-  (try (reitit-ring/ring-handler (router routes mm-middleware/web-middleware)
-                                 (reitit-ring/routes (resource-handler {})
-                                                     (default-handlers nil []))
-                                 {:middleware (mm-middleware/global-middlewares translator logger)
-                                  :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
-                                 })
+         (malli/validate logging/LoggerSchema logger)
+         (some? database)]}
+  (try (reitit-ring/ring-handler
+        (router routes mm-middleware/web-middleware)
+        (reitit-ring/routes (resource-handler {}) (default-handlers nil []))
+        {:middleware (mm-middleware/global-middlewares translator logger database)
+         :inject-match? true ;; So the `:match` keyword is in the request and you can analyse it
+        })
        (catch Exception e (throw (ex-info "Failed to create ring handler" {:routes routes} e)))))
 
 (defn get-app
@@ -91,9 +93,11 @@
   Params:
   * `routes` - application routes
   * `translator` - translator instance
-  * `logger` - logger instance"
-  [routes translator logger]
+  * `logger` - logger instance
+  * `database` - database connection"
+  [routes translator logger database]
   {:pre [(vector? routes)
          (malli/validate i18n/TranslatorSchema translator)
-         (malli/validate logging/LoggerSchema logger)]}
-  (fn [http-req] ((ring-handler routes translator logger) http-req)))
+         (malli/validate logging/LoggerSchema logger)
+         (some? database)]}
+  (fn [http-req] ((ring-handler routes translator logger database) http-req)))

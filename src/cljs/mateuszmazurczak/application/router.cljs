@@ -1,10 +1,11 @@
 (ns mateuszmazurczak.application.router
   "Entry point to mateuszmazurczak app"
   (:require
-   [mateuszmazurczak.application.pages :as mm-nav-pages]
-   [mateuszmazurczak.ports.logging     :as log]
-   [mateuszmazurczak.ports.state       :as state]
-   [mateuszmazurczak.system.config     :as config]))
+   [mateuszmazurczak.application.pages          :as mm-nav-pages]
+   [mateuszmazurczak.ports.logging              :as log]
+   [mateuszmazurczak.ports.state                :as state]
+   [mateuszmazurczak.system.config              :as config]
+   [mateuszmazurczak.ui.components.notification :as notification]))
 
 (defn handle-page-ex
   [page-data page-id]
@@ -41,4 +42,7 @@
     (handle-page-ex page-data page-id)
     [mm-nav-pages/pages current-route page-data]))
 
-(defn main-component "Main component replacing app" [] [router-component])
+(defn main-component
+  "Main component replacing app"
+  []
+  [:<> [notification/toaster] [router-component]])

@@ -8,7 +8,7 @@
    [mateuszmazurczak.ports.logging         :as log]
    [re-frame.core                          :as rf]))
 
-(rf/reg-sub :aoc/raw-data (fn [db _] (get-in db state-registry/*aoc-page-path*)))
+(rf/reg-sub :aoc/raw-data (fn [db _] (get-in db aoc-domain/*aoc-page-path*)))
 
 (rf/reg-sub :aoc/solutions-entities (fn [db _] (get-in db state-registry/*aoc-solutions-path*)))
 

@@ -1,65 +1,106 @@
 (ns mateuszmazurczak.adapters.http.api
   "API handlers for JSON endpoints."
   (:require
-   [ring.util.http-response :as http-response]))
+   [malli.core                             :as m]
+   [malli.error                            :as me]
+   [mateuszmazurczak.domain.aoc.repository :as aoc-repo]
+   [mateuszmazurczak.ports.database        :as db]
+   [mateuszmazurczak.ports.logging         :as log]
+   [ring.util.http-response                :as http-response]))
 
-;; =============================================================================
-;; Mock Data
-;; =============================================================================
-
-(def mock-solutions
-  "Mock solutions for AOC challenges."
-  [{:id "1"
-    :year 2025
-    :challenge 1
-    :part 1
-    :author-name "Mateusz Mazurczak"
-    :github-profile "https://github.com/kaspazza"
-    :content-type :code-snippet
-    :content "(defn solve [input]\n  (reduce + (map parse-long input)))"
-    :created-at "2025-01-15T10:30:00Z"}
-   {:id "2"
-    :year 2025
-    :challenge 1
-    :part 1
-    :author-name "Kaspazza Anonymous"
-    :github-profile "https://github.com/kaspazza"
-    :content-type :repo-link
-    :content "https://github.com/bob/aoc-2025"
-    :created-at "2025-01-15T14:22:00Z"}
-   {:id "3"
-    :year 2025
-    :challenge 2
-    :part 2
-    :author-name "Charlie Day"
-    :content-type :code-snippet
-    :content
-    "(defn solve-part-2 [input]\n  (->> input\n       (partition 2)\n       (map (fn [[a b]] (* a b)))\n       (reduce +)))"
-    :created-at "2025-01-16T08:15:00Z"}])
-
-;; =============================================================================
-;; Handlers
-;; =============================================================================
+(defn validate-query-params
+  "Validate and parse query parameters for fetching solutions.
+   
+   Returns map with :valid? and either :data or :errors."
+  [params]
+  (let [year (parse-long (:year params))
+        challenge (parse-long (:challenge params))
+        part (parse-long (:part params))]
+    (cond
+      (nil? year) {:valid? false
+                   :errors {:year "Year is required and must be an integer"}}
+      (nil? challenge) {:valid? false
+                        :errors {:challenge "Challenge is required and must be an integer"}}
+      (nil? part) {:valid? false
+                   :errors {:part "Part is required and must be an integer"}}
+      :else {:valid? true
+             :data {:year year
+                    :challenge challenge
+                    :part part}})))
 
 (defn get-solutions
-  "GET /api/aoc/solutions - Fetch solutions for a specific year/challenge/part."
-  [request]
-  (let [year (some-> (get-in request [:params :year])
-                     Integer/parseInt)
-        challenge (some-> (get-in request [:params :challenge])
-                          Integer/parseInt)
-        part (some-> (get-in request [:params :part])
-                     Integer/parseInt)
-        filtered-solutions (filter #(and (= (:year %) year)
-                                         (= (:challenge %) challenge)
-                                         (= (:part %) part))
-                                   mock-solutions)]
-    (http-response/ok filtered-solutions)))
+  "GET /api/aoc/solutions - Fetch solutions for a specific year/challenge/part.
+   
+   Query params:
+   - year (required): Year of the challenge (2015-2025)
+   - challenge (required): Challenge day (1-24)
+   - part (required): Part number (1 or 2)
+   
+   Returns:
+   - 200 with array of solutions
+   - 400 if parameters are invalid
+   - 500 if database query fails"
+  [{:keys [database logger params]}]
+  (let [validation (validate-query-params params)]
+    (if-not (:valid? validation)
+      (http-response/bad-request {:error "Invalid parameters"
+                                  :details (:errors validation)})
+      (try (let [{:keys [year challenge part]} (:data validation)
+                 query (aoc-repo/build-get-solutions-query)
+                 results (db/query database query year challenge part)
+                 solutions (->> results
+                                (map aoc-repo/solution-tuple->map)
+                                (aoc-repo/sort-solutions-by-created-at))]
+             (http-response/ok solutions))
+           (catch Exception e
+             (log/error! logger
+                         {:error e
+                          :id ::get-solutions-failed
+                          :data {:params params}})
+             (http-response/internal-server-error {:error "Failed to fetch solutions"}))))))
 
 (defn post-solution
-  "POST /api/aoc/solutions - Submit a new solution (mock - just returns success)."
-  [request]
-  (let [_solution (:body-params request)]
-    ;; In a real app, you'd save to database here
-    (http-response/ok {:success true
-                       :message "Solution submitted successfully"})))
+  "POST /api/aoc/solutions - Submit a new solution.
+   
+   Expected body:
+   - year (int): Year of the challenge (2015-2025)
+   - challenge (int): Challenge day (1-24)
+   - part (int): Part number (1 or 2)
+   - author-name (string): Name of the author
+   - github-profile (optional string): GitHub profile URL
+   - content-type (string): Either 'code-snippet' or 'repo-link'
+   - content (string): The solution code or repository URL
+   
+   Returns:
+   - 200 with success message
+   - 400 if request body is invalid
+   - 500 if database transaction fails"
+  [{:keys [database logger body-params]}]
+  (let [validation-result (m/explain aoc-repo/SaveSolutionRequest body-params)]
+    (if validation-result
+      (let [humanized-errors (me/humanize validation-result)]
+        (log/log! logger
+                  {:level :warn
+                   :id ::post-solution-validation-failed
+                   :msg "Solution validation failed"
+                   :data {:body-params body-params
+                          :errors humanized-errors}})
+        (http-response/bad-request {:error "Invalid solution data"
+                                    :details humanized-errors}))
+      (try (let [tx-data (aoc-repo/build-save-solution-tx body-params)]
+             (db/transact! database tx-data)
+             (log/log! logger
+                       {:id ::solution-saved
+                        :level :info
+                        :msg "AOC solution saved successfully"
+                        :data {:year (:year body-params)
+                               :challenge (:challenge body-params)
+                               :part (:part body-params)}})
+             (http-response/ok {:success true
+                                :message "Solution submitted successfully"}))
+           (catch Exception e
+             (log/error! logger
+                         {:error e
+                          :id ::post-solution-failed
+                          :data {:body-params body-params}})
+             (http-response/internal-server-error {:error "Failed to save solution"}))))))

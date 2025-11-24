@@ -90,20 +90,26 @@
    [vote-buttons solution-card-data]])
 
 (defn input-author
-  [{:keys [form submitting? on-update-form text]
+  [{:keys [form submitting? on-update-form text form-errors]
     :as _form-data}]
-  [:div {:class "space-y-2"}
-   [label/label {:htmlFor "author-name"}
-    (str (:your-name text) " *")]
-   [input/input {:id "author-name"
-                 :type "text"
-                 :value (:author-name form)
-                 :placeholder (:name-placeholder text)
-                 :disabled submitting?
-                 :on-change #(on-update-form :author-name
-                                             (-> %
-                                                 .-target
-                                                 .-value))}]])
+  (let [has-error? (contains? form-errors :author-name)
+        error-msg (get form-errors :author-name)]
+    [:div {:class "space-y-2"}
+     [label/label {:htmlFor "author-name"}
+      (:your-name text)]
+     [input/input {:id "author-name"
+                   :type "text"
+                   :value (:author-name form)
+                   :placeholder (:name-placeholder text)
+                   :disabled submitting?
+                   :class (when has-error? "border-destructive focus-visible:ring-destructive")
+                   :on-change #(on-update-form :author-name
+                                               (-> %
+                                                   .-target
+                                                   .-value))}]
+     (when has-error?
+       [:p {:class "text-xs text-destructive"}
+        error-msg])]))
 
 (defn input-gh
   [{:keys [form submitting? on-update-form text]
@@ -123,7 +129,8 @@
 
 (defn upload-modal
   "Modal for uploading a solution."
-  [{:keys [modal-open? form submitting? on-close-modal on-update-form on-submit-solution text]
+  [{:keys
+    [modal-open? form submitting? on-close-modal on-update-form on-submit-solution text form-errors]
     :as form-data}]
   [dialog/dialog {:open modal-open?
                   :onOpenChange #(when-not % (on-close-modal))}
@@ -138,7 +145,7 @@
      [input-gh form-data]
      [:div {:class "space-y-2"}
       [label/label {}
-       (str (:content-type text) " *")]
+       (:content-type text)]
       [:div {:class "flex gap-4"}
        [:label {:class "flex items-center gap-2 cursor-pointer"}
         [:input {:type "radio"
@@ -154,29 +161,36 @@
                  :disabled submitting?
                  :on-change #(on-update-form :content-type :repo-link)}]
         [:span (:repository-link text)]]]]
-     [:div {:class "space-y-2"}
-      [label/label {:htmlFor "content"}
-       (str (if (= (:content-type form) :code-snippet) (:your-code text) (:repository-url text))
-            " *")]
-      (if (= (:content-type form) :code-snippet)
-        [textarea/textarea {:id "content"
-                            :value (:content form)
-                            :placeholder (:code-placeholder text)
-                            :rows 10
-                            :disabled submitting?
-                            :on-change #(on-update-form :content
-                                                        (-> %
-                                                            .-target
-                                                            .-value))}]
-        [input/input {:id "content"
-                      :type "url"
-                      :value (:content form)
-                      :placeholder (:repo-placeholder text)
-                      :disabled submitting?
-                      :on-change #(on-update-form :content
-                                                  (-> %
-                                                      .-target
-                                                      .-value))}])]]
+     (let [has-error? (contains? form-errors :content)
+           error-msg (get form-errors :content)]
+       [:div {:class "space-y-2"}
+        [label/label {:htmlFor "content"}
+         (if (= (:content-type form) :code-snippet) (:your-code text) (:repository-url text))]
+        (if (= (:content-type form) :code-snippet)
+          [textarea/textarea {:id "content"
+                              :value (:content form)
+                              :placeholder (:code-placeholder text)
+                              :rows 10
+                              :disabled submitting?
+                              :class (when has-error?
+                                       "border-destructive focus-visible:ring-destructive")
+                              :on-change #(on-update-form :content
+                                                          (-> %
+                                                              .-target
+                                                              .-value))}]
+          [input/input {:id "content"
+                        :type "url"
+                        :value (:content form)
+                        :placeholder (:repo-placeholder text)
+                        :disabled submitting?
+                        :class (when has-error? "border-destructive focus-visible:ring-destructive")
+                        :on-change #(on-update-form :content
+                                                    (-> %
+                                                        .-target
+                                                        .-value))}])
+        (when has-error?
+          [:p {:class "text-xs text-destructive"}
+           error-msg])])]
     [dialog/dialog-footer {}
      [button/button {:variant :outline
                      :disabled submitting?
@@ -257,6 +271,7 @@
   - :loading? - Whether solutions are loading
   - :modal-open? - Whether upload modal is open
   - :form - Form data for upload modal
+  - :form-errors - Map of field -> error message for form validation
   - :submitting? - Whether form is submitting
   - :theme - Current theme (:light | :dark)
   - :text - Map of translated text strings
@@ -270,6 +285,7 @@
            loading?
            modal-open?
            form
+           form-errors
            submitting?
            theme
            text
@@ -317,6 +333,7 @@
                  ^{:key (:id solution)} [solution-card (assoc solution :theme theme :text text)]))]]
      [upload-modal {:modal-open? modal-open?
                     :form form
+                    :form-errors (or form-errors {})
                     :submitting? submitting?
                     :on-close-modal on-close-modal
                     :on-submit-solution on-submit-solution

@@ -2,13 +2,14 @@
   "REPL entry point"
   (:require
    [aero.core]
-   [integrant.core                 :as ig]
-   [integrant.repl                 :refer [go halt init prep reset]]
-   [integrant.repl.state           :as state]
-   [mateuszmazurczak.ports.logging :as log]
+   [integrant.core                  :as ig]
+   [integrant.repl                  :refer [go halt init prep reset]]
+   [integrant.repl.state            :as state]
+   [mateuszmazurczak.ports.database :as db]
+   [mateuszmazurczak.ports.logging  :as log]
    [mateuszmazurczak.system.components]
    [mateuszmazurczak.system.config]
-   [nrepl.server                   :refer [default-handler start-server stop-server]])
+   [nrepl.server                    :refer [default-handler start-server stop-server]])
   (:gen-class))
 
 
@@ -96,7 +97,12 @@
 (defn -main "Main entry point for repl" [& args] (start-repl args (default-middleware) go))
 
 (comment
-  (require '[mateuszmazurczak.system :as sys])
+  (require '[mateuszmazurczak.domain.aoc.repository :as aoc-repo]
+           '[mateuszmazurczak.ports.database :as db])
+  ;;Getting data from live system:
+  (db/query (:sys/db-conn state/system) '[:find (pull ?e [*]) :where [?e :aoc-solution/id]])
+  (db/query (:sys/db-conn state/system) (aoc-repo/build-get-solutions-query) 2025)
+  ;;
   ;; (ig/halt! state/system [::sys/db-conn])
   state/config
   (prep)

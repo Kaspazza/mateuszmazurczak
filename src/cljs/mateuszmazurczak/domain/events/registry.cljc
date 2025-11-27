@@ -66,7 +66,119 @@
                       :description
                       "Change application language. Takes DOM event from language selector."
                       :schema [:cat [:= :i18n/change-lang] [:or "PL" "EN"]]
-                      :handler-type :fx}})
+                      :handler-type :fx}
+   :aoc/on-route-enter {:category :page
+                        :description "Controller event: Initialize AoC page when route is entered."
+                        :schema [:cat [:= :aoc/on-route-enter]]
+                        :handler-type :fx}
+   :aoc/select-year {:category :page
+                     :description "Select year and reset challenge to 1, then fetch solutions."
+                     :schema [:cat [:= :aoc/select-year] :int]
+                     :handler-type :fx}
+   :aoc/select-challenge {:category :page
+                          :description "Select challenge and fetch solutions for current year."
+                          :schema [:cat [:= :aoc/select-challenge] :int]
+                          :handler-type :fx}
+   :aoc/select-part {:category :page
+                     :description
+                     "Select part (1 or 2) and fetch solutions for current year/challenge."
+                     :schema [:cat [:= :aoc/select-part] [:enum 1 2]]
+                     :handler-type :fx}
+   :aoc/open-modal {:category :page
+                    :description "Open upload solution modal."
+                    :schema [:cat [:= :aoc/open-modal]]
+                    :handler-type :db}
+   :aoc/close-modal {:category :page
+                     :description "Close upload solution modal and reset form."
+                     :schema [:cat [:= :aoc/close-modal]]
+                     :handler-type :db}
+   :aoc/update-form {:category :page
+                     :description "Update form field in modal."
+                     :schema [:cat [:= :aoc/update-form] keyword? :any]
+                     :handler-type :db}
+   :aoc/submit-solution {:category :page
+                         :description "Submit solution to backend API."
+                         :schema [:cat [:= :aoc/submit-solution]]
+                         :handler-type :fx}
+   :aoc/submit-success {:category :page
+                        :description "Handle successful solution submission."
+                        :schema [:cat [:= :aoc/submit-success]]
+                        :handler-type :fx}
+   :aoc/submit-failure {:category :page
+                        :description "Handle failed solution submission."
+                        :schema [:cat [:= :aoc/submit-failure] :any]
+                        :handler-type :fx}
+   :aoc/fetch-solutions {:category :page
+                         :description "Fetch solutions from backend for year/challenge/part."
+                         :schema [:cat [:= :aoc/fetch-solutions] :int :int [:enum 1 2]]
+                         :handler-type :fx}
+   :aoc/fetch-solutions-success {:category :page
+                                 :description "Handle successful solutions fetch."
+                                 :schema [:cat [:= :aoc/fetch-solutions-success] [:sequential :any]]
+                                 :handler-type :db}
+   :aoc/fetch-solutions-failure {:category :page
+                                 :description "Handle failed solutions fetch."
+                                 :schema [:cat [:= :aoc/fetch-solutions-failure] :any]
+                                 :handler-type :fx}
+   :aoc/vote {:category :page
+              :description "Vote for a solution (best-practices or clever)."
+              :schema [:cat [:= :aoc/vote] :string [:enum :best-practices :clever]]
+              :handler-type :fx}
+   :aoc/vote-success
+   {:category :page
+    :description "Handle successful vote submission. Refetches solutions to get updated counts."
+    :schema [:cat [:= :aoc/vote-success]]
+    :handler-type :fx}
+   :aoc/vote-failure {:category :page
+                      :description "Handle failed vote submission."
+                      :schema [:cat [:= :aoc/vote-failure] :any]
+                      :handler-type :fx}
+   :aoc/give-consent {:category :page
+                      :description "Give consent ('I've solved it') to unlock viewing solutions."
+                      :schema [:cat [:= :aoc/give-consent] :int :int [:enum 1 2]]
+                      :handler-type :fx}
+   :admin/on-route-enter {:category :page
+                          :description "Initialize admin page state on route entry."
+                          :schema [:cat [:= :admin/on-route-enter]]
+                          :handler-type :fx}
+   :admin/update-form {:category :page
+                       :description "Update admin form field."
+                       :schema [:cat [:= :admin/update-form] :keyword :any]
+                       :handler-type :fx}
+   :admin/login {:category :admin
+                 :description "Admin login with API key from form."
+                 :schema [:cat [:= :admin/login]]
+                 :handler-type :fx}
+   :admin/logout {:category :admin
+                  :description "Admin logout (clear key)."
+                  :schema [:cat [:= :admin/logout]]
+                  :handler-type :fx}
+   :admin/check-status {:category :admin
+                        :description "Check if admin key exists in localStorage on init."
+                        :schema [:cat [:= :admin/check-status]]
+                        :handler-type :fx}
+   :admin/delete-solution {:category :admin
+                           :description "Delete a solution (admin only)."
+                           :schema [:cat [:= :admin/delete-solution] :string]
+                           :handler-type :fx}
+   :admin/delete-solution-success {:category :admin
+                                   :description "Handle successful solution deletion."
+                                   :schema [:cat [:= :admin/delete-solution-success] :any]
+                                   :handler-type :fx}
+   :admin/delete-solution-failure {:category :admin
+                                   :description "Handle failed solution deletion."
+                                   :schema [:cat [:= :admin/delete-solution-failure] :any]
+                                   :handler-type :fx}
+   :theme/set {:category :theme
+               :description
+               "Set theme to app-db and apply to DOM. Theme persistence handled by cache system."
+               :schema [:cat [:= :theme/set] [:enum :light :dark]]
+               :handler-type :fx}
+   :theme/toggle {:category :theme
+                  :description
+                  "Toggle between light and dark themes. Theme persistence handled by cache system."
+                  :schema [:cat [:= :theme/toggle]]
+                  :handler-type :fx}})
 
 (defn events-by-category
   "Get events grouped by category (:navigation, :page, :i18n).

@@ -2,10 +2,10 @@
   "Command palette component built on cmdk (Command Menu Dialog Kit).
   https://cmdk.paco.me/"
   (:require
-   ["cmdk"                    :refer [Command]]
-   ["lucide-react"            :refer [SearchIcon]]
+   ["cmdk"                                :refer [Command]]
+   ["lucide-react"                        :refer [SearchIcon]]
    [mateuszmazurczak.ui.components.dialog :as dialog]
-   [ui.utils.styles         :refer [merge-classes]]))
+   [mateuszmazurczak.utils.styles         :refer [merge-classes]]))
 
 (defn command
   "Root command component. Container for command palette.
@@ -33,10 +33,12 @@
   (into [:>
          Command
          (-> props
-          (assoc :data-slot "command" :class
-           (merge-classes "bg-popover text-popover-foreground"
-            "flex h-full w-full flex-col overflow-hidden rounded-md" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "command"
+                    :class (merge-classes "bg-popover text-popover-foreground"
+                                          "flex h-full w-full flex-col overflow-hidden rounded-md"
+                                          class))
+             (dissoc :class-name))]
+        children))
 
 (defn command-dialog
   "Command dialog component that wraps command in a modal dialog.
@@ -68,8 +70,8 @@
    children]
   [dialog/dialog
    (-> props
-    (select-keys [:open :defaultOpen :onOpenChange :modal])
-    (assoc :data-slot "command-dialog"))
+       (select-keys [:open :defaultOpen :onOpenChange :modal])
+       (assoc :data-slot "command-dialog"))
    [dialog/dialog-header {:class "sr-only"}
     [dialog/dialog-title {}
      title]
@@ -78,13 +80,16 @@
    (into [dialog/dialog-content {:class (merge-classes "overflow-hidden p-0" class)
                                  :showCloseButton showCloseButton}
           [command {:class (merge-classes "[&_[cmdk-group-heading]]:text-muted-foreground"
-                            "[&_[data-slot=command-input-wrapper]]:h-12"
-                            "[&_[cmdk-group-heading]]:px-2" "[&_[cmdk-group-heading]]:font-medium"
-                            "[&_[cmdk-group]]:px-2"
-                            "[&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0"
-                            "[&_[cmdk-input-wrapper]_svg]:h-5" "[&_[cmdk-input-wrapper]_svg]:w-5"
-                            "[&_[cmdk-input]]:h-12" "[&_[cmdk-item]]:px-2" "[&_[cmdk-item]]:py-3"
-                            "[&_[cmdk-item]_svg]:h-5" "[&_[cmdk-item]_svg]:w-5")}]] children)])
+                                          "[&_[data-slot=command-input-wrapper]]:h-12"
+                                          "[&_[cmdk-group-heading]]:px-2"
+                                          "[&_[cmdk-group-heading]]:font-medium"
+                                          "[&_[cmdk-group]]:px-2"
+                                          "[&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0"
+                                          "[&_[cmdk-input-wrapper]_svg]:h-5"
+                                          "[&_[cmdk-input-wrapper]_svg]:w-5" "[&_[cmdk-input]]:h-12"
+                                          "[&_[cmdk-item]]:px-2" "[&_[cmdk-item]]:py-3"
+                                          "[&_[cmdk-item]_svg]:h-5" "[&_[cmdk-item]_svg]:w-5")}]]
+         children)])
 
 (defn command-input
   "Command input field with search icon.
@@ -107,12 +112,12 @@
    [:>
     (.-Input Command)
     (-> props
-     (assoc
-      :data-slot "command-input"
-      :class (merge-classes "placeholder:text-muted-foreground"
-              "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden"
-              "disabled:cursor-not-allowed disabled:opacity-50" class))
-     (dissoc :class-name))]])
+        (assoc :data-slot "command-input"
+               :class (merge-classes
+                       "placeholder:text-muted-foreground"
+                       "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden"
+                       "disabled:cursor-not-allowed disabled:opacity-50" class))
+        (dissoc :class-name))]])
 
 (defn command-list
   "Scrollable list container for command items.
@@ -138,9 +143,12 @@
   (into [:>
          (.-List Command)
          (-> props
-          (assoc :data-slot "command-list" :class
-           (merge-classes "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "command-list"
+                    :class (merge-classes
+                            "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto"
+                            class))
+             (dissoc :class-name))]
+        children))
 
 (defn command-empty
   "Empty state shown when no items match the search.
@@ -157,8 +165,10 @@
   (into [:>
          (.-Empty Command)
          (-> props
-          (assoc :data-slot "command-empty" :class (merge-classes "py-6 text-center text-sm" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "command-empty"
+                    :class (merge-classes "py-6 text-center text-sm" class))
+             (dissoc :class-name))]
+        children))
 
 (defn command-group
   "Group container for related command items.
@@ -179,11 +189,14 @@
   (into [:>
          (.-Group Command)
          (-> props
-          (assoc :data-slot "command-group" :class
-           (merge-classes "text-foreground [&_[cmdk-group-heading]]:text-muted-foreground"
-            "overflow-hidden p-1" "[&_[cmdk-group-heading]]:px-2" "[&_[cmdk-group-heading]]:py-1.5"
-            "[&_[cmdk-group-heading]]:text-xs" "[&_[cmdk-group-heading]]:font-medium" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "command-group"
+                    :class (merge-classes
+                            "text-foreground [&_[cmdk-group-heading]]:text-muted-foreground"
+                            "overflow-hidden p-1" "[&_[cmdk-group-heading]]:px-2"
+                            "[&_[cmdk-group-heading]]:py-1.5" "[&_[cmdk-group-heading]]:text-xs"
+                            "[&_[cmdk-group-heading]]:font-medium" class))
+             (dissoc :class-name))]
+        children))
 
 (defn command-separator
   "Horizontal separator between command groups.
@@ -202,8 +215,8 @@
   [:>
    (.-Separator Command)
    (-> props
-    (assoc :data-slot "command-separator" :class (merge-classes "bg-border -mx-1 h-px" class))
-    (dissoc :class-name))])
+       (assoc :data-slot "command-separator" :class (merge-classes "bg-border -mx-1 h-px" class))
+       (dissoc :class-name))])
 
 (defn command-item
   "Selectable command item.
@@ -232,18 +245,21 @@
     :as props}
    &
    children]
-  (into
-   [:>
-    (.-Item Command)
-    (-> props
-     (assoc :data-slot "command-item" :class
-      (merge-classes "data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
-       "[&_svg:not([class*='text-'])]:text-muted-foreground"
-       "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5"
-       "text-sm outline-hidden select-none"
-       "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
-       "[&_svg]:pointer-events-none [&_svg]:shrink-0" "[&_svg:not([class*='size-'])]:size-4" class))
-     (dissoc :class-name))] children))
+  (into [:>
+         (.-Item Command)
+         (-> props
+             (assoc :data-slot "command-item"
+                    :class
+                    (merge-classes
+                     "data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
+                     "[&_svg:not([class*='text-'])]:text-muted-foreground"
+                     "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5"
+                     "text-sm outline-hidden select-none"
+                     "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
+                     "[&_svg]:pointer-events-none [&_svg]:shrink-0"
+                     "[&_svg:not([class*='size-'])]:size-4" class))
+             (dissoc :class-name))]
+        children))
 
 (defn command-shortcut
   "Keyboard shortcut display for command items.
@@ -264,6 +280,8 @@
    children]
   (into [:span
          (-> props
-          (assoc :data-slot "command-shortcut" :class
-           (merge-classes "text-muted-foreground ml-auto text-xs tracking-widest" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "command-shortcut"
+                    :class (merge-classes "text-muted-foreground ml-auto text-xs tracking-widest"
+                                          class))
+             (dissoc :class-name))]
+        children))

@@ -99,6 +99,8 @@
         :enter (common/enter lint/cli-opts (current-task))
         :requires [[mateuszmazurczak.tasks.lint :as lint]]
         :task (lint/lint ["src" "test"])}
+  optimize-images {:doc "Optimize images (PNG/JPG to WebP)"
+                   :task (babashka.process/shell "scripts/optimize-images.sh")}
   test {:depends [-base-deps]
         :doc "Quick test"
         :enter (common/enter test/cli-opts (current-task))

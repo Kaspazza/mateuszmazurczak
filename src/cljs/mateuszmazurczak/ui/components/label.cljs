@@ -2,8 +2,8 @@
   "Label component for form fields with accessibility support.
   https://www.radix-ui.com/primitives/docs/components/label"
   (:require
-   ["@radix-ui/react-label" :as RadixLabel]
-   [ui.utils.styles       :refer [merge-classes]]))
+   ["@radix-ui/react-label"       :as RadixLabel]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn label
   "Label component that automatically associates with form controls.
@@ -36,9 +36,12 @@
   (into [:>
          RadixLabel/Root
          (-> props
-          (assoc :data-slot "label" :class
-           (merge-classes ["flex items-center gap-2 text-sm leading-none font-medium select-none"
-                           "group-data-[disabled=true]:pointer-events-none"
-                           "group-data-[disabled=true]:opacity-50"
-                           "peer-disabled:cursor-not-allowed peer-disabled:opacity-50"] class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "label"
+                    :class (merge-classes
+                            ["flex items-center gap-2 text-sm leading-none font-medium select-none"
+                             "group-data-[disabled=true]:pointer-events-none"
+                             "group-data-[disabled=true]:opacity-50"
+                             "peer-disabled:cursor-not-allowed peer-disabled:opacity-50"]
+                            class))
+             (dissoc :class-name))]
+        children))

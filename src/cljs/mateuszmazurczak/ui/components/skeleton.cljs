@@ -37,7 +37,7 @@
              :aria-label \"Loading...\"}]
   ```"
   (:require
-   [ui.utils.styles :refer [merge-classes]]))
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn skeleton
   "Loading placeholder with pulse animation.
@@ -88,5 +88,6 @@
     :as props}]
   [:div
    (-> props
-    (assoc :data-slot "skeleton" :class (merge-classes "animate-pulse rounded-md bg-muted" class))
-    (dissoc :class-name))])
+       (assoc :data-slot "skeleton"
+              :class (merge-classes "animate-pulse rounded-md bg-muted" class))
+       (dissoc :class-name))])

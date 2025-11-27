@@ -1,10 +1,14 @@
 (ns mateuszmazurczak.adapters.events.reframe.core
   "Re-frame event adapter - implements events/registry.cljs contract."
   (:require
+   [mateuszmazurczak.adapters.events.reframe.admin      :as admin-events]
    [mateuszmazurczak.adapters.events.reframe.cache      :as cache-events]
+   [mateuszmazurczak.adapters.events.reframe.http       :as http-events]
    [mateuszmazurczak.adapters.events.reframe.i18n       :as i18n-events]
    [mateuszmazurczak.adapters.events.reframe.navigation :as nav-events]
+   [mateuszmazurczak.adapters.events.reframe.pages.aoc  :as aoc-events]
    [mateuszmazurczak.adapters.events.reframe.pages.home :as home-events]
+   [mateuszmazurczak.adapters.events.reframe.theme      :as theme-events]
    [re-frame.core                                       :as rf]))
 
 (def register-fns
@@ -23,7 +27,12 @@
    Exported as data for the system layer to wire via events/wire!.
    The system layer should NOT call this adapter's init! for wiring -
    it should call events/wire! directly with this handlers map."
-  (merge home-events/handlers nav-events/handlers i18n-events/handlers))
+  (merge home-events/handlers
+         nav-events/handlers
+         i18n-events/handlers
+         aoc-events/handlers
+         theme-events/handlers
+         admin-events/handlers))
 
 (defn init!
   "Initialize adapter-specific setup (effects and subscriptions).
@@ -33,9 +42,11 @@
    
    Returns nil as it only performs side-effects."
   []
+  (http-events/init-effects!)
   (nav-events/init!)
   (i18n-events/init!)
   (cache-events/init!)
+  (theme-events/init!)
   nil)
 
 (defn get-dispatch-fn

@@ -7,10 +7,10 @@
   
   Docs: https://www.radix-ui.com/docs/primitives/components/dialog"
   (:require
-   ["@radix-ui/react-dialog" :as DialogPrimitive]
-   ["lucide-react"           :refer [X]]
-   [ui.utils.styles        :refer [merge-classes]]
-   [reagent.core             :as r]))
+   ["@radix-ui/react-dialog"      :as DialogPrimitive]
+   ["lucide-react"                :refer [X]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]
+   [reagent.core                  :as r]))
 
 ;; ============================================================================
 ;; Root Components (Simple Aliases)
@@ -105,12 +105,13 @@
   [:>
    (.-Overlay DialogPrimitive)
    (-> props
-    (assoc
-     :data-slot "sheet-overlay"
-     :class (merge-classes (str "fixed inset-0 z-50 bg-black/80 "
-                            "data-[state=open]:animate-in data-[state=closed]:animate-out "
-                            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0") class))
-    (dissoc :class-name))])
+       (assoc :data-slot "sheet-overlay"
+              :class (merge-classes (str
+                                     "fixed inset-0 z-50 bg-black/80 "
+                                     "data-[state=open]:animate-in data-[state=closed]:animate-out "
+                                     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0")
+                                    class))
+       (dissoc :class-name))])
 
 ;; ============================================================================
 ;; Sheet Content with Variants
@@ -126,17 +127,19 @@
   - `:right` - Slide in from right edge (default)"
   [side]
   (case side
-    :top (str "inset-x-0 top-0 border-b " "data-[state=closed]:slide-out-to-top "
-          "data-[state=open]:slide-in-from-top")
-    :bottom (str "inset-x-0 bottom-0 border-t " "data-[state=closed]:slide-out-to-bottom "
-             "data-[state=open]:slide-in-from-bottom")
+    :top (str "inset-x-0 top-0 border-b "
+              "data-[state=closed]:slide-out-to-top "
+              "data-[state=open]:slide-in-from-top")
+    :bottom (str "inset-x-0 bottom-0 border-t "
+                 "data-[state=closed]:slide-out-to-bottom "
+                 "data-[state=open]:slide-in-from-bottom")
     :left (str "inset-y-0 left-0 h-full w-3/4 border-r " "data-[state=closed]:slide-out-to-left "
-           "data-[state=open]:slide-in-from-left " "sm:max-w-sm")
+               "data-[state=open]:slide-in-from-left " "sm:max-w-sm")
     :right (str "inset-y-0 right-0 h-full w-3/4 border-l " "data-[state=closed]:slide-out-to-right "
-            "data-[state=open]:slide-in-from-right " "sm:max-w-sm")
+                "data-[state=open]:slide-in-from-right " "sm:max-w-sm")
     ;; default fallback to right
     (str "inset-y-0 right-0 h-full w-3/4 border-l " "data-[state=closed]:slide-out-to-right "
-     "data-[state=open]:slide-in-from-right " "sm:max-w-sm")))
+         "data-[state=open]:slide-in-from-right " "sm:max-w-sm")))
 
 (defn sheet-content
   "Main content container for the sheet with slide-in animation from specified side.
@@ -201,19 +204,20 @@
     (.-Overlay DialogPrimitive)
     {:data-slot "sheet-overlay"
      :class (merge-classes (str "fixed inset-0 z-50 bg-black/80 "
-                            "data-[state=open]:animate-in data-[state=closed]:animate-out "
-                            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"))}]
+                                "data-[state=open]:animate-in data-[state=closed]:animate-out "
+                                "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"))}]
    [:>
     (.-Content DialogPrimitive)
     (-> props
-     (assoc
-      :data-slot "sheet-content"
-      :class (merge-classes (str "fixed z-50 gap-4 bg-background p-6 shadow-lg "
-                             "transition ease-in-out "
-                             "data-[state=open]:animate-in data-[state=closed]:animate-out "
-                             "data-[state=closed]:duration-300 data-[state=open]:duration-500")
-              (side-classes side) class))
-     (dissoc :class-name :side))
+        (assoc :data-slot "sheet-content"
+               :class (merge-classes
+                       (str "fixed z-50 gap-4 bg-background p-6 shadow-lg "
+                            "transition ease-in-out "
+                            "data-[state=open]:animate-in data-[state=closed]:animate-out "
+                            "data-[state=closed]:duration-300 data-[state=open]:duration-500")
+                       (side-classes side)
+                       class))
+        (dissoc :class-name :side))
     ;; Render children
     (into [:<>] children)
     ;; Built-in close button
@@ -221,9 +225,10 @@
      (.-Close DialogPrimitive)
      {:data-slot "sheet-close-button"
       :class (str "absolute right-4 top-4 rounded-sm opacity-70 "
-              "ring-offset-background transition-opacity " "hover:opacity-100 "
-              "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 "
-              "disabled:pointer-events-none " "data-[state=open]:bg-secondary")}
+                  "ring-offset-background transition-opacity "
+                  "hover:opacity-100 "
+                  "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 "
+                  "disabled:pointer-events-none " "data-[state=open]:bg-secondary")}
      [:> X {:class "h-4 w-4"}]
      [:span {:class "sr-only"}
       "Close"]]]])
@@ -255,9 +260,10 @@
    children]
   (into [:div
          (-> props
-          (assoc :data-slot "sheet-header" :class
-           (merge-classes "flex flex-col space-y-2 text-center sm:text-left" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "sheet-header"
+                    :class (merge-classes "flex flex-col space-y-2 text-center sm:text-left" class))
+             (dissoc :class-name))]
+        children))
 
 (defn sheet-footer
   "Footer section for sheet content with button layout.
@@ -283,10 +289,12 @@
    children]
   (into [:div
          (-> props
-          (assoc :data-slot "sheet-footer" :class
-           (merge-classes (str "flex flex-col-reverse " "sm:flex-row sm:justify-end sm:space-x-2")
-            class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "sheet-footer"
+                    :class (merge-classes (str "flex flex-col-reverse "
+                                               "sm:flex-row sm:justify-end sm:space-x-2")
+                                          class))
+             (dissoc :class-name))]
+        children))
 
 ;; ============================================================================
 ;; Text Components
@@ -316,9 +324,10 @@
   (into [:>
          (.-Title DialogPrimitive)
          (-> props
-          (assoc :data-slot "sheet-title" :class (merge-classes
-                                                  "text-lg font-semibold text-foreground" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "sheet-title"
+                    :class (merge-classes "text-lg font-semibold text-foreground" class))
+             (dissoc :class-name))]
+        children))
 
 (defn sheet-description
   "Description component for sheet header.
@@ -343,6 +352,7 @@
   (into [:>
          (.-Description DialogPrimitive)
          (-> props
-          (assoc :data-slot "sheet-description" :class (merge-classes
-                                                        "text-sm text-muted-foreground" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "sheet-description"
+                    :class (merge-classes "text-sm text-muted-foreground" class))
+             (dissoc :class-name))]
+        children))

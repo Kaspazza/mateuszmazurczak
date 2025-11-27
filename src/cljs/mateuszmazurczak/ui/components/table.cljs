@@ -2,7 +2,7 @@
   "Table component primitives for building data tables.
   Provides semantic HTML table elements with consistent Tailwind styling."
   (:require
-   [ui.utils.styles :refer [merge-classes]]))
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn table
   "Table wrapper component with overflow container.
@@ -24,8 +24,9 @@
            :class "relative w-full overflow-x-auto"}
      (into [:table
             (merge {:data-slot "table"
-                    :class (merge-classes "w-full caption-bottom text-sm" class)} rest-props)]
-      children)]))
+                    :class (merge-classes "w-full caption-bottom text-sm" class)}
+                   rest-props)]
+           children)]))
 
 (defn table-header
   "Table header (thead) component.
@@ -46,7 +47,9 @@
   (let [rest-props (dissoc props :class)]
     (into [:thead
            (merge {:data-slot "table-header"
-                   :class (merge-classes "[&_tr]:border-b" class)} rest-props)] children)))
+                   :class (merge-classes "[&_tr]:border-b" class)}
+                  rest-props)]
+          children)))
 
 (defn table-body
   "Table body (tbody) component.
@@ -67,8 +70,9 @@
   (let [rest-props (dissoc props :class)]
     (into [:tbody
            (merge {:data-slot "table-body"
-                   :class (merge-classes "[&_tr:last-child]:border-0" class)} rest-props)]
-     children)))
+                   :class (merge-classes "[&_tr:last-child]:border-0" class)}
+                  rest-props)]
+          children)))
 
 (defn table-footer
   "Table footer (tfoot) component.
@@ -89,7 +93,9 @@
     (into [:tfoot
            (merge {:data-slot "table-footer"
                    :class (merge-classes "bg-muted/50 border-t font-medium [&>tr]:last:border-b-0"
-                           class)} rest-props)] children)))
+                                         class)}
+                  rest-props)]
+          children)))
 
 (defn table-row
   "Table row (tr) component with hover and selection states.
@@ -117,7 +123,9 @@
                    :class
                    (merge-classes
                     "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors"
-                    class)} rest-props)] children)))
+                    class)}
+                  rest-props)]
+          children)))
 
 (defn table-head
   "Table header cell (th) component.
@@ -147,7 +155,9 @@
         :class
         (merge-classes
          "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
-         class)} rest-props)] children)))
+         class)}
+       rest-props)]
+     children)))
 
 (defn table-cell
   "Table cell (td) component.
@@ -177,7 +187,9 @@
         :class
         (merge-classes
          "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]"
-         class)} rest-props)] children)))
+         class)}
+       rest-props)]
+     children)))
 
 (defn table-caption
   "Table caption component for describing the table.
@@ -198,5 +210,6 @@
   (let [rest-props (dissoc props :class)]
     (into [:caption
            (merge {:data-slot "table-caption"
-                   :class (merge-classes "text-muted-foreground mt-4 text-sm" class)} rest-props)]
-     children)))
+                   :class (merge-classes "text-muted-foreground mt-4 text-sm" class)}
+                  rest-props)]
+          children)))

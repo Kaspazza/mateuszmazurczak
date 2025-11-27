@@ -86,9 +86,9 @@
 
 (defmethod ig/init-key :sys/handler
   [_
-   {:keys [routes translator logger]
+   {:keys [routes translator logger database admin-api-key]
     :as _opts}]
-  (mm-http-router/get-app routes translator logger))
+  (mm-http-router/get-app routes translator logger database admin-api-key))
 
 (defmethod ig/init-key :sys/db-conn
   [_

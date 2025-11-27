@@ -4,7 +4,7 @@
   A styled native HTML input element with comprehensive styling for text, file,
   and other input types."
   (:require
-   [ui.utils.styles :refer [merge-classes]]))
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn input
   "Renders a styled input element with comprehensive form styling.
@@ -71,14 +71,15 @@
     :as props}]
   [:input
    (-> props
-    (assoc
-     :data-slot "input"
-     :type type
-     :class (merge-classes (str "flex h-10 w-full rounded-md border border-input bg-background "
-                            "px-3 py-2 text-base ring-offset-background "
-                            "file:border-0 file:bg-transparent file:text-sm file:font-medium "
-                            "file:text-foreground " "placeholder:text-muted-foreground "
-                            "focus-visible:outline-none focus-visible:ring-2 "
-                            "focus-visible:ring-ring focus-visible:ring-offset-2 "
-                            "disabled:cursor-not-allowed disabled:opacity-50 " "md:text-sm") class))
-    (dissoc :class-name))])
+       (assoc :data-slot "input"
+              :type type
+              :class (merge-classes
+                      (str "flex h-10 w-full rounded-md border border-input bg-background "
+                           "px-3 py-2 text-base ring-offset-background "
+                           "file:border-0 file:bg-transparent file:text-sm file:font-medium "
+                           "file:text-foreground " "placeholder:text-muted-foreground "
+                           "focus-visible:outline-none focus-visible:ring-2 "
+                           "focus-visible:ring-ring focus-visible:ring-offset-2 "
+                           "disabled:cursor-not-allowed disabled:opacity-50 " "md:text-sm")
+                      class))
+       (dissoc :class-name))])

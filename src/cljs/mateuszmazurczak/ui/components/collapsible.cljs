@@ -3,7 +3,7 @@
   https://www.radix-ui.com/primitives/docs/components/collapsible"
   (:require
    ["@radix-ui/react-collapsible" :as CollapsiblePrimitive]
-   [ui.utils.styles             :refer [merge-classes]]))
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn collapsible
   "Collapsible root component. Manages the open/closed state of the collapsible.
@@ -34,8 +34,9 @@
   (into [:>
          (.-Root CollapsiblePrimitive)
          (-> props
-          (assoc :data-slot "collapsible" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "collapsible" :class class)
+             (dissoc :class-name))]
+        children))
 
 (defn collapsible-trigger
   "Collapsible trigger component. The button that toggles the collapsible state.
@@ -62,8 +63,9 @@
   (into [:>
          (.-CollapsibleTrigger CollapsiblePrimitive)
          (-> props
-          (assoc :data-slot "collapsible-trigger" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "collapsible-trigger" :class class)
+             (dissoc :class-name))]
+        children))
 
 (defn collapsible-content
   "Collapsible content component. The content that expands and collapses with animation.
@@ -92,5 +94,6 @@
   (into [:>
          (.-CollapsibleContent CollapsiblePrimitive)
          (-> props
-          (assoc :data-slot "collapsible-content" :class class)
-          (dissoc :class-name))] children))
+             (assoc :data-slot "collapsible-content" :class class)
+             (dissoc :class-name))]
+        children))

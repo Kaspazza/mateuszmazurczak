@@ -162,14 +162,12 @@
                                                :path-params)}})
         response))))
 
+(def session-store (ring-memory/memory-store))
 
 (def web-middleware
   "Midllewares for web pages"
   (vec
-   (concat [(fn [handler]
-              (ring-session/wrap-session handler
-                                         {:store (ring-memory/memory-store (atom {}))
-                                          :cookies-attrs {:http-only true}}))
+   (concat [(fn [handler] (ring-session/wrap-session handler {:store session-store}))
             ring-anti-forgery/wrap-anti-forgery
             (fn [handler]
               (ring-cors/wrap-cors handler
@@ -221,16 +219,38 @@
           (assoc :tr (fn ([tr-id] (i18n/tr translator lang tr-id))))
           handler))))
 
+
+(defn wrap-admin-authentication
+  "Check admin authentication and set flag in request.
+  
+  Always sets :admin-authenticated? to true or false based on:
+  - X-Admin-Key header matches admin-api-key
+  - admin-api-key is valid (at least 32 characters)"
+  [handler admin-api-key]
+  (fn [request]
+    (let [provided-key (get-in request [:headers "x-admin-key"])
+          valid-key? (and (some? admin-api-key)
+                          (string? admin-api-key)
+                          (not (str/blank? admin-api-key))
+                          (>= (count admin-api-key) 32))
+          authenticated? (and valid-key? (some? provided-key) (= admin-api-key provided-key))
+          request-with-auth (assoc request :admin-authenticated? authenticated?)]
+      (handler request-with-auth))))
+
 (defn global-middlewares
   "Middleware for the whole app
   Params:
   * `translator` - translator function from the system
-  * `logger` - logger instance from the system"
-  [translator logger]
+  * `logger` - logger instance from the system
+  * `database` - database connection from the system
+  * `admin-api-key` - admin API key for authentication (optional)"
+  [translator logger database admin-api-key]
   [ring-cookies/wrap-cookies ;; It's important to have cookies before translator to allow strategy based on cookie lang
    rrmp/parameters-middleware ;; It's important to have parameters before translator to allow strategy based on parameters lang
    ring-keyword-params/wrap-keyword-params ;; Translator use keyworded parameters
-   (fn [handler] (fn [request] (handler (assoc request :logger logger)))) ;; Add logger to request
-   (fn [handler] (wrap-translation handler translator))
+   (fn [handler] (fn [request] (handler (assoc request :logger logger :database database)))) ;; Add logger and database directly to request
+   (fn [handler] (wrap-admin-authentication handler admin-api-key)) ;; Check admin auth and set flag
+   (fn [handler] (wrap-translation handler translator)) ;; Make translator available (mostly for error-page rendering)
    ;; (fn [handler] (wrap-request-logging handler logger))
-   (partial wrap-exception-handling logger)])
+   (partial wrap-exception-handling logger) ;; Ex wrap must be last to catch all exceptions
+  ])

@@ -151,13 +151,24 @@ Controllers dispatch page events to load data on route enter. Static data lives 
 **`.secrets.edn` structure:**
 
 ```edn
-{:development {:db {:uri "./storage/datalevin/dev-db"}
+{:development {:admin {:api-key "dev-admin-key-min-32-characters-required"}
+               :db {:uri "./storage/datalevin/dev-db"}
                :sentry {:backend {:dsn "..."} :frontend {:dsn "..."}}
                :posthog {:api-key "phc_..."}}
- :production  {:db {:uri "/app/data/db"}
+ :production  {:admin {:api-key "prod-admin-key-min-32-characters-required"}
+               :db {:uri "/app/data/db"}
                :sentry {:backend {:dsn "..."} :frontend {:dsn "..."}}
                :posthog {:api-key "phc_..."}}}
 ```
+
+**Admin Access** (AoC solution moderation):
+
+Admin API key configured via Aero config (like all other secrets):
+- **Environment Variable**: `export ADMIN_API_KEY="your-key-min-32-chars"`
+- **OR `.secrets.edn`**: `{:development {:admin {:api-key "..."}}}`
+- **Fallback order**: ENV → `.secrets.edn` → error (fail-fast if missing in prod)
+- **Minimum length**: 32 characters (enforced at runtime)
+- **Usage**: Stored in browser localStorage after login, sent as `X-Admin-Key` header
 
 ## Development
 
@@ -220,7 +231,7 @@ bb docker-run --profile development <v> # Run with dev secrets
 **Container details:**
 - **Port**: 8080
 - **Data volume**: `/app/data` (database persistence)
-- **Config**: ENV vars (DB_URI, SENTRY_BACKEND_DSN, SENTRY_FRONTEND_DSN) or `env/production/config.edn` defaults
+- **Config**: ENV vars (ADMIN_API_KEY, DB_URI, SENTRY_BACKEND_DSN, SENTRY_FRONTEND_DSN) or `env/production/config.edn` defaults
 
 `bb docker-run` auto-injects secrets from `.secrets.edn`. In production, use orchestration tool (docker-compose, K8s) for ENV vars.
 

@@ -6,25 +6,25 @@
   
   All TanStack Table interactions happen in this component"
   (:require
-   ["@tanstack/react-table"          :refer [flexRender
-                                             getCoreRowModel
-                                             getFacetedRowModel
-                                             getFacetedUniqueValues
-                                             getFilteredRowModel
-                                             getPaginationRowModel
-                                             getSortedRowModel
-                                             useReactTable]]
-   ["lucide-react"                   :refer [ArrowDown
-                                             ArrowUp
-                                             Check
-                                             ChevronLeft
-                                             ChevronRight
-                                             ChevronsLeft
-                                             ChevronsRight
-                                             ChevronsUpDown
-                                             EyeOff
-                                             PlusCircle
-                                             X]]
+   ["@tanstack/react-table"                      :refer [flexRender
+                                                         getCoreRowModel
+                                                         getFacetedRowModel
+                                                         getFacetedUniqueValues
+                                                         getFilteredRowModel
+                                                         getPaginationRowModel
+                                                         getSortedRowModel
+                                                         useReactTable]]
+   ["lucide-react"                               :refer [ArrowDown
+                                                         ArrowUp
+                                                         Check
+                                                         ChevronLeft
+                                                         ChevronRight
+                                                         ChevronsLeft
+                                                         ChevronsRight
+                                                         ChevronsUpDown
+                                                         EyeOff
+                                                         PlusCircle
+                                                         X]]
    [mateuszmazurczak.ui.components.badge         :as ui-badge]
    [mateuszmazurczak.ui.components.button        :as ui-button]
    [mateuszmazurczak.ui.components.command       :as ui-command]
@@ -34,10 +34,10 @@
    [mateuszmazurczak.ui.components.select        :as ui-select]
    [mateuszmazurczak.ui.components.separator     :as ui-separator]
    [mateuszmazurczak.ui.components.table         :as ui-table]
-   [ui.utils.styles                :refer [merge-classes]]
-   [reagent.core                     :as    r
-                                     :refer [defc]]
-   [reagent.hooks                    :as rhooks]))
+   [mateuszmazurczak.utils.styles                :refer [merge-classes]]
+   [reagent.core                                 :as    r
+                                                 :refer [defc]]
+   [reagent.hooks                                :as rhooks]))
 
 
 
@@ -63,25 +63,28 @@
         column-filters-state (.-columnFilters table-state)
         is-filtered? (pos? (.-length column-filters-state))
         faceted-filters-with-state
-        (vec (for [filter-config (:faceted-filters toolbar-config)]
-               (let [column-id (:column-id filter-config)
-                     column (.getColumn table-instance column-id)
-                     filter-value (when column (or (.getFilterValue column) #js []))
-                     selected-values (set (js->clj filter-value))
-                     facets (when column (.getFacetedUniqueValues column))
-                     facet-counts (when facets
-                                    (into {} (map (fn [^js entry] [(aget entry 0) (aget entry 1)])
-                                              (js/Array.from facets))))]
-                 {:title (:title filter-config)
-                  :options (:options filter-config)
-                  :selected-values selected-values
-                  :facet-counts facet-counts
-                  :on-change (fn [new-selected-set]
-                               (when column
-                                 (let [filter-values (vec new-selected-set)]
-                                   (.setFilterValue column (if (seq filter-values)
-                                                             (clj->js filter-values)
-                                                             js/undefined)))))})))]
+        (vec
+         (for [filter-config (:faceted-filters toolbar-config)]
+           (let [column-id (:column-id filter-config)
+                 column (.getColumn table-instance column-id)
+                 filter-value (when column (or (.getFilterValue column) #js []))
+                 selected-values (set (js->clj filter-value))
+                 facets (when column (.getFacetedUniqueValues column))
+                 facet-counts (when facets
+                                (into {}
+                                      (map (fn [^js entry] [(aget entry 0) (aget entry 1)])
+                                           (js/Array.from facets))))]
+             {:title (:title filter-config)
+              :options (:options filter-config)
+              :selected-values selected-values
+              :facet-counts facet-counts
+              :on-change (fn [new-selected-set]
+                           (when column
+                             (let [filter-values (vec new-selected-set)]
+                               (.setFilterValue column
+                                                (if (seq filter-values)
+                                                  (clj->js filter-values)
+                                                  js/undefined)))))})))]
     {:text-filter-value text-filter-value
      :on-text-filter-change (fn [value] (when text-column (.setFilterValue text-column value)))
      :text-placeholder text-placeholder
@@ -149,27 +152,29 @@
     [ui-popover/popover {}
      [ui-popover/popover-trigger {:as-child true}
       (ui-button/button {:variant :outline
-                           :size :sm
-                           :class "h-8 border-dashed"} [:> PlusCircle] title
-       (when (pos? selected-count)
-         [:<>
-          [ui-separator/separator {:orientation :vertical
-                                     :class "mx-2 h-4"}]
-          [ui-badge/badge {:variant :secondary
-                             :class "rounded-sm px-1 font-normal lg:hidden"}
-           selected-count]
-          [:div {:class "hidden gap-1 lg:flex"}
-           (if (> selected-count 2)
-             [ui-badge/badge {:variant :secondary
-                                :class "rounded-sm px-1 font-normal"}
-              (str selected-count " selected")]
-             (for [option (filter #(contains? selected-values (:value %)) options)]
-               ^{:key (:value option)}
-               [ui-badge/badge {:variant :secondary
-                                  :class "rounded-sm px-1 font-normal"}
-                (:label option)]))]]))]
+                         :size :sm
+                         :class "h-8 border-dashed"}
+                        [:> PlusCircle]
+                        title
+                        (when (pos? selected-count)
+                          [:<>
+                           [ui-separator/separator {:orientation :vertical
+                                                    :class "mx-2 h-4"}]
+                           [ui-badge/badge {:variant :secondary
+                                            :class "rounded-sm px-1 font-normal lg:hidden"}
+                            selected-count]
+                           [:div {:class "hidden gap-1 lg:flex"}
+                            (if (> selected-count 2)
+                              [ui-badge/badge {:variant :secondary
+                                               :class "rounded-sm px-1 font-normal"}
+                               (str selected-count " selected")]
+                              (for [option (filter #(contains? selected-values (:value %)) options)]
+                                ^{:key (:value option)}
+                                [ui-badge/badge {:variant :secondary
+                                                 :class "rounded-sm px-1 font-normal"}
+                                 (:label option)]))]]))]
      [ui-popover/popover-content {:class "w-[200px] p-0"
-                                    :align "start"}
+                                  :align "start"}
       [ui-command/command {}
        [ui-command/command-input {:placeholder title}]
        [ui-command/command-list {}
@@ -181,12 +186,11 @@
                  option-icon (:icon option)]
              ^{:key (:value option)}
              [ui-command/command-item {:onSelect (fn []
-                                                     (let [new-selected (if is-selected
-                                                                          (disj selected-values
-                                                                           (:value option))
-                                                                          (conj selected-values
-                                                                           (:value option)))]
-                                                       (when on-change (on-change new-selected))))}
+                                                   (let [new-selected
+                                                         (if is-selected
+                                                           (disj selected-values (:value option))
+                                                           (conj selected-values (:value option)))]
+                                                     (when on-change (on-change new-selected))))}
               [:div {:class (merge-classes
                              "flex size-4 items-center justify-center rounded-[4px] border"
                              (if is-selected
@@ -205,7 +209,7 @@
            [ui-command/command-separator {}]
            [ui-command/command-group {}
             [ui-command/command-item {:onSelect #(when on-change (on-change #{}))
-                                        :class "justify-center text-center"}
+                                      :class "justify-center text-center"}
              "Clear filters"]]])]]]]))
 
 (defn toolbar-ui
@@ -245,19 +249,19 @@
    [:div {:class "flex flex-1 items-center gap-2"}
     (when on-text-filter-change
       [ui-input/input {:placeholder text-placeholder
-                         :value (or text-filter-value "")
-                         :on-change #(let [value (-> %
-                                                  .-target
-                                                  .-value)]
-                                       (on-text-filter-change value))
-                         :class "h-8 w-[150px] lg:w-[250px]"}])
+                       :value (or text-filter-value "")
+                       :on-change #(let [value (-> %
+                                                   .-target
+                                                   .-value)]
+                                     (on-text-filter-change value))
+                       :class "h-8 w-[150px] lg:w-[250px]"}])
     (for [[idx filter-config] (map-indexed vector faceted-filters)]
       ^{:key idx} [faceted-filter-ui filter-config])
     (when is-filtered?
       [ui-button/button {:variant :ghost
-                           :size :sm
-                           :on-click #(when on-reset-filters (on-reset-filters))
-                           :class "h-8 px-2 lg:px-3"}
+                         :size :sm
+                         :on-click #(when on-reset-filters (on-reset-filters))
+                         :class "h-8 px-2 lg:px-3"}
        "Reset"
        [:> X {:class "ml-2 h-4 w-4"}]])]
    (when toolbar-end toolbar-end)])
@@ -291,19 +295,20 @@
        [ui-dropdown-menu/dropdown-menu {}
         [ui-dropdown-menu/dropdown-menu-trigger {:as-child true}
          (ui-button/button {:variant :ghost
-                              :size :sm
-                              :class "data-[state=open]:bg-accent -ml-3 h-8"} [:span title]
-          (case sort-state
-            "desc" [:> ArrowDown]
-            "asc" [:> ArrowUp]
-            [:> ChevronsUpDown]))]
+                            :size :sm
+                            :class "data-[state=open]:bg-accent -ml-3 h-8"}
+                           [:span title]
+                           (case sort-state
+                             "desc" [:> ArrowDown]
+                             "asc" [:> ArrowUp]
+                             [:> ChevronsUpDown]))]
         [ui-dropdown-menu/dropdown-menu-content {:align :start}
          [ui-dropdown-menu/dropdown-menu-item {:on-select #(when on-toggle-sort
-                                                               (on-toggle-sort false))}
+                                                             (on-toggle-sort false))}
           [:> ArrowUp]
           "Asc"]
          [ui-dropdown-menu/dropdown-menu-item {:on-select #(when on-toggle-sort
-                                                               (on-toggle-sort true))}
+                                                             (on-toggle-sort true))}
           [:> ArrowDown]
           "Desc"]
          (when (and on-clear-sort sort-state)
@@ -317,13 +322,13 @@
           [:> EyeOff]
           "Hide"]]]
        [ui-button/button {:variant :ghost
-                            :size :sm
-                            :class "-ml-3 h-8"
-                            :on-click (fn []
-                                        (case sort-state
-                                          false (when on-toggle-sort (on-toggle-sort false))
-                                          "asc" (when on-toggle-sort (on-toggle-sort true))
-                                          "desc" (when on-clear-sort (on-clear-sort))))}
+                          :size :sm
+                          :class "-ml-3 h-8"
+                          :on-click (fn []
+                                      (case sort-state
+                                        false (when on-toggle-sort (on-toggle-sort false))
+                                        "asc" (when on-toggle-sort (on-toggle-sort true))
+                                        "desc" (when on-clear-sort (on-clear-sort))))}
         [:span title]
         (case sort-state
           "desc" [:> ArrowDown]
@@ -360,13 +365,13 @@
      (if (pos? (.-length rows))
        (for [row rows]
          [ui-table/table-row {:key (.-id row)
-                                :data-state (when (.getIsSelected row) "selected")}
+                              :data-state (when (.getIsSelected row) "selected")}
           (for [cell (.getVisibleCells row)]
             [ui-table/table-cell {:key (.-id cell)}
              (flexRender (.. cell -column -columnDef -cell) (.getContext cell))])])
        [ui-table/table-row {}
         [ui-table/table-cell {:col-span columns-count
-                                :class "h-24 text-center"}
+                              :class "h-24 text-center"}
          (cond
            ;; If no-results-state is provided and is a function, call it with reset callback
            (and no-results-state (fn? no-results-state)) (no-results-state on-reset-filters)
@@ -427,9 +432,9 @@
      [:p {:class "text-sm font-medium"}
       "Rows per page"]
      [ui-select/select {:value (str page-size)
-                          :onValueChange (fn [value]
-                                           (when on-page-size-change
-                                             (on-page-size-change (js/Number value))))}
+                        :onValueChange (fn [value]
+                                         (when on-page-size-change
+                                           (on-page-size-change (js/Number value))))}
       [ui-select/select-trigger {:class "h-8 w-[70px]"}
        [ui-select/select-value {:placeholder page-size}]]
       [ui-select/select-content {:side "top"}
@@ -442,34 +447,34 @@
      " of " page-count]
     [:div {:class "flex items-center space-x-2"}
      [ui-button/button {:variant :outline
-                          :size :icon
-                          :class "hidden size-8 lg:flex"
-                          :on-click #(when on-first-page (on-first-page))
-                          :disabled (not can-previous?)}
+                        :size :icon
+                        :class "hidden size-8 lg:flex"
+                        :on-click #(when on-first-page (on-first-page))
+                        :disabled (not can-previous?)}
       [:span {:class "sr-only"}
        "Go to first page"]
       [:> ChevronsLeft]]
      [ui-button/button {:variant :outline
-                          :size :icon
-                          :class "size-8"
-                          :on-click #(when on-previous-page (on-previous-page))
-                          :disabled (not can-previous?)}
+                        :size :icon
+                        :class "size-8"
+                        :on-click #(when on-previous-page (on-previous-page))
+                        :disabled (not can-previous?)}
       [:span {:class "sr-only"}
        "Go to previous page"]
       [:> ChevronLeft]]
      [ui-button/button {:variant :outline
-                          :size :icon
-                          :class "size-8"
-                          :on-click #(when on-next-page (on-next-page))
-                          :disabled (not can-next?)}
+                        :size :icon
+                        :class "size-8"
+                        :on-click #(when on-next-page (on-next-page))
+                        :disabled (not can-next?)}
       [:span {:class "sr-only"}
        "Go to next page"]
       [:> ChevronRight]]
      [ui-button/button {:variant :outline
-                          :size :icon
-                          :class "hidden size-8 lg:flex"
-                          :on-click #(when on-last-page (on-last-page))
-                          :disabled (not can-next?)}
+                        :size :icon
+                        :class "hidden size-8 lg:flex"
+                        :on-click #(when on-last-page (on-last-page))
+                        :disabled (not can-next?)}
       [:span {:class "sr-only"}
        "Go to last page"]
       [:> ChevronsRight]]]]])
@@ -520,26 +525,26 @@
                                                   (clj->js (or initial-column-visibility {})))
        [column-filters set-column-filters] (rhooks/use-state #js [])
        [sorting set-sorting] (rhooks/use-state #js [])
-       table-config (rhooks/use-memo (fn []
-                                       #js {:data data
-                                            :columns columns
-                                            :initialState #js {:pagination #js {:pageSize
-                                                                                initial-page-size}}
-                                            :state #js {:sorting sorting
-                                                        :columnVisibility column-visibility
-                                                        :rowSelection row-selection
-                                                        :columnFilters column-filters}
-                                            :enableRowSelection true
-                                            :onRowSelectionChange set-row-selection
-                                            :onSortingChange set-sorting
-                                            :onColumnFiltersChange set-column-filters
-                                            :onColumnVisibilityChange set-column-visibility
-                                            :getCoreRowModel (getCoreRowModel)
-                                            :getFilteredRowModel (getFilteredRowModel)
-                                            :getPaginationRowModel (getPaginationRowModel)
-                                            :getSortedRowModel (getSortedRowModel)
-                                            :getFacetedRowModel (getFacetedRowModel)
-                                            :getFacetedUniqueValues (getFacetedUniqueValues)})
+       table-config (rhooks/use-memo
+                     (fn []
+                       #js {:data data
+                            :columns columns
+                            :initialState #js {:pagination #js {:pageSize initial-page-size}}
+                            :state #js {:sorting sorting
+                                        :columnVisibility column-visibility
+                                        :rowSelection row-selection
+                                        :columnFilters column-filters}
+                            :enableRowSelection true
+                            :onRowSelectionChange set-row-selection
+                            :onSortingChange set-sorting
+                            :onColumnFiltersChange set-column-filters
+                            :onColumnVisibilityChange set-column-visibility
+                            :getCoreRowModel (getCoreRowModel)
+                            :getFilteredRowModel (getFilteredRowModel)
+                            :getPaginationRowModel (getPaginationRowModel)
+                            :getSortedRowModel (getSortedRowModel)
+                            :getFacetedRowModel (getFacetedRowModel)
+                            :getFacetedUniqueValues (getFacetedUniqueValues)})
                      #js [data columns sorting column-visibility row-selection column-filters])
        table-instance (useReactTable table-config)
        toolbar-data (when toolbar-config (extract-toolbar-data toolbar-config table-instance))

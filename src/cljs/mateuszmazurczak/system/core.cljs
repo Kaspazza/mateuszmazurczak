@@ -19,6 +19,7 @@
    [mateuszmazurczak.ports.logging                     :as log]
    [mateuszmazurczak.ports.navigation                  :as nav]
    [mateuszmazurczak.ports.state                       :as state]
+   [mateuszmazurczak.ports.theme                       :as theme]
    [mateuszmazurczak.system.config                     :as conf]
    [mateuszmazurczak.system.integrant-utils            :as ig-utils]))
 
@@ -139,14 +140,23 @@
              :level :info
              :msg "State watch wired"})
   (let [initial-state (state/initial-state translator logger (fi18n/language-strategy))
-        merged-state (merge initial-state persisted-cache)]
+        merged-state (merge initial-state persisted-cache)
+        theme-value (get merged-state :theme)]
     (log/log! logger
               {:id ::state-initialized
                :level :info
                :msg "Frontend state initialized"
                :data {:has-translator (some? translator)
-                      :has-cached-data (seq persisted-cache)}})
-    (state/init-app-db! merged-state)))
+                      :has-cached-data (seq persisted-cache)
+                      :theme theme-value}})
+    (state/init-app-db! merged-state)
+    (when theme-value
+      (theme/apply-theme! theme-value)
+      (log/log! logger
+                {:id ::theme-applied-on-init
+                 :level :info
+                 :msg "Theme applied to DOM on initialization"
+                 :data {:theme theme-value}}))))
 
 (defmethod ig/halt-key! :frontend/state [_ _] (state/set-watch-fn! nil) (state/reset-app-db!) nil)
 

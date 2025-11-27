@@ -32,4 +32,34 @@
    :comment/created-at {:doc "Timestamp when the comment was created"
                         :attr :instant}})
 
-(def entities [article author comment migrations/migration-schema])
+(def aoc-solution
+  {:aoc-solution/id {:doc "Unique ID for the AOC solution"
+                     :attr :uuid
+                     :unique :identity}
+   :aoc-solution/year {:doc "AOC year (2015-2025)"
+                       :attr :int
+                       :index true}
+   :aoc-solution/challenge {:doc "Challenge day (1-24)"
+                            :attr :int
+                            :index true}
+   :aoc-solution/part {:doc "Challenge part (1 or 2)"
+                       :attr :int
+                       :index true}
+   :aoc-solution/author-name {:doc "Name of the solution author"
+                              :attr :string}
+   :aoc-solution/github-profile {:doc "Optional GitHub profile URL"
+                                 :attr :string}
+   :aoc-solution/content-type {:doc "Type of content: :code-snippet or :repo-link"
+                               :enum #{:code-snippet :repo-link}}
+   :aoc-solution/content {:doc
+                          "The solution content (code or URL). Can be large text for code snippets."
+                          :attr :string}
+   :aoc-solution/created-at {:doc "Timestamp when the solution was submitted"
+                             :attr :instant
+                             :index true}
+   :aoc-solution/best-practices-count {:doc "Number of best practices votes"
+                                       :attr :int}
+   :aoc-solution/clever-count {:doc "Number of clever votes"
+                               :attr :int}})
+
+(def entities [article author comment aoc-solution migrations/migration-schema])

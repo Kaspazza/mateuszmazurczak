@@ -9,7 +9,7 @@
        :class "no-underline"}
    [:span
     {:class
-     "heading-anchorlink-icon bg-base-content/5 hover:bg-primary/10 size-[1em] text-base-content/30 hover:text-primary/50 rounded-field border border-base-content/5 hover:border-primary/20 inline-grid place-content-center hover:shadow-sm hover:shadow-base-200 align-text-bottom me-3 lg:absolute lg:ms-[-1.5em] lg:mt-1 transition-all group"}
+     "heading-anchorlink-icon bg-muted/50 hover:bg-primary/10 size-[1em] text-muted-foreground hover:text-primary/70 rounded-md border border-border hover:border-primary/30 inline-grid place-content-center hover:shadow-sm align-text-bottom me-3 lg:absolute lg:ms-[-1.5em] lg:mt-1 transition-all group"}
     [:svg {:class "group-hover:scale-100 scale-90 transition-transform"
            :fill "currentColor"
            :width ".5em"
@@ -35,36 +35,45 @@
                   "max-h-[80vh]"
                   "overflow-y-auto"
                   "p-4"
-                  "bg-base-100"
+                  "bg-card"
+                  "border"
+                  "border-border"
                   "rounded-lg"
                   "shadow-md"
                   "z-10"
-                  "w-64"]} ; Add fixed width to prevent container resizing
-    [:ul {:class ["list-none" "p-0" "m-0"]}
+                  "w-64"]}
+    [:h3 {:class "text-sm font-semibold text-foreground mb-3 px-2"}
+     "On this page"]
+    [:ul {:class ["list-none" "p-0" "m-0" "space-y-1"]}
      (for [{:keys [level text id]} headings]
        ^{:key (str "toc-li-" id)}
-       [:li {:class ["mb-2"]}
-        [:a {:class
-             [(case level
-                :h1 "ml-0"
-                :h2 "ml-4"
-                :h3 "ml-8"
-                "ml-0")
-              (case level
-                :h1 "font-medium"
-                :h2 "text-sm"
-                :h3 "text-xs"
-                "")
-              (if (= id active-id) "text-primary font-bold" "text-base-content hover:text-primary")
-              "block"
-              "no-underline"
-              "transition-colors"
-              "duration-200"
-              "overflow-hidden"
-              "text-ellipsis"
-              "whitespace-nowrap"
-              "w-full"]
-             :href (str "#" id)}
+       [:li
+        [:a
+         {:class
+          [(case level
+             :h1 "ml-0"
+             :h2 "ml-3"
+             :h3 "ml-6"
+             "ml-0")
+           (case level
+             :h1 "font-medium text-sm"
+             :h2 "text-xs"
+             :h3 "text-xs"
+             "text-sm")
+           (if (= id active-id)
+             "text-primary font-semibold border-l-2 border-primary bg-primary/5"
+             "text-muted-foreground hover:text-foreground border-l-2 border-transparent hover:border-border")
+           "block"
+           "no-underline"
+           "transition-all"
+           "duration-200"
+           "py-1.5"
+           "px-2"
+           "rounded-r"
+           "overflow-hidden"
+           "text-ellipsis"
+           "whitespace-nowrap"]
+          :href (str "#" id)}
          text]])]]))
 
 #?(:cljs (defn- throttle-header-change
@@ -148,11 +157,11 @@
 
 (defn article-header
   [title date]
-  [:header
-   [:h1 {:class "page-title"}
+  [:header {:class "mb-8 border-b border-border pb-6"}
+   [:h1 {:class "text-4xl font-bold text-foreground mb-3"}
     title]
    (when date
-     [:time {:class "text-gray-700"}
+     [:time {:class "text-sm text-muted-foreground"}
       date])])
 
 (defn article-wrap
@@ -170,14 +179,23 @@
 
 (defn article-card
   [{:keys [title description img on-click]}]
-  [:a {:class "card sm:card-side hover:bg-base-200 transition-colors sm:max-w-none cursor-pointer"
-       :on-click on-click}
-   [:figure {:class "mx-auto w-full object-cover p-6 max-sm:pb-0 sm:max-w-[12rem] sm:pe-0"}
-    [:img {:class "border-base-content/5 bg-base-300 rounded-field border"
-           :alt "Image representing article"
-           :src img}]]
-   [:div {:class "card-body"}
-    [:h2 {:class "card-title"}
-     title]
-    [:p {:class "text-xs opacity-60"}
-     description]]])
+  [:div
+   {:class
+    "group border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer bg-card hover:bg-accent/5"
+    :on-click on-click}
+   [:div {:class "sm:flex"}
+    [:div {:class "sm:w-48 sm:flex-shrink-0"}
+     [:img {:class "w-full h-48 sm:h-full object-cover"
+            :alt (str "Image representing " title)
+            :src img
+            :width 192
+            :height 192
+            :loading "lazy"
+            :decoding "async"}]]
+    [:div {:class "p-6 flex-1"}
+     [:h2
+      {:class
+       "text-xl font-semibold mb-2 text-card-foreground group-hover:text-primary transition-colors"}
+      title]
+     [:p {:class "text-sm text-muted-foreground line-clamp-2"}
+      description]]]])

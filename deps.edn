@@ -1,7 +1,8 @@
 {:aliases
  {:antq {:deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}}
          :main-opts ["-m" "antq.core"]}
-  :cljs-deps {:extra-deps {juji/editscript {:mvn/version "0.6.6"}
+  :cljs-deps {:extra-deps {cljs-ajax/cljs-ajax {:mvn/version "0.8.4"}
+                           juji/editscript {:mvn/version "0.6.6"}
                            lambdaisland/uri #:mvn{:version "1.19.155"}
                            re-frame/re-frame #:mvn{:version "1.4.3"}
                            reagent/reagent #:mvn{:version "2.0.1"}

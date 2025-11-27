@@ -2,6 +2,7 @@
   "Customer app home page assembly"
   (:require
    [mateuszmazurczak.ui.articles              :as ui-articles]
+   [mateuszmazurczak.ui.components.image      :as ui-img]
    [mateuszmazurczak.ui.components.navigation :as mm-ui-navigation]))
 
 (defn about-me
@@ -11,8 +12,14 @@
    [:div {:style {:height "100%"
                   :position "relative"
                   :background-color "#bea5c2 "}}]
-   [:div {:class "block  overflow-hidden w-80"}
-    [:img {:src "img/mateusz_mazurczak.png"}]]
+   [:div {:class "block overflow-hidden w-80"}
+    [ui-img/optimized-img {:src "img/mateusz_mazurczak.webp"
+                           :alt "Mateusz Mazurczak"
+                           :width 320
+                           :height 320
+                           :loading "eager"
+                           :fetchpriority "high"
+                           :class "w-full h-auto"}]]
    [:div
     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold"}
      welcome-text]

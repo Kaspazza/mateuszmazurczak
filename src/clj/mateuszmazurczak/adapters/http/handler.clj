@@ -14,7 +14,7 @@
   []
   [:div {:name "__anti-forgery-token"
          :id "__anti-forgery-token"
-         :anti-forgery-token (force ring-anti-forgery/*anti-forgery-token*)
+         :data-anti-forgery-token (force ring-anti-forgery/*anti-forgery-token*)
          :class ["hidden"]}])
 
 (defn html-core

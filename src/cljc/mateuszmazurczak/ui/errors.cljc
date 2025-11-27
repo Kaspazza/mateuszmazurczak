@@ -8,8 +8,12 @@
   [:main {:class ["relative isolate min-h-full h-full"]}
    [:div {:class
           ["before:content-[''] before:absolute before:h-full before:w-full before:bg-black/[.5]"]}
-    [:img {:src "/img/not_found.jpg"
+    [:img {:src "/img/not_found.webp"
            :alt ""
+           :width 1920
+           :height 1080
+           :loading "eager"
+           :decoding "async"
            :class ["absolute inset-0 -z-10 h-full w-full object-cover object-top "]}]]
    [:div {:class ["absolute left-1/2 top-1/2 text-center -translate-x-1/2 -translate-y-1/2"]}
     [:p {:class ["text-base font-semibold leading-8 text-white text-border-red"]}
@@ -30,8 +34,12 @@
   [:main {:class ["relative isolate min-h-full h-full"]}
    [:div {:class
           ["before:content-[''] before:absolute before:h-full before:w-full before:bg-black/[.5]"]}
-    [:img {:src "/img/not_found.jpg"
+    [:img {:src "/img/not_found.webp"
            :alt ""
+           :width 1920
+           :height 1080
+           :loading "eager"
+           :decoding "async"
            :class ["absolute inset-0 -z-10 h-full w-full object-cover object-top "]}]]
    [:div {:class ["absolute left-1/2 top-1/2 text-center -translate-x-1/2 -translate-y-1/2"]}
     [:p {:class ["text-base font-semibold leading-8 text-white text-border-red"]}

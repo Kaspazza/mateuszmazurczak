@@ -59,7 +59,8 @@
            :style (clj->js {"--normal-bg" "var(--popover)"
                             "--normal-text" "var(--popover-foreground)"
                             "--normal-border" "var(--border)"
-                            "--border-radius" "var(--radius)"})} props)])
+                            "--border-radius" "var(--radius)"})}
+          props)])
 
 (defn show-toast
   "Display a toast notification.
@@ -106,32 +107,21 @@
      :or {position "top-right"}
      :as _options}]
    (let [opts (cond-> {}
-               description
-               (assoc :description description)
-               action
-               (assoc
-                :action
-                (clj->js (-> action
-                          (update :on-click (fn [f] #(f)))
-                          (update :label identity))))
-               cancel
-               (assoc
-                :cancel
-                (clj->js (-> cancel
-                          (update :on-click (fn [f] #(f)))
-                          (update :label identity))))
-               duration
-               (assoc :duration duration)
-               position
-               (assoc :position position)
-               id
-               (assoc :id id)
-               important
-               (assoc :important important)
-               on-dismiss
-               (assoc :onDismiss (fn [_] (on-dismiss)))
-               on-auto-close
-               (assoc :onAutoClose (fn [_] (on-auto-close))))]
+                description (assoc :description description)
+                action (assoc :action
+                              (clj->js (-> action
+                                           (update :on-click (fn [f] #(f)))
+                                           (update :label identity))))
+                cancel (assoc :cancel
+                              (clj->js (-> cancel
+                                           (update :on-click (fn [f] #(f)))
+                                           (update :label identity))))
+                duration (assoc :duration duration)
+                position (assoc :position position)
+                id (assoc :id id)
+                important (assoc :important important)
+                on-dismiss (assoc :onDismiss (fn [_] (on-dismiss)))
+                on-auto-close (assoc :onAutoClose (fn [_] (on-auto-close))))]
      (toast message (clj->js opts)))))
 
 (defn show-success
@@ -150,12 +140,11 @@
   ([message] (show-success message nil))
   ([message options]
    (let [styled-options
-         (assoc
-          options
-          :style
-          {"--normal-bg" "var(--background)"
-           "--normal-text" "light-dark(var(--color-green-600), var(--color-green-400))"
-           "--normal-border" "light-dark(var(--color-green-600), var(--color-green-400))"})]
+         (assoc options
+                :style
+                {"--normal-bg" "var(--background)"
+                 "--normal-text" "light-dark(var(--color-green-600), var(--color-green-400))"
+                 "--normal-border" "light-dark(var(--color-green-600), var(--color-green-400))"})]
      (toast.success message (clj->js styled-options)))))
 
 (defn show-error
@@ -171,12 +160,11 @@
   (show-error \"Oops, there was an error processing your request.\")"
   ([message] (show-error message nil))
   ([message options]
-   (let [styled-options (assoc
-                         options
-                         :style
-                         {"--normal-bg" "var(--background)"
-                          "--normal-text" "var(--destructive)"
-                          "--normal-border" "var(--destructive)"})]
+   (let [styled-options (assoc options
+                               :style
+                               {"--normal-bg" "var(--background)"
+                                "--normal-text" "var(--destructive)"
+                                "--normal-border" "var(--destructive)"})]
      (toast.error message (clj->js styled-options)))))
 
 (defn show-info
@@ -194,13 +182,12 @@
   (show-info \"This is for your information, please note.\")"
   ([message] (show-info message nil))
   ([message options]
-   (let [styled-options (assoc
-                         options
-                         :style
-                         {"--normal-bg" "var(--background)"
-                          "--normal-text" "light-dark(var(--color-sky-600), var(--color-sky-400))"
-                          "--normal-border"
-                          "light-dark(var(--color-sky-600), var(--color-sky-400))"})]
+   (let [styled-options
+         (assoc options
+                :style
+                {"--normal-bg" "var(--background)"
+                 "--normal-text" "light-dark(var(--color-sky-600), var(--color-sky-400))"
+                 "--normal-border" "light-dark(var(--color-sky-600), var(--color-sky-400))"})]
      (toast.info message (clj->js styled-options)))))
 
 (defn show-warning
@@ -219,12 +206,11 @@
   ([message] (show-warning message nil))
   ([message options]
    (let [styled-options
-         (assoc
-          options
-          :style
-          {"--normal-bg" "var(--background)"
-           "--normal-text" "light-dark(var(--color-amber-600), var(--color-amber-400))"
-           "--normal-border" "light-dark(var(--color-amber-600), var(--color-amber-400))"})]
+         (assoc options
+                :style
+                {"--normal-bg" "var(--background)"
+                 "--normal-text" "light-dark(var(--color-amber-600), var(--color-amber-400))"
+                 "--normal-border" "light-dark(var(--color-amber-600), var(--color-amber-400))"})]
      (toast.warning message (clj->js styled-options)))))
 
 (defn show-loading
@@ -294,4 +280,5 @@
   (toast.custom (if (vector? component)
                   ;; Convert Reagent component to React element
                   (r/as-element component)
-                  component) (clj->js (or options {}))))
+                  component)
+                (clj->js (or options {}))))

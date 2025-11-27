@@ -2,9 +2,9 @@
   "Dialog (modal) component with overlay and content area.
   https://www.radix-ui.com/primitives/docs/components/dialog"
   (:require
-   ["@radix-ui/react-dialog" :as RadixDialog]
-   ["lucide-react"           :refer [XIcon]]
-   [ui.utils.styles        :refer [merge-classes]]))
+   ["@radix-ui/react-dialog"      :as RadixDialog]
+   ["lucide-react"                :refer [XIcon]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn dialog
   "Root dialog component. Controls open/closed state.
@@ -64,12 +64,12 @@
   [:>
    RadixDialog/Overlay
    (-> props
-    (assoc
-     :data-slot "dialog-overlay"
-     :class (merge-classes ["data-[state=open]:animate-in data-[state=closed]:animate-out"
-                            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
-                            "fixed inset-0 z-50 bg-black/50"] class))
-    (dissoc :class-name))])
+       (assoc :data-slot "dialog-overlay"
+              :class (merge-classes ["data-[state=open]:animate-in data-[state=closed]:animate-out"
+                                     "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+                                     "fixed inset-0 z-50 bg-black/50"]
+                                    class))
+       (dissoc :class-name))])
 
 (defn dialog-content
   "Dialog content container with overlay and optional close button.
@@ -102,26 +102,31 @@
    children]
   [dialog-portal {}
    (dialog-overlay {})
-   (into [:>
-          RadixDialog/Content
-          (-> props
-           (assoc :data-slot "dialog-content" :class
-            (merge-classes
-             ["bg-background data-[state=open]:animate-in data-[state=closed]:animate-out"
-              "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
-              "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
-              "fixed top-[50%] left-[50%] z-50 grid w-full"
-              "max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%]"
-              "gap-4 rounded-lg border p-6 shadow-lg duration-200"
-              "sm:max-w-lg"] class))
-           (dissoc :class-name :showCloseButton))]
-    (concat children
+   (into
+    [:>
+     RadixDialog/Content
+     (-> props
+         (assoc :data-slot "dialog-content"
+                :class
+                (merge-classes
+                 ["bg-background data-[state=open]:animate-in data-[state=closed]:animate-out"
+                  "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+                  "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95"
+                  "fixed top-[50%] left-[50%] z-50 grid w-full"
+                  "max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%]"
+                  "gap-4 rounded-lg border p-6 shadow-lg duration-200"
+                  "sm:max-w-lg"]
+                 class))
+         (dissoc :class-name :showCloseButton))]
+    (concat
+     children
      (when showCloseButton
        [[:>
          RadixDialog/Close
          {:data-slot "dialog-close"
           :class
-          (merge-classes "ring-offset-background focus:ring-ring"
+          (merge-classes
+           "ring-offset-background focus:ring-ring"
            "data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
            "absolute top-4 right-4 rounded-xs opacity-70" "transition-opacity hover:opacity-100"
            "focus:ring-2 focus:ring-offset-2 focus:outline-hidden" "disabled:pointer-events-none"
@@ -146,9 +151,10 @@
    children]
   (into [:div
          (-> props
-          (assoc :data-slot "dialog-header" :class
-           (merge-classes "flex flex-col gap-2 text-center sm:text-left" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dialog-header"
+                    :class (merge-classes "flex flex-col gap-2 text-center sm:text-left" class))
+             (dissoc :class-name))]
+        children))
 
 (defn dialog-footer
   "Footer section for dialog (action buttons).
@@ -170,9 +176,11 @@
    children]
   (into [:div
          (-> props
-          (assoc :data-slot "dialog-footer" :class
-           (merge-classes "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dialog-footer"
+                    :class (merge-classes "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+                                          class))
+             (dissoc :class-name))]
+        children))
 
 (defn dialog-title
   "Dialog title component (automatically labeled for accessibility).
@@ -191,9 +199,10 @@
   (into [:>
          RadixDialog/Title
          (-> props
-          (assoc :data-slot "dialog-title" :class (merge-classes
-                                                   "text-lg leading-none font-semibold" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dialog-title"
+                    :class (merge-classes "text-lg leading-none font-semibold" class))
+             (dissoc :class-name))]
+        children))
 
 (defn dialog-description
   "Dialog description component (automatically used for accessibility).
@@ -213,6 +222,7 @@
   (into [:>
          RadixDialog/Description
          (-> props
-          (assoc :data-slot "dialog-description" :class (merge-classes
-                                                         "text-muted-foreground text-sm" class))
-          (dissoc :class-name))] children))
+             (assoc :data-slot "dialog-description"
+                    :class (merge-classes "text-muted-foreground text-sm" class))
+             (dissoc :class-name))]
+        children))

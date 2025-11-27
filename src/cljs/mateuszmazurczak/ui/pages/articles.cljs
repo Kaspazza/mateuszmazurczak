@@ -10,19 +10,23 @@
 
 (defn articles-page
   []
-  [:div {:class ["mt-12"]}
-   [:h1 {:class ["text-4xl/7 font-bold ml-4 mb-8"]}
-    (fi18n/tr :articles)]
-   [:div {:class ["grid justify-items-stretch gap-6 mx-auto w-full"]}
-    (doall (for [{:keys [title id]
-                  :as article}
-                 articles/articles]
-             ^{:key title}
-             [ui-articles/article-card
-              (merge article
-                     {:on-click #(events/dispatch! [:nav/navigate
-                                                    ::mm-routes/article
-                                                    {:article-id (name id)}])})]))]])
+  [:div {:class "min-h-screen bg-background"}
+   [:div {:class "container mx-auto px-4 py-8 max-w-5xl"}
+    [:div {:class "mb-8"}
+     [:h1 {:class "text-4xl font-bold mb-2 text-foreground"}
+      (fi18n/tr :articles)]
+     [:p {:class "text-muted-foreground"}
+      "Thoughts on software development, architecture, and more."]]
+    [:div {:class "grid gap-6 w-full"}
+     (doall (for [{:keys [title id]
+                   :as article}
+                  articles/articles]
+              ^{:key title}
+              [ui-articles/article-card
+               (merge article
+                      {:on-click #(events/dispatch! [:nav/navigate
+                                                     ::mm-routes/article
+                                                     {:article-id (name id)}])})]))]]])
 (defonce comments
   (r/atom
    [{:id 1

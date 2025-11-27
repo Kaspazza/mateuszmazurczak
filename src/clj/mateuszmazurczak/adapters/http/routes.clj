@@ -7,24 +7,40 @@
 (def routes
   "Storing backend router data, as described in [reitit.ring/router](https://cljdoc.org/d/fi.metosin/reitit/0.7.0-alpha6/doc/ring/ring-router#reititringrouter)
    Not found should not be here, as it introduce conflicts, use nil value instead."
-  (conj [[""
-          {:name ::root
-           :get mateuszmazurczak-page
-           :middleware []}]
-         ["/"
-          {:name ::home ;; Important for history as browser adds systematically that `/`
-           :get mateuszmazurczak-page}]
-         ["/articles"
-          {:name ::articles
-           :get mateuszmazurczak-page}]
-         ["/article/:article-name"
-          {:name ::article
-           :get article-page}]
-         ["/aoc"
-          {:name ::aoc
-           :get mateuszmazurczak-page}]
-         ["/api/aoc/solutions"
-          {:name ::api-aoc-solutions
-           :get api/get-solutions
-           :post api/post-solution}]]
-        (mm-env/route)))
+  (conj
+   [[""
+     {:name ::root
+      :get mateuszmazurczak-page
+      :middleware []}]
+    ["/"
+     {:name ::home ;; Important for history as browser adds systematically that `/`
+      :get mateuszmazurczak-page}]
+    ["/articles"
+     {:name ::articles
+      :get mateuszmazurczak-page}]
+    ["/article/:article-name"
+     {:name ::article
+      :get article-page}]
+    ["/aoc"
+     {:name ::aoc
+      :get mateuszmazurczak-page}]
+    ["/secret-admin-panel-xyz"
+     {:name ::admin
+      :get mateuszmazurczak-page}]
+    ["/api/aoc/solutions"
+     [""
+      {:name ::api-aoc-solutions
+       :get api/get-solutions
+       :post api/post-solution}]
+     ["/vote"
+      {:name ::api-aoc-solutions-vote
+       :post api/post-vote
+       :conflicting true}]
+     ["/:solution-id"
+      {:name ::api-aoc-solution-delete
+       :delete api/delete-solution
+       :conflicting true
+       :constraints
+       {:solution-id
+        #"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"}}]]]
+   (mm-env/route)))

@@ -120,6 +120,55 @@
                                  :description "Handle failed solutions fetch."
                                  :schema [:cat [:= :aoc/fetch-solutions-failure] :any]
                                  :handler-type :fx}
+   :aoc/vote {:category :page
+              :description "Vote for a solution (best-practices or clever)."
+              :schema [:cat [:= :aoc/vote] :string [:enum :best-practices :clever]]
+              :handler-type :fx}
+   :aoc/vote-success
+   {:category :page
+    :description "Handle successful vote submission. Refetches solutions to get updated counts."
+    :schema [:cat [:= :aoc/vote-success]]
+    :handler-type :fx}
+   :aoc/vote-failure {:category :page
+                      :description "Handle failed vote submission."
+                      :schema [:cat [:= :aoc/vote-failure] :any]
+                      :handler-type :fx}
+   :aoc/give-consent {:category :page
+                      :description "Give consent ('I've solved it') to unlock viewing solutions."
+                      :schema [:cat [:= :aoc/give-consent] :int :int [:enum 1 2]]
+                      :handler-type :fx}
+   :admin/on-route-enter {:category :page
+                          :description "Initialize admin page state on route entry."
+                          :schema [:cat [:= :admin/on-route-enter]]
+                          :handler-type :fx}
+   :admin/update-form {:category :page
+                       :description "Update admin form field."
+                       :schema [:cat [:= :admin/update-form] :keyword :any]
+                       :handler-type :fx}
+   :admin/login {:category :admin
+                 :description "Admin login with API key from form."
+                 :schema [:cat [:= :admin/login]]
+                 :handler-type :fx}
+   :admin/logout {:category :admin
+                  :description "Admin logout (clear key)."
+                  :schema [:cat [:= :admin/logout]]
+                  :handler-type :fx}
+   :admin/check-status {:category :admin
+                        :description "Check if admin key exists in localStorage on init."
+                        :schema [:cat [:= :admin/check-status]]
+                        :handler-type :fx}
+   :admin/delete-solution {:category :admin
+                           :description "Delete a solution (admin only)."
+                           :schema [:cat [:= :admin/delete-solution] :string]
+                           :handler-type :fx}
+   :admin/delete-solution-success {:category :admin
+                                   :description "Handle successful solution deletion."
+                                   :schema [:cat [:= :admin/delete-solution-success] :any]
+                                   :handler-type :fx}
+   :admin/delete-solution-failure {:category :admin
+                                   :description "Handle failed solution deletion."
+                                   :schema [:cat [:= :admin/delete-solution-failure] :any]
+                                   :handler-type :fx}
    :theme/set {:category :theme
                :description
                "Set theme to app-db and apply to DOM. Theme persistence handled by cache system."

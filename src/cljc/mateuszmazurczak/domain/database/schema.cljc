@@ -56,6 +56,10 @@
                           :attr :string}
    :aoc-solution/created-at {:doc "Timestamp when the solution was submitted"
                              :attr :instant
-                             :index true}})
+                             :index true}
+   :aoc-solution/best-practices-count {:doc "Number of best practices votes"
+                                       :attr :int}
+   :aoc-solution/clever-count {:doc "Number of clever votes"
+                               :attr :int}})
 
 (def entities [article author comment aoc-solution migrations/migration-schema])

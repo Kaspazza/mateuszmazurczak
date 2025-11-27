@@ -22,4 +22,8 @@
    ["/aoc"
     {:name ::aoc
      :page-id :pages/aoc
-     :controllers [{:start (fn [_] (events/dispatch! [:aoc/on-route-enter]))}]}]])
+     :controllers [{:start (fn [_] (events/dispatch! [:aoc/on-route-enter]))}]}]
+   ["/secret-admin-panel-xyz"
+    {:name ::admin
+     :page-id :pages/admin
+     :controllers [{:start (fn [_] (events/dispatch! [:admin/on-route-enter]))}]}]])

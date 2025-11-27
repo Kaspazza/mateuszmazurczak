@@ -102,8 +102,6 @@
   [conn pattern entity-id]
   (d/pull (d/db conn) pattern entity-id))
 
-;; Migration tracking functions
-
 (defn get-applied-migrations
   "Get list of applied migration IDs from the database."
   [conn]

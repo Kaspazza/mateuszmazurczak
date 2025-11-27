@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.domain.aoc.repository
   "Domain logic for AOC solution repository operations.
    
-   Pure functions for building queries and transaction data.
-   Actual database operations delegated to ports/database."
+   Functions for building queries and transaction data."
   (:require
-   [clojure.string :as str])
+   [clojure.string                  :as str]
+   [mateuszmazurczak.ports.database :as db])
   (:import [java.util Date UUID]))
 
 (def SaveSolutionRequest
@@ -39,8 +39,12 @@
    - :content-type (string or keyword: code-snippet or repo-link)
    - :content (string)
    
-   Returns Datalevin transaction data (vector of maps).
-   Generates UUID and timestamp automatically."
+   Returns tuple of [solution-id tx-data] where:
+   - solution-id is the generated UUID
+   - tx-data is Datalevin transaction data (vector of maps)
+   
+   Generates UUID and timestamp automatically.
+   Vote counts are initialized to 0."
   [{:keys [year challenge part author-name github-profile content-type content]}]
   (let [solution-id (UUID/randomUUID)
         now (Date.)
@@ -52,10 +56,13 @@
                  :aoc-solution/author-name author-name
                  :aoc-solution/content-type normalized-content-type
                  :aoc-solution/content content
-                 :aoc-solution/created-at now}]
-    [(if (and github-profile (string? github-profile) (not (str/blank? github-profile)))
-       (assoc base-tx :aoc-solution/github-profile github-profile)
-       base-tx)]))
+                 :aoc-solution/created-at now
+                 :aoc-solution/best-practices-count 0
+                 :aoc-solution/clever-count 0}
+        tx (if (and github-profile (string? github-profile) (not (str/blank? github-profile)))
+             (assoc base-tx :aoc-solution/github-profile github-profile)
+             base-tx)]
+    [solution-id [tx]]))
 
 (defn build-get-solutions-query
   "Build Datalog query for fetching solutions by year, challenge, and part.
@@ -80,8 +87,17 @@
    
    Takes a tuple from the query result and returns a properly formatted
    solution map with string ID (for frontend compatibility)."
-  [{:aoc-solution/keys
-    [id year challenge part author-name github-profile content-type content created-at]}]
+  [{:aoc-solution/keys [id
+                        year
+                        challenge
+                        part
+                        author-name
+                        github-profile
+                        content-type
+                        content
+                        created-at
+                        best-practices-count
+                        clever-count]}]
   (cond-> {:id (str id)
            :year year
            :challenge challenge
@@ -89,10 +105,41 @@
            :author-name author-name
            :content-type content-type
            :content content
-           :created-at (str created-at)}
+           :created-at (str created-at)
+           :best-practices-count (or best-practices-count 0)
+           :clever-count (or clever-count 0)}
     github-profile (assoc :github-profile github-profile)))
 
 (defn sort-solutions-by-created-at
   "Sort solutions by created-at timestamp, newest first."
   [solutions]
   (sort-by :created-at #(compare %2 %1) solutions))
+
+(defn vote-type->attribute
+  "Map vote type to its corresponding database attribute.
+   
+   Takes:
+   - vote-type: :best-practices or :clever
+   
+   Returns the corresponding database attribute keyword."
+  [vote-type]
+  (case vote-type
+    :best-practices :aoc-solution/best-practices-count
+    :clever :aoc-solution/clever-count))
+
+(def solution-votes-query
+  "Build query to find all vote entities for a given solution.
+   
+   Returns Datalog query that finds vote entity IDs."
+  '[:find [?vote ...] :in $ ?solution-id :where [?vote :aoc-vote/solution-id ?solution-id]])
+
+(defn solution-query
+  [{:keys [db]} solution-uid]
+  (db/pull-entity db '[*] [:aoc-solution/id solution-uid]))
+
+(defn delete-solution-tx
+  [{:keys [db]} solution-uid]
+  (let [vote-eids (db/query db solution-votes-query solution-uid)
+        delete-votes-tx (when (seq vote-eids) (mapv (fn [eid] [:db/retractEntity eid]) vote-eids))
+        delete-solution-tx [[:db/retractEntity [:aoc-solution/id solution-uid]]]]
+    (if delete-votes-tx (concat delete-votes-tx delete-solution-tx) delete-solution-tx)))

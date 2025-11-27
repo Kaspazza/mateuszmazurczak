@@ -127,7 +127,8 @@
                  [:dispatch
                   [:nav/navigate
                    :mateuszmazurczak.adapters.navigation.routes/article
-                   {:article-id (name (:id article))}]]))
+                   {:article-id (name (:id article))}
+                   nil]]))
         articles-data))
 
 (defn build-home-page-data

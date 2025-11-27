@@ -4,11 +4,12 @@
    Provides HTTP request capabilities as standalone functions and re-frame effects.
    All HTTP-related side effects should go through this module."
   (:require
-   [ajax.core                              :as ajax]
-   [clojure.string                         :as string]
-   [mateuszmazurczak.domain.state.registry :as state-reg]
-   [mateuszmazurczak.ports.logging         :as log]
-   [re-frame.core                          :as rf]))
+   [ajax.core                                      :as ajax]
+   [clojure.string                                 :as string]
+   [mateuszmazurczak.application.aoc.cache-service :as aoc-cache]
+   [mateuszmazurczak.domain.state.registry         :as state-reg]
+   [mateuszmazurczak.ports.logging                 :as log]
+   [re-frame.core                                  :as rf]))
 
 (defn get-anti-forgery-token
   "Extract the anti-forgery token from the DOM.
@@ -79,8 +80,15 @@
   [{:keys [method url params]
     :event/keys [on-success on-error]}]
   (let [needs-csrf? (contains? #{:post :put :delete :patch}
-                               (some-> method name string/lower-case keyword))
-        csrf-token (when needs-csrf? (get-anti-forgery-token))]
+                               (some-> method
+                                       name
+                                       string/lower-case
+                                       keyword))
+        csrf-token (when needs-csrf? (get-anti-forgery-token))
+        admin-key (aoc-cache/get-admin-key)
+        headers (cond-> {}
+                  csrf-token (assoc "X-CSRF-Token" csrf-token "X-Requested-With" "XMLHttpRequest")
+                  admin-key (assoc "X-Admin-Key" admin-key))]
     ((ajax-method method)
      url
      (cond-> {:format (ajax/json-request-format {})
@@ -88,8 +96,7 @@
               :handler on-success
               :error-handler on-error}
        params (assoc :params params)
-       csrf-token (assoc :headers {"X-CSRF-Token" csrf-token
-                                    "X-Requested-With" "XMLHttpRequest"})))))
+       (seq headers) (assoc :headers headers)))))
 
 (defn init-effects!
   "Register all HTTP effects for re-frame.

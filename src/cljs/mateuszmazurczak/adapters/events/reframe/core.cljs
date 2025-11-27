@@ -1,6 +1,7 @@
 (ns mateuszmazurczak.adapters.events.reframe.core
   "Re-frame event adapter - implements events/registry.cljs contract."
   (:require
+   [mateuszmazurczak.adapters.events.reframe.admin      :as admin-events]
    [mateuszmazurczak.adapters.events.reframe.cache      :as cache-events]
    [mateuszmazurczak.adapters.events.reframe.http       :as http-events]
    [mateuszmazurczak.adapters.events.reframe.i18n       :as i18n-events]
@@ -30,7 +31,8 @@
          nav-events/handlers
          i18n-events/handlers
          aoc-events/handlers
-         theme-events/handlers))
+         theme-events/handlers
+         admin-events/handlers))
 
 (defn init!
   "Initialize adapter-specific setup (effects and subscriptions).

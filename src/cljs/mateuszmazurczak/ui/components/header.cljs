@@ -1,16 +1,11 @@
 (ns mateuszmazurczak.ui.components.header
   "Header component with support for dark/light theme and language selection."
   (:require
-   [mateuszmazurczak.adapters.navigation.routes :as mm-routes]
    [mateuszmazurczak.domain.i18n.language       :as mm-i18n-lang]
    [mateuszmazurczak.frontend-i18n              :as fi18n]
-   [mateuszmazurczak.ports.navigation           :as navigation]
    [mateuszmazurczak.ui.components.select       :as ui-select]
    [mateuszmazurczak.ui.components.theme-toggle :as theme-toggle]
-   [mateuszmazurczak.utils.styles               :refer [merge-classes]]
-   [reagent.core                                :as r]))
-
-
+   [mateuszmazurczak.utils.styles               :refer [merge-classes]]))
 
 (defn- base-header
   "Base header component with common layout and styling.
@@ -123,7 +118,7 @@
                             :class class
                             :right-section [:<> [theme-toggle/theme-toggle] [lang-select]]}])
 
-(defn- toggle-header-border
+(defn toggle-header-border
   "Toggle header border based on scroll position.
   
   Shows/hides border when scrolling past 50px threshold.
@@ -141,38 +136,4 @@
           (and (<= scroll-y 50) (not has-border?)) (.add header-css-list "border-b")
           :else nil)))))
 
-(defn header
-  "Main header component with navigation menu, theme toggle, and language selector.
-  
-  Includes scroll-based border toggling for a dynamic appearance.
-  The border appears/disappears based on scroll position.
-  
-  Props:
-  - :size (:full | :half) - Header width (default: :full)
-  - :border? (boolean) - Initial border state (default: true)
-  - :sticky? (boolean) - Sticky positioning (default: true)
-  - :class - Additional CSS classes
-  
-  Menu items:
-  - Mateusz Mazurczak (home)
-  - Articles
-  - AoC Solutions
-  
-  Example:
-  [header {:size :full :border? true :sticky? true}]"
-  [{:keys [_size _border? _sticky? _class]}]
-  (r/create-class
-   {:component-did-mount (fn [_] (.addEventListener js/window "scroll" toggle-header-border))
-    :component-will-unmount (fn [_] (.removeEventListener js/window "scroll" toggle-header-border))
-    :reagent-render (fn [{:keys [size border? sticky? class]}]
-                      [header-comp {:size size
-                                    :sticky? sticky?
-                                    :border? border?
-                                    :class class
-                                    :right-section [:<> [theme-toggle/theme-toggle] [lang-select]]}
-                       {:title "Mateusz Mazurczak"
-                        :href (navigation/href ::mm-routes/home)}
-                       {:title (fi18n/tr :articles)
-                        :href (navigation/href ::mm-routes/articles)}
-                       {:title "AoC Solutions"
-                        :href (navigation/href ::mm-routes/aoc)}])}))
+

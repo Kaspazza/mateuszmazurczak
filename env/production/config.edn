@@ -1,4 +1,5 @@
-{:app-name "mateuszmazurczak"
+{:admin {:api-key #or [#env ADMIN_API_KEY #secrets [:admin :api-key]]}
+ :app-name "mateuszmazurczak"
  :db {:uri #or [#env DB_URI #secrets [:db :uri]]}
  :env :production
  :http-server {:port #or [#env PORT 8080]
@@ -11,7 +12,8 @@
           :sys/db-conn {:db-uri #ref [:db :uri]
                         :logger #ig/ref :sys/logging}
           :sys/error-tracking {:logger #ig/ref :sys/logging}
-          :sys/handler {:database #ig/ref :sys/db-conn
+          :sys/handler {:admin-api-key #ref [:admin :api-key]
+                        :database #ig/ref :sys/db-conn
                         :logger #ig/ref :sys/logging
                         :routes #var mateuszmazurczak.adapters.http.routes/routes
                         :translator #ig/ref :sys/translator}

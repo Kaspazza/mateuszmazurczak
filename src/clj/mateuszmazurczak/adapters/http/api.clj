@@ -1,9 +1,11 @@
 (ns mateuszmazurczak.adapters.http.api
   "API handlers for JSON endpoints."
   (:require
+   [clojure.string                         :as str]
    [malli.core                             :as m]
    [malli.error                            :as me]
    [mateuszmazurczak.domain.aoc.repository :as aoc-repo]
+   [mateuszmazurczak.domain.aoc.vote       :as vote]
    [mateuszmazurczak.ports.database        :as db]
    [mateuszmazurczak.ports.logging         :as log]
    [ring.util.http-response                :as http-response]))
@@ -51,7 +53,7 @@
                  solutions (->> results
                                 (map aoc-repo/solution-tuple->map)
                                 (aoc-repo/sort-solutions-by-created-at))]
-             (http-response/ok solutions))
+             (http-response/ok {:solutions solutions}))
            (catch Exception e
              (log/error! logger
                          {:error e
@@ -72,7 +74,7 @@
    - content (string): The solution code or repository URL
    
    Returns:
-   - 200 with success message
+   - 200 with success message and solution-id
    - 400 if request body is invalid
    - 500 if database transaction fails"
   [{:keys [database logger body-params]}]
@@ -87,7 +89,7 @@
                           :errors humanized-errors}})
         (http-response/bad-request {:error "Invalid solution data"
                                     :details humanized-errors}))
-      (try (let [tx-data (aoc-repo/build-save-solution-tx body-params)]
+      (try (let [[solution-id tx-data] (aoc-repo/build-save-solution-tx body-params)]
              (db/transact! database tx-data)
              (log/log! logger
                        {:id ::solution-saved
@@ -95,12 +97,146 @@
                         :msg "AOC solution saved successfully"
                         :data {:year (:year body-params)
                                :challenge (:challenge body-params)
-                               :part (:part body-params)}})
+                               :part (:part body-params)
+                               :solution-id (str solution-id)}})
              (http-response/ok {:success true
-                                :message "Solution submitted successfully"}))
+                                :message "Solution submitted successfully"
+                                :solution-id (str solution-id)}))
            (catch Exception e
              (log/error! logger
                          {:error e
                           :id ::post-solution-failed
                           :data {:body-params body-params}})
              (http-response/internal-server-error {:error "Failed to save solution"}))))))
+
+(defn post-vote-response
+  [{:keys [database logger]
+    :as _ctx}
+   lookup-ref
+   solution-id
+   vote-type-kw]
+  (let [updated-solution (db/pull-entity database '[*] lookup-ref)
+        response-data {:success true
+                       :solution-id solution-id
+                       :best-practices-count (:aoc-solution/best-practices-count updated-solution)
+                       :clever-count (:aoc-solution/clever-count updated-solution)}]
+    (log/log! logger
+              {:id ::vote-recorded
+               :level :info
+               :msg "Vote recorded for AOC solution"
+               :data {:solution-id solution-id
+                      :vote-type vote-type-kw}})
+    (http-response/ok response-data)))
+
+(defn post-vote
+  "POST /api/aoc/solutions/vote - Vote for a solution.
+   
+   Expected body:
+   - solution-id (string): UUID of the solution as string
+   - vote-type (string): Either 'best-practices' or 'clever'
+   
+   Returns:
+   - 200 with success message and updated solution
+   - 400 if request body is invalid or solution doesn't exist
+   - 500 if database transaction fails"
+  [{:keys [database logger body-params]}]
+  (let [{:keys [solution-id vote-type]} body-params]
+    (cond
+      (or (nil? solution-id) (str/blank? solution-id)) (http-response/bad-request
+                                                        {:error "solution-id is required"})
+      (not (contains? #{"best-practices" "clever" :best-practices :clever} vote-type))
+      (http-response/bad-request {:error "vote-type must be 'best-practices' or 'clever'"})
+      :else (try (let [uuid-id (java.util.UUID/fromString solution-id)
+                       vote-type-kw (vote/normalize-vote-type vote-type)
+                       vote-tx (vote/save-vote-tx solution-id vote-type-kw)
+                       attribute (aoc-repo/vote-type->attribute vote-type-kw)
+                       lookup-ref [:aoc-solution/id uuid-id]
+                       combined-tx (conj vote-tx [:db/add lookup-ref attribute 1])]
+                   (db/transact! database combined-tx)
+                   (post-vote-response {:database database
+                                        :logger logger}
+                                       lookup-ref
+                                       solution-id
+                                       vote-type-kw))
+                 (catch IllegalArgumentException _
+                   (http-response/bad-request {:error "Invalid solution-id format"}))
+                 (catch clojure.lang.ExceptionInfo e
+                   (if (= (:type (ex-data e))
+                          :mateuszmazurczak.adapters.database.datalevin/entity-not-found)
+                     (http-response/bad-request {:error "Solution not found"})
+                     (do (log/error! logger
+                                     {:error e
+                                      :id ::post-vote-failed
+                                      :data {:body-params body-params}})
+                         (http-response/internal-server-error {:error "Failed to record vote"}))))
+                 (catch Exception e
+                   (log/error! logger
+                               {:error e
+                                :id ::post-vote-failed
+                                :data {:body-params body-params}})
+                   (http-response/internal-server-error {:error "Failed to record vote"}))))))
+
+
+
+(defn delete-solution
+  "DELETE /api/aoc/solutions/:solution-id - Delete a solution (admin only).
+   
+   Path params:
+   - solution-id (string): UUID of the solution to delete
+   
+   Headers:
+   - X-Admin-Key (required): Admin API key
+   
+   Admin Authentication:
+   - Requires valid X-Admin-Key header
+   - Key must match ADMIN_API_KEY environment variable
+   - Key must be at least 32 characters
+   
+   Returns:
+   - 200 with success message
+   - 401 if admin authentication fails
+   - 400 if solution-id is invalid
+   - 404 if solution doesn't exist
+   - 500 if database transaction fails"
+  [{:keys [database logger path-params admin-authenticated?]}]
+  (if-not admin-authenticated?
+    (do (log/log! logger
+                  {:level :warn
+                   :id ::delete-solution-unauthorized
+                   :msg "Unauthorized delete attempt"})
+        (http-response/unauthorized {:error "Admin authentication required"
+                                     :details "Provide valid X-Admin-Key header"}))
+    (let [solution-id (:solution-id path-params)]
+      (cond
+        (or (nil? solution-id) (str/blank? solution-id)) (http-response/bad-request
+                                                          {:error "solution-id is required"})
+        :else (try
+                (let [uuid-id (java.util.UUID/fromString solution-id)
+                      solution (aoc-repo/solution-query {:db database} uuid-id)]
+                  (if-not solution
+                    (do (log/log! logger
+                                  {:level :warn
+                                   :id ::delete-solution-not-found
+                                   :msg "Solution not found for deletion"
+                                   :data {:solution-id solution-id}})
+                        (http-response/not-found {:error "Solution not found"}))
+                    (do (db/transact! database (aoc-repo/delete-solution-tx {:db database} uuid-id))
+                        (log/log! logger
+                                  {:id ::solution-deleted
+                                   :level :info
+                                   :msg "AOC solution deleted"
+                                   :data {:solution-id solution-id
+                                          :year (:aoc-solution/year solution)
+                                          :challenge (:aoc-solution/challenge solution)
+                                          :part (:aoc-solution/part solution)}})
+                        (http-response/ok {:success true
+                                           :message "Solution deleted successfully"
+                                           :solution-id solution-id}))))
+                (catch IllegalArgumentException _
+                  (http-response/bad-request {:error "Invalid solution-id format"}))
+                (catch Exception e
+                  (log/error! logger
+                              {:error e
+                               :id ::delete-solution-failed
+                               :data {:solution-id solution-id}})
+                  (http-response/internal-server-error {:error "Failed to delete solution"})))))))

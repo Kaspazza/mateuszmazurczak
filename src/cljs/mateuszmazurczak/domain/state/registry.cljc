@@ -42,6 +42,7 @@
 (def ^:dynamic *current-route-path* [:current-route])
 (def ^:dynamic *translator-path* [:translator])
 (def ^:dynamic *logger-path* [:logger])
+(def ^:dynamic *admin-logged-in-path* [:admin :logged-in?])
 
 (def ^:dynamic *entities-path* [:entities])
 (def ^:dynamic *aoc-solutions-path* [:entities :aoc-solutions])
@@ -49,6 +50,7 @@
 (def ^:dynamic *pages-path* [:pages])
 (def ^:dynamic *home-page-path* [:pages :home])
 (def ^:dynamic *aoc-page-path* [:pages :aoc])
+(def ^:dynamic *admin-page-path* [:pages :admin])
 
 (def watch-reg
   "Registry of all application watch.
@@ -120,4 +122,18 @@
                             :output-schema [:maybe map?]}
    :theme/current {:description "Returns current theme keyword (:light | :dark)"
                    :input-schema [:cat [:= :theme/current]]
-                   :output-schema [:maybe [:enum :light :dark]]}})
+                   :output-schema [:maybe [:enum :light :dark]]}
+   :admin/logged-in? {:description "Returns true if admin is logged in, false otherwise"
+                      :input-schema [:cat [:= :admin/logged-in?]]
+                      :output-schema [:maybe boolean?]}
+   :pages/admin {:description "Returns processed admin page data with validation metadata"
+                 :input-schema [:cat [:= :pages/admin]]
+                 :output-schema [:maybe
+                                 [:map
+                                  [:data map?]
+                                  [:valid? boolean?]
+                                  [:error {:optional true}
+                                   map?]]]}
+   :admin/raw-data {:description "Returns raw admin page data from state"
+                    :input-schema [:cat [:= :admin/raw-data]]
+                    :output-schema [:maybe map?]}})

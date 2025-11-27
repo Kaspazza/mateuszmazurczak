@@ -7,16 +7,17 @@
    - `get-watch-fn` returns re-frame's subscribe function
    - `init!` provides explicit initialization hook for system wiring but it's not necessairily needed for reframe, this ns just needs to be compiled"
   (:require
-   [clojure.set                                   :as set]
-   [mateuszmazurczak.adapters.state.reframe.aoc   :as aoc-watch]
-   [mateuszmazurczak.adapters.state.reframe.theme :as theme-watch]
-   [mateuszmazurczak.domain.i18n.language         :as i18n-lang]
-   [mateuszmazurczak.domain.pages.home            :as home-domain]
-   [mateuszmazurczak.domain.state.registry        :as state-registry]
-   [mateuszmazurczak.frontend-i18n                :as fi18n]
-   [mateuszmazurczak.ports.events                 :as events]
-   [mateuszmazurczak.ports.navigation             :as nav-core]
-   [re-frame.core                                 :as rf]))
+   [clojure.set                                        :as set]
+   [mateuszmazurczak.adapters.state.reframe.admin-page :as admin-page-watch]
+   [mateuszmazurczak.adapters.state.reframe.aoc        :as aoc-watch]
+   [mateuszmazurczak.adapters.state.reframe.theme      :as theme-watch]
+   [mateuszmazurczak.domain.i18n.language              :as i18n-lang]
+   [mateuszmazurczak.domain.pages.home                 :as home-domain]
+   [mateuszmazurczak.domain.state.registry             :as state-registry]
+   [mateuszmazurczak.frontend-i18n                     :as fi18n]
+   [mateuszmazurczak.ports.events                      :as events]
+   [mateuszmazurczak.ports.navigation                  :as nav-core]
+   [re-frame.core                                      :as rf]))
 
 ;; =============================================================================
 ;; Navigation watch
@@ -88,8 +89,6 @@
               (-> lang-id
                   i18n-lang/id-to-str)))
 
-
-
 ;; =============================================================================
 ;; Adapter interface
 ;; =============================================================================
@@ -102,6 +101,7 @@
                :nav/active-route? :pages/home :home/raw-data :logger :i18n/lang :i18n/translator
                :i18n/lang-str}
              aoc-watch/watch
+             admin-page-watch/watch
              theme-watch/watch))
 
 (defn get-watch-fn

@@ -102,4 +102,5 @@
          (malli/validate i18n/TranslatorSchema translator)
          (malli/validate logging/LoggerSchema logger)
          (some? database)]}
-  (fn [http-req] ((ring-handler routes translator logger database admin-api-key) http-req)))
+  (let [rh (ring-handler routes translator logger database admin-api-key)]
+    (fn [http-req] (rh http-req))))

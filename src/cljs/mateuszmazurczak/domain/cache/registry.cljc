@@ -14,6 +14,13 @@
    On version mismatch, all cached data is cleared and re-initialized."
   2)
 
+(def version-cache-path
+  "localStorage key for storing version number"
+  "mateuszmazurczak-cache-version")
+(def lang-cache-path (str "mateuszmazurczak-v" version "-lang"))
+(def route-cache-path (str "mateuszmazurczak-v" version "-route"))
+(def theme-cache-path (str "mateuszmazurczak-v" version "-theme"))
+
 (def domains
   "Map of domain-id to persistence configuration.
    
@@ -23,11 +30,11 @@
    Example:
    {:route {:key 'mateuszmazurczak-v1-route'
             :path [:current-route]}}"
-  {:route {:key (str "mateuszmazurczak-v" version "-route")
+  {:route {:key route-cache-path
            :path state-reg/*current-route-path*}
-   :lang {:key (str "mateuszmazurczak-v" version "-lang")
+   :lang {:key lang-cache-path
           :path state-reg/*lang-path*}
-   :theme {:key (str "mateuszmazurczak-v" version "-theme")
+   :theme {:key theme-cache-path
            :path state-reg/*theme-path*}})
 
-(def version-key "localStorage key for storing version number" "mateuszmazurczak-cache-version")
+

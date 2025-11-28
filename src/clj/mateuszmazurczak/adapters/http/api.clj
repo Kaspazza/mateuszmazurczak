@@ -39,7 +39,7 @@
    - part (required): Part number (1 or 2)
    
    Returns:
-   - 200 with array of solutions
+   - 200 with array of solutions (with vote counts computed from vote refs)
    - 400 if parameters are invalid
    - 500 if database query fails"
   [{:keys [database logger params]}]
@@ -52,6 +52,7 @@
                  results (db/query database query year challenge part)
                  solutions (->> results
                                 (map aoc-repo/solution-tuple->map)
+                                (map (partial aoc-repo/enrich-with-vote-counts database))
                                 (aoc-repo/sort-solutions-by-created-at))]
              (http-response/ok {:solutions solutions}))
            (catch Exception e
@@ -112,14 +113,15 @@
 (defn post-vote-response
   [{:keys [database logger]
     :as _ctx}
-   lookup-ref
+   solution-uuid
    solution-id
    vote-type-kw]
-  (let [updated-solution (db/pull-entity database '[*] lookup-ref)
+  (let [best-practices-count (aoc-repo/count-votes database solution-uuid :best-practices)
+        clever-count (aoc-repo/count-votes database solution-uuid :clever)
         response-data {:success true
                        :solution-id solution-id
-                       :best-practices-count (:aoc-solution/best-practices-count updated-solution)
-                       :clever-count (:aoc-solution/clever-count updated-solution)}]
+                       :best-practices-count best-practices-count
+                       :clever-count clever-count}]
     (log/log! logger
               {:id ::vote-recorded
                :level :info
@@ -136,7 +138,7 @@
    - vote-type (string): Either 'best-practices' or 'clever'
    
    Returns:
-   - 200 with success message and updated solution
+   - 200 with success message and updated vote counts (computed from vote refs)
    - 400 if request body is invalid or solution doesn't exist
    - 500 if database transaction fails"
   [{:keys [database logger body-params]}]
@@ -149,13 +151,12 @@
       :else (try (let [uuid-id (java.util.UUID/fromString solution-id)
                        vote-type-kw (vote/normalize-vote-type vote-type)
                        vote-tx (vote/save-vote-tx solution-id vote-type-kw)
-                       attribute (aoc-repo/vote-type->attribute vote-type-kw)
                        lookup-ref [:aoc-solution/id uuid-id]
-                       combined-tx (conj vote-tx [:db/add lookup-ref attribute 1])]
-                   (db/transact! database combined-tx)
+                       aoc-solution (db/pull-entity database '[*] lookup-ref)]
+                   (db/transact! database vote-tx)
                    (post-vote-response {:database database
                                         :logger logger}
-                                       lookup-ref
+                                       uuid-id
                                        solution-id
                                        vote-type-kw))
                  (catch IllegalArgumentException _

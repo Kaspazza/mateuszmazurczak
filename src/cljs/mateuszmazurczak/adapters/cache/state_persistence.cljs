@@ -24,12 +24,12 @@
    
    Returns: true if version valid, false if invalidated"
   []
-  (let [stored-version (cache/get-item cache-registry/version-key)
+  (let [stored-version (cache/get-item cache-registry/version-cache-path)
         current-version cache-registry/version]
     (if (= stored-version current-version)
       true
       (do (doseq [[_domain-id {:keys [key]}] cache-registry/domains] (cache/remove-item! key))
-          (cache/set-item! cache-registry/version-key current-version)
+          (cache/set-item! cache-registry/version-cache-path current-version)
           false))))
 
 (defn save-domain!

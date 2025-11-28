@@ -14,7 +14,8 @@
         :default
         :production
         :parse-fn
-        keyword]]
+        keyword]
+       ["-n" "--no-cache" "Build without using cache" :default false]]
       (concat cli-opts/help-options cli-opts/verbose-options)
       cli-opts/parse-cli))
 
@@ -128,13 +129,16 @@
   ([image-name tag] (build-image image-name tag default-dockerfile))
   ([image-name tag dockerfile]
    (let [profile (get-in cli-opts [:options :profile])
+         no-cache? (get-in cli-opts [:options :no-cache])
          secrets (load-secrets-for-env profile)
          build-args (secrets->build-args secrets profile)
          image-tag (str image-name ":" tag)
          base-cmd ["docker" "build" "--platform" "linux/amd64" "-f" dockerfile "-t" image-tag]
-         cmd (vec (concat base-cmd build-args ["."]))]
+         base-cmd-with-cache (if no-cache? (conj base-cmd "--no-cache") base-cmd)
+         cmd (vec (concat base-cmd-with-cache build-args ["."]))]
      (normalln "Building Docker image:" image-tag)
      (normalln "Using environment profile:" profile)
+     (when no-cache? (normalln "Building without cache"))
      (when (seq build-args) (normalln "Injecting build-time secrets from .secrets.edn"))
      (let [{:keys [proc]
             :as _result}
@@ -192,10 +196,10 @@
    Argument validation is handled by bb.edn via enter-with-arguments
    
    Usage: 
-     bb docker-build <version>
+     bb docker-build <version> [-n|--no-cache] [-p|--profile PROFILE]
      bb docker-push <version>
-     bb docker-run <version>
-     bb docker-build-push <version>"
+     bb docker-run <version> [-p|--profile PROFILE]
+     bb docker-build-push <version> [-n|--no-cache] [-p|--profile PROFILE]"
   [task-type]
   (let [tag (first (get-in cli-opts [:arguments]))]
     (case task-type

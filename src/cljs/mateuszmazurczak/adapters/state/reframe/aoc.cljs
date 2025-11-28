@@ -45,8 +45,10 @@
          solutions-text (get-in ui-data
                                 (aoc-domain/relative-path aoc-domain/*aoc-solutions-text-path*))
          enriched-solutions
-         (mapv #(assoc % :theme theme :text solutions-text)
-               (get-in ui-data (aoc-domain/relative-path aoc-domain/*aoc-solutions-path*)))
+         (->> (get-in ui-data (aoc-domain/relative-path aoc-domain/*aoc-solutions-path*))
+              (mapv #(assoc % :theme theme :text solutions-text))
+              (sort-by #(+ (or (:best-practices-count %) 0) (or (:clever-count %) 0)) >)
+              vec)
          ui-data (assoc-in ui-data
                   (aoc-domain/relative-path aoc-domain/*aoc-solutions-path*)
                   enriched-solutions)

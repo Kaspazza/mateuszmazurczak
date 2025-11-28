@@ -206,8 +206,7 @@ npx karma start --single-run --client.args '["shadow.test.karma.init","^mateuszm
 ### Build & Release
 
 ```bash
-npx shadow-cljs release mateuszmazurczak-app  # Frontend production build
-bb build-jar                                   # Backend JAR (add -v for verbose)
+bb build-jar                                   # Application Uber JAR (add -v for verbose)
 bb clean                                       # Clean build artifacts
 ```
 

@@ -85,7 +85,7 @@
              now (Date.)
              solution-uuid (UUID/fromString solution-id)]
          [{:aoc-vote/id vote-id
-           :aoc-vote/solution-id solution-uuid
+           :aoc-vote/solution-id [:aoc-solution/id solution-uuid]
            :aoc-vote/vote-type vote-type
            :aoc-vote/voted-at now}])))
 

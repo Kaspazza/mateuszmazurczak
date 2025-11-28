@@ -43,8 +43,7 @@
    - solution-id is the generated UUID
    - tx-data is Datalevin transaction data (vector of maps)
    
-   Generates UUID and timestamp automatically.
-   Vote counts are initialized to 0."
+   Generates UUID and timestamp automatically."
   [{:keys [year challenge part author-name github-profile content-type content]}]
   (let [solution-id (UUID/randomUUID)
         now (Date.)
@@ -56,9 +55,7 @@
                  :aoc-solution/author-name author-name
                  :aoc-solution/content-type normalized-content-type
                  :aoc-solution/content content
-                 :aoc-solution/created-at now
-                 :aoc-solution/best-practices-count 0
-                 :aoc-solution/clever-count 0}
+                 :aoc-solution/created-at now}
         tx (if (and github-profile (string? github-profile) (not (str/blank? github-profile)))
              (assoc base-tx :aoc-solution/github-profile github-profile)
              base-tx)]
@@ -82,22 +79,41 @@
     [?e :aoc-solution/challenge ?challenge]
     [?e :aoc-solution/part ?part]])
 
+(def find-votes-query
+  "Query to find all votes by type for a given solution.
+   
+   Joins through the solution entity's UUID to find votes.
+   Returns collection of vote entity IDs."
+  '[:find
+    [?vote ...]
+    :in
+    $
+    ?solution-uuid
+    ?vote-type
+    :where
+    [?solution :aoc-solution/id ?solution-uuid]
+    [?vote :aoc-vote/solution-id ?solution]
+    [?vote :aoc-vote/vote-type ?vote-type]])
+
+(defn count-votes
+  "Count votes for a solution by type.
+   
+   Takes:
+   - db: Database connection
+   - solution-id: UUID of the solution
+   - vote-type: :best-practices or :clever
+   
+   Returns count as integer (0 if no votes)."
+  [db solution-id vote-type]
+  (count (db/query db find-votes-query solution-id vote-type)))
+
 (defn solution-tuple->map
   "Convert query result tuple to solution map.
    
    Takes a tuple from the query result and returns a properly formatted
    solution map with string ID (for frontend compatibility)."
-  [{:aoc-solution/keys [id
-                        year
-                        challenge
-                        part
-                        author-name
-                        github-profile
-                        content-type
-                        content
-                        created-at
-                        best-practices-count
-                        clever-count]}]
+  [{:aoc-solution/keys
+    [id year challenge part author-name github-profile content-type content created-at]}]
   (cond-> {:id (str id)
            :year year
            :challenge challenge
@@ -105,27 +121,27 @@
            :author-name author-name
            :content-type content-type
            :content content
-           :created-at (str created-at)
-           :best-practices-count (or best-practices-count 0)
-           :clever-count (or clever-count 0)}
+           :created-at (str created-at)}
     github-profile (assoc :github-profile github-profile)))
+
+(defn enrich-with-vote-counts
+  "Enrich solution map with vote counts by querying the database.
+   
+   Takes:
+   - db: Database connection
+   - solution: Solution map with :id (string UUID)
+   
+   Returns solution map with :best-practices-count and :clever-count added."
+  [db solution]
+  (let [solution-uuid (UUID/fromString (:id solution))
+        best-practices-count (count-votes db solution-uuid :best-practices)
+        clever-count (count-votes db solution-uuid :clever)]
+    (assoc solution :best-practices-count best-practices-count :clever-count clever-count)))
 
 (defn sort-solutions-by-created-at
   "Sort solutions by created-at timestamp, newest first."
   [solutions]
   (sort-by :created-at #(compare %2 %1) solutions))
-
-(defn vote-type->attribute
-  "Map vote type to its corresponding database attribute.
-   
-   Takes:
-   - vote-type: :best-practices or :clever
-   
-   Returns the corresponding database attribute keyword."
-  [vote-type]
-  (case vote-type
-    :best-practices :aoc-solution/best-practices-count
-    :clever :aoc-solution/clever-count))
 
 (def solution-votes-query
   "Build query to find all vote entities for a given solution.

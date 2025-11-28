@@ -56,10 +56,18 @@
                           :attr :string}
    :aoc-solution/created-at {:doc "Timestamp when the solution was submitted"
                              :attr :instant
-                             :index true}
-   :aoc-solution/best-practices-count {:doc "Number of best practices votes"
-                                       :attr :int}
-   :aoc-solution/clever-count {:doc "Number of clever votes"
-                               :attr :int}})
+                             :index true}})
 
-(def entities [article author comment aoc-solution migrations/migration-schema])
+(def aoc-vote
+  {:aoc-vote/id {:doc "Unique ID for the vote"
+                 :attr :uuid
+                 :unique :identity}
+   :aoc-vote/solution-id {:doc "Reference to the solution being voted on"
+                          :ref :aoc-solution/id}
+   :aoc-vote/vote-type {:doc "Type of vote: :best-practices or :clever"
+                        :enum #{:best-practices :clever}}
+   :aoc-vote/voted-at {:doc "Timestamp when the vote was cast"
+                       :attr :instant
+                       :index true}})
+
+(def entities [article author comment aoc-solution aoc-vote migrations/migration-schema])

@@ -11,6 +11,7 @@
 ;; Cache Keys
 ;; =============================================================================
 
+;;TODO connect name to cache registry in some way
 (def ^:private aoc-votes-key "aoc-votes")
 (def ^:private aoc-consents-key "aoc-consents")
 (def ^:private aoc-solution-ids-key "aoc-solution-ids")

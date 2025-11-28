@@ -72,6 +72,7 @@
     :logged-in-as-admin "Logged in as admin"
     :manage-aoc-solutions "Manage AoC Solutions"
     :go-to-aoc-page "Go to AoC Page"
+    :aoc-solutions "AoC Solutions"
     :admin-description
     "Use this panel to manage Advent of Code solutions and other administrative tasks."}
    :pl
@@ -142,6 +143,7 @@
     :admin-dashboard "Panel Administracyjny"
     :logged-in-as-admin "Zalogowany jako admin"
     :manage-aoc-solutions "Zarządzaj Rozwiązaniami AoC"
+    :aoc-solutions "AoC Rozwiązania"
     :go-to-aoc-page "Przejdź do Strony AoC"
     :admin-description
     "Użyj tego panelu do zarządzania rozwiązaniami Advent of Code i innych zadań administracyjnych."}})

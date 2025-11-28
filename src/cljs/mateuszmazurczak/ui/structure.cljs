@@ -69,7 +69,7 @@
         :href (navigation/href ::mm-routes/home)}
        {:title (fi18n/tr :articles)
         :href (navigation/href ::mm-routes/articles)}
-       {:title "AoC Solutions"
+       {:title (fi18n/tr :aoc-solutions)
         :href (navigation/href ::mm-routes/aoc)}])}))
 
 (defn mateuszmazurczak-page-structure

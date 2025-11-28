@@ -110,8 +110,8 @@
         on-reply handle-reply-click]
     [:div
      [ui-articles/article-wrap article]
-     [ui-comments/comments-section {:comments nested-comments
-                                    :count comments-count
-                                    :add-comment-props add-comment-props
-                                    :on-reply on-reply}]]))
+     #_[ui-comments/comments-section {:comments nested-comments
+                                      :count comments-count
+                                      :add-comment-props add-comment-props
+                                      :on-reply on-reply}]]))
 

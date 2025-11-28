@@ -181,11 +181,11 @@
   [{:keys [title description img on-click]}]
   [:div
    {:class
-    "group border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer bg-card hover:bg-accent/5"
+    "group rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer bg-card hover:bg-accent/5"
     :on-click on-click}
    [:div {:class "sm:flex"}
     [:div {:class "sm:w-48 sm:flex-shrink-0"}
-     [:img {:class "w-full h-48 sm:h-full object-cover"
+     [:img {:class "w-full h-48 sm:h-full object-contain p-2"
             :alt (str "Image representing " title)
             :src img
             :width 192

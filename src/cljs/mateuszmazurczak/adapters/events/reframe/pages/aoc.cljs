@@ -8,8 +8,13 @@
    [mateuszmazurczak.domain.pages.aoc              :as aoc-domain]
    [mateuszmazurczak.domain.state.registry         :as state-registry]
    [mateuszmazurczak.ports.logging                 :as log]
+   [mateuszmazurczak.ports.navigation              :as nav]
    [mateuszmazurczak.ui.components.notification    :as notification]
+   [mateuszmazurczak.utils.url                     :as url-utils]
    [re-frame.core                                  :as rf]))
+
+
+;; "payload: " {:author-name "Mateusz Mazurczak", :github-profile "", :content-type :repo-link, :content "https://github.com/Kaspazza/adventofcode/blob/main/src/kaspazza/2024/2/solution.clj", :year 2025, :challenge 2, :part 1}
 
 ;; =============================================================================
 ;; Internal Effects (not in registry - re-frame specific)
@@ -29,12 +34,20 @@
 ;; =============================================================================
 
 (defn- reset-form
-  "Reset form to initial state."
-  []
+  "Reset form to initial state with current year/challenge/part from page state.
+   
+   Args:
+   - year: Year value (required)
+   - challenge: Challenge value (required)
+   - part: Part value (required)"
+  [year challenge part]
   {:author-name ""
    :github-profile ""
    :content-type :code-snippet
-   :content ""})
+   :content ""
+   :year year
+   :challenge challenge
+   :part part})
 
 ;;TODO rethink what logic from here should go to domain
 ;;TODO some text here that should be :i18n
@@ -48,18 +61,89 @@
    :fx handlers receive {:keys [db]} coeffects and return effects map
    :db handlers receive db directly and return updated db"
   {:aoc/on-route-enter
-   (fn [{:keys [db]} [_]]
-     (let [existing-data (get-in db state-registry/*aoc-page-path*)
+   (fn [{:keys [db]} [_ path-params]]
+     (let [;; Path params come directly from controller (already parsed as integers)
+           url-year (:year path-params)
+           url-challenge (:challenge path-params)
+           url-part (:part path-params)
+           ;; Check for query params (playground-url from external share)
+           query-params (url-utils/parse-queries (url-utils/current-url))
+           playground-url (:playground-url query-params)
+           ;; playground-url (when-let [p (:playground-url query-params)] (js/decodeURIComponent p))
+           ;; _ (prn "after-processing: " ()(:playground-url query-params))
+           ;; Parse year/challenge/part from query params if present
+           query-year (when-let [y (:year query-params)] (js/parseInt y))
+           query-challenge (when-let [c (:challenge query-params)] (js/parseInt c))
+           query-part (when-let [p (:part query-params)] (js/parseInt p))
+           ;; Check for hash in URL (e.g., #solution-123)
+           url-hash (.-hash js/window.location)
+           solution-id (when (and url-hash (not= url-hash ""))
+                         (second (re-find #"^#solution-(.+)$" url-hash)))
+           existing-data (get-in db state-registry/*aoc-page-path*)
            initial-data (aoc-domain/build-initial-page-data)
            years-options (get-in db aoc-domain/*aoc-years-options-path*)
            page-data
            (if (or (nil? existing-data) (empty? years-options)) initial-data existing-data)
-           selected-year (get-in db aoc-domain/*aoc-selected-year-path*)
-           selected-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-           selected-part (get-in db aoc-domain/*aoc-selected-part-path*)]
-       {:db (assoc-in db state-registry/*aoc-page-path* page-data)
-        :dispatch-n [[:admin/check-status]
-                     [:aoc/fetch-solutions selected-year selected-challenge selected-part]]}))
+           default-year (get-in page-data [:selector-data :selected-year])
+           default-challenge (get-in page-data [:selector-data :selected-challenge])
+           default-part (get-in page-data [:selector-data :selected-part])
+           selected-year (or url-year default-year)
+           selected-challenge (or url-challenge default-challenge)
+           selected-part (or url-part default-part)
+           valid-year? (some #{selected-year} aoc-domain/years)
+           valid-challenge? (some #{selected-challenge}
+                                  (aoc-domain/challenges-for-year selected-year))
+           valid-part? (#{1 2} selected-part)
+           final-year (if valid-year? selected-year default-year)
+           final-challenge (if (and valid-year? valid-challenge?)
+                             selected-challenge
+                             (first (aoc-domain/challenges-for-year final-year)))
+           final-part (if valid-part? selected-part default-part)
+           challenges-options (aoc-domain/build-challenges-options final-year)
+           ;; Determine modal form year/challenge/part
+           ;; Priority: query params > page selection
+           modal-year (or query-year final-year)
+           modal-challenge (or query-challenge final-challenge)
+           modal-part (or query-part final-part)
+           valid-modal-year? (some #{modal-year} aoc-domain/years)
+           valid-modal-challenge? (some #{modal-challenge}
+                                        (aoc-domain/challenges-for-year modal-year))
+           valid-modal-part? (#{1 2} modal-part)
+           final-modal-year (if valid-modal-year? modal-year final-year)
+           final-modal-challenge (if (and valid-modal-year? valid-modal-challenge?)
+                                   modal-challenge
+                                   (first (aoc-domain/challenges-for-year final-modal-year)))
+           final-modal-part (if valid-modal-part? modal-part final-part)
+           modal-challenges-options (aoc-domain/build-challenges-options final-modal-year)
+           ;; Pre-fill form if solution is provided via query params (external mode)
+           ;; In external mode, lock content-type to :repo-link and pre-fill content with playground-url
+           form-data (if playground-url
+                       {:author-name ""
+                        :github-profile ""
+                        :content-type :repo-link
+                        :content playground-url
+                        :year final-modal-year
+                        :challenge final-modal-challenge
+                        :part final-modal-part}
+                       (get-in page-data [:modal-data :form]))
+           updated-page-data (-> page-data
+                                 (assoc-in [:selector-data :selected-year] final-year)
+                                 (assoc-in [:selector-data :selected-challenge] final-challenge)
+                                 (assoc-in [:selector-data :selected-part] final-part)
+                                 (assoc-in [:selector-data :challenges-options] challenges-options)
+                                 (assoc-in [:modal-data :form] form-data)
+                                 (assoc-in [:modal-data :playground-url] playground-url)
+                                 (assoc-in [:modal-data :challenges-options]
+                                           modal-challenges-options))
+           dispatches (cond-> [[:admin/check-status]
+                               [:aoc/fetch-solutions final-year final-challenge final-part]]
+                        solution-id (conj [:aoc/highlight-solution solution-id]
+                                          [:dispatch-later {:ms 3000
+                                                            :dispatch [:aoc/clear-highlight]}])
+                        ;; Auto-open modal if solution is provided (external mode)
+                        playground-url (conj [:aoc/open-modal]))]
+       {:db (assoc-in db state-registry/*aoc-page-path* updated-page-data)
+        :dispatch-n dispatches}))
    ;; === Filters ===
    :aoc/select-year (fn [{:keys [db]} [_ year-str]]
                       (let [year (js/parseInt year-str)
@@ -67,6 +151,11 @@
                             first-challenge (first challenges)
                             challenges-options (aoc-domain/build-challenges-options year)
                             part (get-in db aoc-domain/*aoc-selected-part-path*)]
+                        (nav/navigate! :mateuszmazurczak.adapters.navigation.routes/aoc-specific
+                                       {:path-parameters {:year (str year)
+                                                          :challenge (str first-challenge)
+                                                          :part (str part)}}
+                                       false)
                         {:db (-> db
                                  (assoc-in aoc-domain/*aoc-selected-year-path* year)
                                  (assoc-in aoc-domain/*aoc-selected-challenge-path* first-challenge)
@@ -77,39 +166,117 @@
                            (let [challenge (js/parseInt challenge-str)
                                  year (get-in db aoc-domain/*aoc-selected-year-path*)
                                  part (get-in db aoc-domain/*aoc-selected-part-path*)]
+                             (nav/navigate!
+                              :mateuszmazurczak.adapters.navigation.routes/aoc-specific
+                              {:path-parameters {:year (str year)
+                                                 :challenge (str challenge)
+                                                 :part (str part)}}
+                              false)
                              {:db (assoc-in db aoc-domain/*aoc-selected-challenge-path* challenge)
                               :dispatch [:aoc/fetch-solutions year challenge part]}))
    :aoc/select-part (fn [{:keys [db]} [_ part-str]]
                       (let [part (js/parseInt part-str)
                             year (get-in db aoc-domain/*aoc-selected-year-path*)
                             challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)]
+                        (nav/navigate! :mateuszmazurczak.adapters.navigation.routes/aoc-specific
+                                       {:path-parameters {:year (str year)
+                                                          :challenge (str challenge)
+                                                          :part (str part)}}
+                                       false)
                         {:db (assoc-in db aoc-domain/*aoc-selected-part-path* part)
                          :dispatch [:aoc/fetch-solutions year challenge part]}))
    ;; === Modal state (:db handlers) ===
-   :aoc/open-modal (fn [db [_]]
-                     (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
-                           challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-                           part (get-in db aoc-domain/*aoc-selected-part-path*)]
-                       (if (aoc-cache/can-upload? year challenge part)
-                         (assoc-in db aoc-domain/*aoc-modal-open-path* true)
-                         (do (notification/show-error
-                              "Upload limit reached"
-                              {:description
-                               "You have already uploaded 5 solutions for this challenge"})
-                             db))))
-   :aoc/close-modal (fn [db [_]] (assoc-in db aoc-domain/*aoc-modal-open-path* false))
+   :aoc/open-modal
+   (fn [db [_]]
+     (let [;; Check if we're in external mode (has playground-url)
+           playground-url (get-in db
+                                  (conj state-registry/*aoc-page-path* :modal-data :playground-url))
+           ;; Get form values (only relevant in external mode)
+           form-year (get-in db (conj aoc-domain/*aoc-form-path* :year))
+           form-challenge (get-in db (conj aoc-domain/*aoc-form-path* :challenge))
+           form-part (get-in db (conj aoc-domain/*aoc-form-path* :part))
+           ;; Get current page state
+           page-year (get-in db aoc-domain/*aoc-selected-year-path*)
+           page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
+           page-part (get-in db aoc-domain/*aoc-selected-part-path*)
+           ;; In external mode, use form values (from query params).
+           ;; In normal mode, ALWAYS use current page state.
+           year (if playground-url form-year page-year)
+           challenge (if playground-url form-challenge page-challenge)
+           part (if playground-url form-part page-part)
+           ;; Build challenges options for the selected year
+           challenges-options (aoc-domain/build-challenges-options year)]
+       (-> db
+           (assoc-in aoc-domain/*aoc-modal-open-path* true)
+           ;; Pre-fill year/challenge/part in form when opening modal
+           (assoc-in (conj aoc-domain/*aoc-form-path* :year) year)
+           (assoc-in (conj aoc-domain/*aoc-form-path* :challenge) challenge)
+           (assoc-in (conj aoc-domain/*aoc-form-path* :part) part)
+           ;; Update challenges options to match selected year
+           (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
+                     challenges-options))))
+   :aoc/upload-limit-reached
+   (fn [db [_]]
+     (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
+           challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
+           part (get-in db aoc-domain/*aoc-selected-part-path*)]
+       (notification/show-error "Upload limit reached"
+                                {:description
+                                 (str "You have already uploaded 5 solutions for "
+                                      year
+                                      " Day "
+                                      challenge
+                                      " Part "
+                                      part)})
+       db))
+   :aoc/close-modal
+   (fn [db [_]]
+     (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
+           challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
+           part (get-in db aoc-domain/*aoc-selected-part-path*)]
+       (-> db
+           (assoc-in aoc-domain/*aoc-modal-open-path* false)
+           (assoc-in aoc-domain/*aoc-form-path* (reset-form year challenge part))
+           (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url) nil))))
    :aoc/update-form (fn [db [_ field value]]
                       (-> db
                           (assoc-in (conj aoc-domain/*aoc-form-path* field) value)
                           (update-in aoc-domain/*aoc-form-errors-path* dissoc field)))
+   ;; === Modal selectors ===
+   :aoc/modal-select-year
+   (fn [db [_ year-str]]
+     (let [year (js/parseInt year-str)
+           challenges (aoc-domain/challenges-for-year year)
+           first-challenge (first challenges)
+           challenges-options (aoc-domain/build-challenges-options year)]
+       (-> db
+           (assoc-in (conj aoc-domain/*aoc-form-path* :year) year)
+           (assoc-in (conj aoc-domain/*aoc-form-path* :challenge) first-challenge)
+           (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
+                     challenges-options))))
+   :aoc/modal-select-challenge
+   (fn [db [_ challenge-str]]
+     (let [challenge (js/parseInt challenge-str)]
+       (assoc-in db (conj aoc-domain/*aoc-form-path* :challenge) challenge)))
+   :aoc/modal-select-part (fn [db [_ part-str]]
+                            (let [part (js/parseInt part-str)]
+                              (assoc-in db (conj aoc-domain/*aoc-form-path* :part) part)))
    ;; === Solution submission ===
    :aoc/submit-solution
    (fn [{:keys [db]} [_]]
      (let [form (get-in db aoc-domain/*aoc-form-path*)
-           year (get-in db aoc-domain/*aoc-selected-year-path*)
-           challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-           part (get-in db aoc-domain/*aoc-selected-part-path*)
-           payload (assoc form :year year :challenge challenge :part part)
+           ;; In normal mode, year/challenge/part are nil in form - use page state
+           ;; In external mode, they're in the form
+           page-year (get-in db aoc-domain/*aoc-selected-year-path*)
+           page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
+           page-part (get-in db aoc-domain/*aoc-selected-part-path*)
+           year (or (:year form) page-year)
+           challenge (or (:challenge form) page-challenge)
+           part (or (:part form) page-part)
+           ;; Build payload with resolved year/challenge/part
+           payload (-> form
+                       (assoc :year year :challenge challenge :part part))
+           _ (prn "payload: " payload)
            validation-errors (aoc-domain/validate-solution-form form)]
        (cond
          (not (aoc-cache/can-upload? year challenge part))
@@ -129,20 +296,44 @@
                        :params payload
                        :event/on-success [:aoc/submit-success]
                        :event/on-error [:aoc/submit-failure]}})))
-   :aoc/submit-success (fn [{:keys [db]} [_ response]]
-                         (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
-                               challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-                               part (get-in db aoc-domain/*aoc-selected-part-path*)
-                               solution-id (:solution-id response)]
-                           (notification/show-success "Solution submitted successfully!")
-                           {:db (-> db
-                                    (assoc-in aoc-domain/*aoc-submitting-path* false)
-                                    (assoc-in aoc-domain/*aoc-modal-open-path* false)
-                                    (assoc-in aoc-domain/*aoc-form-path* (reset-form))
-                                    (assoc-in aoc-domain/*aoc-form-errors-path* nil))
-                            ::cache-consent [year challenge part]
-                            ::cache-solution-id [year challenge part solution-id]
-                            :dispatch [:aoc/fetch-solutions year challenge part]}))
+   :aoc/submit-success
+   (fn [{:keys [db]} [_ response]]
+     (let [form (get-in db aoc-domain/*aoc-form-path*)
+           page-year (get-in db aoc-domain/*aoc-selected-year-path*)
+           page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
+           page-part (get-in db aoc-domain/*aoc-selected-part-path*)
+           ;; Resolve actual year/challenge/part that was submitted
+           year (or (:year form) page-year)
+           challenge (or (:challenge form) page-challenge)
+           part (or (:part form) page-part)
+           solution-id (:solution-id response)
+           ;; After successful submission, update page selectors to match the submitted solution
+           ;; This ensures consistency between what was submitted and what's displayed
+           challenges-options (aoc-domain/build-challenges-options year)]
+       (notification/show-success "Solution submitted successfully!")
+       ;; Update URL to match submitted solution
+       (nav/navigate! :mateuszmazurczak.adapters.navigation.routes/aoc-specific
+                      {:path-parameters {:year (str year)
+                                         :challenge (str challenge)
+                                         :part (str part)}}
+                      false)
+       {:db (-> db
+                (assoc-in aoc-domain/*aoc-submitting-path* false)
+                (assoc-in aoc-domain/*aoc-modal-open-path* false)
+                (assoc-in aoc-domain/*aoc-form-path* (reset-form year challenge part))
+                (assoc-in aoc-domain/*aoc-form-errors-path* nil)
+                (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url) nil)
+                ;; Update page selectors to match submitted solution
+                (assoc-in aoc-domain/*aoc-selected-year-path* year)
+                (assoc-in aoc-domain/*aoc-selected-challenge-path* challenge)
+                (assoc-in aoc-domain/*aoc-selected-part-path* part)
+                (assoc-in aoc-domain/*aoc-challenges-options-path* challenges-options)
+                ;; Update modal selectors to match submitted solution for next open
+                (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
+                          challenges-options))
+        ::cache-consent [year challenge part]
+        ::cache-solution-id [year challenge part solution-id]
+        :dispatch [:aoc/fetch-solutions year challenge part]}))
    :aoc/submit-failure
    (fn [{:keys [db]} [_ error]]
      (let [logger (get-in db state-registry/*logger-path*)
@@ -234,4 +425,9 @@
    ;; === Consent ===
    :aoc/give-consent (fn [{:keys [db]} [_ year challenge part]]
                        {::cache-consent [year challenge part]
-                        :db (assoc-in db aoc-domain/*aoc-gated-path* false)})})
+                        :db (assoc-in db aoc-domain/*aoc-gated-path* false)})
+   ;; === Highlight ===
+   :aoc/highlight-solution
+   (fn [db [_ solution-id]] (assoc-in db aoc-domain/*aoc-highlighted-solution-id-path* solution-id))
+   :aoc/clear-highlight (fn [db [_]]
+                          (assoc-in db aoc-domain/*aoc-highlighted-solution-id-path* nil))})

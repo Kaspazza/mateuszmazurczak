@@ -43,6 +43,8 @@
 (def ^:dynamic *aoc-user-solution-ids-path*
   (conj state-registry/*aoc-page-path* :solutions-data :user-solution-ids))
 (def ^:dynamic *aoc-gated-path* (conj state-registry/*aoc-page-path* :solutions-data :gated?))
+(def ^:dynamic *aoc-highlighted-solution-id-path*
+  (conj state-registry/*aoc-page-path* :solutions-data :highlighted-solution-id))
 
 ;; Modal data paths
 (def ^:dynamic *aoc-modal-open-path* (conj state-registry/*aoc-page-path* :modal-data :modal-open?))
@@ -116,7 +118,10 @@
    [:github-profile {:optional true}
     [:maybe :string]]
    [:content-type ContentType]
-   [:content [:string {:min 1}]]])
+   [:content [:string {:min 1}]]
+   [:year Year]
+   [:challenge Challenge]
+   [:part Part]])
 
 (def valid-solution-form? (m/validator SolutionForm))
 
@@ -164,6 +169,8 @@
    Note: This schema is for the page state only, NOT the denormalized
    UI data. The page stores solution IDs, subscriptions denormalize them."
   [:map {:closed true}
+   [:playground-url {:optional true}
+    [:maybe :string]]
    [:header-data
     [:map {:closed true}
      [:text [:map-of :keyword i18n-schema/I18nMarker]]]]
@@ -188,13 +195,16 @@
        [:upload-solution i18n-schema/I18nMarker]]]
      [:handlers
       [:map {:closed true}
-       [:on-open-modal fn?]]]]]
+       [:on-open-modal fn?]
+       [:on-upload-limit-reached fn?]]]]]
    [:solutions-data
     [:map {:closed true}
      [:solution-ids [:vector :string]]
      [:loading? :boolean]
      [:gated? :boolean]
      [:user-solution-ids [:set :string]]
+     [:highlighted-solution-id {:optional true}
+      [:maybe :string]]
      [:text [:map-of :keyword i18n-schema/I18nMarker]]
      [:handlers
       [:map {:closed true}
@@ -209,16 +219,29 @@
        [:author-name :string]
        [:github-profile :string]
        [:content-type ContentType]
-       [:content :string]]]
+       [:content :string]
+       [:year {:optional true}
+        [:maybe Year]]
+       [:challenge {:optional true}
+        [:maybe Challenge]]
+       [:part {:optional true}
+        [:maybe Part]]]]
      [:form-errors {:optional true}
       [:maybe [:map-of :keyword i18n-schema/I18nMarker]]]
      [:submitting? :boolean]
+     [:playground-url {:optional true}
+      [:maybe :string]]
+     [:years-options [:vector YearOption]]
+     [:challenges-options [:vector ChallengeOption]]
      [:text [:map-of :keyword i18n-schema/I18nMarker]]
      [:handlers
       [:map {:closed true}
        [:on-close-modal fn?]
        [:on-submit-solution fn?]
-       [:on-update-form fn?]]]]]])
+       [:on-update-form fn?]
+       [:on-select-year fn?]
+       [:on-select-challenge fn?]
+       [:on-select-part fn?]]]]]])
 
 (def AocPageUIData
   "Schema for AoC page UI data (denormalized for component consumption).
@@ -250,13 +273,16 @@
        [:upload-solution :string]]]
      [:handlers
       [:map {:closed true}
-       [:on-open-modal fn?]]]]]
+       [:on-open-modal fn?]
+       [:on-upload-limit-reached fn?]]]]]
    [:solutions-data
     [:map {:closed true}
      [:solutions [:vector Solution]]
      [:loading? :boolean]
      [:gated? :boolean]
      [:user-solution-ids [:set :string]]
+     [:highlighted-solution-id {:optional true}
+      [:maybe :string]]
      [:theme [:enum :light :dark]]
      [:admin-logged-in? [:maybe :boolean]]
      [:text [:map-of :keyword :string]]
@@ -273,16 +299,29 @@
        [:author-name :string]
        [:github-profile :string]
        [:content-type ContentType]
-       [:content :string]]]
+       [:content :string]
+       [:year {:optional true}
+        [:maybe Year]]
+       [:challenge {:optional true}
+        [:maybe Challenge]]
+       [:part {:optional true}
+        [:maybe Part]]]]
      [:form-errors {:optional true}
       [:maybe [:map-of :keyword :string]]]
      [:submitting? :boolean]
+     [:playground-url {:optional true}
+      [:maybe :string]]
+     [:years-options [:vector YearOption]]
+     [:challenges-options [:vector ChallengeOption]]
      [:text [:map-of :keyword :string]]
      [:handlers
       [:map {:closed true}
        [:on-close-modal fn?]
        [:on-submit-solution fn?]
-       [:on-update-form fn?]]]]]])
+       [:on-update-form fn?]
+       [:on-select-year fn?]
+       [:on-select-challenge fn?]
+       [:on-select-part fn?]]]]]])
 
 (defn valid-aoc-page-data?
   "Validate AoC page data against schema."
@@ -353,7 +392,8 @@
                               :on-select-part [:dispatch [:aoc/select-part]]}}
    :upload-data {:upload-count 0
                  :text {:upload-solution [:i18n :upload-solution]}
-                 :handlers {:on-open-modal [:dispatch [:aoc/open-modal]]}}
+                 :handlers {:on-open-modal [:dispatch [:aoc/open-modal]]
+                            :on-upload-limit-reached [:dispatch [:aoc/upload-limit-reached]]}}
    :solutions-data {:solution-ids []
                     :loading? false
                     :gated? false
@@ -378,12 +418,19 @@
                 :form {:author-name ""
                        :github-profile ""
                        :content-type :code-snippet
-                       :content ""}
+                       :content ""
+                       :year (last years)
+                       :challenge 1
+                       :part 1}
                 :form-errors nil
                 :submitting? false
+                :playground-url nil
+                :years-options []
+                :challenges-options []
                 :text {:upload-your-solution [:i18n :upload-your-solution]
                        :share-your-advent-of-code-solution [:i18n
                                                             :share-your-advent-of-code-solution]
+                       :uploading-for [:i18n :uploading-for]
                        :your-name [:i18n :your-name]
                        :github-profile-optional [:i18n :github-profile-optional]
                        :content-type [:i18n :content-type]
@@ -397,10 +444,22 @@
                        :name-placeholder [:i18n :name-placeholder]
                        :github-placeholder [:i18n :github-placeholder]
                        :code-placeholder [:i18n :code-placeholder]
-                       :repo-placeholder [:i18n :repo-placeholder]}
+                       :repo-placeholder [:i18n :repo-placeholder]
+                       :source-playground [:i18n :source-playground]
+                       :year [:i18n :year]
+                       :challenge [:i18n :challenge]
+                       :part [:i18n :part]
+                       :part-1 [:i18n :part-1]
+                       :part-2 [:i18n :part-2]
+                       :select-year [:i18n :select-year]
+                       :select-challenge [:i18n :select-challenge]
+                       :select-part [:i18n :select-part]}
                 :handlers {:on-close-modal [:dispatch [:aoc/close-modal]]
                            :on-submit-solution [:dispatch [:aoc/submit-solution]]
-                           :on-update-form [:dispatch [:aoc/update-form]]}}})
+                           :on-update-form [:dispatch [:aoc/update-form]]
+                           :on-select-year [:dispatch [:aoc/modal-select-year]]
+                           :on-select-challenge [:dispatch [:aoc/modal-select-challenge]]
+                           :on-select-part [:dispatch [:aoc/modal-select-part]]}}})
 
 (defn build-years-options
   "Build year selector options from available years."
@@ -426,10 +485,14 @@
    added at the application layer."
   []
   (let [initial-data (initial-aoc-data)
-        year (get-in initial-data [:selector-data :selected-year])]
+        year (get-in initial-data [:selector-data :selected-year])
+        years-options (build-years-options)
+        challenges-options (build-challenges-options year)]
     (-> initial-data
-        (assoc-in [:selector-data :years-options] (build-years-options))
-        (assoc-in [:selector-data :challenges-options] (build-challenges-options year)))))
+        (assoc-in [:selector-data :years-options] years-options)
+        (assoc-in [:selector-data :challenges-options] challenges-options)
+        (assoc-in [:modal-data :years-options] years-options)
+        (assoc-in [:modal-data :challenges-options] challenges-options))))
 
 (defn normalize-solutions
   "Normalize a collection of solutions into entities map and IDs vector.

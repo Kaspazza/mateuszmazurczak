@@ -12,7 +12,7 @@
 (def version
   "Current cache version. Increment when making breaking changes to state structure.
    On version mismatch, all cached data is cleared and re-initialized."
-  2)
+  3)
 
 (def version-cache-path
   "localStorage key for storing version number"

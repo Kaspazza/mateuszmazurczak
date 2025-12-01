@@ -583,7 +583,8 @@
                         "inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"}]
                  [:p {:class "mt-4 text-muted-foreground"}
                   (:loading-solutions text)]]
-       (and gated? (seq solutions))
+       ;; Don't show unlock block if viewing a specific solution (highlighted-solution-id is set)
+       (and gated? (seq solutions) (nil? highlighted-solution-id))
        [:div {:class "text-center py-12 bg-card rounded-lg border-2 border-dashed"}
         [:div {:class "max-w-md mx-auto"}
          [:svg {:class "size-16 mx-auto text-muted-foreground mb-4"

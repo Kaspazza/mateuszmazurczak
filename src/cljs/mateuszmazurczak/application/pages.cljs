@@ -1,16 +1,16 @@
 (ns mateuszmazurczak.application.pages
   "Describes the link between page names and contents"
   (:require
-   [mateuszmazurczak.domain.articles.core :as articles]
-   [mateuszmazurczak.frontend-i18n        :as fi18n]
-   [mateuszmazurczak.system.config        :as config]
-   [mateuszmazurczak.ui.errors            :as mm-ui-errors]
-   [mateuszmazurczak.ui.pages.admin       :as pages-admin]
-   [mateuszmazurczak.ui.pages.aoc         :as pages-aoc]
-   [mateuszmazurczak.ui.pages.articles    :as pages-articles]
-   [mateuszmazurczak.ui.pages.home        :as mm-home]
-   [mateuszmazurczak.ui.spinner           :as mm-ui-spinner]
-   [mateuszmazurczak.ui.structure         :as mm-ui-structure]))
+   [mateuszmazurczak.domain.articles.core  :as articles]
+   [mateuszmazurczak.frontend-i18n         :as fi18n]
+   [mateuszmazurczak.system.config         :as config]
+   [mateuszmazurczak.ui.components.spinner :as mm-ui-spinner]
+   [mateuszmazurczak.ui.errors             :as mm-ui-errors]
+   [mateuszmazurczak.ui.pages.admin        :as pages-admin]
+   [mateuszmazurczak.ui.pages.aoc          :as pages-aoc]
+   [mateuszmazurczak.ui.pages.articles     :as pages-articles]
+   [mateuszmazurczak.ui.pages.home         :as mm-home]
+   [mateuszmazurczak.ui.structure          :as mm-ui-structure]))
 
 (defmulti pages :page-id)
 
@@ -20,7 +20,7 @@
                            :description (fi18n/tr :not-found-description)
                            :back-home-text (fi18n/tr :back-home)}])
 
-(defmethod pages :pages/pending [_] [:div [mm-ui-spinner/spinner]])
+(defmethod pages :pages/pending [_] [mm-ui-spinner/spinner {:class "size-8 m-auto"}])
 
 (defmethod pages :pages/system-error
   [_]
@@ -40,7 +40,9 @@
                      :description "There was an error loading the home page data. Please refresh."
                      :back-home-text "Refresh Page"}]
       (false? loading?) [mm-ui-structure/mateuszmazurczak-page-structure [mm-home/home data]]
-      :else [mm-ui-spinner/spinner])))
+      :else [mm-ui-structure/mateuszmazurczak-page-structure
+             [:div {:class "flex items-center justify-center h-full"}
+              [mm-ui-spinner/spinner {:class "size-8"}]]])))
 
 (defmethod pages :pages/articles
   [_]
@@ -99,4 +101,5 @@
                           "Raw data: "
                           (pr-str (:actual-data error))]]])]
        (false? loading?) [pages-admin/admin-page data]
-       :else [mm-ui-spinner/spinner])]))
+       :else [:div {:class "flex items-center justify-center h-full"}
+              [mm-ui-spinner/spinner {:class "size-8"}]])]))

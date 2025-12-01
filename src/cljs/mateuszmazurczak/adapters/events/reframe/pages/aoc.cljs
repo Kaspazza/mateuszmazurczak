@@ -17,8 +17,7 @@
 ;; Internal Effects (not in registry - re-frame specific)
 ;; =============================================================================
 
-(rf/reg-fx ::cache-consent
-           (fn [[year challenge]] (aoc-cache/add-consent! year challenge)))
+(rf/reg-fx ::cache-consent (fn [[year challenge]] (aoc-cache/add-consent! year challenge)))
 
 (rf/reg-fx ::cache-solution-id
            (fn [[year challenge solution-id]]
@@ -183,11 +182,8 @@
      (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
            challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)]
        (notification/show-error "Upload limit reached"
-                                {:description
-                                 (str "You have already uploaded 5 solutions for "
-                                      year
-                                      " Day "
-                                      challenge)})
+                                {:description (str "You have already uploaded 5 solutions for " year
+                                                   " Day " challenge)})
        db))
    :aoc/close-modal
    (fn [db [_]]
@@ -301,8 +297,7 @@
                                   :url "/api/aoc/solutions"
                                   :params {:year year
                                            :challenge challenge}
-                                  :event/on-success
-                                  [:aoc/fetch-solutions-success year challenge]
+                                  :event/on-success [:aoc/fetch-solutions-success year challenge]
                                   :event/on-error [:aoc/fetch-solutions-failure]}})
    :aoc/fetch-solutions-success
    (fn [db [_ year challenge response]]

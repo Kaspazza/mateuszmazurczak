@@ -107,7 +107,8 @@
    
    Takes a tuple from the query result and returns a properly formatted
    solution map with string ID (for frontend compatibility)."
-  [{:aoc-solution/keys [id year challenge author-name github-profile content-type content created-at]}]
+  [{:aoc-solution/keys
+    [id year challenge author-name github-profile content-type content created-at]}]
   (cond-> {:id (str id)
            :year year
            :challenge challenge

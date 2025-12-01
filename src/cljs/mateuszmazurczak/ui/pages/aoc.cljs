@@ -417,11 +417,8 @@
            years-options
            challenges-options]
     :as _upload-modal-data}]
-  (let [{:keys [on-close-modal
-                on-update-form
-                on-submit-solution
-                on-select-year
-                on-select-challenge]}
+  (let [{:keys
+         [on-close-modal on-update-form on-submit-solution on-select-year on-select-challenge]}
         handlers
         external-mode? (some? playground-url)
         form-data {:form form
@@ -528,12 +525,7 @@
     (:share-and-explore-solutions text)]])
 
 (defn solution-selector
-  [{:keys [selected-year
-           years-options
-           text
-           selected-challenge
-           challenges-options
-           handlers]}]
+  [{:keys [selected-year years-options text selected-challenge challenges-options handlers]}]
   (let [{:keys [on-select-year on-select-challenge]} handlers]
     [:<>
      [year-selector {:selected-year selected-year
@@ -604,9 +596,8 @@
           (:unlock-community-solutions text)]
          [:p {:class "text-muted-foreground text-sm mb-4"}
           (:only-if-solved-no-cheating text)]
-         [button/button {:on-click
-                         #(when on-give-consent
-                            (on-give-consent selected-year selected-challenge))
+         [button/button {:on-click #(when on-give-consent
+                                      (on-give-consent selected-year selected-challenge))
                          :size :lg}
           (:show-me-solutions text)]]]
        (empty? solutions) [:div {:class "text-center py-12 bg-card rounded-lg border"}

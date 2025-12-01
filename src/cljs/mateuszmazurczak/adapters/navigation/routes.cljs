@@ -32,7 +32,8 @@
                                (let [year-int (js/parseInt year 10)
                                      challenge-int (js/parseInt challenge 10)]
                                  (events/dispatch! [:aoc/on-route-enter {:year year-int
-                                                                         :challenge challenge-int}])))}]}]]]
+                                                                         :challenge
+                                                                         challenge-int}])))}]}]]]
    ["/secret-admin-panel-xyz"
     {:name ::admin
      :page-id :pages/admin

@@ -108,7 +108,7 @@
                            :on-content-change handle-content-change
                            :on-submit handle-submit}
         on-reply handle-reply-click]
-    [:div
+    [:div {:class "min-h-screen bg-background"}
      [ui-articles/article-wrap article]
      #_[ui-comments/comments-section {:comments nested-comments
                                       :count comments-count

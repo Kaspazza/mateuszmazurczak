@@ -16,8 +16,6 @@
   (conj state-registry/*aoc-page-path* :selector-data :selected-year))
 (def ^:dynamic *aoc-selected-challenge-path*
   (conj state-registry/*aoc-page-path* :selector-data :selected-challenge))
-(def ^:dynamic *aoc-selected-part-path*
-  (conj state-registry/*aoc-page-path* :selector-data :selected-part))
 (def ^:dynamic *aoc-challenges-options-path*
   (conj state-registry/*aoc-page-path* :selector-data :challenges-options))
 (def ^:dynamic *aoc-years-options-path*
@@ -71,8 +69,6 @@
 
 (def Challenge [:and :int [:>= 1] [:<= 24]])
 
-(def Part [:enum 1 2])
-
 (def ContentType [:enum :code-snippet :repo-link])
 
 (def Solution
@@ -84,7 +80,6 @@
    [:id :string]
    [:year Year]
    [:challenge Challenge]
-   [:part Part]
    [:author-name :string]
    [:github-profile {:optional true}
     [:maybe :string]]
@@ -120,8 +115,7 @@
    [:content-type ContentType]
    [:content [:string {:min 1}]]
    [:year Year]
-   [:challenge Challenge]
-   [:part Part]])
+   [:challenge Challenge]])
 
 (def valid-solution-form? (m/validator SolutionForm))
 
@@ -178,15 +172,13 @@
     [:map {:closed true}
      [:selected-year Year]
      [:selected-challenge Challenge]
-     [:selected-part Part]
      [:years-options [:vector YearOption]]
      [:challenges-options [:vector ChallengeOption]]
      [:text [:map-of :keyword i18n-schema/I18nMarker]]
      [:handlers
       [:map {:closed true}
        [:on-select-year fn?]
-       [:on-select-challenge fn?]
-       [:on-select-part fn?]]]]]
+       [:on-select-challenge fn?]]]]]
    [:upload-data
     [:map {:closed true}
      [:upload-count :int]
@@ -223,9 +215,7 @@
        [:year {:optional true}
         [:maybe Year]]
        [:challenge {:optional true}
-        [:maybe Challenge]]
-       [:part {:optional true}
-        [:maybe Part]]]]
+        [:maybe Challenge]]]]
      [:form-errors {:optional true}
       [:maybe [:map-of :keyword i18n-schema/I18nMarker]]]
      [:submitting? :boolean]
@@ -240,8 +230,7 @@
        [:on-submit-solution fn?]
        [:on-update-form fn?]
        [:on-select-year fn?]
-       [:on-select-challenge fn?]
-       [:on-select-part fn?]]]]]])
+       [:on-select-challenge fn?]]]]]])
 
 (def AocPageUIData
   "Schema for AoC page UI data (denormalized for component consumption).
@@ -256,15 +245,13 @@
     [:map {:closed true}
      [:selected-year Year]
      [:selected-challenge Challenge]
-     [:selected-part Part]
      [:years-options [:vector YearOption]]
      [:challenges-options [:vector ChallengeOption]]
      [:text [:map-of :keyword :string]]
      [:handlers
       [:map {:closed true}
        [:on-select-year fn?]
-       [:on-select-challenge fn?]
-       [:on-select-part fn?]]]]]
+       [:on-select-challenge fn?]]]]]
    [:upload-data
     [:map {:closed true}
      [:upload-count :int]
@@ -303,9 +290,7 @@
        [:year {:optional true}
         [:maybe Year]]
        [:challenge {:optional true}
-        [:maybe Challenge]]
-       [:part {:optional true}
-        [:maybe Part]]]]
+        [:maybe Challenge]]]]
      [:form-errors {:optional true}
       [:maybe [:map-of :keyword :string]]]
      [:submitting? :boolean]
@@ -320,8 +305,7 @@
        [:on-submit-solution fn?]
        [:on-update-form fn?]
        [:on-select-year fn?]
-       [:on-select-challenge fn?]
-       [:on-select-part fn?]]]]]])
+       [:on-select-challenge fn?]]]]]])
 
 (defn valid-aoc-page-data?
   "Validate AoC page data against schema."
@@ -360,14 +344,14 @@
 (defn initial-aoc-data
   "Returns initial AoC page data structure for app-db initialization.
    
-   Starts with default year (2025), challenge (1), and part (1).
+   Starts with default year (2025) and challenge (1).
    Solutions and options are loaded via :aoc/on-route-enter event.
    
    Note: Stores solution-ids (not full solutions) - entities stored separately.
    
    Data structure mirrors component hierarchy:
    - header-data: Page title and description
-   - selector-data: Year/challenge/part filters with options
+   - selector-data: Year/challenge filters with options
    - upload-data: Upload button and limits
    - solutions-data: Solutions display with loading/gating states
    - modal-data: Form for uploading solutions"
@@ -376,20 +360,14 @@
                         :description [:i18n :share-and-explore-solutions]}}
    :selector-data {:selected-year (last years)
                    :selected-challenge 1
-                   :selected-part 1
                    :years-options []
                    :challenges-options []
                    :text {:year [:i18n :year]
                           :challenge [:i18n :challenge]
-                          :part [:i18n :part]
-                          :part-1 [:i18n :part-1]
-                          :part-2 [:i18n :part-2]
                           :select-year [:i18n :select-year]
-                          :select-challenge [:i18n :select-challenge]
-                          :select-part [:i18n :select-part]}
+                          :select-challenge [:i18n :select-challenge]}
                    :handlers {:on-select-year [:dispatch [:aoc/select-year]]
-                              :on-select-challenge [:dispatch [:aoc/select-challenge]]
-                              :on-select-part [:dispatch [:aoc/select-part]]}}
+                              :on-select-challenge [:dispatch [:aoc/select-challenge]]}}
    :upload-data {:upload-count 0
                  :text {:upload-solution [:i18n :upload-solution]}
                  :handlers {:on-open-modal [:dispatch [:aoc/open-modal]]
@@ -420,8 +398,7 @@
                        :content-type :code-snippet
                        :content ""
                        :year (last years)
-                       :challenge 1
-                       :part 1}
+                       :challenge 1}
                 :form-errors nil
                 :submitting? false
                 :playground-url nil
@@ -448,18 +425,13 @@
                        :source-playground [:i18n :source-playground]
                        :year [:i18n :year]
                        :challenge [:i18n :challenge]
-                       :part [:i18n :part]
-                       :part-1 [:i18n :part-1]
-                       :part-2 [:i18n :part-2]
                        :select-year [:i18n :select-year]
-                       :select-challenge [:i18n :select-challenge]
-                       :select-part [:i18n :select-part]}
+                       :select-challenge [:i18n :select-challenge]}
                 :handlers {:on-close-modal [:dispatch [:aoc/close-modal]]
                            :on-submit-solution [:dispatch [:aoc/submit-solution]]
                            :on-update-form [:dispatch [:aoc/update-form]]
                            :on-select-year [:dispatch [:aoc/modal-select-year]]
-                           :on-select-challenge [:dispatch [:aoc/modal-select-challenge]]
-                           :on-select-part [:dispatch [:aoc/modal-select-part]]}}})
+                           :on-select-challenge [:dispatch [:aoc/modal-select-challenge]]}}})
 
 (defn build-years-options
   "Build year selector options from available years."

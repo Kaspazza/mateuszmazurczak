@@ -16,27 +16,22 @@
    Returns map with :valid? and either :data or :errors."
   [params]
   (let [year (parse-long (:year params))
-        challenge (parse-long (:challenge params))
-        part (parse-long (:part params))]
+        challenge (parse-long (:challenge params))]
     (cond
       (nil? year) {:valid? false
                    :errors {:year "Year is required and must be an integer"}}
       (nil? challenge) {:valid? false
                         :errors {:challenge "Challenge is required and must be an integer"}}
-      (nil? part) {:valid? false
-                   :errors {:part "Part is required and must be an integer"}}
       :else {:valid? true
              :data {:year year
-                    :challenge challenge
-                    :part part}})))
+                    :challenge challenge}})))
 
 (defn get-solutions
-  "GET /api/aoc/solutions - Fetch solutions for a specific year/challenge/part.
+  "GET /api/aoc/solutions - Fetch solutions for a specific year/challenge.
    
    Query params:
    - year (required): Year of the challenge (2015-2025)
    - challenge (required): Challenge day (1-24)
-   - part (required): Part number (1 or 2)
    
    Returns:
    - 200 with array of solutions (with vote counts computed from vote refs)
@@ -47,9 +42,9 @@
     (if-not (:valid? validation)
       (http-response/bad-request {:error "Invalid parameters"
                                   :details (:errors validation)})
-      (try (let [{:keys [year challenge part]} (:data validation)
+      (try (let [{:keys [year challenge]} (:data validation)
                  query (aoc-repo/build-get-solutions-query)
-                 results (db/query database query year challenge part)
+                 results (db/query database query year challenge)
                  solutions (->> results
                                 (map aoc-repo/solution-tuple->map)
                                 (map (partial aoc-repo/enrich-with-vote-counts database))
@@ -68,7 +63,6 @@
    Expected body:
    - year (int): Year of the challenge (2015-2025)
    - challenge (int): Challenge day (1-24)
-   - part (int): Part number (1 or 2)
    - author-name (string): Name of the author
    - github-profile (optional string): GitHub profile URL
    - content-type (string): Either 'code-snippet' or 'repo-link'
@@ -98,7 +92,6 @@
                         :msg "AOC solution saved successfully"
                         :data {:year (:year body-params)
                                :challenge (:challenge body-params)
-                               :part (:part body-params)
                                :solution-id (str solution-id)}})
              (http-response/ok {:success true
                                 :message "Solution submitted successfully"
@@ -228,8 +221,7 @@
                                    :msg "AOC solution deleted"
                                    :data {:solution-id solution-id
                                           :year (:aoc-solution/year solution)
-                                          :challenge (:aoc-solution/challenge solution)
-                                          :part (:aoc-solution/part solution)}})
+                                          :challenge (:aoc-solution/challenge solution)}})
                         (http-response/ok {:success true
                                            :message "Solution deleted successfully"
                                            :solution-id solution-id}))))

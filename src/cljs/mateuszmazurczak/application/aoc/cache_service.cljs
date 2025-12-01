@@ -55,17 +55,17 @@
 ;; =============================================================================
 
 (defn make-challenge-key
-  "Create a composite key for year/challenge/part.
+  "Create a composite key for year/challenge.
    
-   Format: year::challenge::part
-   Example: \"2024::1::1\""
-  [year challenge part]
-  (str year "::" challenge "::" part))
+   Format: year::challenge
+   Example: \"2024::1\""
+  [year challenge]
+  (str year "::" challenge))
 
 (defn get-consents
   "Get all consents from cache.
    
-   Returns a set of consent keys (\"year::challenge::part\")."
+   Returns a set of consent keys (\"year::challenge\")."
   []
   (or (cache/get-item aoc-consents-key) #{}))
 
@@ -75,23 +75,21 @@
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    
    Returns true if successful."
-  [year challenge part]
+  [year challenge]
   (let [consents (get-consents)
-        updated-consents (conj consents (make-challenge-key year challenge part))]
+        updated-consents (conj consents (make-challenge-key year challenge))]
     (cache/set-item! aoc-consents-key updated-consents)))
 
 (defn has-consented?
-  "Check if user has given consent for year/challenge/part.
+  "Check if user has given consent for year/challenge.
    
    Args:
    - year: Year number
-   - challenge: Challenge number
-   - part: Part number"
-  [year challenge part]
-  (contains? (get-consents) (make-challenge-key year challenge part)))
+   - challenge: Challenge number"
+  [year challenge]
+  (contains? (get-consents) (make-challenge-key year challenge)))
 
 ;; =============================================================================
 ;; Solution ID Tracking 
@@ -110,51 +108,47 @@
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    - solution-id: Solution ID string
    
    Returns true if successful."
-  [year challenge part solution-id]
+  [year challenge solution-id]
   (let [solution-ids (get-solution-ids)
-        challenge-key (make-challenge-key year challenge part)
+        challenge-key (make-challenge-key year challenge)
         current-ids (get solution-ids challenge-key [])
         updated-ids (conj current-ids solution-id)
         updated-map (assoc solution-ids challenge-key updated-ids)]
     (cache/set-item! aoc-solution-ids-key updated-map)))
 
 (defn get-user-solution-ids
-  "Get user's solution IDs for year/challenge/part.
+  "Get user's solution IDs for year/challenge.
    
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    
    Returns vector of solution-id strings or empty vector."
-  [year challenge part]
-  (get (get-solution-ids) (make-challenge-key year challenge part) []))
+  [year challenge]
+  (get (get-solution-ids) (make-challenge-key year challenge) []))
 
 (defn get-upload-count
-  "Get number of solutions user has uploaded for year/challenge/part.
+  "Get number of solutions user has uploaded for year/challenge.
    
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    
    Returns count of user's solutions."
-  [year challenge part]
-  (count (get-user-solution-ids year challenge part)))
+  [year challenge]
+  (count (get-user-solution-ids year challenge)))
 
 (defn can-upload?
   "Check if user can upload another solution (max 5 per challenge).
    
    Args:
    - year: Year number
-   - challenge: Challenge number
-   - part: Part number"
-  [year challenge part]
-  (< (get-upload-count year challenge part) 5))
+   - challenge: Challenge number"
+  [year challenge]
+  (< (get-upload-count year challenge) 5))
 
 ;; =============================================================================
 ;; Admin Key Management

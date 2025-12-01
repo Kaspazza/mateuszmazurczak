@@ -12,7 +12,6 @@
   [:map
    [:year [:and :int [:>= 2015] [:<= 2025]]]
    [:challenge [:and :int [:>= 1] [:<= 24]]]
-   [:part [:enum 1 2]]
    [:author-name [:string {:min 1}]]
    [:github-profile {:optional true}
     [:maybe :string]]
@@ -33,7 +32,6 @@
    Takes a solution map with keys:
    - :year (int)
    - :challenge (int)
-   - :part (int)
    - :author-name (string)
    - :github-profile (optional string)
    - :content-type (string or keyword: code-snippet or repo-link)
@@ -44,14 +42,13 @@
    - tx-data is Datalevin transaction data (vector of maps)
    
    Generates UUID and timestamp automatically."
-  [{:keys [year challenge part author-name github-profile content-type content]}]
+  [{:keys [year challenge author-name github-profile content-type content]}]
   (let [solution-id (UUID/randomUUID)
         now (Date.)
         normalized-content-type (normalize-content-type content-type)
         base-tx {:aoc-solution/id solution-id
                  :aoc-solution/year year
                  :aoc-solution/challenge challenge
-                 :aoc-solution/part part
                  :aoc-solution/author-name author-name
                  :aoc-solution/content-type normalized-content-type
                  :aoc-solution/content content
@@ -62,7 +59,7 @@
     [solution-id [tx]]))
 
 (defn build-get-solutions-query
-  "Build Datalog query for fetching solutions by year, challenge, and part.
+  "Build Datalog query for fetching solutions by year and challenge.
    
    Returns a Datalog query that finds all solutions matching the criteria,
    sorted by creation date (newest first)."
@@ -73,11 +70,9 @@
     $
     ?year
     ?challenge
-    ?part
     :where
     [?e :aoc-solution/year ?year]
-    [?e :aoc-solution/challenge ?challenge]
-    [?e :aoc-solution/part ?part]])
+    [?e :aoc-solution/challenge ?challenge]])
 
 (def find-votes-query
   "Query to find all votes by type for a given solution.
@@ -112,12 +107,10 @@
    
    Takes a tuple from the query result and returns a properly formatted
    solution map with string ID (for frontend compatibility)."
-  [{:aoc-solution/keys
-    [id year challenge part author-name github-profile content-type content created-at]}]
+  [{:aoc-solution/keys [id year challenge author-name github-profile content-type content created-at]}]
   (cond-> {:id (str id)
            :year year
            :challenge challenge
-           :part part
            :author-name author-name
            :content-type content-type
            :content content

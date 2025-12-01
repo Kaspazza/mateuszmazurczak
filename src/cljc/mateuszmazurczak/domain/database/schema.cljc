@@ -42,9 +42,6 @@
    :aoc-solution/challenge {:doc "Challenge day (1-24)"
                             :attr :int
                             :index true}
-   :aoc-solution/part {:doc "Challenge part (1 or 2)"
-                       :attr :int
-                       :index true}
    :aoc-solution/author-name {:doc "Name of the solution author"
                               :attr :string}
    :aoc-solution/github-profile {:doc "Optional GitHub profile URL"

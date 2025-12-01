@@ -79,13 +79,10 @@
   (let [base-url (case playground
                    :cherry "https://squint-cljs.github.io/cherry/"
                    :squint "https://squint-cljs.github.io/squint/")
-        ;; Squint supports gzip compression, Cherry doesn't
         encoded-code (if (= playground :squint)
-                       ;; Squint: gzip compress for shorter URLs
                        (let [compressed (pako/gzip code)
                              binary-string (uint8array-to-binary-string compressed)]
                          (str "gzip:" (js/btoa binary-string)))
-                       ;; Cherry: plain base64 encoding
                        (js/btoa code))
         url (js/URL. base-url)]
     (.. url -searchParams (set "src" encoded-code))
@@ -402,21 +399,7 @@
        [select/select-item {:value (str value)}
         label])]]])
 
-(defn part-selector
-  "Part dropdown selector."
-  [{:keys [selected-part on-select-part text]}]
-  [:div {:class "space-y-2"}
-   [label/label {}
-    (:part text)]
-   [select/select {:value (str selected-part)
-                   :onValueChange on-select-part}
-    [select/select-trigger {:class "w-[180px]"}
-     [select/select-value {:placeholder (:select-part text)}]]
-    [select/select-content {}
-     [select/select-item {:value "1"}
-      (:part-1 text)]
-     [select/select-item {:value "2"}
-      (:part-2 text)]]]])
+
 
 (defn upload-modal
   "Modal for uploading a solution.
@@ -438,8 +421,7 @@
                 on-update-form
                 on-submit-solution
                 on-select-year
-                on-select-challenge
-                on-select-part]}
+                on-select-challenge]}
         handlers
         external-mode? (some? playground-url)
         form-data {:form form
@@ -456,11 +438,11 @@
        [dialog/dialog-description {}
         (:share-your-advent-of-code-solution text)]]
       [:div {:class "space-y-4 py-4 px-2 overflow-y-auto flex-1"}
-       ;; Always show year/challenge/part selectors
+       ;; Always show year/challenge selectors
        [:div {:class "mb-4 pb-4"}
         [:p {:class "text-sm font-medium mb-3"}
          (:uploading-for text)]
-        [:div {:class "grid grid-cols-3 gap-4"}
+        [:div {:class "grid grid-cols-2 gap-4"}
          [year-selector {:selected-year (:year form)
                          :years-options years-options
                          :on-select-year on-select-year
@@ -468,10 +450,7 @@
          [challenge-selector {:selected-challenge (:challenge form)
                               :challenges-options challenges-options
                               :on-select-challenge on-select-challenge
-                              :text text}]
-         [part-selector {:selected-part (:part form)
-                         :on-select-part on-select-part
-                         :text text}]]]
+                              :text text}]]]
        [input-author form-data]
        [input-gh form-data]
        ;; Content type selector - locked to :repo-link in external mode
@@ -554,9 +533,8 @@
            text
            selected-challenge
            challenges-options
-           selected-part
            handlers]}]
-  (let [{:keys [on-select-year on-select-challenge on-select-part]} handlers]
+  (let [{:keys [on-select-year on-select-challenge]} handlers]
     [:<>
      [year-selector {:selected-year selected-year
                      :years-options years-options
@@ -565,10 +543,7 @@
      [challenge-selector {:selected-challenge selected-challenge
                           :challenges-options challenges-options
                           :on-select-challenge on-select-challenge
-                          :text text}]
-     [part-selector {:selected-part selected-part
-                     :on-select-part on-select-part
-                     :text text}]]))
+                          :text text}]]))
 
 (defn upload-solution
   [{:keys [upload-count text handlers]}]
@@ -596,7 +571,6 @@
            solutions
            selected-year
            selected-challenge
-           selected-part
            user-solution-ids
            highlighted-solution-id
            admin-logged-in?
@@ -631,7 +605,7 @@
           (:only-if-solved-no-cheating text)]
          [button/button {:on-click
                          #(when on-give-consent
-                            (on-give-consent selected-year selected-challenge selected-part))
+                            (on-give-consent selected-year selected-challenge))
                          :size :lg}
           (:show-me-solutions text)]]]
        (empty? solutions) [:div {:class "text-center py-12 bg-card rounded-lg border"}
@@ -662,7 +636,7 @@
   
   Props (nested structure):
   - :header-data - Page title and description with text
-  - :selector-data - Year/challenge/part filters with options, handlers, and text
+  - :selector-data - Year/challenge filters with options, handlers, and text
   - :upload-data - Upload button with count, handlers, and text
   - :solutions-data - Solutions list with state (loading/gated), handlers, theme, and text
   - :modal-data - Form with state, handlers, and text"
@@ -676,6 +650,5 @@
     [solutions-container
      (assoc solutions-data
             :selected-year (:selected-year selector-data)
-            :selected-challenge (:selected-challenge selector-data)
-            :selected-part (:selected-part selector-data))]]
+            :selected-challenge (:selected-challenge selector-data))]]
    [upload-modal modal-data]])

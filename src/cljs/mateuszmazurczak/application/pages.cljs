@@ -20,7 +20,9 @@
                            :description (fi18n/tr :not-found-description)
                            :back-home-text (fi18n/tr :back-home)}])
 
-(defmethod pages :pages/pending [_] [mm-ui-spinner/spinner {:class "size-8 m-auto"}])
+(defmethod pages :pages/pending
+  [_]
+  [mm-ui-spinner/spinner {:class "size-8 m-auto"}])
 
 (defmethod pages :pages/system-error
   [_]

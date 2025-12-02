@@ -22,19 +22,19 @@
                      (string? class) class
                      :else "")
          ;; Default size handling - if class contains size-*, don't set explicit size
-         explicit-size (when (and size (not (str/includes? class-str "size-")))
-                         size)
+         explicit-size (when (and size (not (str/includes? class-str "size-"))) size)
          merged-class (str "animate-spin " class-str)]
-     [:svg (cond-> {:xmlns "http://www.w3.org/2000/svg"
-                    :viewBox "0 0 24 24"
-                    :fill "none"
-                    :stroke "currentColor"
-                    :stroke-width "2"
-                    :stroke-linecap "round"
-                    :stroke-linejoin "round"
-                    :class merged-class
-                    :role "status"
-                    :aria-label "Loading"}
-             explicit-size (assoc :width explicit-size :height explicit-size))
+     [:svg
+      (cond-> {:xmlns "http://www.w3.org/2000/svg"
+               :viewBox "0 0 24 24"
+               :fill "none"
+               :stroke "currentColor"
+               :stroke-width "2"
+               :stroke-linecap "round"
+               :stroke-linejoin "round"
+               :class merged-class
+               :role "status"
+               :aria-label "Loading"}
+        explicit-size (assoc :width explicit-size :height explicit-size))
       ;; Lucide Loader2 icon path
       [:path {:d "M21 12a9 9 0 1 1-6.219-8.56"}]])))

@@ -97,21 +97,21 @@
 (defn -main "Main entry point for repl" [& args] (start-repl args (default-middleware) go))
 
 (comment
-  (require '[mateuszmazurczak.domain.aoc.repository :as aoc-repo]
-           '[mateuszmazurczak.ports.database :as db])
-  ;;Getting data from live system:
-  (db/query (:sys/db-conn state/system) '[:find (pull ?e [*]) :where [?e :aoc-solution/id]])
-  (db/query (:sys/db-conn state/system) (aoc-repo/build-get-solutions-query) 2025)
-  ;;
-  ;; (ig/halt! state/system [::sys/db-conn])
-  state/config
-  (prep)
-  (init)
-  ;;Start
-  (go)
-  ;;halt
-  (halt)
-  ;;reset
-  (reset)
-  ;
+ (require '[mateuszmazurczak.domain.aoc.repository :as aoc-repo]
+          '[mateuszmazurczak.ports.database :as db])
+ ;;Getting data from live system:
+ (db/query (:sys/db-conn state/system) '[:find (pull ?e [*]) :where [?e :aoc-solution/id]])
+ (db/query (:sys/db-conn state/system) (aoc-repo/build-get-solutions-query) 2025)
+ ;;
+ ;; (ig/halt! state/system [::sys/db-conn])
+ state/config
+ (prep)
+ (init)
+ ;;Start
+ (go)
+ ;;halt
+ (halt)
+ ;;reset
+ (reset)
+ ;
 )

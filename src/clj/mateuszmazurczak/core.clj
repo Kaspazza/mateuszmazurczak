@@ -32,9 +32,9 @@
 
 
 (comment
-  (require '[integrant.repl.state :as state] '[aero.core])
-  (aero.core/read-config "env/development/config.edn")
-  state/config
-  (tap> "hello")
-  ;
+ (require '[integrant.repl.state :as state] '[aero.core])
+ (aero.core/read-config "env/development/config.edn")
+ state/config
+ (tap> "hello")
+ ;
 )

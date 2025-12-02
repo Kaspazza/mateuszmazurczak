@@ -25,7 +25,7 @@
      [""
       {:name ::aoc
        :get mateuszmazurczak-page}]
-     ["/:year/:challenge/:part"
+     ["/:year/:challenge"
       {:name ::aoc-specific
        :get mateuszmazurczak-page}]]
     ["/secret-admin-panel-xyz"

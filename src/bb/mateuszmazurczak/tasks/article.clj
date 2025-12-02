@@ -86,9 +86,9 @@
 
 
 (comment
-  (def articles (file/read-file "articles.edn"))
-  (read-md-content (first articles))
-  (io/resource "")
-  (render-article! (first articles))
-  ;;
+ (def articles (file/read-file "articles.edn"))
+ (read-md-content (first articles))
+ (io/resource "")
+ (render-article! (first articles))
+ ;;
 )

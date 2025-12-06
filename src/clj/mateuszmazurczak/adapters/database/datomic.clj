@@ -150,10 +150,12 @@
                         :migration/checksum checksum}])
          (log/log! logger
                    {:id ::migration-applied
+                    :level :info
                     :msg (str "Successfully applied migration: " id)})
          (catch Exception e
            (log/error! logger
                        {:error e
+                        :level :error
                         :id ::migration-failed
                         :data {:migration-id id}})
            (throw (ex-info (str "Migration failed: " id)

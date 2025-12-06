@@ -58,6 +58,7 @@
          (log/error! logger
                      {:error e
                       :id ::database-start-failed
+                      :level :error
                       :data {:uri uri}})
          (throw (ex-info "Unable to start Datalevin database"
                          {:type ::database-start-failed
@@ -134,6 +135,7 @@
   (let [{:keys [migration/id migration/up migration/checksum]} migration]
     (try (log/log! logger
                    {:id ::migration-applying
+                    :level :info
                     :msg (str "Applying migration: " id)})
          ;; Run the migration - Datalevin migrations can use d/update-schema within the up function
          (when-let [result (up conn logger)]
@@ -157,10 +159,12 @@
                         :migration/checksum checksum}])
          (log/log! logger
                    {:id ::migration-applied
+                    :level :info
                     :msg (str "Successfully applied migration: " id)})
          (catch Exception e
            (log/error! logger
                        {:error e
+                        :level :error
                         :id ::migration-failed
                         :data {:migration-id id}})
            (throw (ex-info (str "Migration failed: " id)
@@ -193,6 +197,7 @@
            (log/error! logger
                        {:error e
                         :id ::migrations-failed
+                        :level :error
                         :data {:pending-migrations-count (count pending-migrations)}})
            (throw (ex-info "Failed to run migrations"
                            {:type ::migrations-failed

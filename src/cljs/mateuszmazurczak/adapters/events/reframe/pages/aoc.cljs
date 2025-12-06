@@ -29,21 +29,6 @@
 ;; Helpers
 ;; =============================================================================
 
-(defn- reset-form
-  "Reset form to initial state with current year/challenge from page state.
-   
-   Args:
-   - year: Year value (required)
-   - challenge: Challenge value (required)"
-  [year challenge]
-  {:author-name ""
-   :github-profile ""
-   :content-type :code-snippet
-   :content ""
-   :year year
-   :challenge challenge})
-
-;;TODO rethink what logic from here should go to domain
 ;;TODO some text here that should be :i18n
 (def handlers
   "AoC page event handlers exported as data.
@@ -102,7 +87,7 @@
            ;; In external mode, lock content-type to :repo-link and pre-fill content with playground-url
            form-data (if playground-url
                        {:author-name ""
-                        :github-profile ""
+                        :github-username ""
                         :content-type :repo-link
                         :content playground-url
                         :year final-modal-year
@@ -191,7 +176,7 @@
            challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)]
        (-> db
            (assoc-in aoc-domain/*aoc-modal-open-path* false)
-           (assoc-in aoc-domain/*aoc-form-path* (reset-form year challenge))
+           (assoc-in aoc-domain/*aoc-form-path* (aoc-domain/reset-form year challenge))
            (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url) nil))))
    :aoc/update-form (fn [db [_ field value]]
                       (-> db
@@ -223,9 +208,10 @@
            page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
            year (or (:year form) page-year)
            challenge (or (:challenge form) page-challenge)
-           ;; Build payload with resolved year/challenge
+           ;; Build and normalize payload (parse GitHub username from various formats)
            payload (-> form
-                       (assoc :year year :challenge challenge))
+                       (assoc :year year :challenge challenge)
+                       aoc-domain/prepare-solution-payload)
            validation-errors (aoc-domain/validate-solution-form form)]
        (cond
          (not (aoc-cache/can-upload? year challenge))
@@ -266,7 +252,7 @@
        {:db (-> db
                 (assoc-in aoc-domain/*aoc-submitting-path* false)
                 (assoc-in aoc-domain/*aoc-modal-open-path* false)
-                (assoc-in aoc-domain/*aoc-form-path* (reset-form year challenge))
+                (assoc-in aoc-domain/*aoc-form-path* (aoc-domain/reset-form year challenge))
                 (assoc-in aoc-domain/*aoc-form-errors-path* nil)
                 (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url) nil)
                 ;; Update page selectors to match submitted solution

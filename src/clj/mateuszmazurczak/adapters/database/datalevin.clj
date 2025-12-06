@@ -1,12 +1,12 @@
 (ns mateuszmazurczak.adapters.database.datalevin
   "Datalevin adapter implementation for database operations."
   (:require
-   [datalevin.core                              :as d]
-   [malli.core                                  :as m]
-   [mateuszmazurczak.adapters.database.utils    :as db-utils]
-   [mateuszmazurczak.domain.database.migrations :as migrations]
-   [mateuszmazurczak.domain.database.schema     :as schema]
-   [mateuszmazurczak.ports.logging              :as log])
+   [datalevin.core                               :as d]
+   [malli.core                                   :as m]
+   [mateuszmazurczak.adapters.database.migrations :as migrations]
+   [mateuszmazurczak.adapters.database.utils     :as db-utils]
+   [mateuszmazurczak.domain.database.schema      :as schema]
+   [mateuszmazurczak.ports.logging               :as log])
   (:import [java.util Date]))
 
 (defn- build-datalevin-schema
@@ -179,6 +179,7 @@
   (when (seq pending-migrations)
     (try (log/log! logger
                    {:id ::migrations-starting
+                    :level :info
                     :msg (str "Running " (count pending-migrations) " pending migrations")})
          (migrations/validate-migration-registry!)
          (let [applied-migrations (get-applied-migrations conn)]
@@ -186,6 +187,7 @@
          (doseq [migration pending-migrations] (apply-migration! conn migration logger))
          (log/log! logger
                    {:id ::migrations-completed
+                    :level :info
                     :msg (str "Completed " (count pending-migrations) " migrations")})
          (catch Exception e
            (log/error! logger

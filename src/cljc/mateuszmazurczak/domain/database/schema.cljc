@@ -1,7 +1,5 @@
 (ns mateuszmazurczak.domain.database.schema
-  (:refer-clojure :exclude [comment])
-  (:require
-   [mateuszmazurczak.domain.database.migrations :as migrations]))
+  (:refer-clojure :exclude [comment]))
 
 (def article
   {:article/id {:doc "Unique identificator for the article which main SOT is articles.edn"
@@ -44,8 +42,8 @@
                             :index true}
    :aoc-solution/author-name {:doc "Name of the solution author"
                               :attr :string}
-   :aoc-solution/github-profile {:doc "Optional GitHub profile URL"
-                                 :attr :string}
+   :aoc-solution/github-username {:doc "Optional GitHub username (without @ or URL)"
+                                  :attr :string}
    :aoc-solution/content-type {:doc "Type of content: :code-snippet or :repo-link"
                                :enum #{:code-snippet :repo-link}}
    :aoc-solution/content {:doc
@@ -67,4 +65,14 @@
                        :attr :instant
                        :index true}})
 
-(def entities [article author comment aoc-solution aoc-vote migrations/migration-schema])
+(def migration-schema
+  "Schema for tracking applied migrations in the database"
+  {:migration/id {:doc "Unique migration identifier (timestamp + description)"
+                  :attr :string
+                  :unique :identity}
+   :migration/applied-at {:doc "Timestamp when migration was applied"
+                          :attr :instant}
+   :migration/checksum {:doc "MD5 hash of migration content for integrity check"
+                        :attr :string}})
+
+(def entities [article author comment aoc-solution aoc-vote migration-schema])

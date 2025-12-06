@@ -13,7 +13,7 @@
    [:year [:and :int [:>= 2015] [:<= 2025]]]
    [:challenge [:and :int [:>= 1] [:<= 24]]]
    [:author-name [:string {:min 1}]]
-   [:github-profile {:optional true}
+   [:github-username {:optional true}
     [:maybe :string]]
    [:content-type [:enum "code-snippet" "repo-link" :code-snippet :repo-link]]
    [:content [:string {:min 1}]]])
@@ -33,7 +33,7 @@
    - :year (int)
    - :challenge (int)
    - :author-name (string)
-   - :github-profile (optional string)
+   - :github-username (optional string) - Just the GitHub username
    - :content-type (string or keyword: code-snippet or repo-link)
    - :content (string)
    
@@ -42,7 +42,7 @@
    - tx-data is Datalevin transaction data (vector of maps)
    
    Generates UUID and timestamp automatically."
-  [{:keys [year challenge author-name github-profile content-type content]}]
+  [{:keys [year challenge author-name github-username content-type content]}]
   (let [solution-id (UUID/randomUUID)
         now (Date.)
         normalized-content-type (normalize-content-type content-type)
@@ -53,8 +53,8 @@
                  :aoc-solution/content-type normalized-content-type
                  :aoc-solution/content content
                  :aoc-solution/created-at now}
-        tx (if (and github-profile (string? github-profile) (not (str/blank? github-profile)))
-             (assoc base-tx :aoc-solution/github-profile github-profile)
+        tx (if (and github-username (string? github-username) (not (str/blank? github-username)))
+             (assoc base-tx :aoc-solution/github-username github-username)
              base-tx)]
     [solution-id [tx]]))
 
@@ -108,7 +108,7 @@
    Takes a tuple from the query result and returns a properly formatted
    solution map with string ID (for frontend compatibility)."
   [{:aoc-solution/keys
-    [id year challenge author-name github-profile content-type content created-at]}]
+    [id year challenge author-name github-username content-type content created-at]}]
   (cond-> {:id (str id)
            :year year
            :challenge challenge
@@ -116,7 +116,7 @@
            :content-type content-type
            :content content
            :created-at (str created-at)}
-    github-profile (assoc :github-profile github-profile)))
+    github-username (assoc :github-username github-username)))
 
 (defn enrich-with-vote-counts
   "Enrich solution map with vote counts by querying the database.
@@ -146,6 +146,7 @@
 (defn solution-query
   [{:keys [db]} solution-uid]
   (db/pull-entity db '[*] [:aoc-solution/id solution-uid]))
+
 
 (defn delete-solution-tx
   [{:keys [db]} solution-uid]

@@ -1,7 +1,8 @@
 (ns mateuszmazurczak.repl.entry-point
-  "REPL entry point"
+  "REPL entry point with automatic reload support"
   (:require
    [aero.core]
+   [clojure.tools.namespace.repl    :as tn-repl]
    [integrant.core                  :as ig]
    [integrant.repl                  :refer [go halt init prep reset]]
    [integrant.repl.state            :as state]
@@ -96,6 +97,25 @@
 
 (defn -main "Main entry point for repl" [& args] (start-repl args (default-middleware) go))
 
+;; Configure tools.namespace to avoid reloading certain namespaces
+;; This prevents REPL state from being lost on reload
+(tn-repl/set-refresh-dirs "src/clj" "src/cljc" "env/development/src/clj" "env/development/src/cljc")
+
+(defn refresh
+  "Reload changed namespaces without restarting the system.
+   
+   Use this when you change domain logic, handlers, etc. and want to
+   see the changes without full system restart.
+   
+   If refresh fails, use (reset) to do a full system restart."
+  []
+  (tn-repl/refresh))
+
+(defn refresh-all
+  "Reload all namespaces, useful when refresh gets confused."
+  []
+  (tn-repl/refresh-all))
+
 (comment
  (require '[mateuszmazurczak.domain.aoc.repository :as aoc-repo]
           '[mateuszmazurczak.ports.database :as db])
@@ -111,7 +131,11 @@
  (go)
  ;;halt
  (halt)
- ;;reset
+ ;;reset - does halt, refresh, and go
  (reset)
+ ;;refresh - reload changed namespaces without restarting system
+ (refresh)
+ ;;refresh-all - reload ALL namespaces (use when refresh fails)
+ (refresh-all)
  ;
 )

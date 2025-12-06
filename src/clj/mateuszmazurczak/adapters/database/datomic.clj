@@ -1,15 +1,15 @@
 (ns mateuszmazurczak.adapters.database.datomic
   "Datomic adapter implementation for database operations."
   (:require
-   [datofu.all                                  :as datofu-all]
-   [datofu.migration                            :as datofu-migration]
-   [datofu.schema.dsl                           :as dsl]
-   [datomic.api                                 :as d]
-   [malli.core                                  :as m]
-   [mateuszmazurczak.adapters.database.utils    :as db-utils]
-   [mateuszmazurczak.domain.database.migrations :as migrations]
-   [mateuszmazurczak.domain.database.schema     :as schema]
-   [mateuszmazurczak.ports.logging              :as log]))
+   [datofu.all                                   :as datofu-all]
+   [datofu.migration                             :as datofu-migration]
+   [datofu.schema.dsl                            :as dsl]
+   [datomic.api                                  :as d]
+   [malli.core                                   :as m]
+   [mateuszmazurczak.adapters.database.migrations :as migrations]
+   [mateuszmazurczak.adapters.database.utils     :as db-utils]
+   [mateuszmazurczak.domain.database.schema      :as schema]
+   [mateuszmazurczak.ports.logging               :as log]))
 
 (defn- entity-attr->txes
   [kw m]

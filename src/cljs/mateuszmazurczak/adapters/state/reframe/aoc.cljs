@@ -12,7 +12,6 @@
 
 (rf/reg-sub :aoc/solutions-entities (fn [db _] (get-in db state-registry/*aoc-solutions-path*)))
 
-;;TODO rethink what logic from here should go to domain
 (rf/reg-sub
  :pages/aoc
  :<-
@@ -28,12 +27,13 @@
  (fn [[raw-data solutions-entities theme logger admin-logged-in?] _]
    (let [solution-ids (get-in raw-data
                               (aoc-domain/relative-path aoc-domain/*aoc-solution-ids-path*))
-         solutions (aoc-domain/denormalize-solutions solution-ids solutions-entities)
+         denormalized-solutions (aoc-domain/denormalize-solutions solution-ids solutions-entities)
          ui-data
          (-> raw-data
              events/dispatch-markers->handlers
              fi18n/i18n-markers->translation
-             (assoc-in (aoc-domain/relative-path aoc-domain/*aoc-solutions-path*) solutions)
+             (assoc-in (aoc-domain/relative-path aoc-domain/*aoc-solutions-path*)
+                       denormalized-solutions)
              (update-in (aoc-domain/relative-path aoc-domain/*aoc-solutions-data-path*)
                         dissoc
                         :solution-ids)
@@ -44,14 +44,13 @@
                         events/dispatch-markers->handlers))
          solutions-text (get-in ui-data
                                 (aoc-domain/relative-path aoc-domain/*aoc-solutions-text-path*))
-         enriched-solutions
+         enriched-and-sorted-solutions
          (->> (get-in ui-data (aoc-domain/relative-path aoc-domain/*aoc-solutions-path*))
-              (mapv #(assoc % :theme theme :text solutions-text))
-              (sort-by #(+ (or (:best-practices-count %) 0) (or (:clever-count %) 0)) >)
-              vec)
+              (mapv #(aoc-domain/enrich-solution-with-ui-context % theme solutions-text))
+              aoc-domain/sort-solutions-by-votes)
          ui-data (assoc-in ui-data
                   (aoc-domain/relative-path aoc-domain/*aoc-solutions-path*)
-                  enriched-solutions)
+                  enriched-and-sorted-solutions)
          valid? (aoc-domain/valid-aoc-page-ui-data? ui-data)
          explanation (when-not valid? (aoc-domain/explain-aoc-page-ui-data ui-data))]
      (when-not valid?

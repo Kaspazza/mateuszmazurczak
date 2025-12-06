@@ -74,16 +74,24 @@
 (def Solution
   "Solution in app-db (content-type normalized to keyword).
    
-   Note: UI-specific fields (theme, text, handlers) are added during
-   denormalization in the subscription layer"
+   Stored fields:
+   - :github-username - Just the username (e.g., \"octocat\"), stored in DB
+   
+   Derived fields (added during denormalization):
+   - :github-profile - Full URL (e.g., \"https://github.com/octocat\")
+   - :github-username-display - Formatted username (e.g., \"@octocat\")
+   - :theme, :text, :on-vote-* - Added during subscription layer processing"
   [:map
    [:id :string]
    [:year Year]
    [:challenge Challenge]
    [:author-name :string]
+   [:github-username {:optional true}
+    [:maybe :string]]
+   ;; Derived fields (added during denormalization)
    [:github-profile {:optional true}
     [:maybe :string]]
-   [:github-username {:optional true}
+   [:github-username-display {:optional true}
     [:maybe :string]]
    [:content-type ContentType]
    [:content :string]
@@ -107,10 +115,13 @@
     [:maybe fn?]]])
 
 (def SolutionForm
-  "Schema for the upload form data."
+  "Schema for the upload form data (UI form state).
+   
+   Note: :github-username can be entered in various formats (username, @username, full URL).
+   Use prepare-solution-payload to normalize before submission."
   [:map
    [:author-name [:string {:min 1}]]
-   [:github-profile {:optional true}
+   [:github-username {:optional true}
     [:maybe :string]]
    [:content-type ContentType]
    [:content [:string {:min 1}]]
@@ -209,7 +220,7 @@
      [:form
       [:map {:closed true}
        [:author-name :string]
-       [:github-profile :string]
+       [:github-username :string]
        [:content-type ContentType]
        [:content :string]
        [:year {:optional true}
@@ -284,7 +295,7 @@
      [:form
       [:map {:closed true}
        [:author-name :string]
-       [:github-profile :string]
+       [:github-username :string]
        [:content-type ContentType]
        [:content :string]
        [:year {:optional true}
@@ -394,7 +405,7 @@
                                :on-delete-solution [:dispatch [:admin/delete-solution]]}}
    :modal-data {:modal-open? false
                 :form {:author-name ""
-                       :github-profile ""
+                       :github-username ""
                        :content-type :code-snippet
                        :content ""
                        :year (last years)
@@ -409,7 +420,7 @@
                                                             :share-your-advent-of-code-solution]
                        :uploading-for [:i18n :uploading-for]
                        :your-name [:i18n :your-name]
-                       :github-profile-optional [:i18n :github-profile-optional]
+                       :github-username-optional [:i18n :github-username-optional]
                        :content-type [:i18n :content-type]
                        :code-snippet [:i18n :code-snippet]
                        :repository-link [:i18n :repository-link]
@@ -476,22 +487,65 @@
   {:entities (into {} (map (fn [solution] [(:id solution) solution]) solutions))
    :ids (mapv :id solutions)})
 
-(defn format-github-username
-  "Extract and format GitHub username from profile URL.
+(defn parse-github-username
+  "Parse and normalize GitHub username from various input formats.
+   
+   Accepts:
+   - Just username: \"octocat\" -> \"octocat\"
+   - With @: \"@octocat\" -> \"octocat\"
+   - Full URL: \"https://github.com/octocat\" -> \"octocat\"
+   - Full URL: \"http://github.com/octocat\" -> \"octocat\"
+   - Full URL with www: \"https://www.github.com/octocat\" -> \"octocat\"
+   - Full URL with trailing slash: \"https://github.com/octocat/\" -> \"octocat\"
+   - URL without protocol: \"github.com/octocat\" -> \"octocat\"
+   - URL without protocol with www: \"www.github.com/octocat\" -> \"octocat\"
+   
+   Returns nil for empty/invalid input."
+  [input]
+  (when (and input (not (str/blank? input)))
+    (let [trimmed (str/trim input)
+          ;; Remove @ prefix if present
+          without-at (if (str/starts-with? trimmed "@") (subs trimmed 1) trimmed)
+          ;; Split by / and take last non-blank segment (handles all URL formats)
+          username (last (remove str/blank? (str/split without-at #"/")))]
+      (when (and username (not (str/blank? username)))
+        username))))
+
+(defn build-github-url
+  "Build GitHub profile URL from username.
+   
+   Args:
+   - username: GitHub username (just the username, no @ or URL)
+   
+   Returns: Full GitHub URL (https://github.com/username) or nil if username is nil/blank."
+  [username]
+  (when (and username (not (str/blank? username)))
+    (str "https://github.com/" username)))
+
+(defn format-github-display
+  "Format GitHub username for display with @ prefix.
    
    Examples:
-   \"https://github.com/username\" -> \"(@username)\"
-   \"https://github.com/user-name\" -> \"(@user-name)\"
+   \"octocat\" -> \"@octocat\"
    nil -> nil"
-  [github-profile]
-  (when github-profile
-    (when-let [username (last (str/split github-profile #"/"))] (str "(@" username ")"))))
+  [username]
+  (when (and username (not (str/blank? username)))
+    (str "@" username)))
 
-(defn enrich-solution-with-github-username
-  "Add formatted github-username to solution if github-profile exists."
+(defn enrich-solution-with-github-data
+  "Enrich solution with GitHub URL and display username.
+   
+   Takes solution with :github-username field (can be username or full URL for backward compatibility),
+   normalizes it to just username, then adds :github-profile (full URL) and :github-username-display (formatted with @).
+   
+   This handles legacy data where full URLs might be stored instead of just usernames."
   [solution]
-  (if-let [profile (:github-profile solution)]
-    (assoc solution :github-username (format-github-username profile))
+  (if-let [raw-username (:github-username solution)]
+    (let [normalized-username (parse-github-username raw-username)]
+      (assoc solution
+             :github-username normalized-username
+             :github-profile (build-github-url normalized-username)
+             :github-username-display (format-github-display normalized-username)))
     solution))
 
 (defn enrich-solution-with-vote-handlers
@@ -511,6 +565,51 @@
   (into []
         (comp (map #(get entities %))
               (filter some?)
-              (map enrich-solution-with-github-username)
+              (map enrich-solution-with-github-data)
               (map enrich-solution-with-vote-handlers))
         solution-ids))
+
+(defn enrich-solution-with-ui-context
+  "Enrich solution with UI-specific context (theme, text).
+   
+   This prepares solutions for rendering by adding theme and shared text.
+   Note: This is still domain logic as it's pure data transformation."
+  [solution theme text]
+  (assoc solution :theme theme :text text))
+
+(defn sort-solutions-by-votes
+  "Sort solutions by total vote count (best-practices + clever) in descending order."
+  [solutions]
+  (->> solutions
+       (sort-by #(+ (or (:best-practices-count %) 0) (or (:clever-count %) 0)) >)
+       vec))
+
+(defn reset-form
+  "Reset form to initial state with given year/challenge.
+   
+   Args:
+   - year: Year value (required)
+   - challenge: Challenge value (required)
+   
+   Returns: Fresh form map with empty fields and specified year/challenge."
+  [year challenge]
+  {:author-name ""
+   :github-username ""
+   :content-type :code-snippet
+   :content ""
+   :year year
+   :challenge challenge})
+
+(defn prepare-solution-payload
+  "Prepare form data for submission by normalizing GitHub username.
+   
+   Takes form data with potentially messy :github-username input,
+   parses it to extract just the username, and returns payload ready for API.
+   
+   Args:
+   - form: Form data map with :author-name, :github-username, :content-type, :content, :year, :challenge
+   
+   Returns: Normalized payload with parsed :github-username"
+  [form]
+  (-> form
+      (update :github-username parse-github-username)))

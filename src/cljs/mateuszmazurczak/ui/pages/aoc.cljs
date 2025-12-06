@@ -1,5 +1,5 @@
 (ns mateuszmazurczak.ui.pages.aoc
-  "Advent of Code solutions page UI."
+  "Advent of Code solutions page UI - pure presentation layer."
   (:require
    ["lucide-react"                               :refer [ArrowUp
                                                          Check
@@ -7,8 +7,8 @@
                                                          ChevronUp
                                                          ExternalLink
                                                          Link2]]
-   ["pako"                                       :as pako]
    [clojure.string                               :as str]
+   [mateuszmazurczak.domain.aoc.playground       :as playground]
    [mateuszmazurczak.ui.components.admin         :as admin]
    [mateuszmazurczak.ui.components.button        :as button]
    [mateuszmazurczak.ui.components.code-block    :as code-block]
@@ -33,80 +33,15 @@
           (.then (fn [] (reset! copied-atom true) (js/setTimeout #(reset! copied-atom false) 2000)))
           (.catch (fn [err] (js/console.error "Failed to copy link:" err)))))))
 
-(def ^:private aoc-helper-comment
-  ";; Helper functions:
-;; (fetch-input year day) - get AOC input
-;; (append str) - append str to DOM
-;; (spy x) - log x to console and return x
 
-;; Example fetch call.
-;;(def input (->> (js-await (fetch-input 2022 1))
-;;             #_spy
-;;             str/split-lines
-;;             (mapv parse-long)))
-
-")
-
-(defn- uint8array-to-binary-string
-  "Convert Uint8Array to binary string for btoa encoding.
-  
-  This is necessary because pako.gzip returns a Uint8Array and btoa expects
-  a binary string (each character represents a byte)."
-  [uint8array]
-  (let [len (.-length uint8array)
-        chars (js/Array. len)]
-    (dotimes [i len] (aset chars i (.fromCharCode js/String (aget uint8array i))))
-    (.join chars "")))
-
-(defn- compose-playground-url
-  "Compose a playground URL (Squint or Cherry) for code content.
-  
-  Uses gzip compression for Squint (supported), plain base64 for Cherry (not supported).
-  
-  Args:
-  - code: The code string to open in playground
-  - opts: Optional map with:
-    - :playground - Playground type (:squint | :cherry), default :squint
-    - :boilerplate - URL to boilerplate code
-    - :repl - Enable REPL mode (default: true)
-  
-  Returns: Complete playground URL"
-  [code
-   {:keys [playground boilerplate repl]
-    :or {playground :squint
-         repl true}
-    :as _opts}]
-  (let [base-url (case playground
-                   :cherry "https://squint-cljs.github.io/cherry/"
-                   :squint "https://squint-cljs.github.io/squint/")
-        encoded-code (if (= playground :squint)
-                       (let [compressed (pako/gzip code)
-                             binary-string (uint8array-to-binary-string compressed)]
-                         (str "gzip:" (js/btoa binary-string)))
-                       (js/btoa code))
-        url (js/URL. base-url)]
-    (.. url -searchParams (set "src" encoded-code))
-    (when boilerplate (.. url -searchParams (set "boilerplate" boilerplate)))
-    (.. url -searchParams (set "repl" (str repl)))
-    (.toString url)))
 
 (defn open-in-playground-menu
   "Dropdown menu to open code solution in interactive playground (Squint or Cherry).
   Only shown for code-snippet content type."
   [content-type content text]
   (when (= content-type :code-snippet)
-    (let
-      [aoc-boilerplate-url
-       "https://gist.githubusercontent.com/borkdude/cf94b492d948f7f418aa81ba54f428ff/raw/3b58a80710fbbbda091966c8eb85323eef4652c1/aoc_ui.cljs"
-       code-with-helpers (str aoc-helper-comment content)
-       squint-url (compose-playground-url code-with-helpers
-                                          {:playground :squint
-                                           :boilerplate aoc-boilerplate-url
-                                           :repl true})
-       cherry-url (compose-playground-url code-with-helpers
-                                          {:playground :cherry
-                                           :boilerplate aoc-boilerplate-url
-                                           :repl true})]
+    (let [squint-url (playground/squint-url content)
+          cherry-url (playground/cherry-url content)]
       [dropdown-menu/dropdown-menu {}
        [dropdown-menu/dropdown-menu-trigger {:as-child true}
         (button/button {:variant :ghost
@@ -142,19 +77,19 @@
                              (if @copied? (:copied text) (:share text))]])))
 
 (defn author-info
-  [{:keys [author-name github-profile github-username created-at]
+  [{:keys [author-name github-profile github-username-display created-at]
     :as _author-data}]
   [:div {:class "flex items-center gap-3 mb-4"}
    [:div {:class "flex-1"}
     [:div {:class "flex items-center gap-2"}
      [:h3 {:class "font-semibold text-lg"}
       author-name]
-     (when (and github-profile github-username)
+     (when (and github-profile github-username-display)
        [:a {:href github-profile
             :target "_blank"
             :rel "noopener noreferrer"
             :class "text-sm text-muted-foreground hover:text-primary transition-colors"}
-        github-username])]
+        github-username-display])]
     (when created-at
       [:p {:class "text-xs text-muted-foreground mt-1"}
        created-at])]])
@@ -355,14 +290,14 @@
   [{:keys [form submitting? on-update-form text]
     :as _form-data}]
   [:div {:class "space-y-2"}
-   [label/label {:htmlFor "github-profile"}
-    (:github-profile-optional text)]
-   [input/input {:id "github-profile"
-                 :type "url"
-                 :value (:github-profile form)
+   [label/label {:htmlFor "github-username"}
+    (:github-username-optional text)]
+   [input/input {:id "github-username"
+                 :type "text"
+                 :value (:github-username form)
                  :placeholder (:github-placeholder text)
                  :disabled submitting?
-                 :on-change #(on-update-form :github-profile
+                 :on-change #(on-update-form :github-username
                                              (-> %
                                                  .-target
                                                  .-value))}]])

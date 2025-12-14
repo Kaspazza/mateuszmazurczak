@@ -6,8 +6,8 @@
   
   Docs: https://www.radix-ui.com/docs/primitives/components/separator"
   (:require
-   ["@radix-ui/react-separator"   :as SeparatorPrimitive]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
+   ["@radix-ui/react-separator" :as SeparatorPrimitive]
+   [mateuszmazurczak.utils.styles           :refer [merge-classes]]))
 
 (defn separator
   "Renders a visual separator line (horizontal or vertical).

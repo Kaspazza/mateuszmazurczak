@@ -4,7 +4,7 @@
   (:require
    ["@radix-ui/react-radio-group" :as RadioGroupPrimitive]
    ["lucide-react"                :refer [CircleIcon]]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]
+   [mateuszmazurczak.utils.styles             :refer [merge-classes]]
    [reagent.core                  :as r]))
 
 (defn radio-group

@@ -88,8 +88,8 @@
                          (reset! open? %))}]])
   ```"
   (:require
-   ["@radix-ui/react-tooltip"     :as TooltipPrimitive]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
+   ["@radix-ui/react-tooltip" :as TooltipPrimitive]
+   [mateuszmazurczak.utils.styles         :refer [merge-classes]]))
 
 ;;
 ;; Internal Radix primitives (not exported)
@@ -99,6 +99,26 @@
 (def ^:private tooltip-root (.-Root TooltipPrimitive))
 (def ^:private tooltip-trigger (.-Trigger TooltipPrimitive))
 (def ^:private tooltip-content-primitive (.-Content TooltipPrimitive))
+
+;;
+;; Public API - Exported provider for shared tooltip context
+;;
+
+(def tooltip-provider-component
+  "TooltipProvider component for wrapping multiple tooltips.
+  Allows tooltips to share delay and skip-delay behavior.
+  
+  Props:
+  - `:delay-duration` - Time (ms) before tooltip shows (default: 700)
+  - `:skip-delay-duration` - Time (ms) to skip delay between tooltips (default: 300)
+  - `:disable-hoverable-content?` - Prevent tooltip from staying open on hover (default: false)
+  
+  Example:
+  ```clojure
+  [:> tooltip-provider-component {}
+   [my-component-with-tooltips]]
+  ```"
+  tooltip-provider)
 
 ;;
 ;; Public API - Single data-driven component
@@ -239,7 +259,7 @@
      (cond-> {:sideOffset side-offset
               :className
               (merge-classes
-               (str "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 "
+               (str "z-50 overmateuszmazurczak-hidden rounded-md border bg-popover px-3 py-1.5 "
                     "text-sm text-popover-foreground shadow-md " "animate-in fade-in-0 zoom-in-95 "
                     "data-[state=closed]:animate-out " "data-[state=closed]:fade-out-0 "
                     "data-[state=closed]:zoom-out-95 " "data-[side=bottom]:slide-in-from-top-2 "

@@ -2,9 +2,9 @@
   "Dialog (modal) component with overlay and content area.
   https://www.radix-ui.com/primitives/docs/components/dialog"
   (:require
-   ["@radix-ui/react-dialog"      :as RadixDialog]
-   ["lucide-react"                :refer [XIcon]]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
+   ["@radix-ui/react-dialog" :as RadixDialog]
+   ["lucide-react"           :refer [XIcon]]
+   [mateuszmazurczak.utils.styles        :refer [merge-classes]]))
 
 (defn dialog
   "Root dialog component. Controls open/closed state.

@@ -2,8 +2,8 @@
   "Popover component for displaying floating content relative to a trigger.
   https://www.radix-ui.com/primitives/docs/components/popover"
   (:require
-   ["@radix-ui/react-popover"     :as RadixPopover]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
+   ["@radix-ui/react-popover" :as RadixPopover]
+   [mateuszmazurczak.utils.styles         :refer [merge-classes]]))
 
 (defn popover
   "Root popover component. Controls open/closed state.

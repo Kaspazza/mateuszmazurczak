@@ -2,14 +2,14 @@
   "Carousel component built on top of Embla Carousel.
   https://www.embla-carousel.com/"
   (:require
-   ["embla-carousel-react"                :as embla-carousel]
-   ["lucide-react"                        :refer [ArrowLeft ArrowRight]]
-   [goog.object                           :as gobj]
-   [mateuszmazurczak.ui.components.button :as ui-button]
+   ["embla-carousel-react"    :as embla-carousel]
+   ["lucide-react"            :refer [ArrowLeft ArrowRight]]
+   [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]
    [mateuszmazurczak.utils.styles         :refer [merge-classes]]
-   [reagent.core                          :as    r
-                                          :refer [defc]]
-   [reagent.hooks                         :as rhooks]))
+   [goog.object               :as gobj]
+   [reagent.core              :as    r
+                              :refer [defc]]
+   [reagent.hooks             :as rhooks]))
 
 (def ^:private carousel-context (r/atom nil))
 
@@ -103,7 +103,7 @@
    children]
   (let [{:keys [carousel-ref orientation]} (use-carousel)]
     [:div {:ref carousel-ref
-           :class "overflow-hidden"
+           :class "overmateuszmazurczak-hidden"
            :data-slot "carousel-content"}
      (into [:div
             (-> props
@@ -155,7 +155,7 @@
          size :icon}
     :as props}]
   (let [{:keys [orientation scroll-prev can-scroll-prev]} (use-carousel)]
-    [ui-button/button
+    [mateuszmazurczak-button/button
      (-> props
          (assoc :variant variant
                 :size size
@@ -187,7 +187,7 @@
          size :icon}
     :as props}]
   (let [{:keys [orientation scroll-next can-scroll-next]} (use-carousel)]
-    [ui-button/button
+    [mateuszmazurczak-button/button
      (-> props
          (assoc :variant variant
                 :size size

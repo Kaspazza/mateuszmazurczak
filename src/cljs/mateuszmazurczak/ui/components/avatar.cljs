@@ -1,8 +1,8 @@
 (ns mateuszmazurczak.ui.components.avatar
   "https://www.radix-ui.com/primitives/docs/components/avatar"
   (:require
-   ["@radix-ui/react-avatar"      :as RadixAvatar]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
+   ["@radix-ui/react-avatar" :as RadixAvatar]
+   [mateuszmazurczak.utils.styles        :refer [merge-classes]]))
 
 (defn avatar
   "Avatar root component. Displays an image or fallback for a user/entity.
@@ -23,7 +23,7 @@
          (-> props
              (assoc :data-slot "avatar"
                     :class (merge-classes
-                            "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
+                            "relative flex h-10 w-10 shrink-0 overmateuszmazurczak-hidden rounded-full"
                             class))
              (dissoc :class-name))]
         children))

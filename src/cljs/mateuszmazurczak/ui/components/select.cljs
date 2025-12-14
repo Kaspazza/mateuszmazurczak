@@ -1,9 +1,9 @@
 (ns mateuszmazurczak.ui.components.select
   "https://www.radix-ui.com/primitives/docs/components/select"
   (:require
-   ["@radix-ui/react-select"      :as RadixSelect]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]
-   [reagent.core                  :as r]))
+   ["@radix-ui/react-select" :as RadixSelect]
+   [mateuszmazurczak.utils.styles        :refer [merge-classes]]
+   [reagent.core             :as r]))
 
 (defn- chevron-down-icon
   []
@@ -132,7 +132,7 @@
                             "max-h-(--radix-select-content-available-height)"
                             "min-w-[8rem]"
                             "origin-(--radix-select-content-transform-origin)"
-                            "overflow-x-hidden overflow-y-auto rounded-md border"
+                            "overmateuszmazurczak-x-hidden overmateuszmazurczak-y-auto rounded-md border"
                             "shadow-md"
                             (when (= position "popper")
                               (merge-classes

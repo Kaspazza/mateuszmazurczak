@@ -123,9 +123,13 @@
          [:div {:class "relative"}
           [:div {:class (when (and is-long-code? (not @expanded?))
                           "max-h-64 overflow-hidden relative")}
-           [code-block/copy-block {:text content
-                                   :language "clojure"
-                                   :theme theme}]
+           [code-block/code-block
+            [code-block/code-block-code {:code content
+                                         :language "clojure"
+                                         :theme (case theme
+                                                  :dark "github-dark"
+                                                  :light "github-light"
+                                                  "github-light")}]]
            (when (and is-long-code? (not @expanded?))
              [:div
               {:class

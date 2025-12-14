@@ -3,8 +3,8 @@
    
    Migrations are infrastructure concerns - they live in the adapter layer."
   (:require
-   [clojure.string :as str]
-   [datalevin.core :as d]
+   [clojure.string                    :as str]
+   [datalevin.core                    :as d]
    [mateuszmazurczak.utils.validation :as validation]))
 
 ;; =============================================================================
@@ -35,15 +35,14 @@
   "Schema for a single migration map"
   [:map {:closed true}
    [:migration/id MigrationId]
-   [:migration/description [:string {:min 1
-                                     :max 200}]]
+   [:migration/description
+    [:string {:min 1
+              :max 200}]]
    [:migration/up fn?]
    [:migration/down fn?]
    [:migration/checksum :string]])
 
-(def ^:private MigrationRegistry
-  "Schema for the entire migration registry"
-  [:sequential Migration])
+(def ^:private MigrationRegistry "Schema for the entire migration registry" [:sequential Migration])
 
 ;; =============================================================================
 ;; Helper Functions
@@ -61,9 +60,7 @@
   (when (and input (not (str/blank? input)))
     (let [trimmed (str/trim input)
           ;; Remove @ prefix if present
-          without-at (if (str/starts-with? trimmed "@")
-                       (subs trimmed 1)
-                       trimmed)
+          without-at (if (str/starts-with? trimmed "@") (subs trimmed 1) trimmed)
           ;; Extract username from URL if it's a URL
           username (if (or (str/starts-with? without-at "http://")
                            (str/starts-with? without-at "https://"))
@@ -73,8 +70,7 @@
                        (last (remove str/blank? parts)))
                      ;; It's just a username
                      without-at)]
-      (when (and username (not (str/blank? username)))
-        username))))
+      (when (and username (not (str/blank? username))) username))))
 
 (defn create-migration
   "Create a migration map with required metadata.
@@ -108,21 +104,18 @@
     "Rename aoc-solution/github-profile to aoc-solution/github-username and parse URLs to usernames"
     (fn [conn _logger]
       ;; Find all solutions with github-profile using Datalevin API directly
-      (let [solutions (d/q
-                       '[:find ?e ?profile
-                         :where
-                         [?e :aoc-solution/github-profile ?profile]]
-                       @conn)
+      (let [solutions (d/q '[:find ?e ?profile :where [?e :aoc-solution/github-profile ?profile]]
+                           @conn)
             ;; Build transaction to migrate data
-            migrate-tx (mapv (fn [[eid profile-url]]
-                               (let [username (parse-github-username-from-url profile-url)]
-                                 (cond-> [[:db/retract eid :aoc-solution/github-profile profile-url]]
-                                   username (conj [:db/add eid :aoc-solution/github-username username]))))
-                             solutions)
+            migrate-tx
+            (mapv (fn [[eid profile-url]]
+                    (let [username (parse-github-username-from-url profile-url)]
+                      (cond-> [[:db/retract eid :aoc-solution/github-profile profile-url]]
+                        username (conj [:db/add eid :aoc-solution/github-username username]))))
+                  solutions)
             flattened-tx (apply concat migrate-tx)]
         ;; Execute the migration transaction
-        (when (seq flattened-tx)
-          (d/transact! conn flattened-tx))
+        (when (seq flattened-tx) (d/transact! conn flattened-tx))
         ;; Return nil since we handled everything
         nil))
     (fn [_conn _logger]

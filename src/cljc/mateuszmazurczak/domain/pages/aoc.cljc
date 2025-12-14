@@ -508,8 +508,7 @@
           without-at (if (str/starts-with? trimmed "@") (subs trimmed 1) trimmed)
           ;; Split by / and take last non-blank segment (handles all URL formats)
           username (last (remove str/blank? (str/split without-at #"/")))]
-      (when (and username (not (str/blank? username)))
-        username))))
+      (when (and username (not (str/blank? username))) username))))
 
 (defn build-github-url
   "Build GitHub profile URL from username.
@@ -519,8 +518,7 @@
    
    Returns: Full GitHub URL (https://github.com/username) or nil if username is nil/blank."
   [username]
-  (when (and username (not (str/blank? username)))
-    (str "https://github.com/" username)))
+  (when (and username (not (str/blank? username))) (str "https://github.com/" username)))
 
 (defn format-github-display
   "Format GitHub username for display with @ prefix.
@@ -529,8 +527,7 @@
    \"octocat\" -> \"@octocat\"
    nil -> nil"
   [username]
-  (when (and username (not (str/blank? username)))
-    (str "@" username)))
+  (when (and username (not (str/blank? username))) (str "@" username)))
 
 (defn enrich-solution-with-github-data
   "Enrich solution with GitHub URL and display username.

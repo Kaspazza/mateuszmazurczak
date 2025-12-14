@@ -74,11 +74,13 @@
 (defn squint-url
   "Compose Squint playground URL with AoC helpers."
   [code]
-  (compose-playground-url code {:playground :squint
-                                :include-helpers? true}))
+  (compose-playground-url code
+                          {:playground :squint
+                           :include-helpers? true}))
 
 (defn cherry-url
   "Compose Cherry playground URL with AoC helpers."
   [code]
-  (compose-playground-url code {:playground :cherry
-                                :include-helpers? true}))
+  (compose-playground-url code
+                          {:playground :cherry
+                           :include-helpers? true}))

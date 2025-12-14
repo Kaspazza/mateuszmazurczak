@@ -4,18 +4,20 @@
    Application service that orchestrates cache port + domain logic.
    Provides high-level operations for AoC vote tracking and consent management."
   (:require
-   [mateuszmazurczak.domain.aoc.vote :as vote]
-   [mateuszmazurczak.ports.cache     :as cache]))
+   [mateuszmazurczak.domain.aoc.vote       :as vote]
+   [mateuszmazurczak.domain.cache.registry :as cache-registry]
+   [mateuszmazurczak.ports.cache           :as cache]))
 
 ;; =============================================================================
 ;; Cache Keys
 ;; =============================================================================
 
-;;TODO connect name to cache registry in some way
-(def ^:private aoc-votes-key "aoc-votes")
-(def ^:private aoc-consents-key "aoc-consents")
-(def ^:private aoc-solution-ids-key "aoc-solution-ids")
-(def ^:private admin-key-storage-key "admin-key")
+;; Use centralized cache keys from registry with separate versioning
+;; This ensures user data is not lost when app-db structure changes
+(def ^:private aoc-votes-key (:key (:aoc-votes cache-registry/user-data-keys)))
+(def ^:private aoc-consents-key (:key (:aoc-consents cache-registry/user-data-keys)))
+(def ^:private aoc-solution-ids-key (:key (:aoc-solution-ids cache-registry/user-data-keys)))
+(def ^:private admin-key-storage-key (:key (:admin-key cache-registry/user-data-keys)))
 
 ;; =============================================================================
 ;; Vote Tracking

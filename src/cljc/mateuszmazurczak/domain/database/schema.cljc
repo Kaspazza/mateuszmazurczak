@@ -1,5 +1,4 @@
-(ns mateuszmazurczak.domain.database.schema
-  (:refer-clojure :exclude [comment]))
+(ns mateuszmazurczak.domain.database.schema (:refer-clojure :exclude [comment]))
 
 (def article
   {:article/id {:doc "Unique identificator for the article which main SOT is articles.edn"

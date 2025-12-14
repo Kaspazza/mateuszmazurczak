@@ -1,12 +1,12 @@
 (ns mateuszmazurczak.adapters.database.datalevin
   "Datalevin adapter implementation for database operations."
   (:require
-   [datalevin.core                               :as d]
-   [malli.core                                   :as m]
+   [datalevin.core                                :as d]
+   [malli.core                                    :as m]
    [mateuszmazurczak.adapters.database.migrations :as migrations]
-   [mateuszmazurczak.adapters.database.utils     :as db-utils]
-   [mateuszmazurczak.domain.database.schema      :as schema]
-   [mateuszmazurczak.ports.logging               :as log])
+   [mateuszmazurczak.adapters.database.utils      :as db-utils]
+   [mateuszmazurczak.domain.database.schema       :as schema]
+   [mateuszmazurczak.ports.logging                :as log])
   (:import [java.util Date]))
 
 (defn- build-datalevin-schema

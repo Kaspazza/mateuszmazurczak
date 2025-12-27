@@ -88,8 +88,8 @@
                          (reset! open? %))}]])
   ```"
   (:require
-   ["@radix-ui/react-tooltip" :as TooltipPrimitive]
-   [mateuszmazurczak.utils.styles         :refer [merge-classes]]))
+   ["@radix-ui/react-tooltip"     :as TooltipPrimitive]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 ;;
 ;; Internal Radix primitives (not exported)

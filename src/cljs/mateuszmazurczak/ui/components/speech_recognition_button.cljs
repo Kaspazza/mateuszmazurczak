@@ -1,15 +1,15 @@
 (ns mateuszmazurczak.ui.components.speech-recognition-button
   "Microphone button component with speech recognition functionality."
   (:require
-   ["lucide-react"                  :refer [Mic]]
-   ["react-speech-recognition"      :default SpeechRecognition
-                                    :refer   [useSpeechRecognition]]
+   ["lucide-react"                              :refer [Mic]]
+   ["react-speech-recognition"                  :default SpeechRecognition
+                                                :refer   [useSpeechRecognition]]
    [mateuszmazurczak.ui.components.button       :as mateuszmazurczak-button]
    [mateuszmazurczak.ui.components.loader       :as loader]
    [mateuszmazurczak.ui.components.prompt-input :as prompt-input]
-   [reagent.core                    :as    r
-                                    :refer [defc]]
-   [reagent.hooks                   :as rhooks]))
+   [reagent.core                                :as    r
+                                                :refer [defc]]
+   [reagent.hooks                               :as rhooks]))
 
 (defc speech-recognition-button
  "Microphone button with speech recognition that updates text on change.
@@ -46,9 +46,9 @@
      [prompt-input/prompt-input-action {:tooltip (if listening? "Stop recording" "Voice input")
                                         :class class}
       [mateuszmazurczak-button/button {:variant :outline
-                           :size :icon
-                           :class "size-9 rounded-full"
-                           :on-click handle-mic-toggle}
+                                       :size :icon
+                                       :class "size-9 rounded-full"
+                                       :on-click handle-mic-toggle}
        (if listening?
          [loader/loader {:variant :wave
                          :size :sm}]
@@ -56,7 +56,7 @@
      [prompt-input/prompt-input-action {:tooltip "Speech recognition not supported in this browser"
                                         :class class}
       [mateuszmazurczak-button/button {:variant :outline
-                           :size :icon
-                           :disabled true
-                           :class "size-9 rounded-full"}
+                                       :size :icon
+                                       :disabled true
+                                       :class "size-9 rounded-full"}
        [:> Mic {:size 18}]]])))

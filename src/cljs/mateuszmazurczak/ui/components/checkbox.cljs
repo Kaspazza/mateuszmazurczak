@@ -2,10 +2,10 @@
   "Checkbox component with built-in check indicator.
   https://www.radix-ui.com/primitives/docs/components/checkbox"
   (:require
-   ["@radix-ui/react-checkbox" :as CheckboxPrimitive]
-   ["lucide-react"             :refer [Check]]
-   [mateuszmazurczak.utils.styles          :refer [merge-classes]]
-   [reagent.core               :as r]))
+   ["@radix-ui/react-checkbox"    :as CheckboxPrimitive]
+   ["lucide-react"                :refer [Check]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]
+   [reagent.core                  :as r]))
 
 (defn checkbox
   "Checkbox component with built-in check indicator.

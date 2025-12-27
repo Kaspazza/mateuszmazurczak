@@ -7,9 +7,9 @@
   
   Docs: https://www.radix-ui.com/docs/primitives/components/dialog"
   (:require
-   ["@radix-ui/react-dialog" :as DialogPrimitive]
-   ["lucide-react"           :refer [X]]
-   [mateuszmazurczak.utils.styles        :refer [merge-classes]]))
+   ["@radix-ui/react-dialog"      :as DialogPrimitive]
+   ["lucide-react"                :refer [X]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 ;; ============================================================================
 ;; Root Components (Simple Aliases)

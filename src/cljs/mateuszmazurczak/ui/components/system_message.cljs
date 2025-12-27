@@ -2,7 +2,7 @@
   "System message component for displaying notifications, alerts, and status messages.
   Supports multiple variants (action, error, warning) with optional icons and CTAs."
   (:require
-   ["lucide-react"            :refer [AlertCircle AlertTriangle Info]]
+   ["lucide-react"                        :refer [AlertCircle AlertTriangle Info]]
    [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]
    [mateuszmazurczak.utils.styles         :refer [merge-classes]]))
 
@@ -122,6 +122,6 @@
      ;; CTA button
      (when cta
        [mateuszmazurczak-button/button {:variant :default
-                            :size :sm
-                            :on-click (:on-click cta)}
+                                        :size :sm
+                                        :on-click (:on-click cta)}
         (:label cta)])]))

@@ -2,8 +2,8 @@
   "Switch component for toggle controls.
   https://www.radix-ui.com/primitives/docs/components/switch"
   (:require
-   ["@radix-ui/react-switch" :as SwitchPrimitive]
-   [mateuszmazurczak.utils.styles        :refer [merge-classes]]))
+   ["@radix-ui/react-switch"      :as SwitchPrimitive]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn switch
   "Switch component for toggle controls.

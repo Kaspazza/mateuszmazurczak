@@ -4,7 +4,7 @@
   (:require
    ["@radix-ui/react-dropdown-menu" :as DropdownMenuPrimitive]
    ["lucide-react"                  :refer [Check ChevronRight Circle]]
-   [mateuszmazurczak.utils.styles               :refer [merge-classes]]
+   [mateuszmazurczak.utils.styles   :refer [merge-classes]]
    [reagent.core                    :as r]))
 
 ;; ============================================================================

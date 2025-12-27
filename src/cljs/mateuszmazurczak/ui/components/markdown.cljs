@@ -2,15 +2,15 @@
   "Markdown component with syntax highlighting and rich formatting.
   Uses react-markdown with remark plugins for GFM and line breaks."
   (:require
-   ["marked"                      :refer [marked]]
-   ["react-markdown"              :default ReactMarkdown]
-   ["remark-breaks"               :default remarkBreaks]
-   ["remark-gfm"                  :default remarkGfm]
+   ["marked"                                  :refer [marked]]
+   ["react-markdown"                          :default ReactMarkdown]
+   ["remark-breaks"                           :default remarkBreaks]
+   ["remark-gfm"                              :default remarkGfm]
    [mateuszmazurczak.ui.components.code-block :as code-block]
    [mateuszmazurczak.utils.styles             :refer [merge-classes]]
-   [reagent.core                  :as    r
-                                  :refer [defc]]
-   [reagent.hooks                 :as rhooks]))
+   [reagent.core                              :as    r
+                                              :refer [defc]]
+   [reagent.hooks                             :as rhooks]))
 
 (defn- parse-markdown-into-blocks
   "Parses markdown string into blocks using marked lexer.

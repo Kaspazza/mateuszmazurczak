@@ -2,14 +2,14 @@
   "Carousel component built on top of Embla Carousel.
   https://www.embla-carousel.com/"
   (:require
-   ["embla-carousel-react"    :as embla-carousel]
-   ["lucide-react"            :refer [ArrowLeft ArrowRight]]
+   ["embla-carousel-react"                :as embla-carousel]
+   ["lucide-react"                        :refer [ArrowLeft ArrowRight]]
+   [goog.object                           :as gobj]
    [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]
    [mateuszmazurczak.utils.styles         :refer [merge-classes]]
-   [goog.object               :as gobj]
-   [reagent.core              :as    r
-                              :refer [defc]]
-   [reagent.hooks             :as rhooks]))
+   [reagent.core                          :as    r
+                                          :refer [defc]]
+   [reagent.hooks                         :as rhooks]))
 
 (def ^:private carousel-context (r/atom nil))
 

@@ -2,11 +2,11 @@
   "Code block component with syntax highlighting using Shiki.
   Provides a styled container for displaying code with proper highlighting."
   (:require
-   ["shiki"           :refer [codeToHtml]]
+   ["shiki"                       :refer [codeToHtml]]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]
-   [reagent.core      :as    r
-                      :refer [defc]]
-   [reagent.hooks     :as rhooks]))
+   [reagent.core                  :as    r
+                                  :refer [defc]]
+   [reagent.hooks                 :as rhooks]))
 
 (defn code-block
   "Root container for code blocks with styling.

@@ -7,12 +7,12 @@
   - UI copied 1:1 from shadcn/ui stepper example
   - Purely presentational: parent manages current-step state"
   (:require
-   ["react"                   :as react]
+   ["react"                               :as react]
    [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]
    [mateuszmazurczak.utils.styles         :refer [merge-classes]]
-   [reagent.core              :as    r
-                              :refer [defc]]
-   [reagent.hooks             :as rhooks]))
+   [reagent.core                          :as    r
+                                          :refer [defc]]
+   [reagent.hooks                         :as rhooks]))
 
 (def ^:private stepper-context (react/createContext nil))
 
@@ -221,22 +221,22 @@
                 :on-click #(when (and (not disabled?) on-step-change) (on-step-change id))}
          disabled? (assoc :data-disabled true))
        (mateuszmazurczak-button/button {:id (str "step-" id)
-                            :data-component "stepper-step-indicator"
-                            :type "button"
-                            :role "tab"
-                            :tab-index (if (not= state "inactive") 0 -1)
-                            :class "rounded-full"
-                            :variant (if (not= state "inactive") :default :secondary)
-                            :size :icon
-                            :disabled disabled?
-                            :aria-controls (str "step-panel-" id)
-                            :aria-current (when active? "step")
-                            :aria-posinset (inc index)
-                            :aria-setsize total
-                            :aria-selected active?
-                            :on-click #(when (and (not disabled?) on-step-change)
-                                         (on-step-change id))}
-                           (or icon (inc index)))
+                                        :data-component "stepper-step-indicator"
+                                        :type "button"
+                                        :role "tab"
+                                        :tab-index (if (not= state "inactive") 0 -1)
+                                        :class "rounded-full"
+                                        :variant (if (not= state "inactive") :default :secondary)
+                                        :size :icon
+                                        :disabled disabled?
+                                        :aria-controls (str "step-panel-" id)
+                                        :aria-current (when active? "step")
+                                        :aria-posinset (inc index)
+                                        :aria-setsize total
+                                        :aria-selected active?
+                                        :on-click #(when (and (not disabled?) on-step-change)
+                                                     (on-step-change id))}
+                                       (or icon (inc index)))
        (when (and (= variant "horizontal") (= label-orientation "vertical"))
          [stepper-separator {:orientation "horizontal"
                              :label-orientation label-orientation

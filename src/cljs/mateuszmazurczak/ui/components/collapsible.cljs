@@ -3,7 +3,7 @@
   https://www.radix-ui.com/primitives/docs/components/collapsible"
   (:require
    ["@radix-ui/react-collapsible" :as CollapsiblePrimitive]
-   [mateuszmazurczak.utils.styles             :refer [merge-classes]]))
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn collapsible
   "Collapsible root component. Manages the open/closed state of the collapsible.

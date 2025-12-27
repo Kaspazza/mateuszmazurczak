@@ -1,7 +1,7 @@
 (ns mateuszmazurczak.ui.components.spinner
   "Spinner component for loading states."
   (:require
-   ["lucide-react"    :refer [Loader2]]
+   ["lucide-react"                :refer [Loader2]]
    [mateuszmazurczak.utils.styles :as styles]))
 
 (defn spinner

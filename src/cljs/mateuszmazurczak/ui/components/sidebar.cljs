@@ -19,8 +19,8 @@
        ;; menu items
        ]]"
   (:require
-   ["@radix-ui/react-slot"       :refer [Slot]]
-   ["lucide-react"               :refer [PanelLeft]]
+   ["@radix-ui/react-slot"                   :refer [Slot]]
+   ["lucide-react"                           :refer [PanelLeft]]
    [mateuszmazurczak.ui.components.button    :as mateuszmazurczak-button]
    [mateuszmazurczak.ui.components.input     :as mateuszmazurczak-input]
    [mateuszmazurczak.ui.components.separator :as mateuszmazurczak-separator]
@@ -421,10 +421,10 @@
     (if (or (not tooltip) (not collapsed?) is-mobile)
       button-el
       [mateuszmazurczak-tooltip/tooltip {:trigger button-el
-                             :content tooltip
-                             :side :right
-                             :align :center
-                             :trigger-as-child? true}])))
+                                         :content tooltip
+                                         :side :right
+                                         :align :center
+                                         :trigger-as-child? true}])))
 
 (defn sidebar-menu-action
   [{:keys [class as-child show-on-hover?]
@@ -498,10 +498,10 @@
                 :class (merge-classes "flex h-8 items-center gap-2 rounded-md px-2" class)))
      (when show-icon?
        [mateuszmazurczak-skeleton/skeleton {:class "size-4 rounded-md"
-                                :data-sidebar "menu-skeleton-icon"}])
+                                            :data-sidebar "menu-skeleton-icon"}])
      [mateuszmazurczak-skeleton/skeleton {:class "h-4 max-w-[--skeleton-width] flex-1"
-                              :data-sidebar "menu-skeleton-text"
-                              :style {"--skeleton-width" width}}]]))
+                                          :data-sidebar "menu-skeleton-text"
+                                          :style {"--skeleton-width" width}}]]))
 
 (defn sidebar-menu-sub
   [{:keys [class]

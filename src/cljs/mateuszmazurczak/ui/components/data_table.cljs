@@ -6,25 +6,25 @@
   
   All TanStack Table interactions happen in this component"
   (:require
-   ["@tanstack/react-table"          :refer [flexRender
-                                             getCoreRowModel
-                                             getFacetedRowModel
-                                             getFacetedUniqueValues
-                                             getFilteredRowModel
-                                             getPaginationRowModel
-                                             getSortedRowModel
-                                             useReactTable]]
-   ["lucide-react"                   :refer [ArrowDown
-                                             ArrowUp
-                                             Check
-                                             ChevronLeft
-                                             ChevronRight
-                                             ChevronsLeft
-                                             ChevronsRight
-                                             ChevronsUpDown
-                                             EyeOff
-                                             PlusCircle
-                                             X]]
+   ["@tanstack/react-table"                      :refer [flexRender
+                                                         getCoreRowModel
+                                                         getFacetedRowModel
+                                                         getFacetedUniqueValues
+                                                         getFilteredRowModel
+                                                         getPaginationRowModel
+                                                         getSortedRowModel
+                                                         useReactTable]]
+   ["lucide-react"                               :refer [ArrowDown
+                                                         ArrowUp
+                                                         Check
+                                                         ChevronLeft
+                                                         ChevronRight
+                                                         ChevronsLeft
+                                                         ChevronsRight
+                                                         ChevronsUpDown
+                                                         EyeOff
+                                                         PlusCircle
+                                                         X]]
    [mateuszmazurczak.ui.components.badge         :as mateuszmazurczak-badge]
    [mateuszmazurczak.ui.components.button        :as mateuszmazurczak-button]
    [mateuszmazurczak.ui.components.command       :as mateuszmazurczak-command]
@@ -35,9 +35,9 @@
    [mateuszmazurczak.ui.components.separator     :as mateuszmazurczak-separator]
    [mateuszmazurczak.ui.components.table         :as mateuszmazurczak-table]
    [mateuszmazurczak.utils.styles                :refer [merge-classes]]
-   [reagent.core                     :as    r
-                                     :refer [defc]]
-   [reagent.hooks                    :as rhooks]))
+   [reagent.core                                 :as    r
+                                                 :refer [defc]]
+   [reagent.hooks                                :as rhooks]))
 
 
 
@@ -151,31 +151,31 @@
   (let [selected-count (count selected-values)]
     [mateuszmazurczak-popover/popover {}
      [mateuszmazurczak-popover/popover-trigger {:as-child true}
-      (mateuszmazurczak-button/button {:variant :outline
-                           :size :sm
-                           :class "h-8 border-dashed"}
-                          [:> PlusCircle]
-                          title
-                          (when (pos? selected-count)
-                            [:<>
-                             [mateuszmazurczak-separator/separator {:orientation :vertical
-                                                        :class "mx-2 h-4"}]
-                             [mateuszmazurczak-badge/badge {:variant :secondary
-                                                :class "rounded-sm px-1 font-normal lg:hidden"}
-                              selected-count]
-                             [:div {:class "hidden gap-1 lg:flex"}
-                              (if (> selected-count 2)
-                                [mateuszmazurczak-badge/badge {:variant :secondary
-                                                   :class "rounded-sm px-1 font-normal"}
-                                 (str selected-count " selected")]
-                                (for [option (filter #(contains? selected-values (:value %))
-                                                     options)]
-                                  ^{:key (:value option)}
-                                  [mateuszmazurczak-badge/badge {:variant :secondary
-                                                     :class "rounded-sm px-1 font-normal"}
-                                   (:label option)]))]]))]
+      (mateuszmazurczak-button/button
+       {:variant :outline
+        :size :sm
+        :class "h-8 border-dashed"}
+       [:> PlusCircle]
+       title
+       (when (pos? selected-count)
+         [:<>
+          [mateuszmazurczak-separator/separator {:orientation :vertical
+                                                 :class "mx-2 h-4"}]
+          [mateuszmazurczak-badge/badge {:variant :secondary
+                                         :class "rounded-sm px-1 font-normal lg:hidden"}
+           selected-count]
+          [:div {:class "hidden gap-1 lg:flex"}
+           (if (> selected-count 2)
+             [mateuszmazurczak-badge/badge {:variant :secondary
+                                            :class "rounded-sm px-1 font-normal"}
+              (str selected-count " selected")]
+             (for [option (filter #(contains? selected-values (:value %)) options)]
+               ^{:key (:value option)}
+               [mateuszmazurczak-badge/badge {:variant :secondary
+                                              :class "rounded-sm px-1 font-normal"}
+                (:label option)]))]]))]
      [mateuszmazurczak-popover/popover-content {:class "w-[200px] p-0"
-                                    :align "start"}
+                                                :align "start"}
       [mateuszmazurczak-command/command {}
        [mateuszmazurczak-command/command-input {:placeholder title}]
        [mateuszmazurczak-command/command-list {}
@@ -186,13 +186,12 @@
            (let [is-selected (contains? selected-values (:value option))
                  option-icon (:icon option)]
              ^{:key (:value option)}
-             [mateuszmazurczak-command/command-item {:onSelect (fn []
-                                                     (let [new-selected (if is-selected
-                                                                          (disj selected-values
-                                                                                (:value option))
-                                                                          (conj selected-values
-                                                                                (:value option)))]
-                                                       (when on-change (on-change new-selected))))}
+             [mateuszmazurczak-command/command-item
+              {:onSelect (fn []
+                           (let [new-selected (if is-selected
+                                                (disj selected-values (:value option))
+                                                (conj selected-values (:value option)))]
+                             (when on-change (on-change new-selected))))}
               [:div {:class (merge-classes
                              "flex size-4 items-center justify-center rounded-[4px] border"
                              (if is-selected
@@ -211,7 +210,7 @@
            [mateuszmazurczak-command/command-separator {}]
            [mateuszmazurczak-command/command-group {}
             [mateuszmazurczak-command/command-item {:onSelect #(when on-change (on-change #{}))
-                                        :class "justify-center text-center"}
+                                                    :class "justify-center text-center"}
              "Clear filters"]]])]]]]))
 
 (defn toolbar-ui
@@ -251,19 +250,19 @@
    [:div {:class "flex flex-1 items-center gap-2"}
     (when on-text-filter-change
       [mateuszmazurczak-input/input {:placeholder text-placeholder
-                         :value (or text-filter-value "")
-                         :on-change #(let [value (-> %
-                                                     .-target
-                                                     .-value)]
-                                       (on-text-filter-change value))
-                         :class "h-8 w-[150px] lg:w-[250px]"}])
+                                     :value (or text-filter-value "")
+                                     :on-change #(let [value (-> %
+                                                                 .-target
+                                                                 .-value)]
+                                                   (on-text-filter-change value))
+                                     :class "h-8 w-[150px] lg:w-[250px]"}])
     (for [[idx filter-config] (map-indexed vector faceted-filters)]
       ^{:key idx} [faceted-filter-ui filter-config])
     (when is-filtered?
       [mateuszmazurczak-button/button {:variant :ghost
-                           :size :sm
-                           :on-click #(when on-reset-filters (on-reset-filters))
-                           :class "h-8 px-2 lg:px-3"}
+                                       :size :sm
+                                       :on-click #(when on-reset-filters (on-reset-filters))
+                                       :class "h-8 px-2 lg:px-3"}
        "Reset"
        [:> X {:class "ml-2 h-4 w-4"}]])]
    (when toolbar-end toolbar-end)])
@@ -297,20 +296,20 @@
        [mateuszmazurczak-dropdown-menu/dropdown-menu {}
         [mateuszmazurczak-dropdown-menu/dropdown-menu-trigger {:as-child true}
          (mateuszmazurczak-button/button {:variant :ghost
-                              :size :sm
-                              :class "data-[state=open]:bg-accent -ml-3 h-8"}
-                             [:span title]
-                             (case sort-state
-                               "desc" [:> ArrowDown]
-                               "asc" [:> ArrowUp]
-                               [:> ChevronsUpDown]))]
+                                          :size :sm
+                                          :class "data-[state=open]:bg-accent -ml-3 h-8"}
+                                         [:span title]
+                                         (case sort-state
+                                           "desc" [:> ArrowDown]
+                                           "asc" [:> ArrowUp]
+                                           [:> ChevronsUpDown]))]
         [mateuszmazurczak-dropdown-menu/dropdown-menu-content {:align :start}
          [mateuszmazurczak-dropdown-menu/dropdown-menu-item {:on-select #(when on-toggle-sort
-                                                               (on-toggle-sort false))}
+                                                                           (on-toggle-sort false))}
           [:> ArrowUp]
           "Asc"]
          [mateuszmazurczak-dropdown-menu/dropdown-menu-item {:on-select #(when on-toggle-sort
-                                                               (on-toggle-sort true))}
+                                                                           (on-toggle-sort true))}
           [:> ArrowDown]
           "Desc"]
          (when (and on-clear-sort sort-state)
@@ -324,13 +323,14 @@
           [:> EyeOff]
           "Hide"]]]
        [mateuszmazurczak-button/button {:variant :ghost
-                            :size :sm
-                            :class "-ml-3 h-8"
-                            :on-click (fn []
-                                        (case sort-state
-                                          false (when on-toggle-sort (on-toggle-sort false))
-                                          "asc" (when on-toggle-sort (on-toggle-sort true))
-                                          "desc" (when on-clear-sort (on-clear-sort))))}
+                                        :size :sm
+                                        :class "-ml-3 h-8"
+                                        :on-click
+                                        (fn []
+                                          (case sort-state
+                                            false (when on-toggle-sort (on-toggle-sort false))
+                                            "asc" (when on-toggle-sort (on-toggle-sort true))
+                                            "desc" (when on-clear-sort (on-clear-sort))))}
         [:span title]
         (case sort-state
           "desc" [:> ArrowDown]
@@ -371,7 +371,7 @@
         [mateuszmazurczak-table/table-body {}
          (for [row rows]
            [mateuszmazurczak-table/table-row {:key (.-id row)
-                                  :data-state (when (.getIsSelected row) "selected")}
+                                              :data-state (when (.getIsSelected row) "selected")}
             (for [cell (.getVisibleCells row)]
               [mateuszmazurczak-table/table-cell {:key (.-id cell)}
                (flexRender (.. cell -column -columnDef -cell) (.getContext cell))])])]]]
@@ -451,9 +451,9 @@
      [:p {:class "text-sm font-medium"}
       "Rows per page"]
      [mateuszmazurczak-select/select {:value (str page-size)
-                          :onValueChange (fn [value]
-                                           (when on-page-size-change
-                                             (on-page-size-change (js/Number value))))}
+                                      :onValueChange (fn [value]
+                                                       (when on-page-size-change
+                                                         (on-page-size-change (js/Number value))))}
       [mateuszmazurczak-select/select-trigger {:class "h-8 w-[70px]"}
        [mateuszmazurczak-select/select-value {:placeholder page-size}]]
       [mateuszmazurczak-select/select-content {:side "top"}
@@ -466,34 +466,34 @@
      " of " page-count]
     [:div {:class "flex items-center space-x-2"}
      [mateuszmazurczak-button/button {:variant :outline
-                          :size :icon
-                          :class "hidden size-8 lg:flex"
-                          :on-click #(when on-first-page (on-first-page))
-                          :disabled (not can-previous?)}
+                                      :size :icon
+                                      :class "hidden size-8 lg:flex"
+                                      :on-click #(when on-first-page (on-first-page))
+                                      :disabled (not can-previous?)}
       [:span {:class "sr-only"}
        "Go to first page"]
       [:> ChevronsLeft]]
      [mateuszmazurczak-button/button {:variant :outline
-                          :size :icon
-                          :class "size-8"
-                          :on-click #(when on-previous-page (on-previous-page))
-                          :disabled (not can-previous?)}
+                                      :size :icon
+                                      :class "size-8"
+                                      :on-click #(when on-previous-page (on-previous-page))
+                                      :disabled (not can-previous?)}
       [:span {:class "sr-only"}
        "Go to previous page"]
       [:> ChevronLeft]]
      [mateuszmazurczak-button/button {:variant :outline
-                          :size :icon
-                          :class "size-8"
-                          :on-click #(when on-next-page (on-next-page))
-                          :disabled (not can-next?)}
+                                      :size :icon
+                                      :class "size-8"
+                                      :on-click #(when on-next-page (on-next-page))
+                                      :disabled (not can-next?)}
       [:span {:class "sr-only"}
        "Go to next page"]
       [:> ChevronRight]]
      [mateuszmazurczak-button/button {:variant :outline
-                          :size :icon
-                          :class "hidden size-8 lg:flex"
-                          :on-click #(when on-last-page (on-last-page))
-                          :disabled (not can-next?)}
+                                      :size :icon
+                                      :class "hidden size-8 lg:flex"
+                                      :on-click #(when on-last-page (on-last-page))
+                                      :disabled (not can-next?)}
       [:span {:class "sr-only"}
        "Go to last page"]
       [:> ChevronsRight]]]]])

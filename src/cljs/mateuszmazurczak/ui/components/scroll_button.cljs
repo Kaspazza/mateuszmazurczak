@@ -2,12 +2,12 @@
   "Scroll-to-bottom button that appears when not at the bottom of a scrollable container.
   Works with chat-container component via use-stick-to-bottom context."
   (:require
-   ["lucide-react"            :refer [ChevronDown]]
-   ["use-stick-to-bottom"     :refer [useStickToBottomContext]]
+   ["lucide-react"                        :refer [ChevronDown]]
+   ["use-stick-to-bottom"                 :refer [useStickToBottomContext]]
    [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]
    [mateuszmazurczak.utils.styles         :refer [merge-classes]]
-   [reagent.core              :as    r
-                              :refer [defc]]))
+   [reagent.core                          :as    r
+                                          :refer [defc]]))
 
 (defc scroll-button
  "Scroll-to-bottom button that appears when user scrolls up in a chat container.

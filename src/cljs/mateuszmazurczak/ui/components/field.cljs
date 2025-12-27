@@ -7,7 +7,7 @@
    [mateuszmazurczak.ui.components.label     :as label-comp]
    [mateuszmazurczak.ui.components.separator :as separator-comp]
    [mateuszmazurczak.utils.styles            :refer [merge-classes]]
-   [reagent.core                 :as r]))
+   [reagent.core                             :as r]))
 
 (defn field-set
   "Container for grouping multiple related fields.

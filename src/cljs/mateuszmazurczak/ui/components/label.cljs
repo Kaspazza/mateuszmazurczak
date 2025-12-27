@@ -2,8 +2,8 @@
   "Label component for form fields with accessibility support.
   https://www.radix-ui.com/primitives/docs/components/label"
   (:require
-   ["@radix-ui/react-label" :as RadixLabel]
-   [mateuszmazurczak.utils.styles       :refer [merge-classes]]))
+   ["@radix-ui/react-label"       :as RadixLabel]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn label
   "Label component that automatically associates with form controls.

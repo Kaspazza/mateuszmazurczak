@@ -2,13 +2,13 @@
   "Prompt input component for chat interfaces with auto-resizing textarea.
   Provides a context-based system for sharing state between input and action buttons."
   (:require
-   ["react"                     :as react]
+   ["react"                                 :as react]
    [mateuszmazurczak.ui.components.textarea :as mateuszmazurczak-textarea]
    [mateuszmazurczak.ui.components.tooltip  :as mateuszmazurczak-tooltip]
    [mateuszmazurczak.utils.styles           :refer [merge-classes]]
-   [reagent.core                :as    r
-                                :refer [defc]]
-   [reagent.hooks               :as rhooks]))
+   [reagent.core                            :as    r
+                                            :refer [defc]]
+   [reagent.hooks                           :as rhooks]))
 
 ;; Context for sharing state between prompt input components
 (def ^:private prompt-input-context (react/createContext nil))

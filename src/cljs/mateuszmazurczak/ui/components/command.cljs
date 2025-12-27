@@ -2,8 +2,8 @@
   "Command palette component built on cmdk (Command Menu Dialog Kit).
   https://cmdk.paco.me/"
   (:require
-   ["cmdk"                    :refer [Command]]
-   ["lucide-react"            :refer [SearchIcon]]
+   ["cmdk"                                :refer [Command]]
+   ["lucide-react"                        :refer [SearchIcon]]
    [mateuszmazurczak.ui.components.dialog :as dialog]
    [mateuszmazurczak.utils.styles         :refer [merge-classes]]))
 
@@ -34,9 +34,10 @@
          Command
          (-> props
              (assoc :data-slot "command"
-                    :class (merge-classes "bg-popover text-popover-foreground"
-                                          "flex h-full w-full flex-col overmateuszmazurczak-hidden rounded-md"
-                                          class))
+                    :class (merge-classes
+                            "bg-popover text-popover-foreground"
+                            "flex h-full w-full flex-col overmateuszmazurczak-hidden rounded-md"
+                            class))
              (dissoc :class-name))]
         children))
 
@@ -143,10 +144,12 @@
   (into [:>
          (.-List Command)
          (-> props
-             (assoc :data-slot "command-list"
-                    :class (merge-classes
-                            "max-h-[300px] scroll-py-1 overmateuszmazurczak-x-hidden overmateuszmazurczak-y-auto"
-                            class))
+             (assoc
+              :data-slot "command-list"
+              :class
+              (merge-classes
+               "max-h-[300px] scroll-py-1 overmateuszmazurczak-x-hidden overmateuszmazurczak-y-auto"
+               class))
              (dissoc :class-name))]
         children))
 

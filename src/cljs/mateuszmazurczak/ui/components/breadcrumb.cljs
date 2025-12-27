@@ -2,10 +2,10 @@
   "Breadcrumb navigation component for displaying hierarchical page location.
   https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/"
   (:require
-   ["@radix-ui/react-slot" :refer [Slot]]
-   ["lucide-react"         :refer [ChevronRight MoreHorizontal]]
-   [mateuszmazurczak.utils.styles      :refer [merge-classes]]
-   [reagent.core           :as r]))
+   ["@radix-ui/react-slot"        :refer [Slot]]
+   ["lucide-react"                :refer [ChevronRight MoreHorizontal]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]
+   [reagent.core                  :as r]))
 
 (defn breadcrumb
   "Breadcrumb root component (nav element).

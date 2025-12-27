@@ -2,8 +2,8 @@
   "Chat container component with auto-scroll-to-bottom functionality.
   Uses use-stick-to-bottom library for smooth scrolling behavior."
   (:require
-   ["use-stick-to-bottom" :refer [StickToBottom]]
-   [mateuszmazurczak.utils.styles     :refer [merge-classes]]))
+   ["use-stick-to-bottom"         :refer [StickToBottom]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 (defn chat-container-root
   "Root container for chat interface with auto-scroll-to-bottom behavior.

@@ -6,7 +6,7 @@
    [mateuszmazurczak.ui.components.markdown :as mateuszmazurczak-markdown]
    [mateuszmazurczak.ui.components.tooltip  :as mateuszmazurczak-tooltip]
    [mateuszmazurczak.utils.styles           :refer [merge-classes]]
-   [reagent.core                :as r]))
+   [reagent.core                            :as r]))
 
 (defn message
   "Root message component. Container for message elements.
@@ -46,7 +46,7 @@
   [{:keys [src alt fallback delay-ms class]}]
   [mateuszmazurczak-avatar/avatar {:class (merge-classes "h-8 w-8 shrink-0" class)}
    [mateuszmazurczak-avatar/avatar-image {:src src
-                              :alt alt}]
+                                          :alt alt}]
    (when fallback
      [mateuszmazurczak-avatar/avatar-fallback {:delayMs delay-ms}
       fallback])])

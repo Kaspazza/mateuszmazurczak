@@ -70,7 +70,7 @@
                                      :description
                                      "There was an error loading the page data. Please refresh."
                                      :back-home-text "Refresh Page"}]
-       (when error
+       (when (and (config/development?) error)
          [:div {:class "container mx-auto px-4 py-8"}
           [:div {:class "bg-red-50 border border-red-200 rounded p-4"}
            [:h3 {:class "font-bold mb-2"}

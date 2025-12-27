@@ -9,6 +9,7 @@
                                                          Link2]]
    [clojure.string                               :as str]
    [mateuszmazurczak.domain.aoc.playground       :as playground]
+   [mateuszmazurczak.domain.pages.aoc            :as aoc-domain]
    [mateuszmazurczak.ui.components.admin         :as admin]
    [mateuszmazurczak.ui.components.button        :as button]
    [mateuszmazurczak.ui.components.code-block    :as code-block]
@@ -39,7 +40,7 @@
   "Dropdown menu to open code solution in interactive playground (Squint or Cherry).
   Only shown for code-snippet content type."
   [content-type content text]
-  (when (= content-type :code-snippet)
+  (when (aoc-domain/should-show-playground? content-type)
     (let [squint-url (playground/squint-url content)
           cherry-url (playground/cherry-url content)]
       [dropdown-menu/dropdown-menu {}

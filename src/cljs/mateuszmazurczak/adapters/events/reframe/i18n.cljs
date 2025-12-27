@@ -26,7 +26,8 @@
                        (let [lang (-> lang-str
                                       i18n-lang/ui-str-to-id)]
                          {:db (assoc-in db state-registry/*lang-path* lang)
-                          ::set-cookie [(get-in cache-registry/domains [:app-db :lang :key]) lang]
+                          ::set-cookie
+                          [(get-in cache-registry/registry [:app-db :domains :lang :key]) lang]
                           :fx [[:dispatch [:nav/change-query-parameters! {:lang lang}]]]}))})
 (defn init!
   "Initialize i18n effects.

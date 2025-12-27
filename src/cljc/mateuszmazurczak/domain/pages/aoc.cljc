@@ -610,3 +610,13 @@
   [form]
   (-> form
       (update :github-username parse-github-username)))
+
+(defn should-show-playground?
+  "Determine if playground menu should be shown for a solution.
+   
+   Args:
+   - content-type: The content type of the solution
+   
+   Returns: Boolean indicating if playground should be shown"
+  [content-type]
+  (= content-type :code-snippet))

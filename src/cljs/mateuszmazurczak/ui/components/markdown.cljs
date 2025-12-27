@@ -97,8 +97,8 @@
        ;; Memoize blocks parsing
        blocks (rhooks/use-memo (fn [] (parse-markdown-into-blocks children)) [children])]
    [:div {:class class}
-    (for [[index block] (map-indexed vector blocks)]
-      ^{:key (str block-id "-block-" index)}
+    (for [block blocks]
+      ^{:key (str block-id "-" (hash block))}
       [memoized-markdown-block {:content block
                                 :components components}])]))
 

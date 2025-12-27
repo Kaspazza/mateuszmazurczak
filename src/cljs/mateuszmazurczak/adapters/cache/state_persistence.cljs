@@ -9,9 +9,12 @@
    - On version mismatch, cache is invalidated
    - Gracefully handles errors (falls back to empty state)"
   (:require
-   [editscript.core                        :as e]
-   [mateuszmazurczak.domain.cache.registry :as cache-registry]
-   [mateuszmazurczak.ports.cache           :as cache]))
+   [clojure.string                              :as str]
+   [editscript.core                             :as e]
+   [mateuszmazurczak.domain.cache.registry      :as cache-registry]
+   [mateuszmazurczak.ports.cache                :as cache]
+   [mateuszmazurczak.ports.logging              :as log]
+   [mateuszmazurczak.ui.components.notification :as notification]))
 
 (defonce ^{:private true
            :doc "Last persisted app-db snapshot for diff comparison"}
@@ -27,33 +30,73 @@
    - old-version: Previous version number
    - target-version: Target version number
    - old-value: Value from old version
+   - logger: Logger instance for structured logging
    
    Returns: Migrated value or nil if migration fails"
-  [version-key domain-id old-version target-version old-value]
+  [version-key domain-id old-version target-version old-value logger]
   (try (loop [current-version (inc old-version)
               value old-value]
          (if (> current-version target-version)
-           ;; Migration complete
            value
-           ;; Apply migration for current-version if exists
            (if-let [migration-fn (get-in cache-registry/migrations
                                          [version-key current-version domain-id])]
              (recur (inc current-version) (migration-fn value))
-             ;; No migration defined - assume data structure is compatible
              (recur (inc current-version) value))))
        (catch :default e
-         ;; Migration failed - log and return nil
          (let [critical? (= version-key :user-data)]
-           (js/console.error (str (when critical? "CRITICAL: ")
-                                  "Migration failed for domain "
-                                  domain-id
-                                  " from v"
-                                  old-version
-                                  " to v"
-                                  target-version
-                                  (when critical? ". User data will be lost!"))
-                             e))
+           (log/log! logger
+                     {:level (if critical? :error :warn)
+                      :id ::migration-failed-domain
+                      :msg "Domain migration failed"
+                      :data {:version-key version-key
+                             :domain-id domain-id
+                             :from-version old-version
+                             :to-version target-version
+                             :critical? critical?
+                             :error (ex-message e)}})
+           (when critical?
+             (notification/show-error
+              "Data migration failed"
+              {:description
+               (str
+                "Your saved data (votes, solutions) could not be migrated. "
+                "This may be due to a browser update. "
+                "All your posted solutions and votes are safe, just cosmetic data may be lost.")})))
          nil)))
+
+(defn- migrate-from-legacy-keys!
+  "One-time migration from old unversioned localStorage keys to new versioned keys.
+   
+   This handles the transition from the old key naming scheme to the new versioned scheme.
+   Uses current registry to determine target key names (works with any version).
+   
+   Old keys → New keys (current version):
+   - \"aoc-consents\" → current registry key for :aoc-consents
+   - \"aoc-votes\" → current registry key for :aoc-votes
+   - \"aoc-solution-ids\" → current registry key for :aoc-solution-ids
+   - \"admin-key\" → current registry key for :admin-key
+   
+   Returns: map with :migrated? boolean and :migrated-keys vector of old-key names"
+  []
+  (let [legacy-mappings
+        {"aoc-consents" (get-in cache-registry/registry [:user-data :domains :aoc-consents :key])
+         "aoc-votes" (get-in cache-registry/registry [:user-data :domains :aoc-votes :key])
+         "aoc-solution-ids" (get-in cache-registry/registry
+                                    [:user-data :domains :aoc-solution-ids :key])
+         "admin-key" (get-in cache-registry/registry [:user-data :domains :admin-key :key])}
+        migrated-keys (atom [])]
+    (doseq [[old-key new-key] legacy-mappings]
+      (when-let [old-value (cache/get-item old-key)]
+        (cache/set-item! new-key old-value)
+        (cache/remove-item! old-key)
+        (swap! migrated-keys conj old-key)))
+    (let [result {:migrated? (seq @migrated-keys)
+                  :migrated-keys @migrated-keys}]
+      (when (:migrated? result)
+        (notification/show-success "Data migrated"
+                                   {:description
+                                    "Your saved data has been migrated to the new format"}))
+      result)))
 
 (defn- check-version-and-migrate!
   "Check version and migrate data for a specific version-key.
@@ -62,45 +105,132 @@
    - version-key: :app-db or :user-data
    - stored-version-path: localStorage key for version tracking
    - current-version: Current version number
+   - logger: Logger instance for structured logging
    
    Migration strategy:
-   1. If versions match → return true (no migration needed)
+   1. If versions match → return {:valid? true}
    2. If old version < current → attempt migration
-   3. If migration succeeds → save migrated data, update version, return true
-   4. If migration fails OR old version > current → clear cache, return false
+   3. If migration succeeds → return {:valid? true, :migrated? true}
+   4. If migration fails OR old version > current → return {:valid? false}
+   5. If no stored version AND version-key is :user-data → attempt legacy migration
    
-   Returns: true if version valid or migration succeeded, false if invalidated"
-  [version-key stored-version-path current-version]
+   Returns: map with :valid? boolean, optional :migrated? and :legacy-migration details"
+  [version-key stored-version-path current-version logger]
   (let [stored-version (cache/get-item stored-version-path)
-        domains (get cache-registry/domains version-key)]
+        domains (get-in cache-registry/registry [version-key :domains])]
+    (log/log! logger
+              {:level :info
+               :id ::version-check
+               :msg "Checking cache version"
+               :data {:version-key version-key
+                      :stored-version stored-version
+                      :current-version current-version}})
     (cond
       ;; Version matches - no migration needed
-      (= stored-version current-version) true
+      (= stored-version current-version) (do (log/log!
+                                              logger
+                                              {:level :info
+                                               :id ::version-match
+                                               :msg "Cache version matches - no migration needed"
+                                               :data {:version-key version-key
+                                                      :version current-version}})
+                                             {:valid? true})
       ;; Old version - attempt migration
       (and stored-version (< stored-version current-version))
-      (let [migration-success? (atom true)]
+      (let [migration-success? (atom true)
+            legacy-result (atom nil)]
+        (log/log! logger
+                  {:level :info
+                   :id ::migrating-version
+                   :msg "Migrating cache to new version"
+                   :data {:version-key version-key
+                          :from stored-version
+                          :to current-version}})
+        ;; Special case: user-data v1→v2 requires legacy key migration
+        ;; because v1 had version tracking but code used hardcoded key names,
+        ;; so data was still in old unversioned keys (aoc-consents, aoc-votes, etc.)
+        (when (and (= version-key :user-data) (= stored-version 1) (= current-version 2))
+          (log/log! logger
+                    {:level :info
+                     :id ::legacy-key-migration
+                     :msg "v1→v2 migration requires legacy key migration"})
+          (reset! legacy-result (migrate-from-legacy-keys!))
+          (when (:migrated? @legacy-result)
+            (log/log! logger
+                      {:level :info
+                       :id ::legacy-keys-migrated
+                       :msg "Legacy keys migrated successfully"
+                       :data {:keys (:migrated-keys @legacy-result)}})))
         (doseq [[domain-id {:keys [key]}] domains]
-          (when-let [old-value (cache/get-item key)]
-            (if-let [migrated-value
-                     (migrate-domain version-key domain-id stored-version current-version old-value)]
-              ;; Migration succeeded - save to NEW key
-              (cache/set-item! key migrated-value)
-              ;; Migration failed - mark as failed
-              (reset! migration-success? false))))
+          (let [old-key (str/replace-first key
+                                           (str "-v" current-version "-")
+                                           (str "-v" stored-version "-"))]
+            (when-let [old-value (cache/get-item old-key)]
+              (if-let [migrated-value (migrate-domain version-key
+                                                      domain-id
+                                                      stored-version
+                                                      current-version
+                                                      old-value
+                                                      logger)]
+                (do (cache/set-item! key migrated-value) (cache/remove-item! old-key))
+                (reset! migration-success? false)))))
         (if @migration-success?
-          (do (cache/set-item! stored-version-path current-version) true)
-          ;; Migration failed - clear cache
-          (do (when (= version-key :user-data)
-                (js/console.warn "User data migration failed. Clearing user data."))
-              (doseq [[_domain-id {:keys [key]}] domains]
-                (cache/remove-item! key))
+          (do (cache/set-item! stored-version-path current-version)
+              {:valid? true
+               :migrated? true
+               :legacy-migration @legacy-result})
+          (do (log/log! logger
+                        {:level :warn
+                         :id ::migration-failed
+                         :msg "Cache migration failed - clearing cache"
+                         :data {:version-key version-key}})
+              (when (= version-key :user-data)
+                (notification/show-warning "Cache cleared"
+                                           {:description
+                                            "Unable to migrate saved data. Starting fresh."}))
+              (doseq [[_domain-id {:keys [key]}] domains] (cache/remove-item! key))
               (cache/set-item! stored-version-path current-version)
-              false)))
-      ;; Version mismatch (downgrade or no stored version) - clear cache
-      :else (do (doseq [[_domain-id {:keys [key]}] domains]
-                  (cache/remove-item! key))
-                (cache/set-item! stored-version-path current-version)
-                false))))
+              {:valid? false})))
+      (and (nil? stored-version) (= version-key :user-data))
+      (do (log/log! logger
+                    {:level :info
+                     :id ::no-version-legacy-migration
+                     :msg "No stored version - attempting legacy key migration"})
+          (let [legacy-result (migrate-from-legacy-keys!)]
+            (when (:migrated? legacy-result)
+              (log/log! logger
+                        {:level :info
+                         :id ::legacy-keys-migrated
+                         :msg "Legacy keys migrated successfully"
+                         :data {:keys (:migrated-keys legacy-result)}}))
+            (cache/set-item! stored-version-path current-version)
+            {:valid? true
+             :legacy-migration legacy-result}))
+      :else
+      (do (log/log! logger
+                    {:level :warn
+                     :id ::version-mismatch
+                     :msg "Cache version mismatch"
+                     :data {:version-key version-key
+                            :stored-version stored-version
+                            :current-version current-version}})
+          (let [legacy-result
+                (when (and (= version-key :user-data) (= stored-version 3) (= current-version 2))
+                  (log/log! logger
+                            {:level :info
+                             :id ::downgrade-legacy-migration
+                             :msg "Downgrade detected - attempting legacy migration"})
+                  (migrate-from-legacy-keys!))]
+            (when (:migrated? legacy-result)
+              (log/log! logger
+                        {:level :info
+                         :id ::legacy-keys-migrated
+                         :msg "Legacy keys migrated during downgrade"
+                         :data {:keys (:migrated-keys legacy-result)}}))
+            (doseq [[_domain-id {:keys [key]}] domains] (cache/remove-item! key))
+            (cache/set-item! stored-version-path current-version)
+            {:valid? false
+             :legacy-migration legacy-result})))))
 
 
 
@@ -115,7 +245,7 @@
    
    Note: Only works for domains with :path (app-db synced domains)"
   [db domain-id]
-  (if-let [{:keys [key path]} (get-in cache-registry/domains [:app-db domain-id])]
+  (if-let [{:keys [key path]} (get-in cache-registry/registry [:app-db :domains domain-id])]
     (let [value (get-in db path)] (if value (cache/set-item! key value) false))
     false))
 
@@ -136,7 +266,7 @@
                      diff (e/diff old-val new-val)]
                  (if (seq (e/get-edits diff)) (conj changed domain-id) changed)))
              #{}
-             (:app-db cache-registry/domains)))
+             (get-in cache-registry/registry [:app-db :domains])))
 
 (defn persist-changed!
   "Detect and persist only app-db synced domains that changed since last snapshot.
@@ -146,29 +276,33 @@
    
    This is called on route change. Uses editscript to compute minimal diff.
    
-   Note: Only persists domains with :path (app-db synced domains)"
+   Note: Only persists domains with :path (app-db synced domains)
+   "
   [db]
-  (let [app-db-domains (keys (:app-db cache-registry/domains))]
-    (if-let [old-db @last-snapshot]
+  (let [app-db-domains (keys (get-in cache-registry/registry [:app-db :domains]))
+        old-db @last-snapshot]
+    (reset! last-snapshot db)
+    (if old-db
       (let [changed (find-changed-domains old-db db)]
-        (when (seq changed)
-          (doseq [domain changed] (save-domain! db domain))
-          (reset! last-snapshot db)))
-      (do (doseq [domain-id app-db-domains] (save-domain! db domain-id))
-          (reset! last-snapshot db)))))
+        (when (seq changed) (doseq [domain changed] (save-domain! db domain))))
+      (doseq [domain-id app-db-domains] (save-domain! db domain-id)))))
 
 (defn load-persisted
   "Load all persisted domains from cache with automatic migration support.
    
-   Migration flow:
-   1. Check user-data version and migrate if needed (votes, consents, etc.)
-   2. Check app-db version and migrate if needed (route, lang, theme)
-   3. Load migrated app-db synced domains into app-db
+   Arguments:
+   - logger: Logger instance for structured logging
+   
+   This function automatically processes ALL version-keys in the registry.
+   When you add a new version-key (e.g., :qr-data) to the registry,
+   this function will automatically:
+   1. Check its version and migrate if needed
+   2. Load domains with :path into app-db
    
    Migration strategy:
    - If old version < current version: attempt sequential migrations
    - If migration succeeds: data is preserved and updated
-   - If migration fails: data is cleared (logged to console)
+   - If migration fails: data is cleared (logged via logger)
    
    Returns a map that can be merged with initial-state.
    Returns empty map if migration failed or no persisted data.
@@ -176,22 +310,22 @@
    Example return:
    {:current-route {:panel-id :home}
     :lang :pl}"
-  []
-  ;; Check and migrate user-data version first (independent of app-db version)
-  (check-version-and-migrate! :user-data
-                              cache-registry/user-data-version-cache-path
-                              cache-registry/user-data-version)
-  ;; Then check and migrate app-db version and load domains with :path
-  (if (check-version-and-migrate! :app-db
-                                  cache-registry/version-cache-path
-                                  cache-registry/app-db-version)
-    (reduce-kv (fn [acc _domain-id {:keys [key path]}]
-                 (if-let [stored-value (cache/get-item key)]
-                   (assoc-in acc path stored-value)
-                   acc))
-               {}
-               (:app-db cache-registry/domains))
-    {}))
+  [logger]
+  (reduce-kv (fn [acc version-key {:keys [version version-cache-path domains]}]
+               (let [migration-result
+                     (check-version-and-migrate! version-key version-cache-path version logger)]
+                 (if (:valid? migration-result)
+                   (reduce-kv (fn [inner-acc _domain-id {:keys [key path]}]
+                                (if path
+                                  (if-let [stored-value (cache/get-item key)]
+                                    (assoc-in inner-acc path stored-value)
+                                    inner-acc)
+                                  inner-acc))
+                              acc
+                              domains)
+                   acc)))
+             {}
+             cache-registry/registry))
 
 (def ops
   "Persistence operations implementation for port"

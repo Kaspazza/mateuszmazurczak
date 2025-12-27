@@ -17,7 +17,7 @@
    
    Returns a set of vote keys (\"solution-id::vote-type\")."
   []
-  (or (cache/get-item (get-in cache-registry/domains [:user-data :aoc-votes :key])) #{}))
+  (or (cache/get-item (get-in cache-registry/registry [:user-data :domains :aoc-votes :key])) #{}))
 
 (defn add-vote!
   "Record a vote in cache.
@@ -30,7 +30,8 @@
   [solution-id vote-type]
   (let [votes (get-votes)
         updated-votes (vote/add-vote votes solution-id vote-type)]
-    (cache/set-item! (get-in cache-registry/domains [:user-data :aoc-votes :key]) updated-votes)))
+    (cache/set-item! (get-in cache-registry/registry [:user-data :domains :aoc-votes :key])
+                     updated-votes)))
 
 (defn has-voted?
   "Check if user has voted for a solution.
@@ -58,7 +59,8 @@
    
    Returns a set of consent keys (\"year::challenge\")."
   []
-  (or (cache/get-item (get-in cache-registry/domains [:user-data :aoc-consents :key])) #{}))
+  (or (cache/get-item (get-in cache-registry/registry [:user-data :domains :aoc-consents :key]))
+      #{}))
 
 (defn add-consent!
   "Record user consent (\"I've solved it\") in cache.
@@ -71,7 +73,8 @@
   [year challenge]
   (let [consents (get-consents)
         updated-consents (conj consents (make-challenge-key year challenge))]
-    (cache/set-item! (get-in cache-registry/domains [:user-data :aoc-consents :key]) updated-consents)))
+    (cache/set-item! (get-in cache-registry/registry [:user-data :domains :aoc-consents :key])
+                     updated-consents)))
 
 (defn has-consented?
   "Check if user has given consent for year/challenge.
@@ -91,7 +94,8 @@
    
    Returns a map of challenge-key -> vector of solution-ids."
   []
-  (or (cache/get-item (get-in cache-registry/domains [:user-data :aoc-solution-ids :key])) {}))
+  (or (cache/get-item (get-in cache-registry/registry [:user-data :domains :aoc-solution-ids :key]))
+      {}))
 
 (defn add-solution-id!
   "Record a solution ID in cache.
@@ -108,7 +112,8 @@
         current-ids (get solution-ids challenge-key [])
         updated-ids (conj current-ids solution-id)
         updated-map (assoc solution-ids challenge-key updated-ids)]
-    (cache/set-item! (get-in cache-registry/domains [:user-data :aoc-solution-ids :key]) updated-map)))
+    (cache/set-item! (get-in cache-registry/registry [:user-data :domains :aoc-solution-ids :key])
+                     updated-map)))
 
 (defn get-user-solution-ids
   "Get user's solution IDs for year/challenge.
@@ -151,19 +156,20 @@
    Args:
    - admin-key: The admin API key string"
   [admin-key]
-  (cache/set-item! (get-in cache-registry/domains [:user-data :admin-key :key]) admin-key))
+  (cache/set-item! (get-in cache-registry/registry [:user-data :domains :admin-key :key])
+                   admin-key))
 
 (defn get-admin-key
   "Get admin key from localStorage.
    
    Returns admin key string or nil."
   []
-  (cache/get-item (get-in cache-registry/domains [:user-data :admin-key :key])))
+  (cache/get-item (get-in cache-registry/registry [:user-data :domains :admin-key :key])))
 
 (defn clear-admin-key!
   "Remove admin key from localStorage (logout)."
   []
-  (cache/remove-item! (get-in cache-registry/domains [:user-data :admin-key :key])))
+  (cache/remove-item! (get-in cache-registry/registry [:user-data :domains :admin-key :key])))
 
 (defn is-admin?
   "Check if user has admin key stored.

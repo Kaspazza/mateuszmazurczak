@@ -17,20 +17,23 @@
   
   Example:
   [code-block
+    [code-block-code {:code \"const x = 42;\" :language \"javascript\"}]]
+  
+  Or with props:
+  [code-block {:class \"custom-class\"}
     [code-block-code {:code \"const x = 42;\" :language \"javascript\"}]]"
-  [{:keys [class]
-    :as props}
-   &
-   children]
+  [& args]
   (let
-    [base-classes
+    [has-props? (and (seq args) (map? (first args)))
+     props (if has-props? (first args) {})
+     children (if has-props? (rest args) args)
+     {:keys [class]} props
+     base-classes
      "not-prose flex w-full flex-col overflow-clip border border-border bg-card text-card-foreground rounded-xl"
-     combined-classes (merge-classes base-classes class)]
-    (into [:div
-           (-> props
-               (assoc :class combined-classes)
-               (dissoc :class-name))]
-          children)))
+     combined-classes (merge-classes base-classes class)
+     props-without-class (dissoc props :class :class-name)
+     div-props (assoc props-without-class :class combined-classes)]
+    (into [:div div-props] children)))
 
 
 (defn highlight
@@ -42,7 +45,7 @@
                                 :theme theme}))]
     (-> code
         (.then set-highlighted-html)
-        (.catch (fn [err] (set-highlighted-html (str "<pre><code>" code "</code></pre>")))))))
+        (.catch (fn [_err] (set-highlighted-html (str "<pre><code>" code "</code></pre>")))))))
 
 (defc code-block-code
  "Code block with syntax highlighting using Shiki.
@@ -94,15 +97,19 @@
     [code-block-group
       [:span \"example.js\"]
       [button {:size :sm} \"Copy\"]]
-    [code-block-code {:code \"...\" :language \"javascript\"}]]"
-  [{:keys [class]
-    :as props}
-   &
-   children]
-  (let [base-classes "flex items-center justify-between"
-        combined-classes (merge-classes base-classes class)]
-    (into [:div
-           (-> props
-               (assoc :class combined-classes)
-               (dissoc :class-name))]
-          children)))
+    [code-block-code {:code \"...\" :language \"javascript\"}]]
+  
+  Or with props:
+  [code-block-group {:class \"custom-class\"}
+    [:span \"example.js\"]
+    [button {:size :sm} \"Copy\"]]"
+  [& args]
+  (let [has-props? (and (seq args) (map? (first args)))
+        props (if has-props? (first args) {})
+        children (if has-props? (rest args) args)
+        {:keys [class]} props
+        base-classes "flex items-center justify-between"
+        combined-classes (merge-classes base-classes class)
+        props-without-class (dissoc props :class :class-name)
+        div-props (assoc props-without-class :class combined-classes)]
+    (into [:div div-props] children)))

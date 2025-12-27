@@ -89,15 +89,18 @@
 (defn load-persisted
   "Load all persisted domains from cache.
    
+   Arguments:
+   - logger: Logger instance for structured logging during migration
+   
    Returns a map that can be merged with initial-state.
    Returns empty map if version mismatch or no persisted data.
    
    Example return:
    {:current-route {...}
     :lang :pl}"
-  []
+  [logger]
   (if-let [ops @persistence-ops]
-    ((:load-persisted ops))
+    ((:load-persisted ops) logger)
     {}))
 
 (defn save-domain!

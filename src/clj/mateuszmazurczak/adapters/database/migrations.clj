@@ -72,9 +72,13 @@
             flattened-tx (apply concat migrate-tx)]
         (when (seq flattened-tx) (d/transact! conn flattened-tx))
         nil))
+    ;; Rollback is not done as Datalevin is embedded DB - can restore from backup if needed and it was done for specific data, and with not a lot of data it's easy to manage like that
     (fn [_conn _logger]
-      (throw (ex-info "Cannot rollback github-profile to github-username migration"
-                      {:migration-id "20241206-000000-rename-github-profile-to-username"}))))])
+      (throw (ex-info "Rollback prohibited: Migration is one-way (URL → username parsing is lossy)"
+                      {:migration-id "20241206-000000-rename-github-profile-to-username"
+                       :rollback-prohibited true
+                       :reason "Original GitHub URLs are not preserved during parsing"
+                       :mitigation "Restore from database backup if rollback needed"}))))])
 
 (defn- validate-migration-id-chronology
   "Validate that migration IDs are in chronological order."

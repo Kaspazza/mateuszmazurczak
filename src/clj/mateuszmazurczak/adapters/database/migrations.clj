@@ -1,15 +1,9 @@
 (ns mateuszmazurczak.adapters.database.migrations
-  "Database migrations for Datalevin adapter.
-   
-   Migrations are infrastructure concerns - they live in the adapter layer."
+  "Database migrations for Datalevin adapter"
   (:require
-   [clojure.string                    :as str]
    [datalevin.core                    :as d]
+   [mateuszmazurczak.domain.pages.aoc :as aoc-domain]
    [mateuszmazurczak.utils.validation :as validation]))
-
-;; =============================================================================
-;; Migration Schema (for tracking)
-;; =============================================================================
 
 (def migration-schema
   "Schema for tracking applied migrations in the database"
@@ -20,10 +14,6 @@
                           :attr :instant}
    :migration/checksum {:doc "MD5 hash of migration content for integrity check"
                         :attr :string}})
-
-;; =============================================================================
-;; Malli Schemas for Validation
-;; =============================================================================
 
 (def ^:private migration-id-pattern #"^20\d{6}-\d{6}-[a-z0-9-]+$")
 
@@ -43,34 +33,6 @@
    [:migration/checksum :string]])
 
 (def ^:private MigrationRegistry "Schema for the entire migration registry" [:sequential Migration])
-
-;; =============================================================================
-;; Helper Functions
-;; =============================================================================
-
-(defn- parse-github-username-from-url
-  "Parse GitHub username from URL or return as-is if already a username.
-   
-   Handles:
-   - Full URLs: https://github.com/username -> username
-   - Already username: username -> username
-   - With @: @username -> username
-   - Blank/nil: nil"
-  [input]
-  (when (and input (not (str/blank? input)))
-    (let [trimmed (str/trim input)
-          ;; Remove @ prefix if present
-          without-at (if (str/starts-with? trimmed "@") (subs trimmed 1) trimmed)
-          ;; Extract username from URL if it's a URL
-          username (if (or (str/starts-with? without-at "http://")
-                           (str/starts-with? without-at "https://"))
-                     ;; It's a URL - extract username from path
-                     (let [parts (str/split without-at #"/")]
-                       ;; github.com/username or www.github.com/username
-                       (last (remove str/blank? parts)))
-                     ;; It's just a username
-                     without-at)]
-      (when (and username (not (str/blank? username))) username))))
 
 (defn create-migration
   "Create a migration map with required metadata.
@@ -92,10 +54,6 @@
                             :cause e}
                            e))))))
 
-;; =============================================================================
-;; Migration Registry
-;; =============================================================================
-
 (def migrations
   "Registry of all database migrations in chronological order.
    Each migration should have a unique ID in format: YYYYMMDD-HHMMSS-description"
@@ -103,28 +61,20 @@
     "20241206-000000-rename-github-profile-to-username"
     "Rename aoc-solution/github-profile to aoc-solution/github-username and parse URLs to usernames"
     (fn [conn _logger]
-      ;; Find all solutions with github-profile using Datalevin API directly
       (let [solutions (d/q '[:find ?e ?profile :where [?e :aoc-solution/github-profile ?profile]]
                            @conn)
-            ;; Build transaction to migrate data
             migrate-tx
             (mapv (fn [[eid profile-url]]
-                    (let [username (parse-github-username-from-url profile-url)]
+                    (let [username (aoc-domain/parse-github-username profile-url)]
                       (cond-> [[:db/retract eid :aoc-solution/github-profile profile-url]]
                         username (conj [:db/add eid :aoc-solution/github-username username]))))
                   solutions)
             flattened-tx (apply concat migrate-tx)]
-        ;; Execute the migration transaction
         (when (seq flattened-tx) (d/transact! conn flattened-tx))
-        ;; Return nil since we handled everything
         nil))
     (fn [_conn _logger]
       (throw (ex-info "Cannot rollback github-profile to github-username migration"
                       {:migration-id "20241206-000000-rename-github-profile-to-username"}))))])
-
-;; =============================================================================
-;; Validation Functions
-;; =============================================================================
 
 (defn- validate-migration-id-chronology
   "Validate that migration IDs are in chronological order."

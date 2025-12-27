@@ -17,7 +17,7 @@
                  "via-primary/40"
                  "to-background"]}
    [:div {:class "block overflow-hidden w-80"}
-    [ui-img/optimized-img {:src "img/mateusz_mazurczak.webp"
+    [ui-img/optimized-img {:src "/img/mateusz_mazurczak.webp"
                            :alt "Mateusz Mazurczak"
                            :width 320
                            :height 320

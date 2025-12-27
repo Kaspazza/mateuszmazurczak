@@ -243,18 +243,18 @@ bb docker-run --profile development <v> # Run with dev secrets
 - ✅ Full-stack routing (Ring, Reitit, Shadow-CLJS)
 - ✅ i18n (taoensso/tempura)
 - ✅ UI: Reagent, Tailwind CSS, DaisyUI
-- ✅ Component development (Portfolio)
+- ✅ Component development (Portfolio - route  /admin/portfolio)
 - ✅ Error monitoring (Sentry)
 - ✅ Logging (taoensso/telemere)
 - ✅ Analytics (PostHog)
 - ✅ Database (Datalevin)
 - ✅ Docker deployment
 - ✅ Babashka scripting (build, test, lint, format)
+- ✅ UI theming
 
 **Planned:**
 - [ ] Contact chat (email integration)
 - [ ] Realtime page update notifications
-- [ ] UI theming
 - [ ] E2E testing documentation
 - [ ] Auth + feature flags
 - [ ] Versioning

@@ -26,7 +26,7 @@
            :doc "Generate HTML from articles"
            :enter (common/enter lint/cli-opts (current-task))
            :extra-deps {hiccup/hiccup {:mvn/version "2.0.0"}
-                        io.github.nextjournal/markdown {:mvn/version "0.7.213"}}
+                        io.github.nextjournal/markdown {:mvn/version "0.7.222"}}
            :requires [[mateuszmazurczak.tasks.article :as article]]
            :task (article/run)}
   build-jar {:depends [-base-deps clean]

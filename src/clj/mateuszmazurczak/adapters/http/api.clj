@@ -1,5 +1,4 @@
 (ns mateuszmazurczak.adapters.http.api
-  "API handlers for JSON endpoints."
   (:require
    [clojure.string                         :as str]
    [malli.core                             :as m]
@@ -103,18 +102,20 @@
                           :data {:body-params body-params}})
              (http-response/internal-server-error {:error "Failed to save solution"}))))))
 
-(defn post-vote-response
+(defn post-vote!
   [{:keys [database logger]
     :as _ctx}
    solution-uuid
    solution-id
    vote-type-kw]
-  (let [best-practices-count (aoc-repo/count-votes database solution-uuid :best-practices)
+  (let [vote-tx (vote/save-vote-tx solution-id vote-type-kw)
+        best-practices-count (aoc-repo/count-votes database solution-uuid :best-practices)
         clever-count (aoc-repo/count-votes database solution-uuid :clever)
         response-data {:success true
                        :solution-id solution-id
                        :best-practices-count best-practices-count
                        :clever-count clever-count}]
+    (db/transact! database vote-tx)
     (log/log! logger
               {:id ::vote-recorded
                :level :info
@@ -142,16 +143,12 @@
       (not (contains? #{"best-practices" "clever" :best-practices :clever} vote-type))
       (http-response/bad-request {:error "vote-type must be 'best-practices' or 'clever'"})
       :else (try (let [uuid-id (java.util.UUID/fromString solution-id)
-                       vote-type-kw (vote/normalize-vote-type vote-type)
-                       vote-tx (vote/save-vote-tx solution-id vote-type-kw)
-                       lookup-ref [:aoc-solution/id uuid-id]
-                       aoc-solution (db/pull-entity database '[*] lookup-ref)]
-                   (db/transact! database vote-tx)
-                   (post-vote-response {:database database
-                                        :logger logger}
-                                       uuid-id
-                                       solution-id
-                                       vote-type-kw))
+                       vote-type-kw (vote/normalize-vote-type vote-type)]
+                   (post-vote! {:database database
+                                :logger logger}
+                               uuid-id
+                               solution-id
+                               vote-type-kw))
                  (catch IllegalArgumentException _
                    (http-response/bad-request {:error "Invalid solution-id format"}))
                  (catch clojure.lang.ExceptionInfo e

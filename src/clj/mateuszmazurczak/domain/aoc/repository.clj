@@ -147,7 +147,6 @@
   [{:keys [db]} solution-uid]
   (db/pull-entity db '[*] [:aoc-solution/id solution-uid]))
 
-
 (defn delete-solution-tx
   [{:keys [db]} solution-uid]
   (let [vote-eids (db/query db solution-votes-query solution-uid)

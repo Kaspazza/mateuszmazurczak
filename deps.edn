@@ -45,8 +45,8 @@
  :deps {aero/aero {:mvn/version "1.1.6"}
         amalloy/ring-gzip-middleware {:mvn/version "0.1.4"}
         com.datomic/peer {:mvn/version "1.0.7469"}
-        com.taoensso/telemere {:mvn/version "1.2.0"}
-        com.taoensso/telemere-slf4j {:mvn/version "1.2.0"}
+        com.taoensso/telemere {:mvn/version "1.2.1"}
+        com.taoensso/telemere-slf4j {:mvn/version "1.2.1"}
         com.taoensso/tempura {:mvn/version "1.5.4"}
         com.taoensso/truss {:mvn/version "2.3.0"}
         datalevin/datalevin {:mvn/version "0.9.27"}

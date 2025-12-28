@@ -82,11 +82,11 @@
    :requires [[mateuszmazurczak.tasks.docker :as docker]]
    :task (docker/run "run")}
   format {:doc "zprint format"
-          :task (try (-> (babashka.process/shell "zprint -w **/*.clj **/*.cljs **/*.cljc **/*.edn"
-                                                 *command-line-args*)
-                         System/exit)
-                     (catch Exception e
-                       (println "Repl failed also - error during repl startup" (ex-message e))))}
+          :extra-deps {zprint/zprint {:mvn/version "1.3.0"}}
+          :requires ([zprint.main] [babashka.fs :as fs])
+          :task (let [files (mapcat (fn [pattern] (map str (fs/glob "." pattern)))
+                                    ["**/*.clj" "**/*.cljs" "**/*.cljc" "**/*.edn"])]
+                  (apply zprint.main/-main (concat ["-w"] files *command-line-args*)))}
   lconnect {:doc "Repl in case dev-launch is failing"
             :task (try (-> (babashka.process/shell "clojure"
                                                    "-M:common-test:env-development-repl"

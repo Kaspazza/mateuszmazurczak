@@ -63,7 +63,7 @@
    - year (int): Year of the challenge (2015-2025)
    - challenge (int): Challenge day (1-24)
    - author-name (string): Name of the author
-   - github-profile (optional string): GitHub profile URL
+   - github-username (optional string): GitHub username (can be just username, @username, or full URL - will be normalized)
    - content-type (string): Either 'code-snippet' or 'repo-link'
    - content (string): The solution code or repository URL
    

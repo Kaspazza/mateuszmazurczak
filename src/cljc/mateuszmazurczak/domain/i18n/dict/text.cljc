@@ -77,7 +77,16 @@
     :go-to-aoc-page "Go to AoC Page"
     :aoc-solutions "AoC Solutions"
     :admin-description
-    "Use this panel to manage Advent of Code solutions and other administrative tasks."}
+    "Use this panel to manage Advent of Code solutions and other administrative tasks."
+    ;; Notifications (generic, reusable)
+    :upload-limit-reached "Upload limit reached"
+    :uploaded-max-solutions-for-challenge "You have already uploaded 5 solutions for this challenge"
+    :solution-submitted-successfully "Solution submitted successfully!"
+    :failed-to-submit-solution "Failed to submit solution"
+    :please-fix-form-errors "Please fix the form errors"
+    :required-fields-missing "Some required fields are missing"
+    :already-voted-for-solution "You have already voted for this solution"
+    :failed-to-vote "Failed to vote"}
    :pl
    {:homepage "Główna"
     :articles "Artykuły"
@@ -152,4 +161,13 @@
     :aoc-solutions "AoC Rozwiązania"
     :go-to-aoc-page "Przejdź do Strony AoC"
     :admin-description
-    "Użyj tego panelu do zarządzania rozwiązaniami Advent of Code i innych zadań administracyjnych."}})
+    "Użyj tego panelu do zarządzania rozwiązaniami Advent of Code i innych zadań administracyjnych."
+    ;; Notyfikacje (ogólne, wielokrotnego użytku)
+    :upload-limit-reached "Osiągnięto limit przesyłania"
+    :uploaded-max-solutions-for-challenge "Przesłałeś już 5 rozwiązań dla tego wyzwania"
+    :solution-submitted-successfully "Rozwiązanie przesłane pomyślnie!"
+    :failed-to-submit-solution "Nie udało się przesłać rozwiązania"
+    :please-fix-form-errors "Proszę popraw błędy w formularzu"
+    :required-fields-missing "Brakuje wymaganych pól"
+    :already-voted-for-solution "Już głosowałeś na to rozwiązanie"
+    :failed-to-vote "Nie udało się zagłosować"}})

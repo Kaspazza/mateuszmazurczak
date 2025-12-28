@@ -620,3 +620,344 @@
    Returns: Boolean indicating if playground should be shown"
   [content-type]
   (= content-type :code-snippet))
+
+(defn enrich-solution-voting-state
+  "Enrich solution with voting state from cache.
+   
+   Transforms solution by:
+   - Converting :content-type string to keyword (backend returns string)
+   - Adding :voted-best-practices? flag (from cache)
+   - Adding :voted-clever? flag (from cache)
+   
+   Args:
+   - solution: Solution map with :id, :content-type (string or keyword)
+   - has-voted-fn: Function (solution-id vote-type) -> boolean (typically from cache)
+   
+   Returns: Solution map enriched with voting state"
+  [solution has-voted-fn]
+  (let [solution-id (:id solution)]
+    (-> solution
+        (update :content-type keyword)
+        (assoc :voted-best-practices? (has-voted-fn solution-id :best-practices))
+        (assoc :voted-clever? (has-voted-fn solution-id :clever)))))
+
+;; =============================================================================
+;; Selection Logic
+;; =============================================================================
+
+(defn valid-year? [year] (some #{year} years))
+
+(defn valid-challenge-for-year?
+  "Check if challenge is valid for given year."
+  [year challenge]
+  (some #{challenge} (challenges-for-year year)))
+
+(defn resolve-year-challenge
+  "Resolve and validate year/challenge values.
+   
+   Args:
+   - url-year: Year from URL path params (can be nil)
+   - url-challenge: Challenge from URL path params (can be nil)
+   - default-year: Fallback year value
+   
+   Returns: Map with :year and :challenge (validated or defaulted).
+   Challenge defaults to first available for the resolved year."
+  [url-year url-challenge default-year]
+  (let [valid-year? (valid-year? url-year)
+        year (if valid-year? url-year default-year)
+        valid-challenge? (and valid-year? (valid-challenge-for-year? url-year url-challenge))
+        challenge (if valid-challenge? url-challenge (first (challenges-for-year year)))]
+    {:year year
+     :challenge challenge}))
+
+(defn build-external-form-data
+  "Build form data for external mode (when playground-url is present).
+   
+   In external mode, content-type is locked to :repo-link and 
+   content is pre-filled with playground-url."
+  [playground-url year challenge]
+  {:author-name ""
+   :github-username ""
+   :content-type :repo-link
+   :content playground-url
+   :year year
+   :challenge challenge})
+
+(defn resolve-modal-year-challenge
+  "Resolve modal form year/challenge.
+   
+   Priority: query params > page selection.
+   
+   Args:
+   - query-year: Year from query params (can be nil)
+   - query-challenge: Challenge from query params (can be nil)
+   - page-year: Currently selected page year
+   
+   Returns: Map with :year, :challenge, and :challenges-options.
+   Challenge defaults to first available for the resolved year."
+  [query-year query-challenge page-year]
+  (let [modal-year (or query-year page-year)
+        valid-modal-year? (valid-year? modal-year)
+        final-year (if valid-modal-year? modal-year page-year)
+        valid-modal-challenge? (and valid-modal-year?
+                                    (valid-challenge-for-year? modal-year query-challenge))
+        final-challenge
+        (if valid-modal-challenge? query-challenge (first (challenges-for-year final-year)))]
+    {:year final-year
+     :challenge final-challenge
+     :challenges-options (build-challenges-options final-year)}))
+
+(defn resolve-aoc-selection
+  "Resolve AoC page selection state.
+   
+   Pure business logic for determining which year/challenge to display
+   and what actions to trigger.
+   
+   Args:
+   - requested-year: Year user requested (can be nil)
+   - requested-challenge: Challenge user requested (can be nil)
+   - external-share-url: URL from external share/playground (can be nil)
+   - external-year: Year from external share (can be nil)
+   - external-challenge: Challenge from external share (can be nil)
+   - highlight-solution-id: Solution to highlight (can be nil)
+   - existing-page-data: Current page data (can be nil)
+   - years-options: Current years options
+   
+   Returns: Map with :page-data and :dispatches"
+  [{:keys [requested-year
+           requested-challenge
+           external-share-url
+           external-year
+           external-challenge
+           highlight-solution-id
+           existing-page-data
+           years-options]}]
+  (let [initial-data (build-initial-page-data)
+        page-data
+        (if (or (nil? existing-page-data) (empty? years-options)) initial-data existing-page-data)
+        default-year (get-in page-data [:selector-data :selected-year])
+        {:keys [year challenge]}
+        (resolve-year-challenge requested-year requested-challenge default-year)
+        challenges-options (build-challenges-options year)
+        modal-resolved (resolve-modal-year-challenge external-year external-challenge year)
+        form-data (if external-share-url
+                    (build-external-form-data external-share-url
+                                              (:year modal-resolved)
+                                              (:challenge modal-resolved))
+                    (get-in page-data [:modal-data :form]))
+        updated-page-data (-> page-data
+                              (assoc-in [:selector-data :selected-year] year)
+                              (assoc-in [:selector-data :selected-challenge] challenge)
+                              (assoc-in [:selector-data :challenges-options] challenges-options)
+                              (assoc-in [:modal-data :form] form-data)
+                              (assoc-in [:modal-data :playground-url] external-share-url)
+                              (assoc-in [:modal-data :challenges-options]
+                                        (:challenges-options modal-resolved)))
+        dispatches (cond-> [[:admin/check-status] [:aoc/fetch-solutions year challenge]]
+                     highlight-solution-id (conj [:aoc/highlight-solution highlight-solution-id]
+                                                 [:dispatch-later {:ms 3000
+                                                                   :dispatch
+                                                                   [:aoc/clear-highlight]}])
+                     external-share-url (conj [:aoc/open-modal]))]
+    {:page-data updated-page-data
+     :dispatches dispatches}))
+
+;; =============================================================================
+;; Year/Challenge Selection
+;; =============================================================================
+
+(defn resolve-year-selection
+  "Resolve state after year selection change.
+   
+   Returns the new year, first challenge for that year, and challenges options."
+  [year]
+  (let [first-challenge (first (challenges-for-year year))
+        challenges-options (build-challenges-options year)]
+    {:year year
+     :challenge first-challenge
+     :challenges-options challenges-options}))
+
+;; =============================================================================
+;; Modal Logic
+;; =============================================================================
+
+(defn resolve-modal-open
+  "Resolve modal state when opening.
+   
+   In external mode (playground-url present), use form values.
+   In normal mode, use current page state."
+  [{:keys [playground-url form-year form-challenge page-year page-challenge]}]
+  (let [{:keys [year challenge]} (if playground-url
+                                   {:year form-year
+                                    :challenge form-challenge}
+                                   {:year page-year
+                                    :challenge page-challenge})]
+    {:year year
+     :challenge challenge
+     :challenges-options (build-challenges-options year)}))
+
+(defn resolve-modal-year-selection
+  "Resolve modal state after year selection in modal form."
+  [year]
+  (let [first-challenge (first (challenges-for-year year))]
+    {:year year
+     :challenge first-challenge
+     :challenges-options (build-challenges-options year)}))
+
+(defn resolve-modal-close
+  "Resolve state when closing modal. Returns reset form data."
+  [page-year page-challenge]
+  {:form (reset-form page-year page-challenge)})
+
+;; =============================================================================
+;; Solution Submission
+;; =============================================================================
+
+(defn can-submit-solution?
+  "Check if solution can be submitted.
+   
+   Args:
+   - can-upload-fn: Function (year challenge) -> boolean
+   - year: Year to submit for
+   - challenge: Challenge to submit for
+   - validation-errors: Form validation errors (can be nil)
+   
+   Returns: Map with :can-submit? boolean and :reason keyword
+     :reason can be :upload-limit-reached, :validation-errors, or nil if OK"
+  [can-upload-fn year challenge validation-errors]
+  (cond
+    (not (can-upload-fn year challenge)) {:can-submit? false
+                                          :reason :upload-limit-reached}
+    validation-errors {:can-submit? false
+                       :reason :validation-errors}
+    :else {:can-submit? true
+           :reason nil}))
+
+(defn resolve-submission
+  "Resolve submission payload from form and page state.
+   
+   Returns year, challenge, and normalized payload for API."
+  [{:keys [form page-year page-challenge]}]
+  (let [year (or (:year form) page-year)
+        challenge (or (:challenge form) page-challenge)
+        payload (-> form
+                    (assoc :year year :challenge challenge)
+                    prepare-solution-payload)]
+    {:year year
+     :challenge challenge
+     :payload payload
+     :validation-errors (validate-solution-form form)}))
+
+(defn resolve-submission-success
+  "Resolve state after successful submission.
+   
+   Returns updated state data including reset form and new selection."
+  [{:keys [form page-year page-challenge]}]
+  (let [year (or (:year form) page-year)
+        challenge (or (:challenge form) page-challenge)
+        challenges-options (build-challenges-options year)]
+    {:year year
+     :challenge challenge
+     :challenges-options challenges-options
+     :form (reset-form year challenge)}))
+
+;; =============================================================================
+;; Vote Logic
+;; =============================================================================
+
+(defn vote-type->key
+  "Convert vote type to the voted flag key."
+  [vote-type]
+  (if (= vote-type :best-practices) :voted-best-practices? :voted-clever?))
+
+;; =============================================================================
+;; Form Update Logic
+;; =============================================================================
+
+(defn update-form-field
+  "Update a single form field and clear its error.
+   
+   Args:
+   - form: Current form data
+   - form-errors: Current form errors (can be nil)
+   - field: Field keyword to update
+   - value: New value for field
+   
+   Returns: Map with :form and :form-errors"
+  [form form-errors field value]
+  {:form (assoc form field value)
+   :form-errors (dissoc form-errors field)})
+
+;; =============================================================================
+;; Solutions Fetch Logic
+;; =============================================================================
+
+(defn process-fetched-solutions
+  "Process solutions fetched from API.
+   
+   Enriches solutions with voting state, normalizes them,
+   and prepares all related state updates.
+   
+   Args:
+   - solutions: Raw solutions from API
+   - year: Year for cache lookup
+   - challenge: Challenge for cache lookup
+   - has-consented-fn: Function (year challenge) -> boolean
+   - get-user-solution-ids-fn: Function (year challenge) -> set of IDs
+   - get-upload-count-fn: Function (year challenge) -> int
+   - enrich-voting-fn: Function (solution) -> enriched solution
+   
+   Returns: Map with :entities :ids :user-solution-ids :upload-count :gated?"
+  [{:keys [solutions
+           year
+           challenge
+           has-consented-fn
+           get-user-solution-ids-fn
+           get-upload-count-fn
+           enrich-voting-fn]}]
+  (let [has-consent? (has-consented-fn year challenge)
+        user-solution-ids (set (get-user-solution-ids-fn year challenge))
+        upload-count (get-upload-count-fn year challenge)
+        enriched-solutions (mapv enrich-voting-fn solutions)
+        {:keys [entities ids]} (normalize-solutions enriched-solutions)]
+    {:entities entities
+     :ids ids
+     :user-solution-ids user-solution-ids
+     :upload-count upload-count
+     :gated? (not has-consent?)}))
+
+;; =============================================================================
+;; Vote Logic (continued)
+;; =============================================================================
+
+(defn can-vote?
+  "Check if user can vote for solution.
+   
+   Args:
+   - has-voted-fn: Function (solution-id vote-type) -> boolean
+   - solution-id: ID of solution to vote on
+   - vote-type: Vote type (:best-practices or :clever)
+   
+   Returns: Map with :can-vote? boolean"
+  [has-voted-fn solution-id vote-type]
+  {:can-vote? (not (has-voted-fn solution-id vote-type))})
+
+(defn update-solution-votes
+  "Update solution vote counts and voted flag.
+   
+   Args:
+   - solution: Current solution data
+   - vote-type: Vote type (:best-practices or :clever)
+   - best-practices-count: New best practices count
+   - clever-count: New clever count
+   
+   Returns: Updated solution map"
+  [solution vote-type best-practices-count clever-count]
+  (let [voted-key (vote-type->key vote-type)]
+    (assoc solution
+           :best-practices-count
+           best-practices-count
+           :clever-count
+           clever-count
+           voted-key
+           true)))

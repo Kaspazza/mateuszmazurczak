@@ -20,9 +20,20 @@
     {:name ::article
      :page-id :pages/article}]
    ["/aoc"
-    {:name ::aoc
-     :page-id :pages/aoc
-     :controllers [{:start (fn [_] (events/dispatch! [:aoc/on-route-enter]))}]}]
+    [[""
+      {:name ::aoc
+       :page-id :pages/aoc
+       :controllers [{:start (fn [_] (events/dispatch! [:aoc/on-route-enter nil]))}]}]
+     ["/:year/:challenge"
+      {:name ::aoc-specific
+       :page-id :pages/aoc
+       :controllers [{:parameters {:path [:year :challenge]}
+                      :start (fn [{{:keys [year challenge]} :path}]
+                               (let [year-int (js/parseInt year 10)
+                                     challenge-int (js/parseInt challenge 10)]
+                                 (events/dispatch! [:aoc/on-route-enter {:year year-int
+                                                                         :challenge
+                                                                         challenge-int}])))}]}]]]
    ["/secret-admin-panel-xyz"
     {:name ::admin
      :page-id :pages/admin

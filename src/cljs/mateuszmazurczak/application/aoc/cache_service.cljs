@@ -4,18 +4,9 @@
    Application service that orchestrates cache port + domain logic.
    Provides high-level operations for AoC vote tracking and consent management."
   (:require
-   [mateuszmazurczak.domain.aoc.vote :as vote]
-   [mateuszmazurczak.ports.cache     :as cache]))
-
-;; =============================================================================
-;; Cache Keys
-;; =============================================================================
-
-;;TODO connect name to cache registry in some way
-(def ^:private aoc-votes-key "aoc-votes")
-(def ^:private aoc-consents-key "aoc-consents")
-(def ^:private aoc-solution-ids-key "aoc-solution-ids")
-(def ^:private admin-key-storage-key "admin-key")
+   [mateuszmazurczak.domain.aoc.vote       :as vote]
+   [mateuszmazurczak.domain.cache.registry :as cache-registry]
+   [mateuszmazurczak.ports.cache           :as cache]))
 
 ;; =============================================================================
 ;; Vote Tracking
@@ -26,7 +17,7 @@
    
    Returns a set of vote keys (\"solution-id::vote-type\")."
   []
-  (or (cache/get-item aoc-votes-key) #{}))
+  (or (cache/get-item (get-in cache-registry/registry [:user-data :domains :aoc-votes :key])) #{}))
 
 (defn add-vote!
   "Record a vote in cache.
@@ -39,7 +30,8 @@
   [solution-id vote-type]
   (let [votes (get-votes)
         updated-votes (vote/add-vote votes solution-id vote-type)]
-    (cache/set-item! aoc-votes-key updated-votes)))
+    (cache/set-item! (get-in cache-registry/registry [:user-data :domains :aoc-votes :key])
+                     updated-votes)))
 
 (defn has-voted?
   "Check if user has voted for a solution.
@@ -55,19 +47,20 @@
 ;; =============================================================================
 
 (defn make-challenge-key
-  "Create a composite key for year/challenge/part.
+  "Create a composite key for year/challenge.
    
-   Format: year::challenge::part
-   Example: \"2024::1::1\""
-  [year challenge part]
-  (str year "::" challenge "::" part))
+   Format: year::challenge
+   Example: \"2024::1\""
+  [year challenge]
+  (str year "::" challenge))
 
 (defn get-consents
   "Get all consents from cache.
    
-   Returns a set of consent keys (\"year::challenge::part\")."
+   Returns a set of consent keys (\"year::challenge\")."
   []
-  (or (cache/get-item aoc-consents-key) #{}))
+  (or (cache/get-item (get-in cache-registry/registry [:user-data :domains :aoc-consents :key]))
+      #{}))
 
 (defn add-consent!
   "Record user consent (\"I've solved it\") in cache.
@@ -75,23 +68,22 @@
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    
    Returns true if successful."
-  [year challenge part]
+  [year challenge]
   (let [consents (get-consents)
-        updated-consents (conj consents (make-challenge-key year challenge part))]
-    (cache/set-item! aoc-consents-key updated-consents)))
+        updated-consents (conj consents (make-challenge-key year challenge))]
+    (cache/set-item! (get-in cache-registry/registry [:user-data :domains :aoc-consents :key])
+                     updated-consents)))
 
 (defn has-consented?
-  "Check if user has given consent for year/challenge/part.
+  "Check if user has given consent for year/challenge.
    
    Args:
    - year: Year number
-   - challenge: Challenge number
-   - part: Part number"
-  [year challenge part]
-  (contains? (get-consents) (make-challenge-key year challenge part)))
+   - challenge: Challenge number"
+  [year challenge]
+  (contains? (get-consents) (make-challenge-key year challenge)))
 
 ;; =============================================================================
 ;; Solution ID Tracking 
@@ -102,7 +94,8 @@
    
    Returns a map of challenge-key -> vector of solution-ids."
   []
-  (or (cache/get-item aoc-solution-ids-key) {}))
+  (or (cache/get-item (get-in cache-registry/registry [:user-data :domains :aoc-solution-ids :key]))
+      {}))
 
 (defn add-solution-id!
   "Record a solution ID in cache.
@@ -110,51 +103,48 @@
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    - solution-id: Solution ID string
    
    Returns true if successful."
-  [year challenge part solution-id]
+  [year challenge solution-id]
   (let [solution-ids (get-solution-ids)
-        challenge-key (make-challenge-key year challenge part)
+        challenge-key (make-challenge-key year challenge)
         current-ids (get solution-ids challenge-key [])
         updated-ids (conj current-ids solution-id)
         updated-map (assoc solution-ids challenge-key updated-ids)]
-    (cache/set-item! aoc-solution-ids-key updated-map)))
+    (cache/set-item! (get-in cache-registry/registry [:user-data :domains :aoc-solution-ids :key])
+                     updated-map)))
 
 (defn get-user-solution-ids
-  "Get user's solution IDs for year/challenge/part.
+  "Get user's solution IDs for year/challenge.
    
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    
    Returns vector of solution-id strings or empty vector."
-  [year challenge part]
-  (get (get-solution-ids) (make-challenge-key year challenge part) []))
+  [year challenge]
+  (get (get-solution-ids) (make-challenge-key year challenge) []))
 
 (defn get-upload-count
-  "Get number of solutions user has uploaded for year/challenge/part.
+  "Get number of solutions user has uploaded for year/challenge.
    
    Args:
    - year: Year number
    - challenge: Challenge number
-   - part: Part number
    
    Returns count of user's solutions."
-  [year challenge part]
-  (count (get-user-solution-ids year challenge part)))
+  [year challenge]
+  (count (get-user-solution-ids year challenge)))
 
 (defn can-upload?
   "Check if user can upload another solution (max 5 per challenge).
    
    Args:
    - year: Year number
-   - challenge: Challenge number
-   - part: Part number"
-  [year challenge part]
-  (< (get-upload-count year challenge part) 5))
+   - challenge: Challenge number"
+  [year challenge]
+  (< (get-upload-count year challenge) 5))
 
 ;; =============================================================================
 ;; Admin Key Management
@@ -166,19 +156,20 @@
    Args:
    - admin-key: The admin API key string"
   [admin-key]
-  (cache/set-item! admin-key-storage-key admin-key))
+  (cache/set-item! (get-in cache-registry/registry [:user-data :domains :admin-key :key])
+                   admin-key))
 
 (defn get-admin-key
   "Get admin key from localStorage.
    
    Returns admin key string or nil."
   []
-  (cache/get-item admin-key-storage-key))
+  (cache/get-item (get-in cache-registry/registry [:user-data :domains :admin-key :key])))
 
 (defn clear-admin-key!
   "Remove admin key from localStorage (logout)."
   []
-  (cache/remove-item! admin-key-storage-key))
+  (cache/remove-item! (get-in cache-registry/registry [:user-data :domains :admin-key :key])))
 
 (defn is-admin?
   "Check if user has admin key stored.

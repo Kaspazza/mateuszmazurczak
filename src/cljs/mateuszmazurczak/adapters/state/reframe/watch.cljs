@@ -11,11 +11,9 @@
    [mateuszmazurczak.adapters.state.reframe.admin-page :as admin-page-watch]
    [mateuszmazurczak.adapters.state.reframe.aoc        :as aoc-watch]
    [mateuszmazurczak.adapters.state.reframe.theme      :as theme-watch]
+   [mateuszmazurczak.application.home.page-data        :as home-page-data]
    [mateuszmazurczak.domain.i18n.language              :as i18n-lang]
-   [mateuszmazurczak.domain.pages.home                 :as home-domain]
    [mateuszmazurczak.domain.state.registry             :as state-registry]
-   [mateuszmazurczak.frontend-i18n                     :as fi18n]
-   [mateuszmazurczak.ports.events                      :as events]
    [mateuszmazurczak.ports.navigation                  :as nav-core]
    [re-frame.core                                      :as rf]))
 
@@ -54,19 +52,7 @@
 (rf/reg-sub :pages/home
             :<-
             [:home/raw-data]
-            (fn [raw-data _]
-              (let [processed-data (-> raw-data
-                                       fi18n/i18n-markers->translation
-                                       events/dispatch-markers->handlers)
-                    valid? (home-domain/valid-home-page-data? processed-data)]
-                (if valid?
-                  {:data processed-data
-                   :valid? valid?}
-                  {:data processed-data
-                   :valid? valid?
-                   :error {:id ::home-translation-failed
-                           :data (home-domain/explain-home-page-data processed-data)
-                           :actual-data processed-data}}))))
+            (fn [raw-data _] (home-page-data/prepare-ui-data raw-data)))
 
 ;; =============================================================================
 ;; State watch

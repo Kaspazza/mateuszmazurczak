@@ -7,13 +7,17 @@
 
 (defn about-me
   [{:keys [welcome-text description contact-info]}]
-  [:div {:class "hero-content flex-col lg:flex-row max-w-screen justify-evenly"
-         :style {:background "linear-gradient(85deg, rgb(170 137 173) 41%, #fff 100%)"}}
-   [:div {:style {:height "100%"
-                  :position "relative"
-                  :background-color "#bea5c2 "}}]
+  [:div {:class ["hero-content"
+                 "flex-col"
+                 "lg:flex-row"
+                 "max-w-screen"
+                 "justify-evenly"
+                 "bg-gradient-to-r"
+                 "from-primary/60"
+                 "via-primary/40"
+                 "to-background"]}
    [:div {:class "block overflow-hidden w-80"}
-    [ui-img/optimized-img {:src "img/mateusz_mazurczak.webp"
+    [ui-img/optimized-img {:src "/img/mateusz_mazurczak.webp"
                            :alt "Mateusz Mazurczak"
                            :width 320
                            :height 320
@@ -21,12 +25,12 @@
                            :fetchpriority "high"
                            :class "w-full h-auto"}]]
    [:div
-    [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold"}
+    [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-foreground"}
      welcome-text]
-    [:p {:class "py-6 text-md md:text-xl lg:text-3xl"}
+    [:p {:class "py-6 text-md md:text-xl lg:text-3xl text-foreground"}
      description
      [:br]]
-    [:p {:class "py-6 text-md md:text-xl lg:text-3xl"}
+    [:p {:class "py-6 text-md md:text-xl lg:text-3xl text-foreground"}
      contact-info]]])
 
 (defn home

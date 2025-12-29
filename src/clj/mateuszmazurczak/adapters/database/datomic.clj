@@ -1,15 +1,15 @@
 (ns mateuszmazurczak.adapters.database.datomic
   "Datomic adapter implementation for database operations."
   (:require
-   [datofu.all                                  :as datofu-all]
-   [datofu.migration                            :as datofu-migration]
-   [datofu.schema.dsl                           :as dsl]
-   [datomic.api                                 :as d]
-   [malli.core                                  :as m]
-   [mateuszmazurczak.adapters.database.utils    :as db-utils]
-   [mateuszmazurczak.domain.database.migrations :as migrations]
-   [mateuszmazurczak.domain.database.schema     :as schema]
-   [mateuszmazurczak.ports.logging              :as log]))
+   [datofu.all                                    :as datofu-all]
+   [datofu.migration                              :as datofu-migration]
+   [datofu.schema.dsl                             :as dsl]
+   [datomic.api                                   :as d]
+   [malli.core                                    :as m]
+   [mateuszmazurczak.adapters.database.migrations :as migrations]
+   [mateuszmazurczak.adapters.database.utils      :as db-utils]
+   [mateuszmazurczak.domain.database.schema       :as schema]
+   [mateuszmazurczak.ports.logging                :as log]))
 
 (defn- entity-attr->txes
   [kw m]
@@ -150,10 +150,12 @@
                         :migration/checksum checksum}])
          (log/log! logger
                    {:id ::migration-applied
+                    :level :info
                     :msg (str "Successfully applied migration: " id)})
          (catch Exception e
            (log/error! logger
                        {:error e
+                        :level :error
                         :id ::migration-failed
                         :data {:migration-id id}})
            (throw (ex-info (str "Migration failed: " id)

@@ -5,7 +5,7 @@
    [mateuszmazurczak.adapters.http.error-page :as error-page]
    [mateuszmazurczak.adapters.http.handler    :as handler-utils]
    [mateuszmazurczak.domain.articles.core     :as articles]
-   [mateuszmazurczak.ui.spinner               :as mm-spinner]
+   [mateuszmazurczak.ui.components.spinner    :as mm-spinner]
    [mateuszmazurczak.utils.fallback           :as fallback]
    [ring.util.http-response                   :as http-response]))
 
@@ -46,7 +46,8 @@
                     :type "website"}})
            [:div {:id "app"
                   :class ["h-full"]}
-            (mm-spinner/spinner)]
+            [:div {:class ["h-full" "flex" "items-center" "justify-center"]}
+             (mm-spinner/spinner {:class "size-8"})]]
            [:script {:type "text/javascript"
                      :src "/js/compiled/mateuszmazurczak-share.js"}]
            [:script {:type "text/javascript"
@@ -77,7 +78,8 @@
                            :type "website"}})
        [:div {:id "app"
               :class ["h-full"]}
-        (mm-spinner/spinner)]
+        [:div {:class ["h-full" "flex" "items-center" "justify-center"]}
+         (mm-spinner/spinner {:class "size-8"})]]
        [:script {:type "text/javascript"
                  :src "/js/compiled/mateuszmazurczak-share.js"}]
        [:script {:type "text/javascript"

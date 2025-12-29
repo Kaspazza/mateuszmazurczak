@@ -1,82 +1,115 @@
 (ns mateuszmazurczak.ui.components.code-block
-  "Code block component with syntax highlighting."
+  "Code block component with syntax highlighting using Shiki.
+  Provides a styled container for displaying code with proper highlighting."
   (:require
-   ["react-syntax-highlighter"                      :refer [Light]]
-   ["react-syntax-highlighter/dist/esm/styles/hljs" :refer [paraisoDark paraisoLight]]
-   [reagent.core                                    :refer [defc]]
-   [reagent.hooks                                   :as hooks]))
-
-(defn- copy-to-clipboard!
-  "Copy text to clipboard."
-  [text]
-  (when-let [clipboard (.-clipboard js/navigator)] (.writeText clipboard text)))
+   ["shiki"                       :refer [codeToHtml]]
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]
+   [reagent.core                  :as    r
+                                  :refer [defc]]
+   [reagent.hooks                 :as rhooks]))
 
 (defn code-block
-  "Display a code block with syntax highlighting.
-   
-   Props:
-   - :text - The code text to display (required)
-   - :language - Programming language for syntax highlighting (default: 'clojure')
-   - :show-line-numbers? - Whether to show line numbers (default: true)
-   - :theme - Theme variant :dark or :light (default: :dark)
-   - :wrap-lines - Whether to wrap long lines (default: true)"
-  [{:keys [text language show-line-numbers? theme wrap-lines]
-    :or {language "clojure"
-         show-line-numbers? true
-         wrap-lines true
-         theme :dark}}]
-  (let [theme-obj (case theme
-                    :light paraisoLight
-                    :dark paraisoDark
-                    paraisoDark)]
-    [:>
-     Light
-     {:language language
-      :style theme-obj
-      :showLineNumbers show-line-numbers?
-      :wrapLines wrap-lines
-      :customStyle {:margin 0
-                    :border-radius "0.375rem"
-                    :font-size "0.875rem"}}
-     text]))
+  "Root container for code blocks with styling.
+  
+  Props:
+  - `:class` - Additional Tailwind classes to merge with defaults
+  - All other props are passed to the underlying div element
+  
+  Example:
+  [code-block
+    [code-block-code {:code \"const x = 42;\" :language \"javascript\"}]]
+  
+  Or with props:
+  [code-block {:class \"custom-class\"}
+    [code-block-code {:code \"const x = 42;\" :language \"javascript\"}]]"
+  [& args]
+  (let
+    [has-props? (and (seq args) (map? (first args)))
+     props (if has-props? (first args) {})
+     children (if has-props? (rest args) args)
+     {:keys [class]} props
+     base-classes
+     "not-prose flex w-full flex-col overflow-clip border border-border bg-card text-card-foreground rounded-xl"
+     combined-classes (merge-classes base-classes class)
+     props-without-class (dissoc props :class :class-name)
+     div-props (assoc props-without-class :class combined-classes)]
+    (into [:div div-props] children)))
 
-(defc copy-block
- "Display a code block with syntax highlighting and copy button.
-   
-   Props:
-   - :text - The code text to display (required)
-   - :language - Programming language for syntax highlighting (default: 'clojure')
-   - :show-line-numbers? - Whether to show line numbers (default: true)
-   - :theme - Theme variant :dark or :light (default: :dark)
-   - :wrap-lines - Whether to wrap long lines (default: true)"
- [{:keys [text language show-line-numbers? theme wrap-lines]
-   :or {language "clojure"
-        show-line-numbers? true
-        wrap-lines true
-        theme :dark}}]
- (let [[copied? set-copied!] (hooks/use-state false)
-       theme-obj (case theme
-                   :light paraisoLight
-                   :dark paraisoDark
-                   paraisoDark)
-       handle-copy (fn []
-                     (copy-to-clipboard! text)
-                     (set-copied! true)
-                     (js/setTimeout #(set-copied! false) 2000))]
-   [:div.relative.group
-    [:button.absolute.top-2.right-2.px-3.py-1.text-xs.rounded.transition-opacity.opacity-0.group-hover:opacity-100.z-10
-     {:class (if (= theme :dark)
-               "bg-gray-700 text-gray-200 hover:bg-gray-600"
-               "bg-gray-200 text-gray-800 hover:bg-gray-300")
-      :on-click handle-copy}
-     (if copied? "Copied!" "Copy")]
-    [:>
-     Light
-     {:language language
-      :style theme-obj
-      :showLineNumbers show-line-numbers?
-      :wrapLines wrap-lines
-      :customStyle {:margin 0
-                    :border-radius "0.375rem"
-                    :font-size "0.875rem"}}
-     text]]))
+
+(defn highlight
+  [code language theme set-highlighted-html]
+  (let [code (if (or (nil? code) (empty? code))
+               (js/Promise.resolve "<pre><code></code></pre>")
+               (codeToHtml code
+                           #js {:lang language
+                                :theme theme}))]
+    (-> code
+        (.then set-highlighted-html)
+        (.catch (fn [_err] (set-highlighted-html (str "<pre><code>" code "</code></pre>")))))))
+
+(defc code-block-code
+ "Code block with syntax highlighting using Shiki.
+  
+  Props:
+  - `:code` - The code string to highlight (required)
+  - `:language` - Language for syntax highlighting (default: \"tsx\")
+  - `:theme` - Shiki theme to use (default: \"github-light\")
+  - `:class` - Additional Tailwind classes to merge with defaults
+  - All other props are passed to the underlying div element
+  
+  Example:
+  [code-block-code {:code \"const x = 42;\" :language \"javascript\"}]
+  
+  Example with custom theme:
+  [code-block-code {:code \"(defn hello [] ...)\" 
+                    :language \"clojure\" 
+                    :theme \"github-dark\"}]"
+ [{:keys [code language theme class]
+   :or {language "tsx"
+        theme "github-light"}
+   :as props}]
+ (let [[highlighted-html set-highlighted-html] (rhooks/use-state nil)]
+   (rhooks/use-effect (fn [] (highlight code language theme set-highlighted-html) js/undefined)
+                      [code language theme])
+   (let [base-classes "w-full overflow-x-auto text-[13px] [&>pre]:px-4 [&>pre]:py-4"
+         combined-classes (merge-classes base-classes class)]
+     (if highlighted-html
+       [:div
+        (-> props
+            (assoc :class combined-classes
+                   :dangerouslySetInnerHTML (r/unsafe-html highlighted-html))
+            (dissoc :code :language :theme :class-name))]
+       [:div
+        (-> props
+            (assoc :class combined-classes)
+            (dissoc :code :language :theme :class-name))
+        [:pre [:code code]]]))))
+
+(defn code-block-group
+  "Group container for code block elements (e.g., header with actions).
+  
+  Props:
+  - `:class` - Additional Tailwind classes to merge with defaults
+  - All other props are passed to the underlying div element
+  
+  Example:
+  [code-block
+    [code-block-group
+      [:span \"example.js\"]
+      [button {:size :sm} \"Copy\"]]
+    [code-block-code {:code \"...\" :language \"javascript\"}]]
+  
+  Or with props:
+  [code-block-group {:class \"custom-class\"}
+    [:span \"example.js\"]
+    [button {:size :sm} \"Copy\"]]"
+  [& args]
+  (let [has-props? (and (seq args) (map? (first args)))
+        props (if has-props? (first args) {})
+        children (if has-props? (rest args) args)
+        {:keys [class]} props
+        base-classes "flex items-center justify-between"
+        combined-classes (merge-classes base-classes class)
+        props-without-class (dissoc props :class :class-name)
+        div-props (assoc props-without-class :class combined-classes)]
+    (into [:div div-props] children)))

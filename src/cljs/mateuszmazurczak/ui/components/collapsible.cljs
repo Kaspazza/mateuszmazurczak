@@ -2,8 +2,7 @@
   "Collapsible component for showing and hiding content with animation.
   https://www.radix-ui.com/primitives/docs/components/collapsible"
   (:require
-   ["@radix-ui/react-collapsible" :as CollapsiblePrimitive]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
+   ["@radix-ui/react-collapsible" :as CollapsiblePrimitive]))
 
 (defn collapsible
   "Collapsible root component. Manages the open/closed state of the collapsible.

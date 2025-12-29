@@ -22,8 +22,12 @@
      {:name ::article
       :get article-page}]
     ["/aoc"
-     {:name ::aoc
-      :get mateuszmazurczak-page}]
+     [""
+      {:name ::aoc
+       :get mateuszmazurczak-page}]
+     ["/:year/:challenge"
+      {:name ::aoc-specific
+       :get mateuszmazurczak-page}]]
     ["/secret-admin-panel-xyz"
      {:name ::admin
       :get mateuszmazurczak-page}]

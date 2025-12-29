@@ -9,8 +9,7 @@
   (:require
    ["@radix-ui/react-dialog"      :as DialogPrimitive]
    ["lucide-react"                :refer [X]]
-   [mateuszmazurczak.utils.styles :refer [merge-classes]]
-   [reagent.core                  :as r]))
+   [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
 ;; ============================================================================
 ;; Root Components (Simple Aliases)

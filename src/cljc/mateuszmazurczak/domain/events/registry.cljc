@@ -79,15 +79,16 @@
                           :description "Select challenge and fetch solutions for current year."
                           :schema [:cat [:= :aoc/select-challenge] :int]
                           :handler-type :fx}
-   :aoc/select-part {:category :page
-                     :description
-                     "Select part (1 or 2) and fetch solutions for current year/challenge."
-                     :schema [:cat [:= :aoc/select-part] [:enum 1 2]]
-                     :handler-type :fx}
    :aoc/open-modal {:category :page
                     :description "Open upload solution modal."
                     :schema [:cat [:= :aoc/open-modal]]
                     :handler-type :db}
+   :aoc/upload-limit-reached
+   {:category :page
+    :description
+    "Show notification when user tries to upload but has reached the 5 solution limit for current year/challenge/part."
+    :schema [:cat [:= :aoc/upload-limit-reached]]
+    :handler-type :db}
    :aoc/close-modal {:category :page
                      :description "Close upload solution modal and reset form."
                      :schema [:cat [:= :aoc/close-modal]]
@@ -96,6 +97,15 @@
                      :description "Update form field in modal."
                      :schema [:cat [:= :aoc/update-form] keyword? :any]
                      :handler-type :db}
+   :aoc/modal-select-year {:category :page
+                           :description
+                           "Select year in modal and reset challenge to first available."
+                           :schema [:cat [:= :aoc/modal-select-year] :string]
+                           :handler-type :db}
+   :aoc/modal-select-challenge {:category :page
+                                :description "Select challenge in modal."
+                                :schema [:cat [:= :aoc/modal-select-challenge] :string]
+                                :handler-type :db}
    :aoc/submit-solution {:category :page
                          :description "Submit solution to backend API."
                          :schema [:cat [:= :aoc/submit-solution]]
@@ -109,8 +119,8 @@
                         :schema [:cat [:= :aoc/submit-failure] :any]
                         :handler-type :fx}
    :aoc/fetch-solutions {:category :page
-                         :description "Fetch solutions from backend for year/challenge/part."
-                         :schema [:cat [:= :aoc/fetch-solutions] :int :int [:enum 1 2]]
+                         :description "Fetch solutions from backend for year/challenge."
+                         :schema [:cat [:= :aoc/fetch-solutions] :int :int]
                          :handler-type :fx}
    :aoc/fetch-solutions-success {:category :page
                                  :description "Handle successful solutions fetch."
@@ -135,8 +145,17 @@
                       :handler-type :fx}
    :aoc/give-consent {:category :page
                       :description "Give consent ('I've solved it') to unlock viewing solutions."
-                      :schema [:cat [:= :aoc/give-consent] :int :int [:enum 1 2]]
+                      :schema [:cat [:= :aoc/give-consent] :int :int]
                       :handler-type :fx}
+   :aoc/highlight-solution
+   {:category :page
+    :description "Set a solution as highlighted (from URL hash). Cleared automatically after 3s."
+    :schema [:cat [:= :aoc/highlight-solution] [:maybe :string]]
+    :handler-type :db}
+   :aoc/clear-highlight {:category :page
+                         :description "Clear the highlighted solution."
+                         :schema [:cat [:= :aoc/clear-highlight]]
+                         :handler-type :db}
    :admin/on-route-enter {:category :page
                           :description "Initialize admin page state on route entry."
                           :schema [:cat [:= :admin/on-route-enter]]

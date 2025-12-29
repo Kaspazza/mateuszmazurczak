@@ -31,8 +31,9 @@
                           {:db (assoc-in db form-path value)}))
    :admin/login
    (fn [{:keys [db]} [_]]
-     (let [admin-key (get-in db (conj admin-domain/*admin-page-path* :form :admin-key))]
-       (if (or (nil? admin-key) (< (count admin-key) 32))
+     (let [admin-key (get-in db (conj admin-domain/*admin-page-path* :form :admin-key))
+           {:keys [valid?]} (admin-domain/validate-admin-login admin-key)]
+       (if-not valid?
          (do (notification/show-error "Invalid admin key"
                                       {:description "Key must be at least 32 characters"})
              {:db db})
@@ -41,14 +42,14 @@
                       (assoc-in state-registry/*admin-logged-in-path* true)
                       (assoc-in (conj admin-domain/*admin-page-path* :form :admin-key) ""))
               ::cache-admin-key admin-key}))))
-   :admin/logout (fn [{:keys [db]} [_]]
+   :admin/logout (fn [{:keys [db]} _]
                    (notification/show-success "Logged out from admin mode")
                    {:db (assoc-in db state-registry/*admin-logged-in-path* false)
                     ::clear-admin-key true})
    :admin/check-status (fn [{:keys [db]} [_]]
                          (let [has-key? (aoc-cache/is-admin?)]
                            {:db (assoc-in db state-registry/*admin-logged-in-path* has-key?)}))
-   :admin/delete-solution (fn [{:keys [db]} [_ solution-id]]
+   :admin/delete-solution (fn [_ [_ solution-id]]
                             {:http {:method :delete
                                     :url (str "/api/aoc/solutions/" solution-id)
                                     :params {}

@@ -27,7 +27,6 @@
                               :source source
                               :line lineno
                               :column colno}})
-          ;; Return false to allow default error handling to continue
           false))
   (.addEventListener js/window
                      "unhandledrejection"

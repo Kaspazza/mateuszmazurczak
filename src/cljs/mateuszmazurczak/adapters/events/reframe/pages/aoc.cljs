@@ -5,22 +5,24 @@
    This is INTERNAL adapter code - UI components should dispatch via events/dispatch!"
   (:require
    [mateuszmazurczak.application.aoc.cache-service :as aoc-cache]
+   [mateuszmazurczak.application.aoc.use-cases     :as aoc-use-cases]
    [mateuszmazurczak.domain.pages.aoc              :as aoc-domain]
    [mateuszmazurczak.domain.state.registry         :as state-registry]
+   [mateuszmazurczak.ports.i18n                    :as i18n]
    [mateuszmazurczak.ports.logging                 :as log]
    [mateuszmazurczak.ui.components.notification    :as notification]
+   [mateuszmazurczak.utils.url                     :as url-utils]
    [re-frame.core                                  :as rf]))
 
 ;; =============================================================================
 ;; Internal Effects (not in registry - re-frame specific)
 ;; =============================================================================
 
-(rf/reg-fx ::cache-consent
-           (fn [[year challenge part]] (aoc-cache/add-consent! year challenge part)))
+(rf/reg-fx ::cache-consent (fn [[year challenge]] (aoc-cache/add-consent! year challenge)))
 
 (rf/reg-fx ::cache-solution-id
-           (fn [[year challenge part solution-id]]
-             (aoc-cache/add-solution-id! year challenge part solution-id)))
+           (fn [[year challenge solution-id]]
+             (aoc-cache/add-solution-id! year challenge solution-id)))
 
 (rf/reg-fx ::cache-vote (fn [[solution-id vote-type]] (aoc-cache/add-vote! solution-id vote-type)))
 
@@ -28,16 +30,6 @@
 ;; Helpers
 ;; =============================================================================
 
-(defn- reset-form
-  "Reset form to initial state."
-  []
-  {:author-name ""
-   :github-profile ""
-   :content-type :code-snippet
-   :content ""})
-
-;;TODO rethink what logic from here should go to domain
-;;TODO some text here that should be :i18n
 (def handlers
   "AoC page event handlers exported as data.
    
@@ -47,146 +39,190 @@
    
    :fx handlers receive {:keys [db]} coeffects and return effects map
    :db handlers receive db directly and return updated db"
-  {:aoc/on-route-enter
-   (fn [{:keys [db]} [_]]
-     (let [existing-data (get-in db state-registry/*aoc-page-path*)
-           initial-data (aoc-domain/build-initial-page-data)
-           years-options (get-in db aoc-domain/*aoc-years-options-path*)
-           page-data
-           (if (or (nil? existing-data) (empty? years-options)) initial-data existing-data)
-           selected-year (get-in db aoc-domain/*aoc-selected-year-path*)
-           selected-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-           selected-part (get-in db aoc-domain/*aoc-selected-part-path*)]
-       {:db (assoc-in db state-registry/*aoc-page-path* page-data)
-        :dispatch-n [[:admin/check-status]
-                     [:aoc/fetch-solutions selected-year selected-challenge selected-part]]}))
-   ;; === Filters ===
-   :aoc/select-year (fn [{:keys [db]} [_ year-str]]
-                      (let [year (js/parseInt year-str)
-                            challenges (aoc-domain/challenges-for-year year)
-                            first-challenge (first challenges)
-                            challenges-options (aoc-domain/build-challenges-options year)
-                            part (get-in db aoc-domain/*aoc-selected-part-path*)]
-                        {:db (-> db
-                                 (assoc-in aoc-domain/*aoc-selected-year-path* year)
-                                 (assoc-in aoc-domain/*aoc-selected-challenge-path* first-challenge)
-                                 (assoc-in aoc-domain/*aoc-challenges-options-path*
-                                           challenges-options))
-                         :dispatch [:aoc/fetch-solutions year first-challenge part]}))
+  {:aoc/on-route-enter (fn [{:keys [db]} [_ path-params]]
+                         (let [{:keys [page-data dispatches]}
+                               (aoc-use-cases/handle-page-entry
+                                {:path-params path-params
+                                 :url (url-utils/current-url)
+                                 :url-hash (.-hash js/window.location)
+                                 :existing-page-data (get-in db state-registry/*aoc-page-path*)
+                                 :years-options (get-in db aoc-domain/*aoc-years-options-path*)})]
+                           {:db (assoc-in db state-registry/*aoc-page-path* page-data)
+                            :dispatch-n dispatches}))
+   :aoc/select-year
+   (fn [{:keys [db]} [_ year-str]]
+     (let [{:keys [state-updates dispatches]} (aoc-use-cases/handle-year-selection year-str)]
+       {:db
+        (-> db
+            (assoc-in aoc-domain/*aoc-selected-year-path* (:selected-year state-updates))
+            (assoc-in aoc-domain/*aoc-selected-challenge-path* (:selected-challenge state-updates))
+            (assoc-in aoc-domain/*aoc-challenges-options-path* (:challenges-options state-updates)))
+        :dispatch-n dispatches}))
    :aoc/select-challenge (fn [{:keys [db]} [_ challenge-str]]
-                           (let [challenge (js/parseInt challenge-str)
-                                 year (get-in db aoc-domain/*aoc-selected-year-path*)
-                                 part (get-in db aoc-domain/*aoc-selected-part-path*)]
-                             {:db (assoc-in db aoc-domain/*aoc-selected-challenge-path* challenge)
-                              :dispatch [:aoc/fetch-solutions year challenge part]}))
-   :aoc/select-part (fn [{:keys [db]} [_ part-str]]
-                      (let [part (js/parseInt part-str)
-                            year (get-in db aoc-domain/*aoc-selected-year-path*)
-                            challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)]
-                        {:db (assoc-in db aoc-domain/*aoc-selected-part-path* part)
-                         :dispatch [:aoc/fetch-solutions year challenge part]}))
-   ;; === Modal state (:db handlers) ===
-   :aoc/open-modal (fn [db [_]]
-                     (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
-                           challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-                           part (get-in db aoc-domain/*aoc-selected-part-path*)]
-                       (if (aoc-cache/can-upload? year challenge part)
-                         (assoc-in db aoc-domain/*aoc-modal-open-path* true)
-                         (do (notification/show-error
-                              "Upload limit reached"
-                              {:description
-                               "You have already uploaded 5 solutions for this challenge"})
-                             db))))
-   :aoc/close-modal (fn [db [_]] (assoc-in db aoc-domain/*aoc-modal-open-path* false))
-   :aoc/update-form (fn [db [_ field value]]
-                      (-> db
-                          (assoc-in (conj aoc-domain/*aoc-form-path* field) value)
-                          (update-in aoc-domain/*aoc-form-errors-path* dissoc field)))
-   ;; === Solution submission ===
+                           (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
+                                 {:keys [state-updates dispatches]}
+                                 (aoc-use-cases/handle-challenge-selection challenge-str year)]
+                             {:db (assoc-in db
+                                   aoc-domain/*aoc-selected-challenge-path*
+                                   (:selected-challenge state-updates))
+                              :dispatch-n dispatches}))
+   :aoc/open-modal
+   (fn [db [_]]
+     (let [{:keys [state-updates]}
+           (aoc-use-cases/handle-modal-open
+            {:playground-url
+             (get-in db (conj state-registry/*aoc-page-path* :modal-data :playground-url))
+             :form-year (get-in db (conj aoc-domain/*aoc-form-path* :year))
+             :form-challenge (get-in db (conj aoc-domain/*aoc-form-path* :challenge))
+             :page-year (get-in db aoc-domain/*aoc-selected-year-path*)
+             :page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)})]
+       (-> db
+           (assoc-in aoc-domain/*aoc-modal-open-path* (:modal-open? state-updates))
+           (assoc-in (conj aoc-domain/*aoc-form-path* :year) (:form-year state-updates))
+           (assoc-in (conj aoc-domain/*aoc-form-path* :challenge) (:form-challenge state-updates))
+           (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
+                     (:modal-challenges-options state-updates)))))
+   :aoc/upload-limit-reached (fn [db [_]]
+                               (let [translator (get-in db state-registry/*translator-path*)
+                                     lang (get-in db state-registry/*lang-path*)]
+                                 (notification/show-error
+                                  (i18n/tr translator lang :upload-limit-reached)
+                                  {:description
+                                   (i18n/tr translator lang :uploaded-max-solutions-for-challenge)})
+                                 db))
+   :aoc/close-modal
+   (fn [db [_]]
+     (let [{:keys [state-updates]} (aoc-use-cases/handle-modal-close
+                                    (get-in db aoc-domain/*aoc-selected-year-path*)
+                                    (get-in db aoc-domain/*aoc-selected-challenge-path*))]
+       (-> db
+           (assoc-in aoc-domain/*aoc-modal-open-path* (:modal-open? state-updates))
+           (assoc-in aoc-domain/*aoc-form-path* (:form state-updates))
+           (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url)
+                     (:playground-url state-updates)))))
+   :aoc/update-form
+   (fn [db [_ field value]]
+     (let [form (get-in db aoc-domain/*aoc-form-path*)
+           form-errors (get-in db aoc-domain/*aoc-form-errors-path*)
+           {:keys [state-updates]} (aoc-use-cases/handle-form-update form form-errors field value)]
+       (-> db
+           (assoc-in aoc-domain/*aoc-form-path* (:form state-updates))
+           (assoc-in aoc-domain/*aoc-form-errors-path* (:form-errors state-updates)))))
+   :aoc/modal-select-year
+   (fn [db [_ year-str]]
+     (let [{:keys [state-updates]} (aoc-use-cases/handle-modal-year-selection year-str)]
+       (-> db
+           (assoc-in (conj aoc-domain/*aoc-form-path* :year) (:form-year state-updates))
+           (assoc-in (conj aoc-domain/*aoc-form-path* :challenge) (:form-challenge state-updates))
+           (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
+                     (:modal-challenges-options state-updates)))))
+   :aoc/modal-select-challenge
+   (fn [db [_ challenge-str]]
+     (let [{:keys [state-updates]} (aoc-use-cases/handle-modal-challenge-selection challenge-str)]
+       (assoc-in db (conj aoc-domain/*aoc-form-path* :challenge) (:form-challenge state-updates))))
    :aoc/submit-solution
    (fn [{:keys [db]} [_]]
-     (let [form (get-in db aoc-domain/*aoc-form-path*)
-           year (get-in db aoc-domain/*aoc-selected-year-path*)
-           challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-           part (get-in db aoc-domain/*aoc-selected-part-path*)
-           payload (assoc form :year year :challenge challenge :part part)
-           validation-errors (aoc-domain/validate-solution-form form)]
+     (let [translator (get-in db state-registry/*translator-path*)
+           lang (get-in db state-registry/*lang-path*)
+           {:keys [can-submit? reason payload state-updates]}
+           (aoc-use-cases/prepare-submission
+            {:form (get-in db aoc-domain/*aoc-form-path*)
+             :page-year (get-in db aoc-domain/*aoc-selected-year-path*)
+             :page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
+             :can-upload-fn aoc-cache/can-upload?})
+           updated-db (cond-> db
+                        (:form-errors state-updates) (assoc-in aoc-domain/*aoc-form-errors-path*
+                                                      (:form-errors state-updates))
+                        (contains? state-updates :submitting?)
+                        (assoc-in aoc-domain/*aoc-submitting-path* (:submitting? state-updates)))]
        (cond
-         (not (aoc-cache/can-upload? year challenge part))
-         (do (notification/show-error "Upload limit reached"
-                                      {:description
-                                       "You have already uploaded 5 solutions for this challenge"})
+         (= reason :upload-limit-reached)
+         (do (notification/show-error
+              (i18n/tr translator lang :upload-limit-reached)
+              {:description (i18n/tr translator lang :uploaded-max-solutions-for-challenge)})
              {:db db})
-         validation-errors
-         (do (notification/show-error "Please fix the form errors"
-                                      {:description "Some required fields are missing"})
-             {:db (assoc-in db aoc-domain/*aoc-form-errors-path* validation-errors)})
-         :else {:db (-> db
-                        (assoc-in aoc-domain/*aoc-submitting-path* true)
-                        (assoc-in aoc-domain/*aoc-form-errors-path* nil))
-                :http {:method :post
-                       :url "/api/aoc/solutions"
-                       :params payload
-                       :event/on-success [:aoc/submit-success]
-                       :event/on-error [:aoc/submit-failure]}})))
-   :aoc/submit-success (fn [{:keys [db]} [_ response]]
-                         (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
-                               challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-                               part (get-in db aoc-domain/*aoc-selected-part-path*)
-                               solution-id (:solution-id response)]
-                           (notification/show-success "Solution submitted successfully!")
-                           {:db (-> db
-                                    (assoc-in aoc-domain/*aoc-submitting-path* false)
-                                    (assoc-in aoc-domain/*aoc-modal-open-path* false)
-                                    (assoc-in aoc-domain/*aoc-form-path* (reset-form))
-                                    (assoc-in aoc-domain/*aoc-form-errors-path* nil))
-                            ::cache-consent [year challenge part]
-                            ::cache-solution-id [year challenge part solution-id]
-                            :dispatch [:aoc/fetch-solutions year challenge part]}))
+         (= reason :validation-errors) (do (notification/show-error
+                                            (i18n/tr translator lang :please-fix-form-errors)
+                                            {:description
+                                             (i18n/tr translator lang :required-fields-missing)})
+                                           {:db updated-db})
+         can-submit? {:db updated-db
+                      :http {:method :post
+                             :url "/api/aoc/solutions"
+                             :params payload
+                             :event/on-success [:aoc/submit-success]
+                             :event/on-error [:aoc/submit-failure]}}
+         :else {:db db})))
+   :aoc/submit-success
+   (fn [{:keys [db]} [_ response]]
+     (let [translator (get-in db state-registry/*translator-path*)
+           lang (get-in db state-registry/*lang-path*)
+           {:keys [year challenge state-updates navigate]}
+           (aoc-use-cases/handle-submission-success
+            {:form (get-in db aoc-domain/*aoc-form-path*)
+             :page-year (get-in db aoc-domain/*aoc-selected-year-path*)
+             :page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)})
+           solution-id (:solution-id response)
+           updated-db
+           (->
+             db
+             (assoc-in aoc-domain/*aoc-submitting-path* (:submitting? state-updates))
+             (assoc-in aoc-domain/*aoc-modal-open-path* (:modal-open? state-updates))
+             (assoc-in aoc-domain/*aoc-form-path* (:form state-updates))
+             (assoc-in aoc-domain/*aoc-form-errors-path* (:form-errors state-updates))
+             (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url)
+                       (:playground-url state-updates))
+             (assoc-in aoc-domain/*aoc-selected-year-path* (:selected-year state-updates))
+             (assoc-in aoc-domain/*aoc-selected-challenge-path* (:selected-challenge state-updates))
+             (assoc-in aoc-domain/*aoc-challenges-options-path* (:challenges-options state-updates))
+             (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
+                       (:modal-challenges-options state-updates)))]
+       (notification/show-success (i18n/tr translator lang :solution-submitted-successfully))
+       {:db updated-db
+        ::cache-consent [year challenge]
+        ::cache-solution-id [year challenge solution-id]
+        :dispatch-n [navigate [:aoc/fetch-solutions year challenge]]}))
    :aoc/submit-failure
    (fn [{:keys [db]} [_ error]]
-     (let [logger (get-in db state-registry/*logger-path*)
+     (let [translator (get-in db state-registry/*translator-path*)
+           lang (get-in db state-registry/*lang-path*)
+           logger (get-in db state-registry/*logger-path*)
            error-message
            (or (get-in error [:response :message]) (get error :message) "Unknown error occurred")]
        (log/error! logger
                    {:error (ex-info "Failed to submit solution"
                                     {:type ::submit-solution-failed
                                      :error error})})
-       (notification/show-error "Failed to submit solution" {:description error-message})
+       (notification/show-error (i18n/tr translator lang :failed-to-submit-solution)
+                                {:description error-message})
        {:db (assoc-in db aoc-domain/*aoc-submitting-path* false)}))
-   ;; === Solutions fetching ===
-   :aoc/fetch-solutions (fn [{:keys [db]} [_ year challenge part]]
+   :aoc/fetch-solutions (fn [{:keys [db]} [_ year challenge]]
                           {:db (assoc-in db aoc-domain/*aoc-loading-path* true)
                            :http {:method :get
                                   :url "/api/aoc/solutions"
                                   :params {:year year
-                                           :challenge challenge
-                                           :part part}
-                                  :event/on-success
-                                  [:aoc/fetch-solutions-success year challenge part]
+                                           :challenge challenge}
+                                  :event/on-success [:aoc/fetch-solutions-success year challenge]
                                   :event/on-error [:aoc/fetch-solutions-failure]}})
    :aoc/fetch-solutions-success
-   (fn [db [_ year challenge part response]]
+   (fn [db [_ year challenge response]]
      (let [solutions (:solutions response)
-           has-consent? (aoc-cache/has-consented? year challenge part)
-           user-solution-ids (set (aoc-cache/get-user-solution-ids year challenge part))
-           upload-count (aoc-cache/get-upload-count year challenge part)
-           enrich-voting-state (fn [solution]
-                                 (-> solution
-                                     (update :content-type keyword)
-                                     (assoc :voted-best-practices?
-                                            (aoc-cache/has-voted? (:id solution) :best-practices))
-                                     (assoc :voted-clever?
-                                            (aoc-cache/has-voted? (:id solution) :clever))))
-           enriched-solutions (mapv enrich-voting-state solutions)
-           {:keys [entities ids]} (aoc-domain/normalize-solutions enriched-solutions)]
+           {:keys [state-updates]}
+           (aoc-use-cases/handle-fetch-solutions-success
+            {:solutions solutions
+             :year year
+             :challenge challenge
+             :has-consented-fn aoc-cache/has-consented?
+             :get-user-solution-ids-fn aoc-cache/get-user-solution-ids
+             :get-upload-count-fn aoc-cache/get-upload-count
+             :enrich-voting-fn #(aoc-domain/enrich-solution-voting-state % aoc-cache/has-voted?)})]
        (-> db
-           (assoc-in state-registry/*aoc-solutions-path* entities)
-           (assoc-in aoc-domain/*aoc-solution-ids-path* ids)
-           (assoc-in aoc-domain/*aoc-user-solution-ids-path* user-solution-ids)
-           (assoc-in aoc-domain/*aoc-upload-count-path* upload-count)
-           (assoc-in aoc-domain/*aoc-gated-path* (not has-consent?))
-           (assoc-in aoc-domain/*aoc-loading-path* false))))
+           (assoc-in state-registry/*aoc-solutions-path* (:solutions-entities state-updates))
+           (assoc-in aoc-domain/*aoc-solution-ids-path* (:solution-ids state-updates))
+           (assoc-in aoc-domain/*aoc-user-solution-ids-path* (:user-solution-ids state-updates))
+           (assoc-in aoc-domain/*aoc-upload-count-path* (:upload-count state-updates))
+           (assoc-in aoc-domain/*aoc-gated-path* (:gated? state-updates))
+           (assoc-in aoc-domain/*aoc-loading-path* (:loading? state-updates)))))
    :aoc/fetch-solutions-failure (fn [{:keys [db]} [_ error]]
                                   (let [logger (get-in db state-registry/*logger-path*)]
                                     (log/error! logger
@@ -196,42 +232,50 @@
                                     {:db (-> db
                                              (assoc-in aoc-domain/*aoc-solution-ids-path* [])
                                              (assoc-in aoc-domain/*aoc-loading-path* false))}))
-   ;; === Voting ===
    :aoc/vote (fn [{:keys [db]} [_ solution-id vote-type]]
-               (if (aoc-cache/has-voted? solution-id vote-type)
-                 (do (notification/show-error "You have already voted for this solution") {:db db})
-                 {:http {:method :post
-                         :url "/api/aoc/solutions/vote"
-                         :params {:solution-id solution-id
-                                  :vote-type vote-type}
-                         :event/on-success [:aoc/vote-success solution-id vote-type]
-                         :event/on-error [:aoc/vote-failure]}}))
+               (let [translator (get-in db state-registry/*translator-path*)
+                     lang (get-in db state-registry/*lang-path*)
+                     {:keys [can-vote?]}
+                     (aoc-use-cases/check-can-vote aoc-cache/has-voted? solution-id vote-type)]
+                 (if can-vote?
+                   {:http {:method :post
+                           :url "/api/aoc/solutions/vote"
+                           :params {:solution-id solution-id
+                                    :vote-type vote-type}
+                           :event/on-success [:aoc/vote-success solution-id vote-type]
+                           :event/on-error [:aoc/vote-failure]}}
+                   (do (notification/show-error
+                        (i18n/tr translator lang :already-voted-for-solution))
+                       {:db db}))))
    :aoc/vote-success
    (fn [{:keys [db]} [_ solution-id vote-type response]]
      (let [best-practices-count (:best-practices-count response)
            clever-count (:clever-count response)
-           voted-key (if (= vote-type :best-practices) :voted-best-practices? :voted-clever?)]
-       {:db (-> db
-                (assoc-in (concat state-registry/*aoc-solutions-path*
-                                  [solution-id :best-practices-count])
-                          best-practices-count)
-                (assoc-in (concat state-registry/*aoc-solutions-path* [solution-id :clever-count])
-                          clever-count)
-                (assoc-in (concat state-registry/*aoc-solutions-path* [solution-id voted-key])
-                          true))
+           current-solution (get-in db (concat state-registry/*aoc-solutions-path* [solution-id]))
+           updated-solution (aoc-use-cases/handle-vote-success current-solution
+                                                               vote-type
+                                                               best-practices-count
+                                                               clever-count)]
+       {:db
+        (assoc-in db (concat state-registry/*aoc-solutions-path* [solution-id]) updated-solution)
         ::cache-vote [solution-id vote-type]}))
    :aoc/vote-failure (fn [{:keys [db]} [_ error]]
-                       (let [logger (get-in db state-registry/*logger-path*)
+                       (let [translator (get-in db state-registry/*translator-path*)
+                             lang (get-in db state-registry/*lang-path*)
+                             logger (get-in db state-registry/*logger-path*)
                              error-message (or (get-in error [:response :message])
                                                (get error :message)
-                                               "Failed to vote")]
+                                               (i18n/tr translator lang :failed-to-vote))]
                          (log/error! logger
                                      {:error (ex-info "Failed to vote for solution"
                                                       {:type ::vote-failed
                                                        :error error})})
                          (notification/show-error error-message)
                          {:db db}))
-   ;; === Consent ===
-   :aoc/give-consent (fn [{:keys [db]} [_ year challenge part]]
-                       {::cache-consent [year challenge part]
-                        :db (assoc-in db aoc-domain/*aoc-gated-path* false)})})
+   :aoc/give-consent (fn [{:keys [db]} [_ year challenge]]
+                       {::cache-consent [year challenge]
+                        :db (assoc-in db aoc-domain/*aoc-gated-path* false)})
+   :aoc/highlight-solution
+   (fn [db [_ solution-id]] (assoc-in db aoc-domain/*aoc-highlighted-solution-id-path* solution-id))
+   :aoc/clear-highlight (fn [db [_]]
+                          (assoc-in db aoc-domain/*aoc-highlighted-solution-id-path* nil))})

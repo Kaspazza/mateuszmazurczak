@@ -1,5 +1,4 @@
 (ns mateuszmazurczak.adapters.http.api
-  "API handlers for JSON endpoints."
   (:require
    [clojure.string                         :as str]
    [malli.core                             :as m]
@@ -16,27 +15,22 @@
    Returns map with :valid? and either :data or :errors."
   [params]
   (let [year (parse-long (:year params))
-        challenge (parse-long (:challenge params))
-        part (parse-long (:part params))]
+        challenge (parse-long (:challenge params))]
     (cond
       (nil? year) {:valid? false
                    :errors {:year "Year is required and must be an integer"}}
       (nil? challenge) {:valid? false
                         :errors {:challenge "Challenge is required and must be an integer"}}
-      (nil? part) {:valid? false
-                   :errors {:part "Part is required and must be an integer"}}
       :else {:valid? true
              :data {:year year
-                    :challenge challenge
-                    :part part}})))
+                    :challenge challenge}})))
 
 (defn get-solutions
-  "GET /api/aoc/solutions - Fetch solutions for a specific year/challenge/part.
+  "GET /api/aoc/solutions - Fetch solutions for a specific year/challenge.
    
    Query params:
    - year (required): Year of the challenge (2015-2025)
    - challenge (required): Challenge day (1-24)
-   - part (required): Part number (1 or 2)
    
    Returns:
    - 200 with array of solutions (with vote counts computed from vote refs)
@@ -47,9 +41,9 @@
     (if-not (:valid? validation)
       (http-response/bad-request {:error "Invalid parameters"
                                   :details (:errors validation)})
-      (try (let [{:keys [year challenge part]} (:data validation)
+      (try (let [{:keys [year challenge]} (:data validation)
                  query (aoc-repo/build-get-solutions-query)
-                 results (db/query database query year challenge part)
+                 results (db/query database query year challenge)
                  solutions (->> results
                                 (map aoc-repo/solution-tuple->map)
                                 (map (partial aoc-repo/enrich-with-vote-counts database))
@@ -68,9 +62,8 @@
    Expected body:
    - year (int): Year of the challenge (2015-2025)
    - challenge (int): Challenge day (1-24)
-   - part (int): Part number (1 or 2)
    - author-name (string): Name of the author
-   - github-profile (optional string): GitHub profile URL
+   - github-username (optional string): GitHub username (can be just username, @username, or full URL - will be normalized)
    - content-type (string): Either 'code-snippet' or 'repo-link'
    - content (string): The solution code or repository URL
    
@@ -98,7 +91,6 @@
                         :msg "AOC solution saved successfully"
                         :data {:year (:year body-params)
                                :challenge (:challenge body-params)
-                               :part (:part body-params)
                                :solution-id (str solution-id)}})
              (http-response/ok {:success true
                                 :message "Solution submitted successfully"
@@ -110,18 +102,20 @@
                           :data {:body-params body-params}})
              (http-response/internal-server-error {:error "Failed to save solution"}))))))
 
-(defn post-vote-response
+(defn post-vote!
   [{:keys [database logger]
     :as _ctx}
    solution-uuid
    solution-id
    vote-type-kw]
-  (let [best-practices-count (aoc-repo/count-votes database solution-uuid :best-practices)
+  (let [vote-tx (vote/save-vote-tx solution-id vote-type-kw)
+        best-practices-count (aoc-repo/count-votes database solution-uuid :best-practices)
         clever-count (aoc-repo/count-votes database solution-uuid :clever)
         response-data {:success true
                        :solution-id solution-id
                        :best-practices-count best-practices-count
                        :clever-count clever-count}]
+    (db/transact! database vote-tx)
     (log/log! logger
               {:id ::vote-recorded
                :level :info
@@ -149,16 +143,12 @@
       (not (contains? #{"best-practices" "clever" :best-practices :clever} vote-type))
       (http-response/bad-request {:error "vote-type must be 'best-practices' or 'clever'"})
       :else (try (let [uuid-id (java.util.UUID/fromString solution-id)
-                       vote-type-kw (vote/normalize-vote-type vote-type)
-                       vote-tx (vote/save-vote-tx solution-id vote-type-kw)
-                       lookup-ref [:aoc-solution/id uuid-id]
-                       aoc-solution (db/pull-entity database '[*] lookup-ref)]
-                   (db/transact! database vote-tx)
-                   (post-vote-response {:database database
-                                        :logger logger}
-                                       uuid-id
-                                       solution-id
-                                       vote-type-kw))
+                       vote-type-kw (vote/normalize-vote-type vote-type)]
+                   (post-vote! {:database database
+                                :logger logger}
+                               uuid-id
+                               solution-id
+                               vote-type-kw))
                  (catch IllegalArgumentException _
                    (http-response/bad-request {:error "Invalid solution-id format"}))
                  (catch clojure.lang.ExceptionInfo e
@@ -228,8 +218,7 @@
                                    :msg "AOC solution deleted"
                                    :data {:solution-id solution-id
                                           :year (:aoc-solution/year solution)
-                                          :challenge (:aoc-solution/challenge solution)
-                                          :part (:aoc-solution/part solution)}})
+                                          :challenge (:aoc-solution/challenge solution)}})
                         (http-response/ok {:success true
                                            :message "Solution deleted successfully"
                                            :solution-id solution-id}))))

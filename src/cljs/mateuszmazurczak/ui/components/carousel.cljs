@@ -5,7 +5,7 @@
    ["embla-carousel-react"                :as embla-carousel]
    ["lucide-react"                        :refer [ArrowLeft ArrowRight]]
    [goog.object                           :as gobj]
-   [mateuszmazurczak.ui.components.button :as ui-button]
+   [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]
    [mateuszmazurczak.utils.styles         :refer [merge-classes]]
    [reagent.core                          :as    r
                                           :refer [defc]]
@@ -38,8 +38,7 @@
     [carousel-previous {}]
     [carousel-next {}]]"
  [{:keys [orientation opts set-api plugins class]
-   :or {orientation :horizontal}
-   :as props}
+   :or {orientation :horizontal}}
   &
   children]
  (let [use-embla-carousel (or (gobj/get embla-carousel "default") embla-carousel)
@@ -103,7 +102,7 @@
    children]
   (let [{:keys [carousel-ref orientation]} (use-carousel)]
     [:div {:ref carousel-ref
-           :class "overflow-hidden"
+           :class "overmateuszmazurczak-hidden"
            :data-slot "carousel-content"}
      (into [:div
             (-> props
@@ -155,7 +154,7 @@
          size :icon}
     :as props}]
   (let [{:keys [orientation scroll-prev can-scroll-prev]} (use-carousel)]
-    [ui-button/button
+    [mateuszmazurczak-button/button
      (-> props
          (assoc :variant variant
                 :size size
@@ -187,7 +186,7 @@
          size :icon}
     :as props}]
   (let [{:keys [orientation scroll-next can-scroll-next]} (use-carousel)]
-    [ui-button/button
+    [mateuszmazurczak-button/button
      (-> props
          (assoc :variant variant
                 :size size

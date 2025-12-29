@@ -69,7 +69,7 @@
             {:id ::cache-initialized
              :level :info
              :msg "Cache initialized"})
-  (let [persisted-state (cache/load-persisted)]
+  (let [persisted-state (cache/load-persisted logger)]
     (log/log! logger
               {:id ::cache-loaded-persisted
                :level :info

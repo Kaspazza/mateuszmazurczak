@@ -5,7 +5,6 @@
    [mateuszmazurczak.frontend-i18n              :as fi18n]
    [mateuszmazurczak.ports.events               :as events]
    [mateuszmazurczak.ui.articles                :as ui-articles]
-   [mateuszmazurczak.ui.comments                :as ui-comments]
    [reagent.core                                :as r]))
 
 (defn articles-page
@@ -102,16 +101,16 @@
 
 (defn article-page
   [article]
-  (let [nested-comments (nest-comments @comments)
-        comments-count (count @comments)
-        add-comment-props {:content (:content @form-state)
-                           :on-content-change handle-content-change
-                           :on-submit handle-submit}
-        on-reply handle-reply-click]
-    [:div
-     [ui-articles/article-wrap article]
-     #_[ui-comments/comments-section {:comments nested-comments
-                                      :count comments-count
-                                      :add-comment-props add-comment-props
-                                      :on-reply on-reply}]]))
+  #_(let [nested-comments (nest-comments @comments)
+          comments-count (count @comments)
+          add-comment-props {:content (:content @form-state)
+                             :on-content-change handle-content-change
+                             :on-submit handle-submit}
+          on-reply handle-reply-click])
+  [:div {:class "min-h-screen bg-background"}
+   [ui-articles/article-wrap article]
+   #_[ui-comments/comments-section {:comments nested-comments
+                                    :count comments-count
+                                    :add-comment-props add-comment-props
+                                    :on-reply on-reply}]])
 

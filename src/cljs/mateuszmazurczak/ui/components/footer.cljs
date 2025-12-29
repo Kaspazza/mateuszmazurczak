@@ -1,14 +1,20 @@
 (ns mateuszmazurczak.ui.components.footer
   "Frontend based implementation of footer"
   (:require
-   [mateuszmazurczak.ui.icons :as icons]))
+   [mateuszmazurczak.ports.state :as state]
+   [mateuszmazurczak.ui.icons    :as icons]))
 
 (defn footer
   []
-  (let [dark? false]
-    [:footer
-     {:class
-      ["footer sm:footer-horizontal bg-white text-neutral-content items-center justify-end p-4"]}
+  (let [current-theme @(state/watch [:theme/current])
+        dark? (= current-theme :dark)]
+    [:footer {:class ["footer"
+                      "sm:footer-horizontal"
+                      "bg-background"
+                      "text-foreground"
+                      "items-center"
+                      "justify-end"
+                      "p-4"]}
      [:aside
       [:div {:class ["flex justify-center space-x-10 relative"]}
        [icons/icon {:path-kw :svg/youtube

@@ -175,10 +175,10 @@
   (print echo-text/font-default))
 
 (comment
-  (h2 "test  very long one......")
-  (errorln "zeaa")
-  (h1-error " failed testt")
-  (h1-valid " valid test"))
+ (h2 "test  very long one......")
+ (errorln "zeaa")
+ (h1-error " failed testt")
+ (h1-valid " valid test"))
 
 ;; Formatting helpers functions.
 (defn pprint-str "Pretty print `data`" [data] (echo-common/pprint-str data))

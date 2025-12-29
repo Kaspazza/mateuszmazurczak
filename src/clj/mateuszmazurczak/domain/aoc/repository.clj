@@ -12,9 +12,8 @@
   [:map
    [:year [:and :int [:>= 2015] [:<= 2025]]]
    [:challenge [:and :int [:>= 1] [:<= 24]]]
-   [:part [:enum 1 2]]
    [:author-name [:string {:min 1}]]
-   [:github-profile {:optional true}
+   [:github-username {:optional true}
     [:maybe :string]]
    [:content-type [:enum "code-snippet" "repo-link" :code-snippet :repo-link]]
    [:content [:string {:min 1}]]])
@@ -33,9 +32,8 @@
    Takes a solution map with keys:
    - :year (int)
    - :challenge (int)
-   - :part (int)
    - :author-name (string)
-   - :github-profile (optional string)
+   - :github-username (optional string) - Just the GitHub username
    - :content-type (string or keyword: code-snippet or repo-link)
    - :content (string)
    
@@ -44,25 +42,24 @@
    - tx-data is Datalevin transaction data (vector of maps)
    
    Generates UUID and timestamp automatically."
-  [{:keys [year challenge part author-name github-profile content-type content]}]
+  [{:keys [year challenge author-name github-username content-type content]}]
   (let [solution-id (UUID/randomUUID)
         now (Date.)
         normalized-content-type (normalize-content-type content-type)
         base-tx {:aoc-solution/id solution-id
                  :aoc-solution/year year
                  :aoc-solution/challenge challenge
-                 :aoc-solution/part part
                  :aoc-solution/author-name author-name
                  :aoc-solution/content-type normalized-content-type
                  :aoc-solution/content content
                  :aoc-solution/created-at now}
-        tx (if (and github-profile (string? github-profile) (not (str/blank? github-profile)))
-             (assoc base-tx :aoc-solution/github-profile github-profile)
+        tx (if (and github-username (string? github-username) (not (str/blank? github-username)))
+             (assoc base-tx :aoc-solution/github-username github-username)
              base-tx)]
     [solution-id [tx]]))
 
 (defn build-get-solutions-query
-  "Build Datalog query for fetching solutions by year, challenge, and part.
+  "Build Datalog query for fetching solutions by year and challenge.
    
    Returns a Datalog query that finds all solutions matching the criteria,
    sorted by creation date (newest first)."
@@ -73,11 +70,9 @@
     $
     ?year
     ?challenge
-    ?part
     :where
     [?e :aoc-solution/year ?year]
-    [?e :aoc-solution/challenge ?challenge]
-    [?e :aoc-solution/part ?part]])
+    [?e :aoc-solution/challenge ?challenge]])
 
 (def find-votes-query
   "Query to find all votes by type for a given solution.
@@ -113,16 +108,15 @@
    Takes a tuple from the query result and returns a properly formatted
    solution map with string ID (for frontend compatibility)."
   [{:aoc-solution/keys
-    [id year challenge part author-name github-profile content-type content created-at]}]
+    [id year challenge author-name github-username content-type content created-at]}]
   (cond-> {:id (str id)
            :year year
            :challenge challenge
-           :part part
            :author-name author-name
            :content-type content-type
            :content content
            :created-at (str created-at)}
-    github-profile (assoc :github-profile github-profile)))
+    github-username (assoc :github-username github-username)))
 
 (defn enrich-with-vote-counts
   "Enrich solution map with vote counts by querying the database.

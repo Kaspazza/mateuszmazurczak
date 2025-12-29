@@ -56,10 +56,10 @@
         loki (or (get-in config [env-profile :loki :endpoint]) (System/getenv "LOKI_ENDPOINT") "")
         posthog-api-key
         (or (get-in config [env-profile :posthog :api-key]) (System/getenv "POSTHOG_API_KEY") "")]
-    {:closure-defines {'mateuszmazurczak.config/ENV (name env-profile)
-                       'mateuszmazurczak.config/LOG_SENTRY_DNS sentry-dsn
-                       'mateuszmazurczak.config/POSTHOG_API_KEY posthog-api-key
-                       'mateuszmazurczak.config/LOKI_ENDPOINT loki}}))
+    {:closure-defines {'mateuszmazurczak.system.config/ENV (name env-profile)
+                       'mateuszmazurczak.system.config/LOG_SENTRY_DNS sentry-dsn
+                       'mateuszmazurczak.system.config/POSTHOG_API_KEY posthog-api-key
+                       'mateuszmazurczak.system.config/LOKI_ENDPOINT loki}}))
 
 (defn production-config-merge
   "Generate config-merge string for production builds"

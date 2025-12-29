@@ -350,7 +350,7 @@
   - `:empty-state`       - Component to render when table is empty (optional)
   - `:no-results-state`  - Component or function to render when filters yield no results (optional)
   - `:on-reset-filters`  - Callback to reset filters (passed to no-results-state if it's a function)"
-  [{:keys [header-groups rows columns-count empty-state no-results-state on-reset-filters]
+  [{:keys [header-groups rows empty-state no-results-state on-reset-filters]
     :as _props}]
   (let [has-rows? (pos? (.-length rows))]
     (if has-rows?

@@ -56,8 +56,7 @@
   [{:keys [open? is-mobile on-open-change side variant collapsible class style]
     :or {side "left"
          variant "sidebar"
-         collapsible "offcanvas"}
-    :as props}
+         collapsible "offcanvas"}}
    &
    children]
   (let [state (if open? "expanded" "collapsed")
@@ -517,8 +516,7 @@
        :data-sidebar "menu-sub"
        :class
        (merge-classes
-        (str
-         "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5 ")
+        "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5"
         "group-data-[collapsible=icon]:hidden"
         class)))]
    children))

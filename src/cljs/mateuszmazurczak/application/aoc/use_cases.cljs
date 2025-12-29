@@ -131,8 +131,7 @@
    
    Returns: Map with :state-updates containing modal state to apply"
   [challenge-str]
-  (let [challenge (parse-int-safe challenge-str)]
-    {:state-updates {:form-challenge challenge}}))
+  (let [challenge (parse-int-safe challenge-str)] {:state-updates {:form-challenge challenge}}))
 
 (defn prepare-submission
   "Prepare solution submission - build payload, validate, and determine state updates.
@@ -147,21 +146,15 @@
      - :state-updates - map of state paths to values to update"
   [{:keys [form page-year page-challenge can-upload-fn]}]
   (let [{:keys [year challenge payload validation-errors]} (domain/resolve-submission
-                                                             {:form form
-                                                              :page-year page-year
-                                                              :page-challenge page-challenge})
-        {:keys [can-submit? reason]} (domain/can-submit-solution? can-upload-fn
-                                                                   year
-                                                                   challenge
-                                                                   validation-errors)
+                                                            {:form form
+                                                             :page-year page-year
+                                                             :page-challenge page-challenge})
+        {:keys [can-submit? reason]}
+        (domain/can-submit-solution? can-upload-fn year challenge validation-errors)
         state-updates (cond
-                        (= reason :validation-errors)
-                        {:form-errors validation-errors}
-                        
-                        can-submit?
-                        {:submitting? true
-                         :form-errors nil}
-                        
+                        (= reason :validation-errors) {:form-errors validation-errors}
+                        can-submit? {:submitting? true
+                                     :form-errors nil}
                         :else {})]
     {:can-submit? can-submit?
      :reason reason

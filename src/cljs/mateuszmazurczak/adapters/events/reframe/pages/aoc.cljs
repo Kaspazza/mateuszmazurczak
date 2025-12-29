@@ -51,23 +51,20 @@
    :aoc/select-year
    (fn [{:keys [db]} [_ year-str]]
      (let [{:keys [state-updates dispatches]} (aoc-use-cases/handle-year-selection year-str)]
-       {:db (-> db
-                (assoc-in aoc-domain/*aoc-selected-year-path* (:selected-year state-updates))
-                (assoc-in aoc-domain/*aoc-selected-challenge-path*
-                          (:selected-challenge state-updates))
-                (assoc-in aoc-domain/*aoc-challenges-options-path*
-                          (:challenges-options state-updates)))
+       {:db
+        (-> db
+            (assoc-in aoc-domain/*aoc-selected-year-path* (:selected-year state-updates))
+            (assoc-in aoc-domain/*aoc-selected-challenge-path* (:selected-challenge state-updates))
+            (assoc-in aoc-domain/*aoc-challenges-options-path* (:challenges-options state-updates)))
         :dispatch-n dispatches}))
-   :aoc/select-challenge
-   (fn [{:keys [db]} [_ challenge-str]]
-     (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
-           {:keys [state-updates dispatches]} (aoc-use-cases/handle-challenge-selection
-                                                challenge-str
-                                                year)]
-       {:db (assoc-in db
-                      aoc-domain/*aoc-selected-challenge-path*
-                      (:selected-challenge state-updates))
-        :dispatch-n dispatches}))
+   :aoc/select-challenge (fn [{:keys [db]} [_ challenge-str]]
+                           (let [year (get-in db aoc-domain/*aoc-selected-year-path*)
+                                 {:keys [state-updates dispatches]}
+                                 (aoc-use-cases/handle-challenge-selection challenge-str year)]
+                             {:db (assoc-in db
+                                   aoc-domain/*aoc-selected-challenge-path*
+                                   (:selected-challenge state-updates))
+                              :dispatch-n dispatches}))
    :aoc/open-modal
    (fn [db [_]]
      (let [{:keys [state-updates]}
@@ -120,42 +117,37 @@
    (fn [db [_ challenge-str]]
      (let [{:keys [state-updates]} (aoc-use-cases/handle-modal-challenge-selection challenge-str)]
        (assoc-in db (conj aoc-domain/*aoc-form-path* :challenge) (:form-challenge state-updates))))
-      :aoc/submit-solution
-      (fn [{:keys [db]} [_]]
-        (let [translator (get-in db state-registry/*translator-path*)
-              {:keys [can-submit? reason payload state-updates]}
-              (aoc-use-cases/prepare-submission
-               {:form (get-in db aoc-domain/*aoc-form-path*)
-                :page-year (get-in db aoc-domain/*aoc-selected-year-path*)
-                :page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
-                :can-upload-fn aoc-cache/can-upload?})
-              updated-db (cond-> db
-                           (:form-errors state-updates)
-                           (assoc-in aoc-domain/*aoc-form-errors-path* (:form-errors state-updates))
-                           
-                           (contains? state-updates :submitting?)
-                           (assoc-in aoc-domain/*aoc-submitting-path* (:submitting? state-updates)))]
-          (cond
-            (= reason :upload-limit-reached)
-            (do (notification/show-error (translator :upload-limit-reached)
-                                         {:description (translator
-                                                        :uploaded-max-solutions-for-challenge)})
-                {:db db})
-            
-            (= reason :validation-errors)
-            (do (notification/show-error (translator :please-fix-form-errors)
-                                         {:description (translator :required-fields-missing)})
-                {:db updated-db})
-            
-            can-submit?
-            {:db updated-db
-             :http {:method :post
-                    :url "/api/aoc/solutions"
-                    :params payload
-                    :event/on-success [:aoc/submit-success]
-                    :event/on-error [:aoc/submit-failure]}}
-            
-            :else {:db db})))
+   :aoc/submit-solution
+   (fn [{:keys [db]} [_]]
+     (let [translator (get-in db state-registry/*translator-path*)
+           {:keys [can-submit? reason payload state-updates]}
+           (aoc-use-cases/prepare-submission
+            {:form (get-in db aoc-domain/*aoc-form-path*)
+             :page-year (get-in db aoc-domain/*aoc-selected-year-path*)
+             :page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)
+             :can-upload-fn aoc-cache/can-upload?})
+           updated-db (cond-> db
+                        (:form-errors state-updates) (assoc-in aoc-domain/*aoc-form-errors-path*
+                                                      (:form-errors state-updates))
+                        (contains? state-updates :submitting?)
+                        (assoc-in aoc-domain/*aoc-submitting-path* (:submitting? state-updates)))]
+       (cond
+         (= reason :upload-limit-reached) (do (notification/show-error
+                                               (translator :upload-limit-reached)
+                                               {:description
+                                                (translator :uploaded-max-solutions-for-challenge)})
+                                              {:db db})
+         (= reason :validation-errors) (do (notification/show-error
+                                            (translator :please-fix-form-errors)
+                                            {:description (translator :required-fields-missing)})
+                                           {:db updated-db})
+         can-submit? {:db updated-db
+                      :http {:method :post
+                             :url "/api/aoc/solutions"
+                             :params payload
+                             :event/on-success [:aoc/submit-success]
+                             :event/on-error [:aoc/submit-failure]}}
+         :else {:db db})))
    :aoc/submit-success
    (fn [{:keys [db]} [_ response]]
      (let [translator (get-in db state-registry/*translator-path*)
@@ -165,27 +157,20 @@
              :page-year (get-in db aoc-domain/*aoc-selected-year-path*)
              :page-challenge (get-in db aoc-domain/*aoc-selected-challenge-path*)})
            solution-id (:solution-id response)
-           updated-db (-> db
-                          (assoc-in aoc-domain/*aoc-submitting-path*
-                                    (:submitting? state-updates))
-                          (assoc-in aoc-domain/*aoc-modal-open-path*
-                                    (:modal-open? state-updates))
-                          (assoc-in aoc-domain/*aoc-form-path*
-                                    (:form state-updates))
-                          (assoc-in aoc-domain/*aoc-form-errors-path*
-                                    (:form-errors state-updates))
-                          (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url)
-                                    (:playground-url state-updates))
-                          (assoc-in aoc-domain/*aoc-selected-year-path*
-                                    (:selected-year state-updates))
-                          (assoc-in aoc-domain/*aoc-selected-challenge-path*
-                                    (:selected-challenge state-updates))
-                          (assoc-in aoc-domain/*aoc-challenges-options-path*
-                                    (:challenges-options state-updates))
-                          (assoc-in (conj state-registry/*aoc-page-path*
-                                          :modal-data
-                                          :challenges-options)
-                                    (:modal-challenges-options state-updates)))]
+           updated-db
+           (->
+             db
+             (assoc-in aoc-domain/*aoc-submitting-path* (:submitting? state-updates))
+             (assoc-in aoc-domain/*aoc-modal-open-path* (:modal-open? state-updates))
+             (assoc-in aoc-domain/*aoc-form-path* (:form state-updates))
+             (assoc-in aoc-domain/*aoc-form-errors-path* (:form-errors state-updates))
+             (assoc-in (conj state-registry/*aoc-page-path* :modal-data :playground-url)
+                       (:playground-url state-updates))
+             (assoc-in aoc-domain/*aoc-selected-year-path* (:selected-year state-updates))
+             (assoc-in aoc-domain/*aoc-selected-challenge-path* (:selected-challenge state-updates))
+             (assoc-in aoc-domain/*aoc-challenges-options-path* (:challenges-options state-updates))
+             (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
+                       (:modal-challenges-options state-updates)))]
        (notification/show-success (translator :solution-submitted-successfully))
        {:db updated-db
         ::cache-consent [year challenge]

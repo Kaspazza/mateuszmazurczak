@@ -52,8 +52,7 @@
 (rf/reg-sub :pages/home
             :<-
             [:home/raw-data]
-            (fn [raw-data _]
-              (home-page-data/prepare-ui-data raw-data)))
+            (fn [raw-data _] (home-page-data/prepare-ui-data raw-data)))
 
 ;; =============================================================================
 ;; State watch

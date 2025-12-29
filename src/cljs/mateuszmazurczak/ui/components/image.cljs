@@ -73,7 +73,7 @@
                     :alt \"Hero\"
                     :width 800
                     :height 600}]"
-  [{:keys [src placeholder alt width height loading class img-class]}]
+  [_props]
   (let [loaded? (r/atom false)]
     (fn [{:keys [src placeholder alt width height loading class img-class]}]
       [:div {:class (merge-classes "relative overflow-hidden" class)

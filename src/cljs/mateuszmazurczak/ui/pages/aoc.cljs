@@ -67,7 +67,7 @@
 
 (defn share-button
   "Button to share/copy link to a specific solution."
-  [solution-id text]
+  [_solution-id _text]
   (let [copied? (r/atom false)]
     (fn [solution-id text] [button/button {:variant :ghost
                                            :size :xs
@@ -112,12 +112,13 @@
   - :content - The actual content (code or URL)
   - :theme - Current theme (:light | :dark)
   - :text - Map of translated text strings"
-  [{:keys [content-type content theme text]
+  [{:keys [content-type content]
     :as _solution-card-data}]
   (let [expanded? (r/atom false)
         is-long-code? (and (= content-type :code-snippet) (is-long-code? content))
         is-long-url? (and (= content-type :repo-link) (> (count content) 100))]
-    (fn [{:keys [content-type content theme text]}]
+    (fn [{:keys [content-type content theme text]
+          :as _solution-card-data}]
       [:div {:class "mt-4"}
        (cond
          (= content-type :code-snippet)

@@ -328,10 +328,7 @@
     (r/create-class
      {:display-name "field-error"
       :reagent-render
-      (fn [{:keys [class errors]
-            :as props}
-           &
-           children]
+      (fn [_props & _children]
         (reset! content (cond
                           ;; If children provided, use them
                           (seq children) children

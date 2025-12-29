@@ -160,7 +160,7 @@
         children))
 
 (defn select-item
-  [{:keys [class value]
+  [{:keys [class]
     :as props}
    &
    children]

@@ -121,9 +121,7 @@
    
    Returns: boolean"
   [admin-key]
-  (and (string? admin-key)
-       (not (empty? admin-key))
-       (>= (count admin-key) min-admin-key-length)))
+  (and (string? admin-key) (not (empty? admin-key)) (>= (count admin-key) min-admin-key-length)))
 
 (defn validate-admin-login
   "Validate admin login attempt.

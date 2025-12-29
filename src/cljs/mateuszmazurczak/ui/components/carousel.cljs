@@ -38,8 +38,7 @@
     [carousel-previous {}]
     [carousel-next {}]]"
  [{:keys [orientation opts set-api plugins class]
-   :or {orientation :horizontal}
-   :as props}
+   :or {orientation :horizontal}}
   &
   children]
  (let [use-embla-carousel (or (gobj/get embla-carousel "default") embla-carousel)

@@ -31,8 +31,9 @@
                           {:db (assoc-in db form-path value)}))
    :admin/login
    (fn [{:keys [db]} [_]]
-     (let [admin-key (get-in db (conj admin-domain/*admin-page-path* :form :admin-key))]
-       (if (or (nil? admin-key) (< (count admin-key) 32))
+     (let [admin-key (get-in db (conj admin-domain/*admin-page-path* :form :admin-key))
+           {:keys [valid? reason]} (admin-domain/validate-admin-login admin-key)]
+       (if-not valid?
          (do (notification/show-error "Invalid admin key"
                                       {:description "Key must be at least 32 characters"})
              {:db db})

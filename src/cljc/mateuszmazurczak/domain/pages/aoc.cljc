@@ -581,6 +581,22 @@
        (sort-by #(+ (or (:best-practices-count %) 0) (or (:clever-count %) 0)) >)
        vec))
 
+(defn prepare-solutions-for-ui
+  "Prepare solutions for UI display - enrich with context and sort.
+   
+   This is pure domain logic that composes other domain functions.
+   
+   Args:
+   - solutions: Vector of denormalized solutions
+   - theme: Current theme (:light or :dark)
+   - text: Translated text map
+   
+   Returns: Vector of enriched and sorted solutions"
+  [solutions theme text]
+  (->> solutions
+       (mapv #(enrich-solution-with-ui-context % theme text))
+       sort-solutions-by-votes))
+
 (defn reset-form
   "Reset form to initial state with given year/challenge.
    

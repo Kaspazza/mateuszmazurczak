@@ -51,18 +51,18 @@
    Args:
    - year-str: Year as string from UI
    
-   Returns: Map with :year :challenge :challenges-options :navigate"
+   Returns: Map with :state-updates :dispatches"
   [year-str]
   (let [year (parse-int-safe year-str)
-        {:keys [challenge]
-         :as result}
-        (domain/resolve-year-selection year)]
-    (assoc result
-           :navigate
-           [:nav/navigate-no-history
-            :mateuszmazurczak.adapters.navigation.routes/aoc-specific
-            {:year (str year)
-             :challenge (str challenge)}])))
+        {:keys [challenge challenges-options]} (domain/resolve-year-selection year)]
+    {:state-updates {:selected-year year
+                     :selected-challenge challenge
+                     :challenges-options challenges-options}
+     :dispatches [[:nav/navigate-no-history
+                   :mateuszmazurczak.adapters.navigation.routes/aoc-specific
+                   {:year (str year)
+                    :challenge (str challenge)}]
+                  [:aoc/fetch-solutions year challenge]]}))
 
 (defn handle-challenge-selection
   "Handle challenge selection change.
@@ -71,14 +71,15 @@
    - challenge-str: Challenge as string from UI
    - current-year: Currently selected year
    
-   Returns: Map with :challenge :navigate"
+   Returns: Map with :state-updates :dispatches"
   [challenge-str current-year]
   (let [challenge (parse-int-safe challenge-str)]
-    {:challenge challenge
-     :navigate [:nav/navigate-no-history
-                :mateuszmazurczak.adapters.navigation.routes/aoc-specific
-                {:year (str current-year)
-                 :challenge (str challenge)}]}))
+    {:state-updates {:selected-challenge challenge}
+     :dispatches [[:nav/navigate-no-history
+                   :mateuszmazurczak.adapters.navigation.routes/aoc-specific
+                   {:year (str current-year)
+                    :challenge (str challenge)}]
+                  [:aoc/fetch-solutions current-year challenge]]}))
 
 (defn handle-modal-open
   "Handle modal opening.
@@ -86,9 +87,13 @@
    Args:
    - context: Map with :playground-url :form-year :form-challenge :page-year :page-challenge
    
-   Returns: Map with :year :challenge :challenges-options"
+   Returns: Map with :state-updates containing modal state to apply"
   [context]
-  (domain/resolve-modal-open context))
+  (let [{:keys [year challenge challenges-options]} (domain/resolve-modal-open context)]
+    {:state-updates {:modal-open? true
+                     :form-year year
+                     :form-challenge challenge
+                     :modal-challenges-options challenges-options}}))
 
 (defn handle-modal-close
   "Handle modal closing.
@@ -97,9 +102,12 @@
    - page-year: Current page year
    - page-challenge: Current page challenge
    
-   Returns: Map with :form"
+   Returns: Map with :state-updates containing modal state to apply"
   [page-year page-challenge]
-  (domain/resolve-modal-close page-year page-challenge))
+  (let [{:keys [form]} (domain/resolve-modal-close page-year page-challenge)]
+    {:state-updates {:modal-open? false
+                     :form form
+                     :playground-url nil}}))
 
 (defn handle-modal-year-selection
   "Handle year selection change within modal.
@@ -107,9 +115,13 @@
    Args:
    - year-str: Year as string from UI
    
-   Returns: Map with :year :challenge :challenges-options"
+   Returns: Map with :state-updates containing modal state to apply"
   [year-str]
-  (let [year (parse-int-safe year-str)] (domain/resolve-modal-year-selection year)))
+  (let [year (parse-int-safe year-str)
+        {:keys [year challenge challenges-options]} (domain/resolve-modal-year-selection year)]
+    {:state-updates {:form-year year
+                     :form-challenge challenge
+                     :modal-challenges-options challenges-options}}))
 
 (defn handle-modal-challenge-selection
   "Handle challenge selection change within modal.
@@ -117,34 +129,44 @@
    Args:
    - challenge-str: Challenge as string from UI
    
-   Returns: Parsed challenge integer"
+   Returns: Map with :state-updates containing modal state to apply"
   [challenge-str]
-  (parse-int-safe challenge-str))
+  (let [challenge (parse-int-safe challenge-str)]
+    {:state-updates {:form-challenge challenge}}))
 
 (defn prepare-submission
-  "Prepare solution submission - build payload and validate.
+  "Prepare solution submission - build payload, validate, and determine state updates.
    
    Args:
    - context: Map with :form :page-year :page-challenge :can-upload-fn
    
-   Returns: Map with :can-submit? :reason :year :challenge :payload :validation-errors
+   Returns: Map with:
      - :can-submit? - boolean, true if submission should proceed
      - :reason - keyword (:upload-limit-reached, :validation-errors, or nil)
-     - :year, :challenge, :payload - submission data (only if can-submit? is true)
-     - :validation-errors - form errors (only if reason is :validation-errors)"
+     - :payload - submission payload (only if can-submit? is true)
+     - :state-updates - map of state paths to values to update"
   [{:keys [form page-year page-challenge can-upload-fn]}]
   (let [{:keys [year challenge payload validation-errors]} (domain/resolve-submission
-                                                            {:form form
-                                                             :page-year page-year
-                                                             :page-challenge page-challenge})
-        {:keys [can-submit? reason]}
-        (domain/can-submit-solution? can-upload-fn year challenge validation-errors)]
+                                                             {:form form
+                                                              :page-year page-year
+                                                              :page-challenge page-challenge})
+        {:keys [can-submit? reason]} (domain/can-submit-solution? can-upload-fn
+                                                                   year
+                                                                   challenge
+                                                                   validation-errors)
+        state-updates (cond
+                        (= reason :validation-errors)
+                        {:form-errors validation-errors}
+                        
+                        can-submit?
+                        {:submitting? true
+                         :form-errors nil}
+                        
+                        :else {})]
     {:can-submit? can-submit?
      :reason reason
-     :year year
-     :challenge challenge
      :payload payload
-     :validation-errors validation-errors}))
+     :state-updates state-updates}))
 
 (defn handle-submission-success
   "Handle successful submission.
@@ -152,17 +174,30 @@
    Args:
    - context: Map with :form :page-year :page-challenge
    
-   Returns: Map with :year :challenge :challenges-options :form :navigate"
+   Returns: Map with:
+     - :year :challenge :challenges-options :form - updated data
+     - :navigate - navigation dispatch
+     - :state-updates - map of state updates to apply"
   [context]
-  (let [{:keys [year challenge]
-         :as result}
-        (domain/resolve-submission-success context)]
-    (assoc result
-           :navigate
-           [:nav/navigate-no-history
-            :mateuszmazurczak.adapters.navigation.routes/aoc-specific
-            {:year (str year)
-             :challenge (str challenge)}])))
+  (let [{:keys [year challenge challenges-options form]} (domain/resolve-submission-success
+                                                          context)]
+    {:year year
+     :challenge challenge
+     :challenges-options challenges-options
+     :form form
+     :navigate [:nav/navigate-no-history
+                :mateuszmazurczak.adapters.navigation.routes/aoc-specific
+                {:year (str year)
+                 :challenge (str challenge)}]
+     :state-updates {:submitting? false
+                     :modal-open? false
+                     :form form
+                     :form-errors nil
+                     :playground-url nil
+                     :selected-year year
+                     :selected-challenge challenge
+                     :challenges-options challenges-options
+                     :modal-challenges-options challenges-options}}))
 
 (defn handle-form-update
   "Handle form field update.
@@ -173,25 +208,35 @@
    - field: Field keyword to update
    - value: New value for field
    
-   Returns: Map with :form :form-errors"
+   Returns: Map with :state-updates containing form state to apply"
   [form form-errors field value]
-  (domain/update-form-field form form-errors field value))
+  (let [{:keys [form form-errors]} (domain/update-form-field form form-errors field value)]
+    {:state-updates {:form form
+                     :form-errors form-errors}}))
 
 (defn handle-fetch-solutions-success
   "Handle successful solutions fetch.
    
    Args:
-   - solutions: Raw solutions from API
-   - year: Year for cache lookup
-   - challenge: Challenge for cache lookup
-   - has-consented-fn: Function (year challenge) -> boolean
-   - get-user-solution-ids-fn: Function (year challenge) -> set of IDs
-   - get-upload-count-fn: Function (year challenge) -> int
-   - enrich-voting-fn: Function (solution) -> enriched solution
+   - context: Map with:
+     - :solutions - Raw solutions from API
+     - :year - Year for cache lookup
+     - :challenge - Challenge for cache lookup
+     - :has-consented-fn - Function (year challenge) -> boolean
+     - :get-user-solution-ids-fn - Function (year challenge) -> set of IDs
+     - :get-upload-count-fn - Function (year challenge) -> int
+     - :enrich-voting-fn - Function (solution) -> enriched solution
    
-   Returns: Map with :entities :ids :user-solution-ids :upload-count :gated?"
+   Returns: Map with :state-updates containing solutions state to apply"
   [context]
-  (domain/process-fetched-solutions context))
+  (let [{:keys [entities ids user-solution-ids upload-count gated?]}
+        (domain/process-fetched-solutions context)]
+    {:state-updates {:solutions-entities entities
+                     :solution-ids ids
+                     :user-solution-ids user-solution-ids
+                     :upload-count upload-count
+                     :gated? gated?
+                     :loading? false}}))
 
 (defn handle-vote-success
   "Handle successful vote.

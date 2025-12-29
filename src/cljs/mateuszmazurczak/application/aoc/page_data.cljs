@@ -14,8 +14,9 @@
   [raw-data solutions-entities theme admin-logged-in? logger]
   (let [solution-ids (get-in raw-data (aoc-domain/relative-path aoc-domain/*aoc-solution-ids-path*))
         denormalized-solutions (aoc-domain/denormalize-solutions solution-ids solutions-entities)
-        solutions-text (get-in raw-data
-                               (aoc-domain/relative-path aoc-domain/*aoc-solutions-text-path*))
+        solutions-text-raw (get-in raw-data
+                                   (aoc-domain/relative-path aoc-domain/*aoc-solutions-text-path*))
+        solutions-text (fi18n/i18n-markers->translation solutions-text-raw)
         prepared-solutions
         (aoc-domain/prepare-solutions-for-ui denormalized-solutions theme solutions-text)
         ui-data

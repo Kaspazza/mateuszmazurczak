@@ -8,6 +8,7 @@
    [mateuszmazurczak.application.aoc.use-cases     :as aoc-use-cases]
    [mateuszmazurczak.domain.pages.aoc              :as aoc-domain]
    [mateuszmazurczak.domain.state.registry         :as state-registry]
+   [mateuszmazurczak.ports.i18n                    :as i18n]
    [mateuszmazurczak.ports.logging                 :as log]
    [mateuszmazurczak.ui.components.notification    :as notification]
    [mateuszmazurczak.utils.url                     :as url-utils]
@@ -82,10 +83,12 @@
            (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
                      (:modal-challenges-options state-updates)))))
    :aoc/upload-limit-reached (fn [db [_]]
-                               (let [translator (get-in db state-registry/*translator-path*)]
+                               (let [translator (get-in db state-registry/*translator-path*)
+                                     lang (get-in db state-registry/*lang-path*)]
                                  (notification/show-error
-                                  (translator :upload-limit-reached)
-                                  {:description (translator :uploaded-max-solutions-for-challenge)})
+                                  (i18n/tr translator lang :upload-limit-reached)
+                                  {:description
+                                   (i18n/tr translator lang :uploaded-max-solutions-for-challenge)})
                                  db))
    :aoc/close-modal
    (fn [db [_]]
@@ -120,6 +123,7 @@
    :aoc/submit-solution
    (fn [{:keys [db]} [_]]
      (let [translator (get-in db state-registry/*translator-path*)
+           lang (get-in db state-registry/*lang-path*)
            {:keys [can-submit? reason payload state-updates]}
            (aoc-use-cases/prepare-submission
             {:form (get-in db aoc-domain/*aoc-form-path*)
@@ -132,14 +136,15 @@
                         (contains? state-updates :submitting?)
                         (assoc-in aoc-domain/*aoc-submitting-path* (:submitting? state-updates)))]
        (cond
-         (= reason :upload-limit-reached) (do (notification/show-error
-                                               (translator :upload-limit-reached)
-                                               {:description
-                                                (translator :uploaded-max-solutions-for-challenge)})
-                                              {:db db})
+         (= reason :upload-limit-reached)
+         (do (notification/show-error
+              (i18n/tr translator lang :upload-limit-reached)
+              {:description (i18n/tr translator lang :uploaded-max-solutions-for-challenge)})
+             {:db db})
          (= reason :validation-errors) (do (notification/show-error
-                                            (translator :please-fix-form-errors)
-                                            {:description (translator :required-fields-missing)})
+                                            (i18n/tr translator lang :please-fix-form-errors)
+                                            {:description
+                                             (i18n/tr translator lang :required-fields-missing)})
                                            {:db updated-db})
          can-submit? {:db updated-db
                       :http {:method :post
@@ -151,6 +156,7 @@
    :aoc/submit-success
    (fn [{:keys [db]} [_ response]]
      (let [translator (get-in db state-registry/*translator-path*)
+           lang (get-in db state-registry/*lang-path*)
            {:keys [year challenge state-updates navigate]}
            (aoc-use-cases/handle-submission-success
             {:form (get-in db aoc-domain/*aoc-form-path*)
@@ -171,24 +177,25 @@
              (assoc-in aoc-domain/*aoc-challenges-options-path* (:challenges-options state-updates))
              (assoc-in (conj state-registry/*aoc-page-path* :modal-data :challenges-options)
                        (:modal-challenges-options state-updates)))]
-       (notification/show-success (translator :solution-submitted-successfully))
+       (notification/show-success (i18n/tr translator lang :solution-submitted-successfully))
        {:db updated-db
         ::cache-consent [year challenge]
         ::cache-solution-id [year challenge solution-id]
         :dispatch-n [navigate [:aoc/fetch-solutions year challenge]]}))
-   :aoc/submit-failure (fn [{:keys [db]} [_ error]]
-                         (let [translator (get-in db state-registry/*translator-path*)
-                               logger (get-in db state-registry/*logger-path*)
-                               error-message (or (get-in error [:response :message])
-                                                 (get error :message)
-                                                 "Unknown error occurred")]
-                           (log/error! logger
-                                       {:error (ex-info "Failed to submit solution"
-                                                        {:type ::submit-solution-failed
-                                                         :error error})})
-                           (notification/show-error (translator :failed-to-submit-solution)
-                                                    {:description error-message})
-                           {:db (assoc-in db aoc-domain/*aoc-submitting-path* false)}))
+   :aoc/submit-failure
+   (fn [{:keys [db]} [_ error]]
+     (let [translator (get-in db state-registry/*translator-path*)
+           lang (get-in db state-registry/*lang-path*)
+           logger (get-in db state-registry/*logger-path*)
+           error-message
+           (or (get-in error [:response :message]) (get error :message) "Unknown error occurred")]
+       (log/error! logger
+                   {:error (ex-info "Failed to submit solution"
+                                    {:type ::submit-solution-failed
+                                     :error error})})
+       (notification/show-error (i18n/tr translator lang :failed-to-submit-solution)
+                                {:description error-message})
+       {:db (assoc-in db aoc-domain/*aoc-submitting-path* false)}))
    :aoc/fetch-solutions (fn [{:keys [db]} [_ year challenge]]
                           {:db (assoc-in db aoc-domain/*aoc-loading-path* true)
                            :http {:method :get
@@ -227,6 +234,7 @@
                                              (assoc-in aoc-domain/*aoc-loading-path* false))}))
    :aoc/vote (fn [{:keys [db]} [_ solution-id vote-type]]
                (let [translator (get-in db state-registry/*translator-path*)
+                     lang (get-in db state-registry/*lang-path*)
                      {:keys [can-vote?]}
                      (aoc-use-cases/check-can-vote aoc-cache/has-voted? solution-id vote-type)]
                  (if can-vote?
@@ -236,7 +244,8 @@
                                     :vote-type vote-type}
                            :event/on-success [:aoc/vote-success solution-id vote-type]
                            :event/on-error [:aoc/vote-failure]}}
-                   (do (notification/show-error (translator :already-voted-for-solution))
+                   (do (notification/show-error
+                        (i18n/tr translator lang :already-voted-for-solution))
                        {:db db}))))
    :aoc/vote-success
    (fn [{:keys [db]} [_ solution-id vote-type response]]
@@ -252,10 +261,11 @@
         ::cache-vote [solution-id vote-type]}))
    :aoc/vote-failure (fn [{:keys [db]} [_ error]]
                        (let [translator (get-in db state-registry/*translator-path*)
+                             lang (get-in db state-registry/*lang-path*)
                              logger (get-in db state-registry/*logger-path*)
                              error-message (or (get-in error [:response :message])
                                                (get error :message)
-                                               (translator :failed-to-vote))]
+                                               (i18n/tr translator lang :failed-to-vote))]
                          (log/error! logger
                                      {:error (ex-info "Failed to vote for solution"
                                                       {:type ::vote-failed

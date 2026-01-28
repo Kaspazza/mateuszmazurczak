@@ -35,8 +35,7 @@
 
 (defn- params-map->vec
   "Convert params map to Tempura vector format.
-   Map keys like :1, :2, :3 become vector positions [val1 val2 val3].
-   This allows port to use maps while adapter converts to Tempura's vector format."
+   Map keys like :1, :2, :3 become vector positions [val1 val2 val3]."
   [params-map]
   (when params-map (let [sorted-keys (sort (keys params-map))] (mapv params-map sorted-keys))))
 

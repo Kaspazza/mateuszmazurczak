@@ -5,6 +5,7 @@
   {:en
    {:homepage "Home"
     :articles "Articles"
+    :qr-codes "QR Codes"
     :not-found-page "Page not found"
     :not-found-description
     "If you clicked something on this page and got here. Please tell me: mateusz.mazurczak.dev@gmail.com"
@@ -90,6 +91,7 @@
    :pl
    {:homepage "Główna"
     :articles "Artykuły"
+    :qr-codes "Kody QR"
     :not-found-page "Nie znaleziono takiej strony"
     :not-found-description
     "Jeśli jesteś tu po wciśnięciu czegoś na tej stronie, proszę daj mi znać: mateusz.mazurczak.dev@gmail.com"

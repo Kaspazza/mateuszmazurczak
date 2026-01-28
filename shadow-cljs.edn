@@ -30,6 +30,7 @@
                                mateuszmazurczak.system.config/POSTHOG_API_KEY ""}
              :compiler-options {:optimizations :advanced
                                 :portfolio false}}
+
    :target :browser}}
  :deps {:aliases [:cljs-deps :cljs-dev-deps]}
  :dev-http {8081 [".shadow-cljs/target/browser-test"]}

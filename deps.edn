@@ -53,6 +53,7 @@
         hiccup/hiccup {:mvn/version "2.0.0"}
         http-kit/http-kit {:mvn/version "2.8.1"}
         integrant/integrant {:mvn/version "1.0.1"}
+        io.nayuki/qrcodegen {:mvn/version "1.8.0"}
         io.sentry/sentry {:mvn/version "7.18.0"}
         io.sentry/sentry-clj {:mvn/version "7.16.219"}
         metosin/malli {:mvn/version "0.20.0"}

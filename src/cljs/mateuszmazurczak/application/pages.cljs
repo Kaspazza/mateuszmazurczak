@@ -10,6 +10,7 @@
    [mateuszmazurczak.ui.pages.aoc          :as pages-aoc]
    [mateuszmazurczak.ui.pages.articles     :as pages-articles]
    [mateuszmazurczak.ui.pages.home         :as mm-home]
+   [mateuszmazurczak.ui.pages.qr-codes     :as pages-qr-codes]
    [mateuszmazurczak.ui.structure          :as mm-ui-structure]))
 
 (defmulti pages :page-id)
@@ -105,3 +106,14 @@
        (false? loading?) [pages-admin/admin-page data]
        :else [:div {:class "flex items-center justify-center h-full"}
               [mm-ui-spinner/spinner {:class "size-8"}]])]))
+
+(defmethod pages :pages/qr-codes
+  [_ page-data]
+  (let [{:keys [valid? data]} page-data]
+    [mm-ui-structure/mateuszmazurczak-page-structure
+     (if valid?
+       [pages-qr-codes/qr-codes-page data]
+       [mm-ui-errors/internal-error {:title "Page Data Error"
+                                     :description
+                                     "There was an error loading the QR codes page. Please refresh."
+                                     :back-home-text "Refresh Page"}])]))

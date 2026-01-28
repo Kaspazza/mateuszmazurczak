@@ -9,13 +9,14 @@
    - State queries (watch) - reactive reads from state
    - State lifecycle (reset-app-db!)"
   (:require
-   [clojure.set                             :as set]
-   [mateuszmazurczak.adapters.state.reframe :as reframe-adapter]
-   [mateuszmazurczak.domain.pages.aoc       :as aoc-domain]
-   [mateuszmazurczak.domain.pages.home      :as home-domain]
-   [mateuszmazurczak.domain.state.registry  :as state-registry]
-   [mateuszmazurczak.domain.theme.schema    :as theme-schema]
-   [mateuszmazurczak.system.config          :as config]))
+   [clojure.set                              :as set]
+   [mateuszmazurczak.adapters.state.reframe  :as reframe-adapter]
+   [mateuszmazurczak.domain.pages.aoc        :as aoc-domain]
+   [mateuszmazurczak.domain.pages.home       :as home-domain]
+   [mateuszmazurczak.domain.pages.qr-codes   :as qr-codes-domain]
+   [mateuszmazurczak.domain.state.registry   :as state-registry]
+   [mateuszmazurczak.domain.theme.schema     :as theme-schema]
+   [mateuszmazurczak.system.config           :as config]))
 
 
 ;; =============================================================================
@@ -145,7 +146,8 @@
    :translator translator
    :logger logger
    :pages {:home (home-domain/initial-home-data)
-           :aoc (aoc-domain/initial-aoc-data)}})
+           :aoc (aoc-domain/initial-aoc-data)
+           :qr-codes qr-codes-domain/initial-page-data}})
 
 (defn init-app-db!
   "Initialize the application state with the given initial state.

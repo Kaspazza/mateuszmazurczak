@@ -1,15 +1,16 @@
 (ns mateuszmazurczak.adapters.events.reframe.core
   "Re-frame event adapter - implements events/registry.cljs contract."
   (:require
-   [mateuszmazurczak.adapters.events.reframe.admin      :as admin-events]
-   [mateuszmazurczak.adapters.events.reframe.cache      :as cache-events]
-   [mateuszmazurczak.adapters.events.reframe.http       :as http-events]
-   [mateuszmazurczak.adapters.events.reframe.i18n       :as i18n-events]
-   [mateuszmazurczak.adapters.events.reframe.navigation :as nav-events]
-   [mateuszmazurczak.adapters.events.reframe.pages.aoc  :as aoc-events]
-   [mateuszmazurczak.adapters.events.reframe.pages.home :as home-events]
-   [mateuszmazurczak.adapters.events.reframe.theme      :as theme-events]
-   [re-frame.core                                       :as rf]))
+   [mateuszmazurczak.adapters.events.reframe.admin          :as admin-events]
+   [mateuszmazurczak.adapters.events.reframe.cache          :as cache-events]
+   [mateuszmazurczak.adapters.events.reframe.http           :as http-events]
+   [mateuszmazurczak.adapters.events.reframe.i18n           :as i18n-events]
+   [mateuszmazurczak.adapters.events.reframe.navigation     :as nav-events]
+   [mateuszmazurczak.adapters.events.reframe.pages.aoc      :as aoc-events]
+   [mateuszmazurczak.adapters.events.reframe.pages.home     :as home-events]
+   [mateuszmazurczak.adapters.events.reframe.pages.qr-codes :as qr-codes-events]
+   [mateuszmazurczak.adapters.events.reframe.theme          :as theme-events]
+   [re-frame.core                                           :as rf]))
 
 (def register-fns
   "Map of handler-type -> registration function.
@@ -32,7 +33,8 @@
          i18n-events/handlers
          aoc-events/handlers
          theme-events/handlers
-         admin-events/handlers))
+         admin-events/handlers
+         qr-codes-events/handlers))
 
 (defn init!
   "Initialize adapter-specific setup (effects and subscriptions).

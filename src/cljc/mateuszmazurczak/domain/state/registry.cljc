@@ -51,6 +51,7 @@
 (def ^:dynamic *home-page-path* [:pages :home])
 (def ^:dynamic *aoc-page-path* [:pages :aoc])
 (def ^:dynamic *admin-page-path* [:pages :admin])
+(def ^:dynamic *qr-codes-page-path* [:pages :qr-codes])
 
 (def watch-reg
   "Registry of all application watch.
@@ -136,4 +137,15 @@
                                    map?]]]}
    :admin/raw-data {:description "Returns raw admin page data from state"
                     :input-schema [:cat [:= :admin/raw-data]]
-                    :output-schema [:maybe map?]}})
+                    :output-schema [:maybe map?]}
+   :pages/qr-codes {:description "Returns processed QR codes page data with validation metadata"
+                    :input-schema [:cat [:= :pages/qr-codes]]
+                    :output-schema [:maybe
+                                    [:map
+                                     [:data map?]
+                                     [:valid? boolean?]
+                                     [:error {:optional true}
+                                      map?]]]}
+   :qr-codes/raw-data {:description "Returns raw QR codes page data from state"
+                       :input-schema [:cat [:= :qr-codes/raw-data]]
+                       :output-schema [:maybe map?]}})

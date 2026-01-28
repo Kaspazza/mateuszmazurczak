@@ -197,7 +197,36 @@
                   :description
                   "Toggle between light and dark themes. Theme persistence handled by cache system."
                   :schema [:cat [:= :theme/toggle]]
-                  :handler-type :fx}})
+                  :handler-type :fx}
+   ;; QR Codes page events
+   :qr-codes/on-route-enter {:category :page
+                             :description "Initialize QR codes page state on route entry."
+                             :schema [:cat [:= :qr-codes/on-route-enter]]
+                             :handler-type :db}
+   :qr-codes/update-input {:category :page
+                           :description "Update QR codes input text."
+                           :schema [:cat [:= :qr-codes/update-input] :string]
+                           :handler-type :db}
+   :qr-codes/update-size {:category :page
+                          :description "Update QR code size in pixels."
+                          :schema [:cat [:= :qr-codes/update-size] :int]
+                          :handler-type :db}
+   :qr-codes/update-format {:category :page
+                            :description "Update output format (:zip or :pdf)."
+                            :schema [:cat [:= :qr-codes/update-format] [:enum :zip :pdf]]
+                            :handler-type :db}
+   :qr-codes/generate-preview {:category :page
+                               :description "Generate preview QR codes from input."
+                               :schema [:cat [:= :qr-codes/generate-preview]]
+                               :handler-type :db}
+   :qr-codes/download {:category :page
+                       :description "Download generated QR codes in selected format."
+                       :schema [:cat [:= :qr-codes/download]]
+                       :handler-type :fx}
+   :qr-codes/update-show-label {:category :page
+                                :description "Toggle whether to show QR code value as label below QR code."
+                                :schema [:cat [:= :qr-codes/update-show-label] :boolean]
+                                :handler-type :db}})
 
 (defn events-by-category
   "Get events grouped by category (:navigation, :page, :i18n).

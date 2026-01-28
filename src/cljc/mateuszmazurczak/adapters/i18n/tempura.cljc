@@ -33,10 +33,21 @@
    :default-local (first i18n-lang/main-langs)
    :cache-locales (not debug?)})
 
+(defn- params-map->vec
+  "Convert params map to Tempura vector format.
+   Map keys like :1, :2, :3 become vector positions [val1 val2 val3].
+   This allows port to use maps while adapter converts to Tempura's vector format."
+  [params-map]
+  (when params-map
+    (let [sorted-keys (sort (keys params-map))]
+      (mapv params-map sorted-keys))))
+
 (defrecord TempuraTranslator [translation-opts]
   p/Translator
     (-translate [_ language id]
-      (try (tempura/tr translation-opts (if (vector? language) language [language]) [id])
+      (try (tempura/tr translation-opts
+                       (if (vector? language) language [language])
+                       [id])
            (catch #?(:clj Exception
                      :cljs :default)
              e
@@ -45,7 +56,12 @@
                               :id id}
                              e)))))
     (-translate [_ language id params]
-      (try (tempura/tr translation-opts (if (vector? language) language [language]) [id params])
+      (try (let [params-vec (params-map->vec params)
+                 locales (if (vector? language) language [language])]
+             (tempura/tr translation-opts
+                         locales
+                         [id]
+                         params-vec))
            (catch #?(:clj Exception
                      :cljs :default)
              e

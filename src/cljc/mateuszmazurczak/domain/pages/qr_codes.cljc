@@ -1,7 +1,9 @@
 (ns mateuszmazurczak.domain.pages.qr-codes
   "Domain logic for QR codes page.
-   Pure functions for data transformation and state management."
+   Business rules, data transformations, and state management."
   (:require
+   [malli.core                                  :as m]
+   [malli.error                                 :as me]
    [mateuszmazurczak.domain.qr-codes.generator :as gen]))
 
 ;; =============================================================================
@@ -20,35 +22,27 @@
    :loading? false})
 
 ;; =============================================================================
-;; Size Options
+;; Constants
 ;; =============================================================================
 
-(def size-options
-  "Available QR code size options."
-  [{:value 100
-    :label "100px (Small)"}
-   {:value 200
-    :label "200px"}
-   {:value 300
-    :label "300px (Default)"}
-   {:value 400
-    :label "400px"}
-   {:value 500
-    :label "500px (Large)"}])
+(def preview-display-size
+  "Size for QR code preview display (actual export uses configured size)."
+  150)
 
 ;; =============================================================================
-;; Format Options
+;; Business Constants
 ;; =============================================================================
 
-(def format-options
-  "Available output format options."
-  [{:value :zip
-    :label "ZIP (PNG images)"}
-   {:value :pdf
-    :label "PDF (one QR per page)"}])
+(def valid-sizes
+  "Valid QR code sizes in pixels."
+  [100 200 300 400 500])
+
+(def valid-formats
+  "Valid output formats."
+  #{:zip :pdf})
 
 ;; =============================================================================
-;; Pure Domain Functions
+;; Domain Functions
 ;; =============================================================================
 
 (defn parse-input-count
@@ -108,24 +102,47 @@
     (assoc page-data :preview-codes codes :errors errors :generating? false)))
 
 ;; =============================================================================
-;; UI Data Preparation
+;; Derived State Calculations
 ;; =============================================================================
 
-(defn prepare-ui-data
-  "Prepare page data for UI consumption.
-   Adds computed values and validation."
-  [raw-data]
-  (let [data (or raw-data initial-page-data)
-        input-count (parse-input-count (:input data))
+(defn calculate-derived-state
+  "Calculate derived state from page data."
+  [page-data]
+  (let [input-count (parse-input-count (:input page-data))
+        preview-count (count (:preview-codes page-data))
         has-input? (pos? input-count)
-        can-download? (and has-input? (empty? (:errors data)))]
-    {:data (assoc data
-                  :input-count input-count
-                  :has-input? has-input?
-                  :can-download? can-download?
-                  :size-options size-options
-                  :format-options format-options
-                  :preview-count (count (:preview-codes data))
-                  :showing-preview? (pos? (count (:preview-codes data))))
-     :valid? true
-     :error nil}))
+        can-download? (and has-input? (empty? (:errors page-data)))
+        showing-preview? (pos? preview-count)
+        more-codes-count (- input-count preview-count)]
+    {:input-count input-count
+     :preview-count preview-count
+     :has-input? has-input?
+     :can-download? can-download?
+     :showing-preview? showing-preview?
+     :more-codes-count more-codes-count}))
+
+;; =============================================================================
+;; Schema & Validation
+;; =============================================================================
+
+(def QrCodesPageData
+  "Schema for QR codes page data."
+  [:map
+   [:input :string]
+   [:size :int]
+   [:format [:enum :zip :pdf]]
+   [:show-label? :boolean]
+   [:preview-codes [:vector :any]]
+   [:generating? :boolean]
+   [:errors [:vector :string]]
+   [:loading? {:optional true} :boolean]])
+
+(defn valid-page-data?
+  "Validate QR codes page data against schema."
+  [data]
+  (m/validate QrCodesPageData data))
+
+(defn explain-page-data
+  "Explain validation errors for QR codes page data."
+  [data]
+  (me/humanize (m/explain QrCodesPageData data)))

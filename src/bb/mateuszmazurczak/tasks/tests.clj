@@ -1,6 +1,5 @@
 (ns mateuszmazurczak.tasks.tests
   "Prepare project for proper commit."
-  (:refer-clojure :exclude [format])
   (:require
    [mateuszmazurczak.cli-opts              :as cli-opts]
    [mateuszmazurczak.echo.cmds             :refer [blocking-cmd success]]

@@ -11,8 +11,8 @@
 
 ;; QR code size (pixels)
 (def QrSize
-  [:int {:min gen/min-qr-size
-         :max gen/max-qr-size}])
+  [:int {:min gen/min-qr-pixel-size
+         :max gen/max-qr-pixel-size}])
 
 ;; Single QR code content
 (def QrContent
@@ -30,7 +30,7 @@
   [:map
    [:contents QrContents]
    [:size {:optional true
-           :default gen/default-qr-size}
+           :default gen/default-qr-pixel-size}
     QrSize]
    [:format {:optional true
              :default :zip}
@@ -63,7 +63,7 @@
 
 (def initial-page-data
   {:input ""
-   :size gen/default-qr-size
+   :size gen/default-qr-pixel-size
    :format :zip
    :error-correction :medium
    :generating? false

@@ -109,11 +109,22 @@
 
 (defmethod pages :pages/qr-codes
   [_ page-data]
-  (let [{:keys [valid? data]} page-data]
+  (let [{:keys [valid? data error]} page-data]
     [mm-ui-structure/mateuszmazurczak-page-structure
      (if valid?
        [pages-qr-codes/qr-codes-page data]
-       [mm-ui-errors/internal-error {:title "Page Data Error"
-                                     :description
-                                     "There was an error loading the QR codes page. Please refresh."
-                                     :back-home-text "Refresh Page"}])]))
+       [:div
+        [mm-ui-errors/internal-error {:title "Page Data Error"
+                                      :description
+                                      "There was an error loading the QR codes page. Please refresh."
+                                      :back-home-text "Refresh Page"}]
+        (when (and (config/development?) error)
+          [:div {:class "container mx-auto px-4 py-8"}
+           [:div {:class "bg-red-50 border border-red-200 rounded p-4"}
+            [:h3 {:class "font-bold mb-2"}
+             "Validation Error Details:"]
+            [:pre {:class "text-xs overflow-auto"}
+             (str "Explained: " (pr-str (:data error)))
+             "\n\n"
+             "Raw data: "
+             (pr-str (:actual-data error))]]])])]))

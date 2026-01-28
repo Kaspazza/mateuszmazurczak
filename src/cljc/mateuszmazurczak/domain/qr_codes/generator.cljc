@@ -12,9 +12,9 @@
   #?(:clj (:import [io.nayuki.qrcodegen QrCode QrCode$Ecc])))
 
 ;; Constants
-(def default-qr-size 300)
-(def min-qr-size 50)
-(def max-qr-size 1000)
+(def default-qr-pixel-size 300)
+(def min-qr-pixel-size 50)
+(def max-qr-pixel-size 1000)
 (def max-codes-per-batch 1000)
 
 ;; Pure Domain Functions
@@ -30,9 +30,9 @@
          vec)))
 
 (defn valid-size?
-  "Check if QR code size is within acceptable bounds."
+  "Check if QR code pixel size is within acceptable bounds."
   [size]
-  (and (number? size) (>= size min-qr-size) (<= size max-qr-size)))
+  (and (number? size) (>= size min-qr-pixel-size) (<= size max-qr-pixel-size)))
 
 (defn sanitize-filename
   "Create safe filename from content string."
@@ -53,7 +53,7 @@
   (let [errors (cond-> []
                  (or (nil? contents) (empty? contents)) (conj "No QR code values provided")
                  (and (some? size) (not (valid-size? size)))
-                 (conj (str "Size must be between " min-qr-size " and " max-qr-size))
+                 (conj (str "Size must be between " min-qr-pixel-size " and " max-qr-pixel-size))
                  (and (some? format) (not (#{:zip :pdf} format))) (conj
                                                                    "Format must be :zip or :pdf")
                  (and (some? contents) (> (count contents) max-codes-per-batch))
@@ -166,7 +166,7 @@
 (defn matrix->svg-data
   "Convert QR matrix to SVG data structure for rendering.
    Returns a map that can be used to render SVG in any format."
-  [{:keys [size matrix] :as qr-data}
+  [{:keys [size] :as qr-data}
    &
    {:keys [output-size margin foreground background label]
     :or {output-size 300
@@ -186,7 +186,7 @@
 (defn matrix->svg
   "Convert QR matrix to SVG string. Pure function.
    Used for file export (ZIP/PDF). For UI rendering, use matrix->svg-data."
-  [{:keys [size matrix] :as qr-data}
+  [{:keys [size] :as qr-data}
    &
    {:keys [output-size margin foreground background label]
     :or {output-size 300
@@ -262,11 +262,11 @@
   "Generate multiple QR codes with both SVG string and render data.
    Returns {:success bool :codes [{:content :svg :svg-data :filename}] :errors []}
    - :svg - SVG string for file export (ZIP/PDF)
-   - :svg-data - data map for direct UI rendering (no innerHTML needed)"
+   - :svg-data - data map for direct UI rendering"
   [contents
    &
    {:keys [size error-correction show-label?]
-    :or {size default-qr-size
+    :or {size default-qr-pixel-size
          error-correction :medium
          show-label? false}}]
   (let [validation (validate-request {:contents contents

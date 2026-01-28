@@ -7,7 +7,7 @@
    [mateuszmazurczak.ui.components.theme-toggle :as theme-toggle]
    [mateuszmazurczak.utils.styles               :refer [merge-classes]]))
 
-(defn- base-header
+(defn base-header
   "Base header component with common layout and styling.
   
   Props:

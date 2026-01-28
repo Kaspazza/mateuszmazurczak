@@ -132,33 +132,32 @@
    so we don't add any extra text here."
   [codes size]
   (let [PDFDocument (.-PDFDocument pdf-lib)]
-    (->
-      (.create PDFDocument)
-      (.then
-       (fn [pdf-doc]
-         ;; Convert all SVGs to PNG bytes first
-         (-> (js/Promise.all (clj->js (map (fn [{:keys [svg]}] (svg-to-png-bytes svg size)) codes)))
-             (.then (fn [png-buffers]
-                      ;; Embed all PNGs
-                      (js/Promise.all (clj->js (map (fn [buf]
-                                                      (.embedPng pdf-doc (js/Uint8Array. buf)))
-                                                    png-buffers)))))
-             (.then
-              (fn [png-images]
-                (let [layout (calculate-pdf-layout-pt size)
-                      images (js->clj png-images)]
-                  ;; Add page for each QR code
-                  (doseq [[png-image _code] (map vector images codes)]
-                    (let [page (.addPage pdf-doc #js [a4-width-pt a4-height-pt])]
-                      ;; Draw QR code image centered (label is already in the image if enabled)
-                      (.drawImage page
-                                  png-image
-                                  #js {:x (:x layout)
-                                       :y (:y layout)
-                                       :width (:qr-size layout)
-                                       :height (:qr-size layout)})))
-                  ;; Save PDF
-                  (.save pdf-doc))))))))))
+    (-> (.create PDFDocument)
+        (.then
+         (fn [pdf-doc]
+           ;; Convert all SVGs to PNG bytes first
+           (-> (js/Promise.all (clj->js (map (fn [{:keys [svg]}] (svg-to-png-bytes svg size))
+                                             codes)))
+               (.then (fn [png-buffers]
+                        ;; Embed all PNGs
+                        (js/Promise.all (clj->js (map (fn [buf]
+                                                        (.embedPng pdf-doc (js/Uint8Array. buf)))
+                                                      png-buffers)))))
+               (.then (fn [png-images]
+                        (let [layout (calculate-pdf-layout-pt size)
+                              images (js->clj png-images)]
+                          ;; Add page for each QR code
+                          (doseq [[png-image _code] (map vector images codes)]
+                            (let [page (.addPage pdf-doc #js [a4-width-pt a4-height-pt])]
+                              ;; Draw QR code image centered (label is already in the image if enabled)
+                              (.drawImage page
+                                          png-image
+                                          #js {:x (:x layout)
+                                               :y (:y layout)
+                                               :width (:qr-size layout)
+                                               :height (:qr-size layout)})))
+                          ;; Save PDF
+                          (.save pdf-doc))))))))))
 
 (defn- array-buffer-to-blob
   "Convert ArrayBuffer to Blob with PDF mime type."

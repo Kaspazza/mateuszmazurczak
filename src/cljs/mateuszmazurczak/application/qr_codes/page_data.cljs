@@ -1,11 +1,71 @@
 (ns mateuszmazurczak.application.qr-codes.page-data
   "QR codes page data preparation - application layer orchestration."
   (:require
-   [malli.core                             :as m]
-   [malli.error                            :as me]
-   [mateuszmazurczak.domain.pages.qr-codes :as qr-domain]
-   [mateuszmazurczak.frontend-i18n         :as fi18n]
-   [mateuszmazurczak.ports.events          :as events]))
+   [mateuszmazurczak.application.qr-codes.page-schema :as page-schema]
+   [mateuszmazurczak.domain.qr-codes.preview          :as qr-preview]
+   [mateuszmazurczak.frontend-i18n                    :as fi18n]
+   [mateuszmazurczak.ports.events                     :as events]))
+
+;; =============================================================================
+;; Page State Updates
+;; =============================================================================
+
+(defn update-page-input
+  "Update input and clear preview."
+  [page-data input]
+  (assoc page-data :input input :preview-codes [] :errors []))
+
+(defn update-page-size
+  "Update size and regenerate preview if input exists."
+  [page-data size]
+  (let [updated (assoc page-data :size size)]
+    (if (seq (:input updated))
+      (let [{:keys [codes errors]}
+            (qr-preview/generate-preview-codes (:input updated) size (:show-label? updated))]
+        (assoc updated :preview-codes codes :errors errors))
+      updated)))
+
+(defn update-page-format
+  "Update output format."
+  [page-data format]
+  (assoc page-data :format format))
+
+(defn update-page-show-label
+  "Toggle whether to show QR code value as label below QR code."
+  [page-data show-label?]
+  (let [updated (assoc page-data :show-label? show-label?)]
+    (if (seq (:preview-codes updated))
+      (let [{:keys [codes errors]}
+            (qr-preview/generate-preview-codes (:input updated) (:size updated) show-label?)]
+        (assoc updated :preview-codes codes :errors errors))
+      updated)))
+
+(defn generate-page-preview
+  "Generate preview codes for current input."
+  [page-data]
+  (let [{:keys [input size show-label?]} page-data
+        {:keys [codes errors]} (qr-preview/generate-preview-codes input size show-label?)]
+    (assoc page-data :preview-codes codes :errors errors :generating? false)))
+
+;; =============================================================================
+;; Derived State
+;; =============================================================================
+
+(defn calculate-derived-state
+  "Calculate derived UI state from page data."
+  [page-data]
+  (let [input-count (qr-preview/parse-input-count (:input page-data))
+        preview-count (count (:preview-codes page-data))
+        has-input? (pos? input-count)
+        can-download? (and has-input? (empty? (:errors page-data)))
+        showing-preview? (pos? preview-count)
+        more-codes-count (- input-count preview-count)]
+    {:input-count input-count
+     :preview-count preview-count
+     :has-input? has-input?
+     :can-download? can-download?
+     :showing-preview? showing-preview?
+     :more-codes-count more-codes-count}))
 
 ;; =============================================================================
 ;; UI Data Builders
@@ -17,7 +77,7 @@
   (mapv (fn [size]
           {:value size
            :label (str size "px")})
-        qr-domain/valid-sizes))
+        qr-preview/valid-sizes))
 
 (defn- build-format-options
   "Build format options for UI selector."
@@ -61,60 +121,27 @@
    :download [:i18n :download]
    :preview [:i18n :preview]
    :errors [:i18n :errors]
-   :showing-preview-count [:i18n :showing-preview-count {:1 preview-count :2 input-count}]
+   :showing-preview-count [:i18n
+                           :showing-preview-count
+                           {:1 preview-count
+                            :2 input-count}]
    :more-codes-hidden [:i18n :more-codes-hidden {:1 (- input-count preview-count)}]})
 
 (defn- enrich-with-ui-data
   "Enrich domain data with UI-specific concerns."
   [page-data]
-  (let [derived (qr-domain/calculate-derived-state page-data)
+  (let [derived (calculate-derived-state page-data)
         {:keys [input-count preview-count]} derived]
     (merge page-data
            derived
            {:size-options (build-size-options)
             :format-options (build-format-options)
-            :preview-display-size qr-domain/preview-display-size
+            :preview-display-size qr-preview/preview-display-size
             :input-hint (build-input-hint input-count)
             :handlers (build-handlers)
             :text (build-text-markers preview-count input-count)})))
 
-;; =============================================================================
-;; UI Data Schema & Validation
-;; =============================================================================
 
-(def QrCodesPageUIData
-  "Schema for QR codes page UI data after translation and handler transformation."
-  [:map
-   [:input :string]
-   [:size :int]
-   [:format [:enum :zip :pdf]]
-   [:show-label? :boolean]
-   [:preview-codes [:vector :any]]
-   [:generating? :boolean]
-   [:errors [:vector :string]]
-   [:loading? {:optional true} :boolean]
-   [:input-count :int]
-   [:has-input? :boolean]
-   [:can-download? :boolean]
-   [:size-options [:vector :any]]
-   [:format-options [:vector :any]]
-   [:preview-count :int]
-   [:preview-display-size :int]
-   [:showing-preview? :boolean]
-   [:more-codes-count :int]
-   [:input-hint :string]
-   [:handlers [:map-of :keyword fn?]]
-   [:text [:map-of :keyword :string]]])
-
-(defn- valid-ui-data?
-  "Validate QR codes page UI data against schema."
-  [data]
-  (m/validate QrCodesPageUIData data))
-
-(defn- explain-ui-data
-  "Explain validation errors for QR codes page UI data."
-  [data]
-  (me/humanize (m/explain QrCodesPageUIData data)))
 
 ;; =============================================================================
 ;; Public API
@@ -126,17 +153,17 @@
    Orchestrates domain calculations, UI enrichment, marker transformations,
    and validation to convert raw app-db data into component-ready UI data."
   [raw-data]
-  (let [data (or raw-data qr-domain/initial-page-data)
+  (let [data (or raw-data (page-schema/initial-page-data))
         ui-data (-> data
                     enrich-with-ui-data
                     fi18n/i18n-markers->translation
                     events/dispatch-markers->handlers)
-        valid? (valid-ui-data? ui-data)]
+        valid? (page-schema/valid-ui-data? ui-data)]
     (if valid?
       {:data ui-data
        :valid? true}
       {:data ui-data
        :valid? false
        :error {:id ::qr-codes-ui-data-invalid
-               :explanation (explain-ui-data ui-data)
+               :explanation (page-schema/explain-ui-data ui-data)
                :actual-data ui-data}})))

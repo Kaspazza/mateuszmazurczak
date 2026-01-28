@@ -1,9 +1,9 @@
 (ns mateuszmazurczak.adapters.database.migrations
   "Database migrations for Datalevin adapter"
   (:require
-   [datalevin.core                    :as d]
-   [mateuszmazurczak.domain.pages.aoc :as aoc-domain]
-   [mateuszmazurczak.utils.validation :as validation]))
+   [datalevin.core                       :as d]
+   [mateuszmazurczak.domain.aoc.solution :as aoc-solution]
+   [mateuszmazurczak.utils.validation    :as validation]))
 
 (def migration-schema
   "Schema for tracking applied migrations in the database"
@@ -65,7 +65,7 @@
                            @conn)
             migrate-tx
             (mapv (fn [[eid profile-url]]
-                    (let [username (aoc-domain/parse-github-username profile-url)]
+                    (let [username (aoc-solution/parse-github-username profile-url)]
                       (cond-> [[:db/retract eid :aoc-solution/github-profile profile-url]]
                         username (conj [:db/add eid :aoc-solution/github-username username]))))
                   solutions)

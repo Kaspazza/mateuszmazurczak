@@ -224,7 +224,8 @@
                        :schema [:cat [:= :qr-codes/download]]
                        :handler-type :fx}
    :qr-codes/update-show-label {:category :page
-                                :description "Toggle whether to show QR code value as label below QR code."
+                                :description
+                                "Toggle whether to show QR code value as label below QR code."
                                 :schema [:cat [:= :qr-codes/update-show-label] :boolean]
                                 :handler-type :db}})
 

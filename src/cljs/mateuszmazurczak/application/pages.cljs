@@ -114,10 +114,10 @@
      (if valid?
        [pages-qr-codes/qr-codes-page data]
        [:div
-        [mm-ui-errors/internal-error {:title "Page Data Error"
-                                      :description
-                                      "There was an error loading the QR codes page. Please refresh."
-                                      :back-home-text "Refresh Page"}]
+        [mm-ui-errors/internal-error
+         {:title "Page Data Error"
+          :description "There was an error loading the QR codes page. Please refresh."
+          :back-home-text "Refresh Page"}]
         (when (and (config/development?) error)
           [:div {:class "container mx-auto px-4 py-8"}
            [:div {:class "bg-red-50 border border-red-200 rounded p-4"}

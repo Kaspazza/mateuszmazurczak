@@ -104,10 +104,9 @@
      (:show-label text)]
     [:p {:class "text-sm text-muted-foreground"}
      (:show-label-description text)]]
-   [switch/switch
-    {:id "show-label"
-     :checked show-label?
-     :on-checked-change (:on-update-show-label handlers)}]])
+   [switch/switch {:id "show-label"
+                   :checked show-label?
+                   :on-checked-change (:on-update-show-label handlers)}]])
 
 (defn- input-section
   "Input textarea section."
@@ -115,13 +114,15 @@
   [:div {:class "space-y-2"}
    [label/label {:htmlFor "qr-input"}
     (:qr-code-values text)]
-   [textarea/textarea
-    {:id "qr-input"
-     :value input
-     :on-change #((:on-update-input handlers) (-> % .-target .-value))
-     :placeholder (:enter-values-placeholder text)
-     :rows 10
-     :class "font-mono text-sm"}]
+   [textarea/textarea {:id "qr-input"
+                       :value input
+                       :on-change #((:on-update-input handlers)
+                                     (-> %
+                                         .-target
+                                         .-value))
+                       :placeholder (:enter-values-placeholder text)
+                       :rows 10
+                       :class "font-mono text-sm"}]
    [:p {:class "text-sm text-muted-foreground"}
     input-hint]])
 

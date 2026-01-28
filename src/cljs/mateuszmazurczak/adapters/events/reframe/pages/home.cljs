@@ -5,8 +5,8 @@
    This is INTERNAL adapter code - UI components should dispatch via events/dispatch!"
   (:require
    [mateuszmazurczak.adapters.navigation.routes :as-alias mm-routes]
+   [mateuszmazurczak.application.home.page-data :as page-data]
    [mateuszmazurczak.domain.articles.core       :as articles]
-   [mateuszmazurczak.domain.pages.home          :as home-domain]
    [mateuszmazurczak.domain.state.registry      :as state-registry]
    [mateuszmazurczak.ports.navigation           :as navigation]
    [mateuszmazurczak.utils.map                  :as utils-map]))
@@ -19,11 +19,11 @@
    registered as :db or :fx handler."
   {:home/refresh (fn [db [_]]
                    (let [navigation-href (navigation/href ::mm-routes/articles)
-                         page-data (home-domain/build-home-page-data articles/articles
-                                                                     navigation-href)]
+                         home-page-data (page-data/build-home-page-data articles/articles
+                                                                        navigation-href)]
                      (update-in db
                                 state-registry/*home-page-path*
                                 utils-map/deep-merge
-                                page-data
+                                home-page-data
                                 {:loading? false})))
    :home/on-route-enter (fn [{:keys [_db]} [_]] {:dispatch [:home/refresh]})})

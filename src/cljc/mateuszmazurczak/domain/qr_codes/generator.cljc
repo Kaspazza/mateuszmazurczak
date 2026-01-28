@@ -95,7 +95,9 @@
         {:keys [error-correction]
          :or {error-correction :medium}}]
        ;; Access pattern: qrcodegen.default.QrCode and qrcodegen.default.QrCode.Ecc
-       (let [QrCode (-> qrcodegen .-default .-QrCode)
+       (let [QrCode (-> qrcodegen
+                        .-default
+                        .-QrCode)
              Ecc (.-Ecc QrCode)
              ecc (case error-correction
                    :low (.-LOW Ecc)
@@ -146,9 +148,7 @@
                                 separator (if (empty? current-line) "" " ")
                                 new-line (str current-line separator chunk)]
                             (if (<= (count new-line) max-chars-per-line)
-                              (if (empty? acc)
-                                [new-line]
-                                (conj (vec (butlast acc)) new-line))
+                              (if (empty? acc) [new-line] (conj (vec (butlast acc)) new-line))
                               (conj acc chunk))))
                         []
                         all-chunks)]
@@ -158,15 +158,17 @@
   "Convert QR matrix to SVG path data string. Pure function.
    Returns the 'd' attribute value for an SVG path element."
   [{:keys [size matrix]} margin]
-  (str/join "" (for [y (range size)
-                     x (range size)
-                     :when (get-in matrix [y x])]
-                 (str "M" (+ margin x) "," (+ margin y) "h1v1h-1z"))))
+  (str/join ""
+            (for [y (range size)
+                  x (range size)
+                  :when (get-in matrix [y x])]
+              (str "M" (+ margin x) "," (+ margin y) "h1v1h-1z"))))
 
 (defn matrix->svg-data
   "Convert QR matrix to SVG data structure for rendering.
    Returns a map that can be used to render SVG in any format."
-  [{:keys [size] :as qr-data}
+  [{:keys [size]
+    :as qr-data}
    &
    {:keys [output-size margin foreground background label]
     :or {output-size 300
@@ -186,7 +188,8 @@
 (defn matrix->svg
   "Convert QR matrix to SVG string. Pure function.
    Used for file export (ZIP/PDF). For UI rendering, use matrix->svg-data."
-  [{:keys [size] :as qr-data}
+  [{:keys [size]
+    :as qr-data}
    &
    {:keys [output-size margin foreground background label]
     :or {output-size 300
@@ -209,31 +212,52 @@
         ;; Calculate label height: padding + lines
         label-padding (* total-modules 0.08)
         label-text-height (* line-count line-height)
-        label-height (if has-label?
-                       (+ label-padding label-text-height (* total-modules 0.05))
-                       0)
+        label-height (if has-label? (+ label-padding label-text-height (* total-modules 0.05)) 0)
         total-height-modules (+ total-modules label-height)
         ;; Starting Y position for first line of text (after QR + padding)
         text-start-y (+ total-modules label-padding)]
     (str "<svg xmlns=\"http://www.w3.org/2000/svg\" "
-         "viewBox=\"0 0 " total-modules " " total-height-modules "\" "
-         "width=\"" output-size "\" height=\"" (int (* output-size (/ total-height-modules total-modules))) "\">"
-         "<rect width=\"100%\" height=\"100%\" fill=\"" background "\"/>"
-         "<path d=\"" path-d "\" fill=\"" foreground "\"/>"
+         "viewBox=\"0 0 "
+         total-modules
+         " "
+         total-height-modules
+         "\" "
+         "width=\""
+         output-size
+         "\" height=\""
+         (int (* output-size (/ total-height-modules total-modules)))
+         "\">"
+         "<rect width=\"100%\" height=\"100%\" fill=\""
+         background
+         "\"/>"
+         "<path d=\""
+         path-d
+         "\" fill=\""
+         foreground
+         "\"/>"
          (when has-label?
-           (str "<text x=\"" (/ total-modules 2) "\" "
+           (str "<text x=\""
+                (/ total-modules 2)
+                "\" "
                 "text-anchor=\"middle\" "
                 "font-family=\"monospace, Courier New, Courier\" "
-                "font-size=\"" font-size "\" "
-                "fill=\"" foreground "\">"
+                "font-size=\""
+                font-size
+                "\" "
+                "fill=\""
+                foreground
+                "\">"
                 (str/join ""
-                          (map-indexed
-                           (fn [idx line]
-                             (str "<tspan x=\"" (/ total-modules 2) "\" "
-                                  "y=\"" (+ text-start-y (* idx line-height)) "\">"
-                                  line
-                                  "</tspan>"))
-                           text-lines))
+                          (map-indexed (fn [idx line]
+                                         (str "<tspan x=\""
+                                              (/ total-modules 2)
+                                              "\" "
+                                              "y=\""
+                                              (+ text-start-y (* idx line-height))
+                                              "\">"
+                                              line
+                                              "</tspan>"))
+                                       text-lines))
                 "</text>"))
          "</svg>")))
 
@@ -276,13 +300,13 @@
       {:success false
        :errors (:errors validation)}
       {:success true
-       :codes (vec (map-indexed (fn [idx content]
-                                  (let [qr-matrix (generate-qr-matrix content
-                                                                      :error-correction
-                                                                      error-correction)
-                                        label (when show-label? content)]
-                                    {:content content
-                                     :svg (matrix->svg qr-matrix :output-size size :label label)
-                                     :svg-data (matrix->svg-data qr-matrix :output-size size :label label)
-                                     :filename (sanitize-filename content idx)}))
-                                contents))})))
+       :codes (vec (map-indexed
+                    (fn [idx content]
+                      (let [qr-matrix
+                            (generate-qr-matrix content :error-correction error-correction)
+                            label (when show-label? content)]
+                        {:content content
+                         :svg (matrix->svg qr-matrix :output-size size :label label)
+                         :svg-data (matrix->svg-data qr-matrix :output-size size :label label)
+                         :filename (sanitize-filename content idx)}))
+                    contents))})))

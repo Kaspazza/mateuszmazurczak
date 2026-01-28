@@ -95,9 +95,8 @@
     :enter-values-placeholder
     "Enter one value per line:\n01KD2HHD6WYDAB5YJS9WGFYW3V3687\n01KD2HHD70GDT9BG899TQGY2EF3687\nMy custom text"
     :enter-values-hint "Enter values above, one per line"
-    :qr-codes-will-be-generated
-    (fn [[n]]
-      (str n " QR code" (when-not (= 1 n) "s") " will be generated"))
+    :qr-codes-will-be-generated (fn [[n]]
+                                  (str n " QR code" (when-not (= 1 n) "s") " will be generated"))
     :qr-code-size "QR Code Size"
     :select-size "Select size"
     :size-small "Small"
@@ -207,17 +206,16 @@
     :enter-values-placeholder
     "Wprowadź jedną wartość na linię:\n01KD2HHD6WYDAB5YJS9WGFYW3V3687\n01KD2HHD70GDT9BG899TQGY2EF3687\nMój własny tekst"
     :enter-values-hint "Wprowadź wartości powyżej, jedna na linię"
-    :qr-codes-will-be-generated
-    (fn [[n]]
-      (let [plural-form (cond
-                          (= 1 n) "kod QR zostanie wygenerowany"
-                          ;; 2-4, 22-24, 32-34... (but not 12-14)
-                          (and (<= 2 (mod n 10) 4)
-                               (not (<= 12 (mod n 100) 14)))
-                          "kody QR zostaną wygenerowane"
-                          ;; 0, 5-21, 25-31, 35-41...
-                          :else "kodów QR zostanie wygenerowanych")]
-        (str n " " plural-form)))
+    :qr-codes-will-be-generated (fn [[n]]
+                                  (let [plural-form (cond
+                                                      (= 1 n) "kod QR zostanie wygenerowany"
+                                                      ;; 2-4, 22-24, 32-34... (but not 12-14)
+                                                      (and (<= 2 (mod n 10) 4)
+                                                           (not (<= 12 (mod n 100) 14)))
+                                                      "kody QR zostaną wygenerowane"
+                                                      ;; 0, 5-21, 25-31, 35-41...
+                                                      :else "kodów QR zostanie wygenerowanych")]
+                                    (str n " " plural-form)))
     :qr-code-size "Rozmiar Kodu QR"
     :select-size "Wybierz rozmiar"
     :size-small "Mały"

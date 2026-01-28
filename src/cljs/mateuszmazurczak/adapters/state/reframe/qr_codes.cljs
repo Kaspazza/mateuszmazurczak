@@ -10,7 +10,6 @@
 (rf/reg-sub :pages/qr-codes
             :<-
             [:qr-codes/raw-data]
-            (fn [raw-data _]
-              (page-data/prepare-ui-data raw-data)))
+            (fn [raw-data _] (page-data/prepare-ui-data raw-data)))
 
 (def watch "QR codes page subscriptions for re-frame." #{:qr-codes/raw-data :pages/qr-codes})

@@ -58,36 +58,38 @@
                            (.addEventListener js/window "scroll" mm-ui-header/toggle-header-border))
     :component-will-unmount
     (fn [_] (.removeEventListener js/window "scroll" mm-ui-header/toggle-header-border))
-    :reagent-render
-    (fn [{:keys [size border? sticky? class admin-logged-in? admin-text on-admin-logout]}]
-      (let [menu-items [{:title "Mateusz Mazurczak"
-                         :href (navigation/href ::mm-routes/home)
-                         :route-name ::mm-routes/home}
-                        {:title (fi18n/tr :articles)
-                         :href (navigation/href ::mm-routes/articles)
-                         :route-name ::mm-routes/articles}
-                        {:title (fi18n/tr :aoc-solutions)
-                         :href (navigation/href ::mm-routes/aoc)
-                         :route-name ::mm-routes/aoc}
-                        {:title (fi18n/tr :qr-codes)
-                         :href (navigation/href ::mm-routes/qr-codes)
-                         :route-name ::mm-routes/qr-codes}]]
-        [mm-ui-header/base-header {:size size
-                                   :sticky? sticky?
-                                   :border? border?
-                                   :class class}
-         [:nav {:class "flex items-center justify-between px-6 lg:px-8"}
-          nil ;; no logo
-          [:div {:class "hidden lg:flex lg:gap-x-12"}
-           (for [{:keys [title href route-name]} menu-items]
-             ^{:key href}
-             [nav-link {:title title :href href :route-name route-name}])]
-          [:div {:class "flex items-center gap-4"}
-           (when admin-logged-in?
-             [admin/admin-badge {:text admin-text
-                                 :on-logout on-admin-logout}])
-           [theme-toggle/theme-toggle]
-           [mm-ui-header/lang-select]]]]))}))
+    :reagent-render (fn [{:keys
+                          [size border? sticky? class admin-logged-in? admin-text on-admin-logout]}]
+                      (let [menu-items [{:title "Mateusz Mazurczak"
+                                         :href (navigation/href ::mm-routes/home)
+                                         :route-name ::mm-routes/home}
+                                        {:title (fi18n/tr :articles)
+                                         :href (navigation/href ::mm-routes/articles)
+                                         :route-name ::mm-routes/articles}
+                                        {:title (fi18n/tr :aoc-solutions)
+                                         :href (navigation/href ::mm-routes/aoc)
+                                         :route-name ::mm-routes/aoc}
+                                        {:title (fi18n/tr :qr-codes)
+                                         :href (navigation/href ::mm-routes/qr-codes)
+                                         :route-name ::mm-routes/qr-codes}]]
+                        [mm-ui-header/base-header {:size size
+                                                   :sticky? sticky?
+                                                   :border? border?
+                                                   :class class}
+                         [:nav {:class "flex items-center justify-between px-6 lg:px-8"}
+                          nil ;; no logo
+                          [:div {:class "hidden lg:flex lg:gap-x-12"}
+                           (for [{:keys [title href route-name]} menu-items]
+                             ^{:key href}
+                             [nav-link {:title title
+                                        :href href
+                                        :route-name route-name}])]
+                          [:div {:class "flex items-center gap-4"}
+                           (when admin-logged-in?
+                             [admin/admin-badge {:text admin-text
+                                                 :on-logout on-admin-logout}])
+                           [theme-toggle/theme-toggle]
+                           [mm-ui-header/lang-select]]]]))}))
 
 (defn mateuszmazurczak-page-structure
   "Page structure with header and footer."

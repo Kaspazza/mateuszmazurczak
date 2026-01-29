@@ -103,14 +103,8 @@
 
 
 ;; =============================================================================
-;; Solution Form
+;; Solution Display Logic
 ;; =============================================================================
-
-(defn prepare-solution-payload
-  "Prepare form data for submission by normalizing GitHub username."
-  [form]
-  (-> form
-      (update :github-username parse-github-username)))
 
 (defn should-show-playground?
   "Determine if playground menu should be shown for a solution."
@@ -137,53 +131,6 @@
            clever-count
            voted-key
            true)))
-
-;; =============================================================================
-;; Content Type Normalization
-;; =============================================================================
-
-(defn normalize-content-type
-  "Normalize content-type from string or keyword to keyword.
-   
-   Accepts: \"code-snippet\", \"repo-link\", :code-snippet, :repo-link
-   Returns: :code-snippet or :repo-link"
-  [content-type]
-  (if (keyword? content-type) content-type (keyword content-type)))
-
-;; =============================================================================
-;; Transaction Building
-;; =============================================================================
-
-(defn build-save-solution-tx
-  "Build transaction data for saving a new AOC solution.
-   
-   Takes:
-   - solution-id: UUID for the solution
-   - now: Timestamp (Date or inst)
-   - solution map with keys:
-     - :year (int)
-     - :challenge (int)
-     - :author-name (string)
-     - :github-username (optional string) - Just the GitHub username
-     - :content-type (string or keyword: code-snippet or repo-link)
-     - :content (string)
-   
-   Returns vector of transaction maps for Datalevin.
-   
-   This is a pure function - no side effects, UUID and timestamp are injected."
-  [solution-id now {:keys [year challenge author-name github-username content-type content]}]
-  (let [normalized-content-type (normalize-content-type content-type)
-        base-tx {:aoc-solution/id solution-id
-                 :aoc-solution/year year
-                 :aoc-solution/challenge challenge
-                 :aoc-solution/author-name author-name
-                 :aoc-solution/content-type normalized-content-type
-                 :aoc-solution/content content
-                 :aoc-solution/created-at now}
-        tx (if (and github-username (string? github-username) (not (str/blank? github-username)))
-             (assoc base-tx :aoc-solution/github-username github-username)
-             base-tx)]
-    [tx]))
 
 ;; =============================================================================
 ;; Solution Sorting

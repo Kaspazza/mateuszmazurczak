@@ -5,6 +5,7 @@
    Reusable across different event systems (re-frame, etc.)."
   (:require
    [mateuszmazurczak.application.aoc.page-schema :as page-schema]
+   [mateuszmazurczak.application.aoc.solution    :as app-solution]
    [mateuszmazurczak.domain.aoc.selection        :as selection]
    [mateuszmazurczak.domain.aoc.solution         :as solution]
    [mateuszmazurczak.domain.aoc.validation       :as validation]
@@ -145,7 +146,7 @@
         challenge (or (:challenge form) page-challenge)
         payload (-> form
                     (assoc :year year :challenge challenge)
-                    solution/prepare-solution-payload)]
+                    app-solution/prepare-solution-payload)]
     {:year year
      :challenge challenge
      :payload payload

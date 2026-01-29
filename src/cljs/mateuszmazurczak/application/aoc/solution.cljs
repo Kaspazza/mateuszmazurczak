@@ -1,26 +1,17 @@
 (ns mateuszmazurczak.application.aoc.solution
-  "Application-layer solution enrichment and UI preparation.
+  "Application-layer orchestration for AOC solutions (frontend).
    
-   Contains web-specific logic for preparing solutions for display.")
+   Contains form preparation logic (web-specific concerns).
+   Imports domain/ and ports/ only."
+  (:require
+   [mateuszmazurczak.domain.aoc.solution :as solution]))
 
 ;; =============================================================================
-;; UI Enrichment
+;; Solution Form
 ;; =============================================================================
 
-(defn enrich-solution-with-vote-handlers
-  "Add vote handler dispatch markers to solution."
-  [solution]
-  (let [solution-id (:id solution)]
-    (assoc solution
-           :on-vote-best-practices [:dispatch [:aoc/vote solution-id :best-practices]]
-           :on-vote-clever [:dispatch [:aoc/vote solution-id :clever]])))
-
-(defn enrich-solution-with-ui-context
-  "Enrich solution with UI-specific context (theme, text)."
-  [solution theme text]
-  (assoc solution :theme theme :text text))
-
-(defn denormalize-and-enrich-solutions
-  "Denormalize solution IDs and enrich with UI handlers."
-  [solution-ids entities denormalize-fn]
-  (mapv enrich-solution-with-vote-handlers (denormalize-fn solution-ids entities)))
+(defn prepare-solution-payload
+  "Prepare form data for submission by normalizing GitHub username."
+  [form]
+  (-> form
+      (update :github-username solution/parse-github-username)))

@@ -4,6 +4,7 @@
    Contains schemas, database orchestration, impure operations, and database-specific
    queries/mappers (Datalevin). Imports domain/ and ports/ only."
   (:require
+   [clojure.string                       :as str]
    [mateuszmazurczak.domain.aoc.solution :as solution]
    [mateuszmazurczak.ports.database      :as db])
   (:import [java.util Date UUID]))
@@ -80,6 +81,53 @@
     github-username (assoc :github-username github-username)))
 
 ;; =============================================================================
+;; Content Type Normalization
+;; =============================================================================
+
+(defn- normalize-content-type
+  "Normalize content-type from string or keyword to keyword.
+   
+   Accepts: \"code-snippet\", \"repo-link\", :code-snippet, :repo-link
+   Returns: :code-snippet or :repo-link"
+  [content-type]
+  (if (keyword? content-type) content-type (keyword content-type)))
+
+;; =============================================================================
+;; Transaction Building (Datalevin-specific)
+;; =============================================================================
+
+(defn- build-save-solution-tx
+  "Build transaction data for saving a new AOC solution.
+   
+   Takes:
+   - solution-id: UUID for the solution
+   - now: Timestamp (Date or inst)
+   - solution map with keys:
+     - :year (int)
+     - :challenge (int)
+     - :author-name (string)
+     - :github-username (optional string) - Just the GitHub username
+     - :content-type (string or keyword: code-snippet or repo-link)
+     - :content (string)
+   
+   Returns vector of transaction maps for Datalevin.
+   
+   This is a pure function - no side effects, UUID and timestamp are injected."
+  [solution-id now {:keys [year challenge author-name github-username content-type content]}]
+  (let [normalized-content-type (normalize-content-type content-type)
+        base-tx {:aoc-solution/id solution-id
+                 :aoc-solution/year year
+                 :aoc-solution/challenge challenge
+                 :aoc-solution/author-name author-name
+                 :aoc-solution/content-type normalized-content-type
+                 :aoc-solution/content content
+                 :aoc-solution/created-at now}
+        tx (if (and github-username (string? github-username) (not (str/blank? github-username)))
+             (assoc base-tx :aoc-solution/github-username github-username)
+             base-tx)]
+    [tx]))
+
+;; =============================================================================
 ;; Transaction Generation (Impure - generates UUID and timestamp)
 ;; =============================================================================
 
@@ -95,7 +143,7 @@
   [solution-data]
   (let [solution-id (UUID/randomUUID)
         now (Date.)
-        tx-data (solution/build-save-solution-tx solution-id now solution-data)]
+        tx-data (build-save-solution-tx solution-id now solution-data)]
     [solution-id tx-data]))
 
 ;; =============================================================================

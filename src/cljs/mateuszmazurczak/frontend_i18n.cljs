@@ -81,7 +81,7 @@
    
    Examples:
    [:i18n :hello] -> \"Hello\"
-   [:i18n :greeting {:name \"John\"}] -> \"Hello, John!\""
+   [:i18n :greeting {:1 \"John\"}] -> \"Hello, John!\" (%1 replaced by \"John\")"
   [[_i18n-kw translation-key params]]
   (if params (tr translation-key params) (tr translation-key)))
 
@@ -91,16 +91,16 @@
    Translation markers follow the pattern:
    [:i18n :translation-key]
    or
-   [:i18n :translation-key {:param value}]
+   [:i18n :translation-key {:1 val1 :2 val2 ...}]
    
-   Uses `tr` for translation.
+   Uses `tr` for translation with %1, %2, etc. placeholders.
    
    Examples:
    {:title [:i18n :hello]} 
    -> {:title \"Hello\"}
    
-   {:nested {:msg [:i18n :greeting {:name \"John\"}]}}
-   -> {:nested {:msg \"Hello, John!\"}}"
+   {:nested {:msg [:i18n :greeting {:1 \"John\"}]}}
+   -> {:nested {:msg \"Hello, John!\"}} (if dict has \"Hello %1!\")"
   [data]
   (walk/prewalk #(if (i18n-marker? %) (translate-marker %) %) data))
 

@@ -10,6 +10,7 @@
    [clojure.set                                        :as set]
    [mateuszmazurczak.adapters.state.reframe.admin-page :as admin-page-watch]
    [mateuszmazurczak.adapters.state.reframe.aoc        :as aoc-watch]
+   [mateuszmazurczak.adapters.state.reframe.qr-codes   :as qr-codes-watch]
    [mateuszmazurczak.adapters.state.reframe.theme      :as theme-watch]
    [mateuszmazurczak.application.home.page-data        :as home-page-data]
    [mateuszmazurczak.domain.i18n.language              :as i18n-lang]
@@ -88,6 +89,7 @@
                :i18n/lang-str}
              aoc-watch/watch
              admin-page-watch/watch
+             qr-codes-watch/watch
              theme-watch/watch))
 
 (defn get-watch-fn

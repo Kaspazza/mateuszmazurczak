@@ -34,6 +34,10 @@
                                  (events/dispatch! [:aoc/on-route-enter {:year year-int
                                                                          :challenge
                                                                          challenge-int}])))}]}]]]
+   ["/qr-codes"
+    {:name ::qr-codes
+     :page-id :pages/qr-codes
+     :controllers [{:start (fn [_] (events/dispatch! [:qr-codes/on-route-enter]))}]}]
    ["/secret-admin-panel-xyz"
     {:name ::admin
      :page-id :pages/admin

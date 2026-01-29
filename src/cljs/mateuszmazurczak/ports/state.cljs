@@ -9,13 +9,15 @@
    - State queries (watch) - reactive reads from state
    - State lifecycle (reset-app-db!)"
   (:require
-   [clojure.set                             :as set]
-   [mateuszmazurczak.adapters.state.reframe :as reframe-adapter]
-   [mateuszmazurczak.domain.pages.aoc       :as aoc-domain]
-   [mateuszmazurczak.domain.pages.home      :as home-domain]
-   [mateuszmazurczak.domain.state.registry  :as state-registry]
-   [mateuszmazurczak.domain.theme.schema    :as theme-schema]
-   [mateuszmazurczak.system.config          :as config]))
+   [clojure.set                                       :as set]
+   [mateuszmazurczak.adapters.state.reframe           :as reframe-adapter]
+   [mateuszmazurczak.application.admin.page-schema    :as admin-schema]
+   [mateuszmazurczak.application.aoc.page-schema      :as aoc-schema]
+   [mateuszmazurczak.application.home.page-schema     :as home-schema]
+   [mateuszmazurczak.application.qr-codes.page-schema :as qr-codes-schema]
+   [mateuszmazurczak.domain.state.registry            :as state-registry]
+   [mateuszmazurczak.domain.theme.schema              :as theme-schema]
+   [mateuszmazurczak.system.config                    :as config]))
 
 
 ;; =============================================================================
@@ -144,8 +146,10 @@
    :theme theme-schema/default-theme
    :translator translator
    :logger logger
-   :pages {:home (home-domain/initial-home-data)
-           :aoc (aoc-domain/initial-aoc-data)}})
+   :pages {:home (home-schema/initial-home-data)
+           :admin (admin-schema/initial-admin-data)
+           :aoc (aoc-schema/initial-aoc-data)
+           :qr-codes (qr-codes-schema/initial-page-data)}})
 
 (defn init-app-db!
   "Initialize the application state with the given initial state.

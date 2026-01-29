@@ -1,8 +1,9 @@
 (ns mateuszmazurczak.adapters.events.reframe.admin
   "Re-frame adapter for admin events."
   (:require
+   [mateuszmazurczak.application.admin.page-schema :as page-schema]
    [mateuszmazurczak.application.aoc.cache-service :as aoc-cache]
-   [mateuszmazurczak.domain.pages.admin            :as admin-domain]
+   [mateuszmazurczak.domain.admin.validation       :as admin-validation]
    [mateuszmazurczak.domain.state.registry         :as state-registry]
    [mateuszmazurczak.ports.logging                 :as log]
    [mateuszmazurczak.ui.components.notification    :as notification]
@@ -23,16 +24,16 @@
 (def handlers
   {:admin/on-route-enter
    (fn [{:keys [db]} [_]]
-     (let [initial-data (admin-domain/initial-admin-data)]
-       {:db (assoc-in db admin-domain/*admin-page-path* (assoc initial-data :loading? false))
+     (let [initial-data (page-schema/initial-admin-data)]
+       {:db (assoc-in db page-schema/*admin-page-path* (assoc initial-data :loading? false))
         :dispatch [:admin/check-status]}))
    :admin/update-form (fn [{:keys [db]} [_ field value]]
-                        (let [form-path (conj admin-domain/*admin-page-path* :form field)]
+                        (let [form-path (conj page-schema/*admin-page-path* :form field)]
                           {:db (assoc-in db form-path value)}))
    :admin/login
    (fn [{:keys [db]} [_]]
-     (let [admin-key (get-in db (conj admin-domain/*admin-page-path* :form :admin-key))
-           {:keys [valid?]} (admin-domain/validate-admin-login admin-key)]
+     (let [admin-key (get-in db (conj page-schema/*admin-page-path* :form :admin-key))
+           {:keys [valid?]} (admin-validation/validate-admin-login admin-key)]
        (if-not valid?
          (do (notification/show-error "Invalid admin key"
                                       {:description "Key must be at least 32 characters"})
@@ -40,7 +41,7 @@
          (do (notification/show-success "Admin mode activated")
              {:db (-> db
                       (assoc-in state-registry/*admin-logged-in-path* true)
-                      (assoc-in (conj admin-domain/*admin-page-path* :form :admin-key) ""))
+                      (assoc-in (conj page-schema/*admin-page-path* :form :admin-key) ""))
               ::cache-admin-key admin-key}))))
    :admin/logout (fn [{:keys [db]} _]
                    (notification/show-success "Logged out from admin mode")

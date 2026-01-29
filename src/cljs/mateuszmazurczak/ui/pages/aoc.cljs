@@ -7,9 +7,6 @@
                                                          ChevronUp
                                                          ExternalLink
                                                          Link2]]
-   [clojure.string                               :as str]
-   [mateuszmazurczak.domain.aoc.playground       :as playground]
-   [mateuszmazurczak.domain.pages.aoc            :as aoc-domain]
    [mateuszmazurczak.ui.components.admin         :as admin]
    [mateuszmazurczak.ui.components.button        :as button]
    [mateuszmazurczak.ui.components.code-block    :as code-block]
@@ -38,11 +35,13 @@
 
 (defn open-in-playground-menu
   "Dropdown menu to open code solution in interactive playground (Squint or Cherry).
-  Only shown for code-snippet content type."
-  [content-type content text]
-  (when (aoc-domain/should-show-playground? content-type)
-    (let [squint-url (playground/squint-url content)
-          cherry-url (playground/cherry-url content)]
+  
+  Props:
+  - playground-urls: Map with :squint and :cherry URLs (nil if not applicable)
+  - text: Translated text map"
+  [playground-urls text]
+  (when playground-urls
+    (let [{:keys [squint cherry]} playground-urls]
       [dropdown-menu/dropdown-menu {}
        [dropdown-menu/dropdown-menu-trigger {:as-child true}
         (button/button {:variant :ghost
@@ -53,17 +52,14 @@
                         (or (:open-interactively text) "Open interactively")]
                        [:> ChevronDown {:class "size-3 ml-1"}])]
        [dropdown-menu/dropdown-menu-content {:align "end"}
-        [dropdown-menu/dropdown-menu-item {:on-select #(js/window.open squint-url "_blank")
+        [dropdown-menu/dropdown-menu-item {:on-select #(js/window.open squint "_blank")
                                            :class "cursor-pointer gap-2"}
          [:> ExternalLink {:class "size-4"}]
          [:span "Squint"]]
-        [dropdown-menu/dropdown-menu-item {:on-select #(js/window.open cherry-url "_blank")
+        [dropdown-menu/dropdown-menu-item {:on-select #(js/window.open cherry "_blank")
                                            :class "cursor-pointer gap-2"}
          [:> ExternalLink {:class "size-4"}]
          [:span "Cherry"]]]])))
-
-;; Backward compatibility alias
-(def open-in-squint-button open-in-playground-menu)
 
 (defn share-button
   "Button to share/copy link to a specific solution."
@@ -95,35 +91,25 @@
       [:p {:class "text-xs text-muted-foreground mt-1"}
        created-at])]])
 
-(def ^:private long-code-threshold
-  "Line count threshold to consider code as long and collapsible."
-  20)
-
-(defn- is-long-code?
-  "Check if content is long enough to warrant collapsing."
-  [content]
-  (when content (let [lines (str/split-lines content)] (> (count lines) long-code-threshold))))
-
 (defn solution-info
   "Display solution content based on type with expand/collapse for long code.
   
   Props:
   - :content-type (:code-snippet | :repo-link) - Type of content
   - :content - The actual content (code or URL)
+  - :collapsible? - Whether content should be collapsible (computed in app layer)
   - :theme - Current theme (:light | :dark)
   - :text - Map of translated text strings"
-  [{:keys [content-type content]
+  [{:keys [_content-type collapsible?]
     :as _solution-card-data}]
-  (let [expanded? (r/atom false)
-        is-long-code? (and (= content-type :code-snippet) (is-long-code? content))
-        is-long-url? (and (= content-type :repo-link) (> (count content) 100))]
+  (let [expanded? (r/atom false)]
     (fn [{:keys [content-type content theme text]
           :as _solution-card-data}]
       [:div {:class "mt-4"}
        (cond
          (= content-type :code-snippet)
          [:div {:class "relative"}
-          [:div {:class (when (and is-long-code? (not @expanded?))
+          [:div {:class (when (and collapsible? (not @expanded?))
                           "max-h-64 overflow-hidden relative")}
            [code-block/code-block
             [code-block/code-block-code {:code content
@@ -132,11 +118,11 @@
                                                   :dark "github-dark"
                                                   :light "github-light"
                                                   "github-light")}]]
-           (when (and is-long-code? (not @expanded?))
+           (when (and collapsible? (not @expanded?))
              [:div
               {:class
                "absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-card to-transparent pointer-events-none"}])]
-          (when is-long-code?
+          (when collapsible?
             [:div {:class "mt-2 flex justify-center"}
              [button/button {:variant :ghost
                              :size :sm
@@ -149,7 +135,7 @@
                  [:span (or (:show-more text) "Show more")]])]])]
          (= content-type :repo-link)
          [:div {:class "relative"}
-          [:div {:class (when (and is-long-url? (not @expanded?))
+          [:div {:class (when (and collapsible? (not @expanded?))
                           "max-h-20 overflow-hidden relative")}
            [:a {:href content
                 :target "_blank"
@@ -168,11 +154,11 @@
              " ("
              content
              ")"]]
-           (when (and is-long-url? (not @expanded?))
+           (when (and collapsible? (not @expanded?))
              [:div
               {:class
                "absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card to-transparent pointer-events-none"}])]
-          (when is-long-url?
+          (when collapsible?
             [:div {:class "mt-2 flex justify-center"}
              [button/button {:variant :ghost
                              :size :sm
@@ -196,8 +182,7 @@
   - :on-vote-best-practices - Handler for best practices vote
   - :on-vote-clever - Handler for clever vote
   - :solution-id - ID of the solution for share link
-  - :content-type - Type of content (:code-snippet or :repo-link)
-  - :content - The actual content (code or URL)
+  - :playground-urls - Map with :squint and :cherry URLs (nil if not applicable)
   - :text - Map of translated text strings"
   [{:keys [best-practices-count
            clever-count
@@ -206,8 +191,7 @@
            on-vote-best-practices
            on-vote-clever
            solution-id
-           content-type
-           content
+           playground-urls
            text]
     :as _vote-data}]
   [:div {:class "flex justify-between items-center mt-4"}
@@ -225,7 +209,7 @@
      (if voted-clever? [:> Check {:class "size-4"}] [:> ArrowUp {:class "size-4"}])
      (str (:clever text) " " (or clever-count 0))]]
    [:div {:class "flex gap-2"}
-    [open-in-squint-button content-type content text]
+    [open-in-playground-menu playground-urls text]
     [share-button solution-id text]]])
 
 (defn solution-card
@@ -264,11 +248,7 @@
                                       :on-delete on-delete-solution}]])]
    [author-info solution-card-data]
    [solution-info solution-card-data]
-   [vote-buttons
-    (assoc solution-card-data
-           :solution-id (:id solution-card-data)
-           :content-type (:content-type solution-card-data)
-           :content (:content solution-card-data))]])
+   [vote-buttons solution-card-data]])
 
 (defn input-author
   [{:keys [form submitting? on-update-form text form-errors]
@@ -546,21 +526,16 @@
                             (:no-solutions-yet text)]
                            [:p {:class "text-muted-foreground mt-2"}
                             (:be-first-to-share text)]]
-       :else (let [sorted-solutions (sort-by (fn [solution]
-                                               (if (contains? user-solution-ids (:id solution))
-                                                 0 ;; User solutions first
-                                                 1)) ;; Others after
-                                             solutions)]
-               (for [solution sorted-solutions]
-                 (let [is-user-solution? (contains? user-solution-ids (:id solution))
-                       is-highlighted? (= highlighted-solution-id (:id solution))]
-                   ^{:key (:id solution)}
-                   [solution-card
-                    solution
-                    is-user-solution?
-                    is-highlighted?
-                    admin-logged-in?
-                    on-delete-solution]))))]))
+       :else (for [solution solutions]
+               (let [is-user-solution? (contains? user-solution-ids (:id solution))
+                     is-highlighted? (= highlighted-solution-id (:id solution))]
+                 ^{:key (:id solution)}
+                 [solution-card
+                  solution
+                  is-user-solution?
+                  is-highlighted?
+                  admin-logged-in?
+                  on-delete-solution])))]))
 
 (defn aoc-page
   "Main Advent of Code page.

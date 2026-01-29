@@ -28,6 +28,9 @@
      ["/:year/:challenge"
       {:name ::aoc-specific
        :get mateuszmazurczak-page}]]
+    ["/qr-codes"
+     {:name ::qr-codes
+      :get mateuszmazurczak-page}]
     ["/secret-admin-panel-xyz"
      {:name ::admin
       :get mateuszmazurczak-page}]

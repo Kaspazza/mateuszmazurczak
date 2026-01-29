@@ -1,13 +1,13 @@
 (ns mateuszmazurczak.adapters.http.api
   (:require
-   [clojure.string                         :as str]
-   [malli.core                             :as m]
-   [malli.error                            :as me]
-   [mateuszmazurczak.domain.aoc.repository :as aoc-repo]
-   [mateuszmazurczak.domain.aoc.vote       :as vote]
-   [mateuszmazurczak.ports.database        :as db]
-   [mateuszmazurczak.ports.logging         :as log]
-   [ring.util.http-response                :as http-response]))
+   [clojure.string                             :as str]
+   [malli.core                                 :as m]
+   [malli.error                                :as me]
+   [mateuszmazurczak.application.aoc.solution  :as aoc-app]
+   [mateuszmazurczak.domain.aoc.vote           :as vote]
+   [mateuszmazurczak.ports.database            :as db]
+   [mateuszmazurczak.ports.logging             :as log]
+   [ring.util.http-response                    :as http-response]))
 
 (defn validate-query-params
   "Validate and parse query parameters for fetching solutions.
@@ -42,12 +42,7 @@
       (http-response/bad-request {:error "Invalid parameters"
                                   :details (:errors validation)})
       (try (let [{:keys [year challenge]} (:data validation)
-                 query (aoc-repo/build-get-solutions-query)
-                 results (db/query database query year challenge)
-                 solutions (->> results
-                                (map aoc-repo/solution-tuple->map)
-                                (map (partial aoc-repo/enrich-with-vote-counts database))
-                                (aoc-repo/sort-solutions-by-created-at))]
+                 solutions (aoc-app/fetch-solutions database year challenge)]
              (http-response/ok {:solutions solutions}))
            (catch Exception e
              (log/error! logger
@@ -72,7 +67,7 @@
    - 400 if request body is invalid
    - 500 if database transaction fails"
   [{:keys [database logger body-params]}]
-  (let [validation-result (m/explain aoc-repo/SaveSolutionRequest body-params)]
+  (let [validation-result (m/explain aoc-app/SaveSolutionRequest body-params)]
     (if validation-result
       (let [humanized-errors (me/humanize validation-result)]
         (log/log! logger
@@ -83,7 +78,7 @@
                           :errors humanized-errors}})
         (http-response/bad-request {:error "Invalid solution data"
                                     :details humanized-errors}))
-      (try (let [[solution-id tx-data] (aoc-repo/build-save-solution-tx body-params)]
+      (try (let [[solution-id tx-data] (aoc-app/generate-save-solution-tx body-params)]
              (db/transact! database tx-data)
              (log/log! logger
                        {:id ::solution-saved
@@ -109,8 +104,8 @@
    solution-id
    vote-type-kw]
   (let [vote-tx (vote/save-vote-tx solution-id vote-type-kw)
-        best-practices-count (aoc-repo/count-votes database solution-uuid :best-practices)
-        clever-count (aoc-repo/count-votes database solution-uuid :clever)
+        best-practices-count (aoc-app/count-votes database solution-uuid :best-practices)
+        clever-count (aoc-app/count-votes database solution-uuid :clever)
         response-data {:success true
                        :solution-id solution-id
                        :best-practices-count best-practices-count
@@ -203,7 +198,7 @@
                                                           {:error "solution-id is required"})
         :else (try
                 (let [uuid-id (java.util.UUID/fromString solution-id)
-                      solution (aoc-repo/solution-query {:db database} uuid-id)]
+                      solution (aoc-app/query-solution database uuid-id)]
                   (if-not solution
                     (do (log/log! logger
                                   {:level :warn
@@ -211,7 +206,7 @@
                                    :msg "Solution not found for deletion"
                                    :data {:solution-id solution-id}})
                         (http-response/not-found {:error "Solution not found"}))
-                    (do (db/transact! database (aoc-repo/delete-solution-tx {:db database} uuid-id))
+                    (do (db/transact! database (aoc-app/build-delete-solution-tx database uuid-id))
                         (log/log! logger
                                   {:id ::solution-deleted
                                    :level :info

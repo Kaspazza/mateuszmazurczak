@@ -5,6 +5,7 @@
   {:en
    {:homepage "Home"
     :articles "Articles"
+    :qr-codes "QR Codes"
     :not-found-page "Page not found"
     :not-found-description
     "If you clicked something on this page and got here. Please tell me: mateusz.mazurczak.dev@gmail.com"
@@ -86,10 +87,37 @@
     :please-fix-form-errors "Please fix the form errors"
     :required-fields-missing "Some required fields are missing"
     :already-voted-for-solution "You have already voted for this solution"
-    :failed-to-vote "Failed to vote"}
+    :failed-to-vote "Failed to vote"
+    ;; QR Codes Page
+    :qr-code-generator "QR Code Generator"
+    :generate-multiple-qr-codes "Generate multiple QR codes in bulk"
+    :qr-code-values "QR Code Values"
+    :enter-values-placeholder
+    "Enter one value per line:\n01KD2HHD6WYDAB5YJS9WGFYW3V3687\n01KD2HHD70GDT9BG899TQGY2EF3687\nMy custom text"
+    :enter-values-hint "Enter values above, one per line"
+    :qr-codes-will-be-generated (fn [[n]]
+                                  (str n " QR code" (when-not (= 1 n) "s") " will be generated"))
+    :qr-code-size "QR Code Size"
+    :select-size "Select size"
+    :size-small "Small"
+    :size-default "Default"
+    :size-large "Large"
+    :output-format "Output Format"
+    :select-format "Select format"
+    :format-zip "ZIP (PNG images)"
+    :format-pdf "PDF (one QR per page)"
+    :show-label "Show Label"
+    :show-label-description "Display QR code value below each code"
+    :generate-preview "Generate Preview"
+    :download "Download"
+    :preview "Preview"
+    :showing-preview-count "Showing %1 of %2 codes"
+    :more-codes-hidden "... and %1 more codes"
+    :errors "Errors"}
    :pl
    {:homepage "Główna"
     :articles "Artykuły"
+    :qr-codes "Kody QR"
     :not-found-page "Nie znaleziono takiej strony"
     :not-found-description
     "Jeśli jesteś tu po wciśnięciu czegoś na tej stronie, proszę daj mi znać: mateusz.mazurczak.dev@gmail.com"
@@ -170,4 +198,38 @@
     :please-fix-form-errors "Proszę popraw błędy w formularzu"
     :required-fields-missing "Brakuje wymaganych pól"
     :already-voted-for-solution "Już głosowałeś na to rozwiązanie"
-    :failed-to-vote "Nie udało się zagłosować"}})
+    :failed-to-vote "Nie udało się zagłosować"
+    ;; QR Codes Page
+    :qr-code-generator "Generator Kodów QR"
+    :generate-multiple-qr-codes "Generuj wiele kodów QR naraz"
+    :qr-code-values "Wartości Kodów QR"
+    :enter-values-placeholder
+    "Wprowadź jedną wartość na linię:\n01KD2HHD6WYDAB5YJS9WGFYW3V3687\n01KD2HHD70GDT9BG899TQGY2EF3687\nMój własny tekst"
+    :enter-values-hint "Wprowadź wartości powyżej, jedna na linię"
+    :qr-codes-will-be-generated (fn [[n]]
+                                  (let [plural-form (cond
+                                                      (= 1 n) "kod QR zostanie wygenerowany"
+                                                      ;; 2-4, 22-24, 32-34... (but not 12-14)
+                                                      (and (<= 2 (mod n 10) 4)
+                                                           (not (<= 12 (mod n 100) 14)))
+                                                      "kody QR zostaną wygenerowane"
+                                                      ;; 0, 5-21, 25-31, 35-41...
+                                                      :else "kodów QR zostanie wygenerowanych")]
+                                    (str n " " plural-form)))
+    :qr-code-size "Rozmiar Kodu QR"
+    :select-size "Wybierz rozmiar"
+    :size-small "Mały"
+    :size-default "Domyślny"
+    :size-large "Duży"
+    :output-format "Format Wyjściowy"
+    :select-format "Wybierz format"
+    :format-zip "ZIP (obrazy PNG)"
+    :format-pdf "PDF (jeden QR na stronę)"
+    :show-label "Pokaż Etykietę"
+    :show-label-description "Wyświetl wartość kodu QR pod każdym kodem"
+    :generate-preview "Generuj Podgląd"
+    :download "Pobierz"
+    :preview "Podgląd"
+    :showing-preview-count "Pokazuję %1 z %2 kodów"
+    :more-codes-hidden "... i %1 więcej kodów"
+    :errors "Błędy"}})

@@ -48,24 +48,6 @@
                               :fx []}
                        custom-handler (update :fx conj [:dispatch (conj custom-handler result)])))))
 
-(defn- ajax-method
-  "Convert keyword to ajax method function."
-  [method]
-  (case (some-> method
-                name
-                string/upper-case
-                keyword)
-    :GET ajax/GET
-    :HEAD ajax/HEAD
-    :POST ajax/POST
-    :PUT ajax/PUT
-    :DELETE ajax/DELETE
-    :OPTIONS ajax/OPTIONS
-    :TRACE ajax/TRACE
-    :PATCH ajax/PATCH
-    :PURGE ajax/PURGE
-    ajax/GET))
-
 (defn fetch
   "Make a JSON HTTP request.
    
@@ -88,15 +70,29 @@
         admin-key (aoc-cache/get-admin-key)
         headers (cond-> {}
                   csrf-token (assoc "X-CSRF-Token" csrf-token "X-Requested-With" "XMLHttpRequest")
-                  admin-key (assoc "X-Admin-Key" admin-key))]
-    ((ajax-method method)
-     url
-     (cond-> {:format (ajax/json-request-format {})
-              :response-format (ajax/json-response-format {:keywords? true})
-              :handler on-success
-              :error-handler on-error}
-       params (assoc :params params)
-       (seq headers) (assoc :headers headers)))))
+                  admin-key (assoc "X-Admin-Key" admin-key))
+        ajax-opts (cond-> {:format (ajax/json-request-format {})
+                           :response-format (ajax/json-response-format {:keywords? true})
+                           :handler on-success
+                           :error-handler on-error}
+                    params (assoc :params params)
+                    (seq headers) (assoc :headers headers))
+        method-kw (some-> method
+                          name
+                          string/upper-case
+                          keyword)]
+    #_{:clj-kondo/ignore [:unresolved-var]}
+    (case method-kw
+      :GET (ajax/GET url ajax-opts)
+      :HEAD (ajax/HEAD url ajax-opts)
+      :POST (ajax/POST url ajax-opts)
+      :PUT (ajax/PUT url ajax-opts)
+      :DELETE (ajax/DELETE url ajax-opts)
+      :OPTIONS (ajax/OPTIONS url ajax-opts)
+      :TRACE (ajax/TRACE url ajax-opts)
+      :PATCH (ajax/PATCH url ajax-opts)
+      :PURGE (ajax/PURGE url ajax-opts)
+      (ajax/GET url ajax-opts))))
 
 (defn init-effects!
   "Register all HTTP effects for re-frame.

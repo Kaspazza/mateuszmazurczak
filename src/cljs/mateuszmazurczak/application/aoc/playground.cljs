@@ -1,28 +1,13 @@
-(ns mateuszmazurczak.domain.aoc.playground
-  "Pure data transformations for AoC playground integration.
+(ns mateuszmazurczak.application.aoc.playground
+  "Application-layer playground integration for AoC.
    
    Handles compression and URL composition for opening code in
-   Squint or Cherry playgrounds."
+   Squint or Cherry playgrounds. Uses pako for gzip compression (JS runtime dependent)."
   (:require
-   ["pako" :as pako]))
+   ["pako" :as pako]
+   [mateuszmazurczak.domain.aoc.playground :as playground-domain]))
 
-(def ^:private aoc-helper-comment
-  ";; Helper functions:
-;; (fetch-input year day) - get AOC input
-;; (append str) - append str to DOM
-;; (spy x) - log x to console and return x
 
-;; Example fetch call.
-;;(def input (->> (js-await (fetch-input 2022 1))
-;;             #_spy
-;;             str/split-lines
-;;             (mapv parse-long)))
-
-")
-
-(def ^:private aoc-boilerplate-url
-  "URL to AoC helper functions boilerplate."
-  "https://gist.githubusercontent.com/borkdude/cf94b492d948f7f418aa81ba54f428ff/raw/3b58a80710fbbbda091966c8eb85323eef4652c1/aoc_ui.cljs")
 
 (defn- uint8array->binary-string
   "Convert Uint8Array to binary string for btoa encoding.
@@ -44,7 +29,7 @@
    - code: The code string to open in playground
    - opts: Optional map with:
      - :playground - Playground type (:squint | :cherry), default :squint
-     - :boilerplate - URL to boilerplate code, default aoc-boilerplate-url
+     - :boilerplate - URL to boilerplate code, default from domain
      - :repl - Enable REPL mode (default: true)
      - :include-helpers? - Include AoC helper comment (default: true)
    
@@ -52,14 +37,16 @@
   [code
    {:keys [playground boilerplate repl include-helpers?]
     :or {playground :squint
-         boilerplate aoc-boilerplate-url
+         boilerplate playground-domain/boilerplate-url
          repl true
          include-helpers? true}
     :as _opts}]
   (let [base-url (case playground
-                   :cherry "https://squint-cljs.github.io/cherry/"
-                   :squint "https://squint-cljs.github.io/squint/")
-        code-with-helpers (if include-helpers? (str aoc-helper-comment code) code)
+                   :cherry playground-domain/cherry-url
+                   :squint playground-domain/squint-url)
+        code-with-helpers (if include-helpers?
+                            (str playground-domain/helper-comment code)
+                            code)
         encoded-code (if (= playground :squint)
                        (let [compressed (pako/gzip code-with-helpers)
                              binary-string (uint8array->binary-string compressed)]

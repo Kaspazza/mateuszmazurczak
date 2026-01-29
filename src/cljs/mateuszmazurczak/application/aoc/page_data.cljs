@@ -16,6 +16,9 @@
   [raw-data solutions-entities theme admin-logged-in? logger]
   (let [solution-ids (get-in raw-data
                              (page-schema/relative-path page-schema/*aoc-solution-ids-path*))
+        user-solution-ids (get-in raw-data
+                                  (page-schema/relative-path
+                                   page-schema/*aoc-user-solution-ids-path*))
         denormalized-solutions (app-solution/denormalize-and-enrich-solutions
                                 solution-ids
                                 solutions-entities
@@ -26,7 +29,7 @@
         prepared-solutions
         (->> denormalized-solutions
              (mapv #(app-solution/enrich-solution-with-ui-context % theme solutions-text))
-             solution/sort-solutions-by-votes)
+             (app-solution/sort-solutions-for-display user-solution-ids))
         ui-data
         (-> raw-data
             events/dispatch-markers->handlers

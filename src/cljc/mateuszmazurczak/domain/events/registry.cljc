@@ -198,7 +198,6 @@
                   "Toggle between light and dark themes. Theme persistence handled by cache system."
                   :schema [:cat [:= :theme/toggle]]
                   :handler-type :fx}
-   ;; QR Codes page events
    :qr-codes/on-route-enter {:category :page
                              :description "Initialize QR codes page state on route entry."
                              :schema [:cat [:= :qr-codes/on-route-enter]]

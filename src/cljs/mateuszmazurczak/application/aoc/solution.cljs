@@ -7,10 +7,33 @@
    [clojure.string                           :as str]
    [mateuszmazurczak.application.aoc.playground :as playground]
    [mateuszmazurczak.domain.aoc.playground      :as playground-domain]
-   [mateuszmazurczak.domain.aoc.solution        :as solution]))
+   [mateuszmazurczak.domain.aoc.solution        :as solution]
+   [mateuszmazurczak.domain.aoc.validation      :as validation]))
 
 ;; =============================================================================
-;; Solution Form
+;; Solution Form Validation
+;; =============================================================================
+
+(defn validate-solution-form
+  "Validate solution form and return field-level errors with i18n markers.
+   
+   Returns nil if valid, or a map of field -> i18n marker if invalid.
+   
+   This is application-layer concern because it returns web-specific i18n markers."
+  [form]
+  (when-not (validation/valid-solution? form)
+    (let [errors {}
+          author-name (:author-name form)
+          content (:content form)
+          content-type (:content-type form)
+          is-repo-link? (= content-type :repo-link)]
+      (cond-> errors
+        (or (nil? author-name) (str/blank? author-name)) (assoc :author-name [:i18n :name-required])
+        (or (nil? content) (str/blank? content)) (assoc :content [:i18n :content-required])
+        (and is-repo-link? (not (validation/url? content))) (assoc :content [:i18n :invalid-url])))))
+
+;; =============================================================================
+;; Solution Form Preparation
 ;; =============================================================================
 
 (defn prepare-solution-payload

@@ -47,25 +47,3 @@
   [:or
    [:map [:success [:= true]] [:codes [:vector GeneratedQrCode]]]
    [:map [:success [:= false]] [:errors [:vector :string]]]])
-
-;; Frontend page state
-(def QrCodesPageData
-  [:map
-   [:input :string]
-   [:size QrSize]
-   [:format OutputFormat]
-   [:error-correction ErrorCorrectionLevel]
-   [:generating? :boolean]
-   [:preview-codes {:optional true}
-    [:vector GeneratedQrCode]]
-   [:errors {:optional true}
-    [:vector :string]]])
-
-(def initial-page-data
-  {:input ""
-   :size gen/default-qr-pixel-size
-   :format :zip
-   :error-correction :medium
-   :generating? false
-   :preview-codes []
-   :errors []})

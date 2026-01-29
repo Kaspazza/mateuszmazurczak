@@ -8,7 +8,6 @@
    [mateuszmazurczak.application.aoc.solution    :as app-solution]
    [mateuszmazurczak.domain.aoc.selection        :as selection]
    [mateuszmazurczak.domain.aoc.solution         :as solution]
-   [mateuszmazurczak.domain.aoc.validation       :as validation]
    [mateuszmazurczak.utils.url                   :as url-utils]))
 
 ;; =============================================================================
@@ -150,7 +149,7 @@
     {:year year
      :challenge challenge
      :payload payload
-     :validation-errors (validation/validate-solution-form form)}))
+     :validation-errors (app-solution/validate-solution-form form)}))
 
 (defn- resolve-submission-success-internal
   "Resolve state after successful submission."

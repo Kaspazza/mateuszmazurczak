@@ -1,21 +1,26 @@
 (ns mateuszmazurczak.application.qr-codes.page-schema
   "QR codes page data schemas and validation."
   (:require
-   [malli.core  :as m]
-   [malli.error :as me]))
+   [malli.core                                :as m]
+   [malli.error                               :as me]
+   [mateuszmazurczak.domain.qr-codes.generator :as gen]
+   [mateuszmazurczak.domain.qr-codes.schema    :as qr-schema]))
 
 ;; =============================================================================
 ;; Page Data Schema (stored in app-db)
 ;; =============================================================================
 
 (def QrCodesPageData
-  "Schema for QR codes page data."
+  "Schema for QR codes page data stored in app-db.
+   
+   Includes UI state (generating?, loading?) alongside domain data."
   [:map
    [:input :string]
-   [:size :int]
-   [:format [:enum :zip :pdf]]
+   [:size qr-schema/QrSize]
+   [:format qr-schema/OutputFormat]
+   [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
-   [:preview-codes [:vector :any]]
+   [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
    [:loading? {:optional true}
@@ -36,13 +41,17 @@
 ;; =============================================================================
 
 (def QrCodesPageUIData
-  "Schema for QR codes page UI data after translation and handler transformation."
+  "Schema for QR codes page UI data after translation and handler transformation.
+   
+   This is fully denormalized for component consumption with computed properties,
+   handlers, and translated text."
   [:map
    [:input :string]
-   [:size :int]
-   [:format [:enum :zip :pdf]]
+   [:size qr-schema/QrSize]
+   [:format qr-schema/OutputFormat]
+   [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
-   [:preview-codes [:vector :any]]
+   [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
    [:loading? {:optional true}
@@ -75,11 +84,14 @@
 ;; =============================================================================
 
 (defn initial-page-data
-  "Initial state for QR codes page."
+  "Initial state for QR codes page.
+   
+   Uses domain defaults for QR generation settings."
   []
   {:input ""
-   :size 300
+   :size gen/default-qr-pixel-size
    :format :zip
+   :error-correction :medium
    :show-label? false
    :preview-codes []
    :generating? false

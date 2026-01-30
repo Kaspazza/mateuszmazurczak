@@ -102,8 +102,8 @@
   "Sort solutions for display: user solutions first, then by votes."
   [solutions user-solution-ids]
   (let [sorted-by-votes (solution/sort-solutions-by-votes solutions)]
-    (sort-by (fn [sol]
-               (if (contains? user-solution-ids (:id sol))
-                 0  ;; User solutions first
-                 1)) ;; Others after
-             sorted-by-votes)))
+    (vec (sort-by (fn [sol]
+                    (if (contains? user-solution-ids (:id sol))
+                      0 ;; User solutions first
+                      1)) ;; Others after
+                  sorted-by-votes))))

@@ -59,4 +59,10 @@
        :valid? false
        :error {:id ::aoc-validation-failed
                :actual-data raw-data
-               :explanation explanation}})))
+               :explanation explanation
+               :text {:title (fi18n/tr :page-data-validation-error)
+                      :description (fi18n/tr :page-data-error-description)
+                      :refresh-page (fi18n/tr :refresh-page)
+                      :validation-errors (fi18n/tr :validation-errors)
+                      :raw-data-received (fi18n/tr :raw-data-received)
+                      :click-to-expand-raw-data (fi18n/tr :click-to-expand-raw-data)}}})))

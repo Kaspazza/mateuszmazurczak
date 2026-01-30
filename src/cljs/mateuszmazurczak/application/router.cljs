@@ -11,14 +11,7 @@
   [page-data page-id]
   (let [logger @(state/watch [:logger])]
     (when (and (map? page-data) (not (:valid? page-data)))
-      (if (config/development?)
-        (throw (ex-info "Translated home page data validation failed"
-                        {:id (get-in page-data [:error :id] ::router-page-data)
-                         :context (if-let [error-data (get-in page-data [:error])]
-                                    error-data
-                                    page-data)
-                         :page-id page-id}))
-        (log/error! logger
+      (log/error! logger
                     {:error (ex-info "Page data validation failed"
                                      {:page-data page-data
                                       :page-id page-id})
@@ -26,7 +19,8 @@
                      :data {:page-id page-id
                             :validation-error (if-let [error-data (get-in page-data [:error :data])]
                                                 error-data
-                                                page-data)}})))))
+                                                page-data)}})
+      )))
 
 (defn router-component
   "Component to route to the current page based on current-route.

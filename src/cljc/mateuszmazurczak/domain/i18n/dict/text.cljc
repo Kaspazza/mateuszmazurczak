@@ -113,7 +113,15 @@
     :preview "Preview"
     :showing-preview-count "Showing %1 of %2 codes"
     :more-codes-hidden "... and %1 more codes"
-    :errors "Errors"}
+    :errors "Errors"
+    ;; Error pages
+    :page-data-validation-error "Page Data Validation Error"
+    :page-data-error-description
+    "There was an error loading the page data. This usually indicates a data schema mismatch."
+    :refresh-page "Refresh Page"
+    :validation-errors "Validation Errors"
+    :raw-data-received "Raw Data (Received)"
+    :click-to-expand-raw-data "Click to expand raw data"}
    :pl
    {:homepage "Główna"
     :articles "Artykuły"
@@ -232,4 +240,12 @@
     :preview "Podgląd"
     :showing-preview-count "Pokazuję %1 z %2 kodów"
     :more-codes-hidden "... i %1 więcej kodów"
-    :errors "Błędy"}})
+    :errors "Błędy"
+    ;; Strony błędów
+    :page-data-validation-error "Błąd Walidacji Danych Strony"
+    :page-data-error-description
+    "Wystąpił błąd podczas ładowania danych strony. Zazwyczaj oznacza to niezgodność schematu danych."
+    :refresh-page "Odśwież Stronę"
+    :validation-errors "Błędy Walidacji"
+    :raw-data-received "Surowe Dane (Otrzymane)"
+    :click-to-expand-raw-data "Kliknij, aby rozwinąć surowe dane"}})

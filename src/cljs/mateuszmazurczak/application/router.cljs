@@ -12,15 +12,14 @@
   (let [logger @(state/watch [:logger])]
     (when (and (map? page-data) (not (:valid? page-data)))
       (log/error! logger
-                    {:error (ex-info "Page data validation failed"
-                                     {:page-data page-data
-                                      :page-id page-id})
-                     :id (get-in page-data [:error :id] ::router-page-data)
-                     :data {:page-id page-id
-                            :validation-error (if-let [error-data (get-in page-data [:error :data])]
-                                                error-data
-                                                page-data)}})
-      )))
+                  {:error (ex-info "Page data validation failed"
+                                   {:page-data page-data
+                                    :page-id page-id})
+                   :id (get-in page-data [:error :id] ::router-page-data)
+                   :data {:page-id page-id
+                          :validation-error (if-let [error-data (get-in page-data [:error :data])]
+                                              error-data
+                                              page-data)}}))))
 
 (defn router-component
   "Component to route to the current page based on current-route.

@@ -1,8 +1,8 @@
 (ns mateuszmazurczak.application.qr-codes.page-schema
   "QR codes page data schemas and validation."
   (:require
-   [malli.core                                :as m]
-   [malli.error                               :as me]
+   [malli.core                                 :as m]
+   [malli.error                                :as me]
    [mateuszmazurczak.domain.qr-codes.generator :as gen]
    [mateuszmazurczak.domain.qr-codes.schema    :as qr-schema]))
 

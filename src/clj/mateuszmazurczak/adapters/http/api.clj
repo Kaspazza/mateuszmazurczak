@@ -1,13 +1,13 @@
 (ns mateuszmazurczak.adapters.http.api
   (:require
-   [clojure.string                             :as str]
-   [malli.core                                 :as m]
-   [malli.error                                :as me]
-   [mateuszmazurczak.application.aoc.solution  :as aoc-app]
-   [mateuszmazurczak.domain.aoc.vote           :as vote]
-   [mateuszmazurczak.ports.database            :as db]
-   [mateuszmazurczak.ports.logging             :as log]
-   [ring.util.http-response                    :as http-response]))
+   [clojure.string                            :as str]
+   [malli.core                                :as m]
+   [malli.error                               :as me]
+   [mateuszmazurczak.application.aoc.solution :as aoc-app]
+   [mateuszmazurczak.domain.aoc.vote          :as vote]
+   [mateuszmazurczak.ports.database           :as db]
+   [mateuszmazurczak.ports.logging            :as log]
+   [ring.util.http-response                   :as http-response]))
 
 (defn validate-query-params
   "Validate and parse query parameters for fetching solutions.

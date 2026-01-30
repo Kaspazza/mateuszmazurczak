@@ -79,16 +79,26 @@
                   :fill "none"
                   :stroke "currentColor"
                   :stroke-width "2"}
-            [:circle {:cx "12" :cy "12" :r "10"}]
-            [:line {:x1 "12" :y1 "8" :x2 "12" :y2 "12"}]
-            [:line {:x1 "12" :y1 "16" :x2 "12.01" :y2 "16"}]]]
+            [:circle {:cx "12"
+                      :cy "12"
+                      :r "10"}]
+            [:line {:x1 "12"
+                    :y1 "8"
+                    :x2 "12"
+                    :y2 "12"}]
+            [:line {:x1 "12"
+                    :y1 "16"
+                    :x2 "12.01"
+                    :y2 "16"}]]]
           [:div {:class "flex-1"}
            [:h1 {:class "text-2xl font-bold text-destructive mb-2"}
             (:title error-text)]
            [:p {:class "text-muted-foreground mb-4"}
             (:description error-text)]
-           [:button {:class "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                     :on-click #(js/window.location.reload)}
+           [:button
+            {:class
+             "px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+             :on-click #(js/window.location.reload)}
             (:refresh-page error-text)]]]]
         (when (and (config/development?) error)
           [:div {:class "space-y-4"}
@@ -100,14 +110,21 @@
                     :fill "none"
                     :stroke "currentColor"
                     :stroke-width "2"}
-              [:path {:d "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"}]
-              [:line {:x1 "12" :y1 "9" :x2 "12" :y2 "13"}]
-              [:line {:x1 "12" :y1 "17" :x2 "12.01" :y2 "17"}]]
+              [:path
+               {:d
+                "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"}]
+              [:line {:x1 "12"
+                      :y1 "9"
+                      :x2 "12"
+                      :y2 "13"}]
+              [:line {:x1 "12"
+                      :y1 "17"
+                      :x2 "12.01"
+                      :y2 "17"}]]
              (:validation-errors error-text)]
             [:div {:class "bg-muted rounded p-4 font-mono text-sm"}
              [:pre {:class "whitespace-pre-wrap break-words"}
-              (with-out-str
-                (cljs.pprint/pprint (get-in error [:explanation :explained])))]]]
+              (with-out-str (cljs.pprint/pprint (get-in error [:explanation :explained])))]]]
            [:div {:class "bg-card border rounded-lg p-6 shadow-sm"}
             [:h2 {:class "text-lg font-semibold mb-3 flex items-center gap-2"}
              [:svg {:class "size-5 text-blue-500"
@@ -116,17 +133,24 @@
                     :fill "none"
                     :stroke "currentColor"
                     :stroke-width "2"}
-              [:circle {:cx "12" :cy "12" :r "10"}]
-              [:line {:x1 "12" :y1 "16" :x2 "12" :y2 "12"}]
-              [:line {:x1 "12" :y1 "8" :x2 "12.01" :y2 "8"}]]
+              [:circle {:cx "12"
+                        :cy "12"
+                        :r "10"}]
+              [:line {:x1 "12"
+                      :y1 "16"
+                      :x2 "12"
+                      :y2 "12"}]
+              [:line {:x1 "12"
+                      :y1 "8"
+                      :x2 "12.01"
+                      :y2 "8"}]]
              (:raw-data-received error-text)]
             [:details {:class "cursor-pointer"}
              [:summary {:class "text-sm text-muted-foreground hover:text-foreground mb-2"}
               (:click-to-expand-raw-data error-text)]
              [:div {:class "bg-muted rounded p-4 font-mono text-xs overflow-auto max-h-96"}
               [:pre {:class "whitespace-pre-wrap break-words"}
-               (with-out-str
-                 (cljs.pprint/pprint (:actual-data error)))]]]]])]])))
+               (with-out-str (cljs.pprint/pprint (:actual-data error)))]]]]])]])))
 
 (defmethod pages :pages/admin
   [_ page-data]

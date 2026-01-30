@@ -4,7 +4,7 @@
    Handles compression and URL composition for opening code in
    Squint or Cherry playgrounds. Uses pako for gzip compression (JS runtime dependent)."
   (:require
-   ["pako" :as pako]
+   ["pako"                                 :as pako]
    [mateuszmazurczak.domain.aoc.playground :as playground-domain]))
 
 
@@ -44,9 +44,7 @@
   (let [base-url (case playground
                    :cherry playground-domain/cherry-url
                    :squint playground-domain/squint-url)
-        code-with-helpers (if include-helpers?
-                            (str playground-domain/helper-comment code)
-                            code)
+        code-with-helpers (if include-helpers? (str playground-domain/helper-comment code) code)
         encoded-code (if (= playground :squint)
                        (let [compressed (pako/gzip code-with-helpers)
                              binary-string (uint8array->binary-string compressed)]

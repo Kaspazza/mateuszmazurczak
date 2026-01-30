@@ -4,7 +4,7 @@
    Contains form preparation logic and UI enrichment (web-specific concerns).
    Imports domain/ and ports/ only."
   (:require
-   [clojure.string                           :as str]
+   [clojure.string                              :as str]
    [mateuszmazurczak.application.aoc.playground :as playground]
    [mateuszmazurczak.domain.aoc.playground      :as playground-domain]
    [mateuszmazurczak.domain.aoc.solution        :as solution]
@@ -30,7 +30,8 @@
       (cond-> errors
         (or (nil? author-name) (str/blank? author-name)) (assoc :author-name [:i18n :name-required])
         (or (nil? content) (str/blank? content)) (assoc :content [:i18n :content-required])
-        (and is-repo-link? (not (validation/url? content))) (assoc :content [:i18n :invalid-url])))))
+        (and is-repo-link? (not (validation/url? content))) (assoc :content
+                                                                   [:i18n :invalid-url])))))
 
 ;; =============================================================================
 ;; Solution Form Preparation
@@ -46,23 +47,17 @@
 ;; UI Enrichment
 ;; =============================================================================
 
-(defn- long-code-threshold
-  "Line count threshold to consider code as long and collapsible."
-  []
-  20)
+(defn- long-code-threshold "Line count threshold to consider code as long and collapsible." [] 20)
 
 (defn- is-long-code?
   "Check if content is long enough to warrant collapsing."
   [content]
-  (when content
-    (let [lines (str/split-lines content)]
-      (> (count lines) (long-code-threshold)))))
+  (when content (let [lines (str/split-lines content)] (> (count lines) (long-code-threshold)))))
 
 (defn- is-long-url?
   "Check if URL is long enough to warrant collapsing."
   [url]
-  (when url
-    (> (count url) 100)))
+  (when url (> (count url) 100)))
 
 (defn enrich-solution-with-vote-handlers
   "Add vote handler dispatch markers to solution."

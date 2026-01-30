@@ -8,13 +8,9 @@
 ;; Playground URLs
 ;; =============================================================================
 
-(def squint-url
-  "Base URL for Squint playground."
-  "https://squint-cljs.github.io/squint/")
+(def squint-url "Base URL for Squint playground." "https://squint-cljs.github.io/squint/")
 
-(def cherry-url
-  "Base URL for Cherry playground."
-  "https://squint-cljs.github.io/cherry/")
+(def cherry-url "Base URL for Cherry playground." "https://squint-cljs.github.io/cherry/")
 
 ;; =============================================================================
 ;; AoC Helper Code

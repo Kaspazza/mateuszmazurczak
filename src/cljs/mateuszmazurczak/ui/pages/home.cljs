@@ -8,6 +8,7 @@
 (defn about-me
   [{:keys [welcome-text description contact-info]}]
   [:div {:class ["w-full"
+                 "overflow-hidden"
                  "bg-gradient-to-r"
                  "from-primary/60"
                  "via-primary/40"
@@ -16,25 +17,27 @@
                   "flex-col"
                   "lg:flex-row"
                   "items-center"
+                  "lg:items-end"
                   "gap-8"
                   "lg:gap-16"
                   "mx-auto"
                   "max-w-6xl"
                   "px-6"
                   "lg:px-12"
-                  "py-10"
-                  "lg:py-16"
+                  "pt-10"
+                  "lg:pt-16"
+                  "pb-0"
                   "text-center"
                   "lg:text-left"]}
-    [:div {:class "block overflow-hidden w-80"}
+    [:div {:class "block overflow-hidden self-end -mb-8 lg:-mb-12 w-80 lg:w-[32rem]"}
      [ui-img/optimized-img {:src "/img/mateusz_mazurczak.webp"
                             :alt "Mateusz Mazurczak"
-                            :width 320
-                            :height 320
+                            :width 512
+                            :height 512
                             :loading "eager"
                             :fetchpriority "high"
                             :class "w-full h-auto"}]]
-    [:div
+    [:div {:class "lg:self-center"}
      [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-foreground"}
       welcome-text]
      [:p {:class "py-6 text-md md:text-xl lg:text-3xl text-foreground"}

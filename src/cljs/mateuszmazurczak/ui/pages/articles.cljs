@@ -5,6 +5,7 @@
    [mateuszmazurczak.frontend-i18n              :as fi18n]
    [mateuszmazurczak.ports.events               :as events]
    [mateuszmazurczak.ui.articles                :as ui-articles]
+   [mateuszmazurczak.ui.components.tag-combobox :refer [tag-combobox]]
    [reagent.core                                :as r]))
 
 (defn articles-page
@@ -16,6 +17,30 @@
       (fi18n/tr :articles)]
      [:p {:class "text-muted-foreground"}
       "Thoughts on software development, architecture, and more."]]
+    [:div
+     (let [available-tags (r/atom #{"urgent" "important" "review" "blocked" "in-progress"})
+           selected-tag (r/atom nil)]
+       [:div {:class "p-8 space-y-4"}
+        [:div
+         [:h3 {:class "text-lg font-semibold mb-2"} "Select a Tag"]
+         [:p {:class "text-sm text-muted-foreground mb-4"}
+          "Choose from existing tags or create a new one"]
+         
+         [tag-combobox
+          {:tags @available-tags
+           :selected-tag @selected-tag
+           :on-select #(reset! selected-tag %)
+           :on-create (fn [new-tag]
+                        (swap! available-tags conj new-tag)
+                        (reset! selected-tag new-tag))
+           :placeholder "Search tags!" 
+                                  :class "w-full"}
+          ]]
+        [:div {:class "mt-6 p-4 bg-muted rounded-md"}
+         [:p {:class "text-sm font-medium"} "State:"]
+         [:pre {:class "text-xs mt-2"}
+          (str "Selected: " (pr-str @selected-tag) "\n"
+               "Available: " (pr-str @available-tags))]]])]
     [:div {:class "grid gap-6 w-full"}
      (doall (for [{:keys [title id]
                    :as article}

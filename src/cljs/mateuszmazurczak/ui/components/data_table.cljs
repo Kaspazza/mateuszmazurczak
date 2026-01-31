@@ -6,8 +6,20 @@
   
   All TanStack Table interactions happen in this component"
   (:require
+   ["@dnd-kit/core"                              :refer [DndContext
+                                                         KeyboardSensor
+                                                         MouseSensor
+                                                         TouchSensor
+                                                         closestCenter
+                                                         useSensor
+                                                         useSensors]]
+   ["@dnd-kit/modifiers"                         :refer [restrictToVerticalAxis]]
+   ["@dnd-kit/sortable"                          :refer
+                                                 [SortableContext useSortable verticalListSortingStrategy]]
+   ["@dnd-kit/utilities"                         :refer [CSS]]
    ["@tanstack/react-table"                      :refer [flexRender
                                                          getCoreRowModel
+                                                         getExpandedRowModel
                                                          getFacetedRowModel
                                                          getFacetedUniqueValues
                                                          getFilteredRowModel
@@ -23,6 +35,7 @@
                                                          ChevronsRight
                                                          ChevronsUpDown
                                                          EyeOff
+                                                         GripVertical
                                                          PlusCircle
                                                          X]]
    [mateuszmazurczak.ui.components.badge         :as mateuszmazurczak-badge]
@@ -39,7 +52,45 @@
                                                  :refer [defc]]
    [reagent.hooks                                :as rhooks]))
 
+(defn drag-handle-cell-ui
+  [{:keys [listeners attributes]}]
+  (let [props (js->clj (js/Object.assign #js {} attributes listeners) :keywordize-keys true)]
+    [:button
+     (merge props {:class "cursor-grab active:cursor-grabbing touch-none p-1"})
+     [:> GripVertical {:class "size-4 text-muted-foreground"}]]))
 
+(defc draggable-row
+ [{:keys [row row-id render-sub-component]}]
+ (let [sortable (useSortable #js {:id row-id})
+       transform (.-transform sortable)
+       transition (.-transition sortable)
+       set-node-ref (.-setNodeRef sortable)
+       is-dragging (.-isDragging sortable)
+       listeners (.-listeners sortable)
+       attributes (.-attributes sortable)
+       style #js {:transform (when transform (.. CSS -Transform (toString transform)))
+                  :transition
+                  (if is-dragging
+                    transition
+                    "transform 500ms cubic-bezier(0.4, 0, 0.2, 1), opacity 500ms ease-in-out")
+                  :opacity (if is-dragging 0.8 1)
+                  :zIndex (if is-dragging 1 0)
+                  :position "relative"}]
+   (aset row "dndListeners" listeners)
+   (aset row "dndAttributes" attributes)
+   [:<>
+    [mateuszmazurczak-table/table-row {:ref set-node-ref
+                                       :style style
+                                       :data-state (when (.getIsSelected row) "selected")}
+     (for [cell (.getVisibleCells row)]
+       ^{:key (.-id cell)}
+       [mateuszmazurczak-table/table-cell {}
+        (flexRender (.. cell -column -columnDef -cell) (.getContext cell))])]
+    (when (and render-sub-component (.getIsExpanded row))
+      [mateuszmazurczak-table/table-row {}
+       [mateuszmazurczak-table/table-cell {:col-span (.-length (.getVisibleCells row))
+                                           :class "p-0"}
+        (render-sub-component row)]])]))
 
 (defn- extract-toolbar-data
   "Extracts toolbar state and callbacks from table instance and config.
@@ -345,17 +396,27 @@
   Props:
   - `:header-groups`     - Header groups from table instance (array)
   - `:rows`              - Row model rows from table instance (array)
-  - `:columns-count`     - Total number of columns (for empty state colspan)
-  - `:row-selection`     - Row selection state
-  - `:empty-state`       - Component to render when table is empty (optional)
-  - `:no-results-state`  - Component or function to render when filters yield no results (optional)
-  - `:on-reset-filters`  - Callback to reset filters (passed to no-results-state if it's a function)"
-  [{:keys [header-groups rows empty-state no-results-state on-reset-filters]
-    :as _props}]
+  - `:row-selection`         - Row selection state
+  - `:empty-state`           - Component to render when table is empty (optional)
+  - `:no-results-state`      - Component or function to render when filters yield no results (optional)
+  - `:on-reset-filters`      - Callback to reset filters (passed to no-results-state if it's a function)
+  - `:render-sub-component`  - Function (fn [row]) to render expanded row content (optional)
+  - `:dnd-enabled?`          - Whether drag-and-drop is enabled (boolean)
+  - `:dnd-row-ids`           - Array of row IDs for sortable context (when dnd enabled)
+  - `:get-row-id`            - Function to extract row ID from row (when dnd enabled)"
+  [{:keys [header-groups
+           rows
+           empty-state
+           no-results-state
+           on-reset-filters
+           render-sub-component
+           dnd-enabled?
+           dnd-row-ids
+           get-row-id]}]
   (let [has-rows? (pos? (.-length rows))]
     (if has-rows?
       ;; Table with data
-      [:div {:class "flex min-h-0 flex-1 flex-col overmateuszmazurczak-auto rounded-md border"}
+      [:div {:class "flex min-h-0 flex-1 flex-col overflow-auto rounded-md border"}
        [mateuszmazurczak-table/table {}
         [mateuszmazurczak-table/table-header
          {:class
@@ -369,12 +430,33 @@
                (when-not (.-isPlaceholder header)
                  (flexRender (.. header -column -columnDef -header) (.getContext header)))])])]
         [mateuszmazurczak-table/table-body {}
-         (for [row rows]
-           [mateuszmazurczak-table/table-row {:key (.-id row)
-                                              :data-state (when (.getIsSelected row) "selected")}
-            (for [cell (.getVisibleCells row)]
-              [mateuszmazurczak-table/table-cell {:key (.-id cell)}
-               (flexRender (.. cell -column -columnDef -cell) (.getContext cell))])])]]]
+         (if dnd-enabled?
+           ;; Drag-and-drop enabled: wrap rows in SortableContext
+           [:>
+            SortableContext
+            {:items dnd-row-ids
+             :strategy verticalListSortingStrategy}
+            (for [row rows]
+              (let [row-id (get-row-id row)]
+                ^{:key (.-id row)}
+                [draggable-row {:row row
+                                :row-id row-id
+                                :render-sub-component render-sub-component}]))]
+           ;; Standard table rows (no drag-and-drop)
+           (for [row rows]
+             [:<> {:key (.-id row)}
+              ;; First row - normal row with cells
+              [mateuszmazurczak-table/table-row {:data-state (when (.getIsSelected row) "selected")}
+               (for [cell (.getVisibleCells row)]
+                 [mateuszmazurczak-table/table-cell {:key (.-id cell)}
+                  (flexRender (.. cell -column -columnDef -cell) (.getContext cell))])]
+              ;; Second row - expanded subcomponent (only if expanded)
+              (when (and render-sub-component (.getIsExpanded row))
+                [mateuszmazurczak-table/table-row {}
+                 ;; Single cell spanning all visible columns
+                 [mateuszmazurczak-table/table-cell {:col-span (.-length (.getVisibleCells row))
+                                                     :class "p-0"}
+                  (render-sub-component row)]])]))]]]
       ;; Empty state - render outside table structure
       [:div {:class "flex min-h-0 flex-1 flex-col rounded-md border"}
        [mateuszmazurczak-table/table {}
@@ -512,6 +594,9 @@
   - `:toolbar-config`             - Configuration map for toolbar (optional)
   - `:empty-state`                - Component to render when no data exists (optional)
   - `:no-results-state`           - Component or function (fn [on-reset-filters]) to render when filters yield no results (optional)
+  - `:render-sub-component`       - Function (fn [row]) to render expanded row content (optional, for expandable rows)
+  - `:get-row-can-expand`         - Function (fn [row]) to determine if row can expand (optional, defaults to all rows expandable)
+  - `:dnd-config`                 - Drag-and-drop configuration (optional)
   
   Toolbar config shape:
   ```clojure
@@ -523,12 +608,20 @@
    :toolbar-end (fn [table] ...)}              ; Optional custom content on right
   ```
   
+  Drag-and-drop config shape:
+  ```clojure
+  {:get-row-id (fn [row] ...)     ; Extract unique ID from row data (required)
+   :on-drag-end (fn [active-id over-id] ...)}  ; Called when drag ends (required)
+  ```
+  
   Features:
   - **Sorting**: Click column headers to sort (if configured in column def)
   - **Filtering**: Text search and multi-select faceted filters
   - **Pagination**: Configurable page size with navigation controls
   - **Row Selection**: Multi-select with checkboxes (if configured in column def)
   - **Column Visibility**: Show/hide columns dynamically
+  - **Row Expansion**: Expandable rows with custom sub-component rendering
+  - **Drag-and-Drop**: Reorder rows via drag-and-drop (if dnd-config provided)
   - **Responsive**: Mobile-friendly layout
   - **Empty State**: Displays custom empty state when no data or no results from filters"
  [{:keys [columns
@@ -537,35 +630,77 @@
           initial-column-visibility
           toolbar-config
           empty-state
-          no-results-state]
+          no-results-state
+          render-sub-component
+          get-row-can-expand
+          dnd-config]
    :or {initial-page-size 25}}]
  (let [[row-selection set-row-selection] (rhooks/use-state #js {})
        [column-visibility set-column-visibility] (rhooks/use-state
                                                   (clj->js (or initial-column-visibility {})))
        [column-filters set-column-filters] (rhooks/use-state #js [])
        [sorting set-sorting] (rhooks/use-state #js [])
-       table-config (rhooks/use-memo
-                     (fn []
-                       #js {:data data
-                            :columns columns
-                            :initialState #js {:pagination #js {:pageSize initial-page-size}}
-                            :state #js {:sorting sorting
-                                        :columnVisibility column-visibility
-                                        :rowSelection row-selection
-                                        :columnFilters column-filters}
-                            :enableRowSelection true
-                            :onRowSelectionChange set-row-selection
-                            :onSortingChange set-sorting
-                            :onColumnFiltersChange set-column-filters
-                            :onColumnVisibilityChange set-column-visibility
-                            :getCoreRowModel (getCoreRowModel)
-                            :getFilteredRowModel (getFilteredRowModel)
-                            :getPaginationRowModel (getPaginationRowModel)
-                            :getSortedRowModel (getSortedRowModel)
-                            :getFacetedRowModel (getFacetedRowModel)
-                            :getFacetedUniqueValues (getFacetedUniqueValues)})
-                     #js [data columns sorting column-visibility row-selection column-filters])
+       [expanded set-expanded] (rhooks/use-state #js {})
+       ;; Drag-and-drop setup - must be defined before table-config
+       dnd-enabled? (some? dnd-config)
+       get-row-id-fn (when dnd-enabled? (:get-row-id dnd-config))
+       table-config
+       (rhooks/use-memo
+        (fn []
+          (let [base-config #js {:data data
+                                 :columns columns
+                                 :initialState #js {:pagination #js {:pageSize initial-page-size}}
+                                 :state #js {:sorting sorting
+                                             :columnVisibility column-visibility
+                                             :rowSelection row-selection
+                                             :columnFilters column-filters
+                                             :expanded expanded}
+                                 :enableRowSelection true
+                                 :enableExpanding (some? render-sub-component)
+                                 :getRowCanExpand (or get-row-can-expand
+                                                      (fn [_row] (some? render-sub-component)))
+                                 :onRowSelectionChange set-row-selection
+                                 :onSortingChange set-sorting
+                                 :onColumnFiltersChange set-column-filters
+                                 :onColumnVisibilityChange set-column-visibility
+                                 :onExpandedChange set-expanded
+                                 :getCoreRowModel (getCoreRowModel)
+                                 :getFilteredRowModel (getFilteredRowModel)
+                                 :getPaginationRowModel (getPaginationRowModel)
+                                 :getSortedRowModel (getSortedRowModel)
+                                 :getFacetedRowModel (getFacetedRowModel)
+                                 :getFacetedUniqueValues (getFacetedUniqueValues)
+                                 :getExpandedRowModel (getExpandedRowModel)}]
+            ;; Add getRowId when drag-and-drop is enabled
+            (when (and dnd-enabled? get-row-id-fn) (aset base-config "getRowId" get-row-id-fn))
+            base-config))
+        #js [data
+             columns
+             sorting
+             column-visibility
+             row-selection
+             column-filters
+             expanded
+             dnd-enabled?
+             get-row-id-fn])
        table-instance (useReactTable table-config)
+       dnd-row-ids (when dnd-enabled?
+                     (rhooks/use-memo
+                      (fn [] (let [ids-vec (mapv get-row-id-fn data) ids (clj->js ids-vec)] ids))
+                      #js [(pr-str (mapv get-row-id-fn data))]))
+       mouse-sensor (when dnd-enabled? (useSensor MouseSensor #js {}))
+       touch-sensor (when dnd-enabled? (useSensor TouchSensor #js {}))
+       keyboard-sensor (when dnd-enabled? (useSensor KeyboardSensor #js {}))
+       sensors (when dnd-enabled? (useSensors mouse-sensor touch-sensor keyboard-sensor))
+       handle-drag-end (when dnd-enabled?
+                         (rhooks/use-callback
+                          (fn [event]
+                            (let [active (.-active event)
+                                  over (.-over event)]
+                              (when (and active over (not= (.-id active) (.-id over)))
+                                (when-let [handler (:on-drag-end dnd-config)]
+                                  (handler (.-id active) (.-id over))))))
+                          #js [(pr-str dnd-config)]))
        toolbar-data (when toolbar-config (extract-toolbar-data toolbar-config table-instance))
        pagination-data (extract-pagination-data table-instance)
        has-data? (pos? (.-length data))
@@ -576,12 +711,26 @@
                              :else nil)
        table-data {:header-groups (.getHeaderGroups table-instance)
                    :rows (.. table-instance getRowModel -rows)
-                   :columns-count (.-length columns)
                    :row-selection row-selection
                    :empty-state current-empty-state
                    :no-results-state (when is-filtered? no-results-state)
-                   :on-reset-filters (when toolbar-data (:on-reset-filters toolbar-data))}]
-   [:div {:class "flex min-h-0 flex-1 flex-col gap-4"}
-    (when toolbar-data [toolbar-ui toolbar-data])
-    [table-ui table-data]
-    [pagination-ui pagination-data]]))
+                   :on-reset-filters (when toolbar-data (:on-reset-filters toolbar-data))
+                   :render-sub-component render-sub-component
+                   :dnd-enabled? dnd-enabled?
+                   :dnd-row-ids dnd-row-ids
+                   :get-row-id (when dnd-enabled? (fn [row] (get-row-id-fn (.-original row))))}
+       table-content [:div {:class "flex min-h-0 flex-1 flex-col gap-4"}
+                      (when toolbar-data [toolbar-ui toolbar-data])
+                      [table-ui table-data]
+                      [pagination-ui pagination-data]]]
+   (if dnd-enabled?
+     ;; Wrap in DndContext for drag-and-drop
+     [:>
+      DndContext
+      {:collisionDetection closestCenter
+       :modifiers #js [restrictToVerticalAxis]
+       :onDragEnd handle-drag-end
+       :sensors sensors}
+      table-content]
+     ;; No drag-and-drop, render table directly
+     table-content)))

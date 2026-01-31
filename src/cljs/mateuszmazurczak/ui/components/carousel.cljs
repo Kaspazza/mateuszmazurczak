@@ -102,7 +102,7 @@
    children]
   (let [{:keys [carousel-ref orientation]} (use-carousel)]
     [:div {:ref carousel-ref
-           :class "overmateuszmazurczak-hidden"
+           :class "overflow-hidden"
            :data-slot "carousel-content"}
      (into [:div
             (-> props

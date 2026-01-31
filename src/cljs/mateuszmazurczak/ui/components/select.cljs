@@ -133,7 +133,7 @@
               "max-h-(--radix-select-content-available-height)"
               "min-w-[8rem]"
               "origin-(--radix-select-content-transform-origin)"
-              "overmateuszmazurczak-x-hidden overmateuszmazurczak-y-auto rounded-md border"
+              "overflow-x-hidden overflow-y-auto rounded-md border"
               "shadow-md"
               (when (= position "popper")
                 (merge-classes "data-[side=bottom]:translate-y-1" "data-[side=left]:-translate-x-1"

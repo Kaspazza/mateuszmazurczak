@@ -21,7 +21,7 @@
    children]
   (let [rest-props (dissoc props :class)]
     [:div {:data-slot "table-container"
-           :class "relative w-full overmateuszmazurczak-x-auto"}
+           :class "relative w-full overflow-x-auto"}
      (into [:table
             (merge {:data-slot "table"
                     :class (merge-classes "w-full caption-bottom text-sm" class)}

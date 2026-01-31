@@ -1,6 +1,10 @@
 (ns mateuszmazurczak.portfolio.portfolio
   (:require
    [mateuszmazurczak.portfolio.mateuszmazurczak.home]
+   [mateuszmazurczak.portfolio.ui-components.app-skeleton]
+   [mateuszmazurczak.portfolio.ui-components.drawer]
+   [mateuszmazurczak.portfolio.ui-components.tag-combobox]
+   [mateuszmazurczak.portfolio.ui-components.data-table]
    [portfolio.data      :as data]
    [portfolio.ui        :as ui]
    [portfolio.ui.search :as search]))

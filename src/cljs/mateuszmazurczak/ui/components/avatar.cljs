@@ -24,7 +24,7 @@
              (assoc :data-slot "avatar"
                     :class
                     (merge-classes
-                     "relative flex h-10 w-10 shrink-0 overmateuszmazurczak-hidden rounded-full"
+                     "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
                      class))
              (dissoc :class-name))]
         children))

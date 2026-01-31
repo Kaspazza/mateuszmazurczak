@@ -116,7 +116,7 @@
         (assoc :data-slot "command-input"
                :class (merge-classes
                        "placeholder:text-muted-foreground"
-                       "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-hidden"
+                       "flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-none"
                        "disabled:cursor-not-allowed disabled:opacity-50" class))
         (dissoc :class-name))]])
 

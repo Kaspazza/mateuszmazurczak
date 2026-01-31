@@ -2,10 +2,6 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
-@plugin "daisyui" {
-  themes: light --default, dark --prefersdark
-}
-
 :root {
   --background: oklch(0.9700 0.008 90);
   --foreground: oklch(0.1448 0 0);

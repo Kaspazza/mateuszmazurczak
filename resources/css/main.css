@@ -185,11 +185,11 @@ body {height: 100%}
 
 .home-hero {
   position: relative;
-  background-image:
-    linear-gradient(90deg,
-      oklch(0.6270 0.2650 303.9 / 0.75),
-      oklch(0.6270 0.2650 303.9 / 0.60),
-      oklch(0.9700 0.008 90 / 0.90));
+      background-image:
+        linear-gradient(90deg,
+          oklch(0.6270 0.2650 303.9 / 0.75),
+          oklch(0.6270 0.2650 303.9 / 0.60),
+          oklch(0.8600 0.030 300 / 0.85));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

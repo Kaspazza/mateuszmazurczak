@@ -15,18 +15,18 @@
                   "lg:flex-row"
                   "items-center"
                   "lg:items-end"
-                  "gap-8"
-                  "lg:gap-16"
+                  "gap-4"
+                  "lg:gap-8"
                   "mx-auto"
                   "max-w-6xl"
                   "px-6"
                   "lg:px-12"
-                  "pt-10"
-                  "lg:pt-16"
-                  "pb-0"
+                  "pt-4"
+                  "lg:pt-8"
+                  "pb-2"
                   "text-center"
                   "lg:text-left"]}
-    [:div {:class "block overflow-hidden self-end -mb-8 lg:-mb-12 w-80 lg:w-[32rem]"}
+    [:div {:class "block overflow-hidden self-center lg:self-end mx-auto lg:mx-0 -mb-4 lg:-mb-10 w-64 lg:w-[24rem]"}
      [ui-img/optimized-img {:src "/img/mateusz_mazurczak.webp"
                             :alt "Mateusz Mazurczak"
                             :width 512
@@ -35,12 +35,12 @@
                             :fetchpriority "high"
                             :class "w-full h-auto"}]]
     [:div {:class "lg:self-center"}
-     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-accent text-shadow-md"}
+     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-accent text-shadow-lg"}
       welcome-text]
-     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-md"}
+     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-lg"}
       description
       [:br]]
-     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-md"}
+     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-lg"}
       contact-info]]]])
 
 (defn home

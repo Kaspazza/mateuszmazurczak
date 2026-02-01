@@ -9,10 +9,7 @@
   [{:keys [welcome-text description contact-info]}]
   [:div {:class ["w-full"
                  "overflow-hidden"
-                 "bg-gradient-to-r"
-                 "from-primary/60"
-                 "via-primary/40"
-                 "to-background"]}
+                 "home-hero"]}
    [:div {:class ["flex"
                   "flex-col"
                   "lg:flex-row"
@@ -38,12 +35,12 @@
                             :fetchpriority "high"
                             :class "w-full h-auto"}]]
     [:div {:class "lg:self-center"}
-     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-foreground"}
+     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-accent text-shadow-md"}
       welcome-text]
-     [:p {:class "py-6 text-md md:text-xl lg:text-3xl text-foreground"}
+     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-md"}
       description
       [:br]]
-     [:p {:class "py-6 text-md md:text-xl lg:text-3xl text-foreground"}
+     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-md"}
       contact-info]]]])
 
 (defn home

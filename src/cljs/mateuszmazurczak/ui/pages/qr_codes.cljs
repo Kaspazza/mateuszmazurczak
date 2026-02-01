@@ -122,13 +122,14 @@
                                          .-value))
                        :placeholder (:enter-values-placeholder text)
                        :rows 10
+                       :auto-size? false
                        :class "font-mono text-sm"}]
    [:p {:class "text-sm text-muted-foreground"}
     input-hint]])
 
 (defn- action-buttons
   "Generate preview and download buttons."
-  [{:keys [has-input? can-download? text handlers]}]
+  [{:keys [has-input? can-download? loading? text handlers]}]
   [:div {:class "flex flex-col sm:flex-row gap-3"}
    (button/button {:variant :outline
                    :disabled (not has-input?)
@@ -140,7 +141,7 @@
                    :disabled (not can-download?)
                    :on-click (:on-download handlers)
                    :class "flex-1"}
-                  [:> Download {:class "size-4 mr-2"}]
+                  [:> Download {:class (str "size-4 mr-2" (when loading? " animate-spin"))}]
                   (:download text))])
 
 (defn qr-codes-page

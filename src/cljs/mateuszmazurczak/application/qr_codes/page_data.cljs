@@ -2,6 +2,7 @@
   "QR codes page data preparation - application layer orchestration."
   (:require
    [mateuszmazurczak.application.qr-codes.page-schema :as page-schema]
+   [mateuszmazurczak.domain.qr-codes.generator        :as gen]
    [mateuszmazurczak.domain.qr-codes.preview          :as qr-preview]
    [mateuszmazurczak.frontend-i18n                    :as fi18n]
    [mateuszmazurczak.ports.events                     :as events]))
@@ -13,7 +14,15 @@
 (defn update-page-input
   "Update input and clear preview."
   [page-data input]
-  (assoc page-data :input input :preview-codes [] :errors []))
+  (let [contents (gen/parse-input input)
+        validation (when (seq contents)
+                     (gen/validate-request {:contents contents
+                                            :size (:size page-data)
+                                            :format (:format page-data)}))
+        errors (if (and validation (not (:valid? validation)))
+                 (:errors validation)
+                 [])]
+    (assoc page-data :input input :preview-codes [] :errors errors)))
 
 (defn update-page-size
   "Update size and regenerate preview if input exists."
@@ -57,7 +66,8 @@
   (let [input-count (qr-preview/parse-input-count (:input page-data))
         preview-count (count (:preview-codes page-data))
         has-input? (pos? input-count)
-        can-download? (and has-input? (empty? (:errors page-data)))
+        loading? (:loading? page-data)
+        can-download? (and has-input? (empty? (:errors page-data)) (not loading?))
         showing-preview? (pos? preview-count)
         more-codes-count (- input-count preview-count)]
     {:input-count input-count
@@ -66,6 +76,37 @@
      :can-download? can-download?
      :showing-preview? showing-preview?
      :more-codes-count more-codes-count}))
+
+;; =============================================================================
+;; Download Preparation
+;; =============================================================================
+
+(defn prepare-download-batches
+  "Prepare download batches for QR code export."
+  [{:keys [input size format show-label?]}]
+  (let [contents (gen/parse-input input)
+        result (gen/generate-batches contents :size size :show-label? show-label?)
+        batches (:batches result)
+        batch-count (count batches)
+        base-filename "qr-codes"
+        extension (if (= format :pdf) ".pdf" ".zip")
+        filename-for-index (fn [index]
+                             (if (= batch-count 1)
+                               (str base-filename extension)
+                               (str base-filename
+                                    "-part-"
+                                    (format "%03d" (inc index))
+                                    extension)))]
+    (if (:success result)
+      {:status :success
+       :batches (mapv (fn [{:keys [codes index]}]
+                        {:codes codes
+                         :opts {:size size
+                                :format format
+                                :filename (filename-for-index index)}})
+                      batches)}
+      {:status :error
+       :errors (:errors result)})))
 
 ;; =============================================================================
 ;; UI Data Builders

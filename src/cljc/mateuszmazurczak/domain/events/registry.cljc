@@ -222,6 +222,14 @@
                        :description "Download generated QR codes in selected format."
                        :schema [:cat [:= :qr-codes/download]]
                        :handler-type :fx}
+   :qr-codes/download-success {:category :page
+                               :description "Handle successful QR codes download."
+                               :schema [:cat [:= :qr-codes/download-success]]
+                               :handler-type :db}
+   :qr-codes/download-failure {:category :page
+                               :description "Handle failed QR codes download."
+                               :schema [:cat [:= :qr-codes/download-failure] :any]
+                               :handler-type :fx}
    :qr-codes/update-show-label {:category :page
                                 :description
                                 "Toggle whether to show QR code value as label below QR code."

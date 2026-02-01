@@ -55,9 +55,7 @@
                  (and (some? size) (not (valid-size? size)))
                  (conj (str "Size must be between " min-qr-pixel-size " and " max-qr-pixel-size))
                  (and (some? format) (not (#{:zip :pdf} format))) (conj
-                                                                   "Format must be :zip or :pdf")
-                 (and (some? contents) (> (count contents) max-codes-per-batch))
-                 (conj (str "Maximum " max-codes-per-batch " QR codes per request")))]
+                                                                   "Format must be :zip or :pdf"))]
     {:valid? (empty? errors)
      :errors errors}))
 
@@ -310,3 +308,38 @@
                          :svg-data (matrix->svg-data qr-matrix :output-size size :label label)
                          :filename (sanitize-filename content idx)}))
                     contents))})))
+
+(defn generate-batches
+  "Generate QR codes in chunks based on max-codes-per-batch.
+   Returns {:success bool :batches [{:index int :codes []}] :errors []}."
+  [contents
+   &
+   {:keys [size error-correction show-label? max-batch-size]
+    :or {size default-qr-pixel-size
+         error-correction :medium
+         show-label? false
+         max-batch-size max-codes-per-batch}}]
+  (let [validation (validate-request {:contents contents
+                                      :size size
+                                      :format :zip})]
+    (if-not (:valid? validation)
+      {:success false
+       :errors (:errors validation)}
+      (loop [remaining (partition-all max-batch-size contents)
+             index 0
+             batches []]
+        (if (empty? remaining)
+          {:success true
+           :batches batches}
+          (let [batch (first remaining)
+                result (generate-batch (vec batch)
+                                       :size size
+                                       :error-correction error-correction
+                                       :show-label? show-label?)]
+            (if-not (:success result)
+              {:success false
+               :errors (:errors result)}
+              (recur (rest remaining)
+                     (inc index)
+                     (conj batches {:index index
+                                    :codes (:codes result)})))))))))

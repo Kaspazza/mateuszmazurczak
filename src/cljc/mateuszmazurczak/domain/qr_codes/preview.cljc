@@ -28,14 +28,20 @@
   "Generate preview QR codes from input. Limits to first 10 for performance."
   [input size show-label?]
   (let [contents (gen/parse-input input)
-        limited (take 10 contents)
-        result (gen/generate-batch (vec limited) :size size :show-label? show-label?)]
-    (if (:success result)
-      {:codes (:codes result)
-       :total (count contents)
-       :errors []}
+        validation (gen/validate-request {:contents contents
+                                          :size size})]
+    (if-not (:valid? validation)
       {:codes []
        :total 0
-       :errors (:errors result)})))
+       :errors (:errors validation)}
+      (let [limited (take 10 contents)
+            result (gen/generate-batch (vec limited) :size size :show-label? show-label?)]
+        (if (:success result)
+          {:codes (:codes result)
+           :total (count contents)
+           :errors []}
+          {:codes []
+           :total 0
+           :errors (:errors result)})))))
 
 

@@ -222,6 +222,14 @@
                        :description "Download generated QR codes in selected format."
                        :schema [:cat [:= :qr-codes/download]]
                        :handler-type :fx}
+   :qr-codes/worker-success {:category :page
+                             :description "Handle successful QR code batch generation."
+                             :schema [:cat [:= :qr-codes/worker-success] map?]
+                             :handler-type :fx}
+   :qr-codes/worker-failure {:category :page
+                             :description "Handle failed QR code batch generation."
+                             :schema [:cat [:= :qr-codes/worker-failure] [:vector :string]]
+                             :handler-type :db}
    :qr-codes/download-success {:category :page
                                :description "Handle successful QR codes download."
                                :schema [:cat [:= :qr-codes/download-success]]

@@ -16,12 +16,17 @@
                                :entries [mateuszmazurczak.portfolio.portfolio]
                                :init-fn mateuszmazurczak.portfolio.portfolio/init}}}
    :devtools {:after-load mateuszmazurczak.frontend-core/re-render
-              :preloads [re-frisk.preload]
               :repl-pprint true
+              :preloads [re-frisk.preload]
               :watch-dir "resources/public"}
    :modules {:mateuszmazurczak-frontend-core {:depends-on #{:mateuszmazurczak-share}
-                                              :init-fn mateuszmazurczak.frontend-core/init!}
-             :mateuszmazurczak-share {:entries []}}
+                                              :init-fn mateuszmazurczak.frontend-core/init!
+                                              }
+             :mateuszmazurczak-share {:entries []}
+             :qr-codes-worker {:depends-on #{:mateuszmazurczak-share}
+                               :init-fn mateuszmazurczak.workers.qr-codes/init
+                               :preloads []
+                               :web-worker true}}
    :output-dir "resources/public/js/compiled"
    :release {:build-options {:cache-level :off}
              :closure-defines {mateuszmazurczak.system.config/ENV "production"

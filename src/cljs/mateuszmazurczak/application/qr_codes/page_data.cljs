@@ -81,13 +81,10 @@
 ;; Download Preparation
 ;; =============================================================================
 
-(defn prepare-download-batches
+(defn build-download-batches
   "Prepare download batches for QR code export."
-  [{:keys [input size format show-label?]}]
-  (let [contents (gen/parse-input input)
-        result (gen/generate-batches contents :size size :show-label? show-label?)
-        batches (:batches result)
-        batch-count (count batches)
+  [{:keys [batches format size]}]
+  (let [batch-count (count batches)
         base-filename "qr-codes"
         extension (if (= format :pdf) ".pdf" ".zip")
         filename-for-index (fn [index]
@@ -97,16 +94,12 @@
                                     "-part-"
                                     (format "%03d" (inc index))
                                     extension)))]
-    (if (:success result)
-      {:status :success
-       :batches (mapv (fn [{:keys [codes index]}]
-                        {:codes codes
-                         :opts {:size size
-                                :format format
-                                :filename (filename-for-index index)}})
-                      batches)}
-      {:status :error
-       :errors (:errors result)})))
+    (mapv (fn [{:keys [codes index]}]
+            {:codes codes
+             :opts {:size size
+                    :format format
+                    :filename (filename-for-index index)}})
+          batches)))
 
 ;; =============================================================================
 ;; UI Data Builders

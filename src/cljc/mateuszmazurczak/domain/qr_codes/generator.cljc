@@ -287,10 +287,11 @@
    - :svg-data - data map for direct UI rendering"
   [contents
    &
-   {:keys [size error-correction show-label?]
+   {:keys [size error-correction show-label? start-index]
     :or {size default-qr-pixel-size
          error-correction :medium
-         show-label? false}}]
+         show-label? false
+         start-index 0}}]
   (let [validation (validate-request {:contents contents
                                       :size size
                                       :format :zip})]
@@ -302,11 +303,12 @@
                     (fn [idx content]
                       (let [qr-matrix
                             (generate-qr-matrix content :error-correction error-correction)
-                            label (when show-label? content)]
+                            label (when show-label? content)
+                            filename-idx (+ start-index idx)]
                         {:content content
                          :svg (matrix->svg qr-matrix :output-size size :label label)
                          :svg-data (matrix->svg-data qr-matrix :output-size size :label label)
-                         :filename (sanitize-filename content idx)}))
+                         :filename (sanitize-filename content filename-idx)}))
                     contents))})))
 
 (defn generate-batches
@@ -327,6 +329,7 @@
        :errors (:errors validation)}
       (loop [remaining (partition-all max-batch-size contents)
              index 0
+             start-index 0
              batches []]
         (if (empty? remaining)
           {:success true
@@ -335,11 +338,13 @@
                 result (generate-batch (vec batch)
                                        :size size
                                        :error-correction error-correction
-                                       :show-label? show-label?)]
+                                       :show-label? show-label?
+                                       :start-index start-index)]
             (if-not (:success result)
               {:success false
                :errors (:errors result)}
               (recur (rest remaining)
                      (inc index)
+                     (+ start-index (count batch))
                      (conj batches {:index index
                                     :codes (:codes result)})))))))))

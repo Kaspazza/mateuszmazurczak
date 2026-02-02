@@ -81,25 +81,20 @@
 ;; Download Preparation
 ;; =============================================================================
 
-(defn build-download-batches
-  "Prepare download batches for QR code export."
-  [{:keys [batches format size]}]
-  (let [batch-count (count batches)
-        base-filename "qr-codes"
+(defn build-download-batch
+  "Prepare a single download batch for QR code export."
+  [{:keys [batch-index total-batches format size]}]
+  (let [base-filename "qr-codes"
         extension (if (= format :pdf) ".pdf" ".zip")
-        filename-for-index (fn [index]
-                             (if (= batch-count 1)
-                               (str base-filename extension)
-                               (str base-filename
-                                    "-part-"
-                                    (format "%03d" (inc index))
-                                    extension)))]
-    (mapv (fn [{:keys [codes index]}]
-            {:codes codes
-             :opts {:size size
-                    :format format
-                    :filename (filename-for-index index)}})
-          batches)))
+        filename (if (= total-batches 1)
+                   (str base-filename extension)
+                   (str base-filename
+                        "-part-"
+                        (format "%03d" (inc batch-index))
+                        extension))]
+    {:opts {:size size
+            :format format
+            :filename filename}}))
 
 ;; =============================================================================
 ;; UI Data Builders
@@ -140,7 +135,7 @@
 
 (defn- build-text-markers
   "Build i18n markers for all text in the UI."
-  [preview-count input-count]
+  [preview-count input-count download-progress]
   {:title [:i18n :qr-code-generator]
    :description [:i18n :generate-multiple-qr-codes]
    :qr-code-values [:i18n :qr-code-values]
@@ -155,6 +150,20 @@
    :download [:i18n :download]
    :preview [:i18n :preview]
    :errors [:i18n :errors]
+   :download-progress (cond
+                        ;; Finalizing status (no current/total, just status message)
+                        (and download-progress (:status download-progress))
+                        (:status download-progress)
+                        
+                        ;; Normal progress with current/total
+                        (and download-progress (pos? (:total download-progress)))
+                        [:i18n :download-progress
+                         {:1 (:current download-progress)
+                          :2 (:total download-progress)}]
+                        
+                        ;; No progress
+                        :else
+                        "")
    :showing-preview-count [:i18n
                            :showing-preview-count
                            {:1 preview-count
@@ -173,7 +182,7 @@
             :preview-display-size qr-preview/preview-display-size
             :input-hint (build-input-hint input-count)
             :handlers (build-handlers)
-            :text (build-text-markers preview-count input-count)})))
+            :text (build-text-markers preview-count input-count (:download-progress page-data))})))
 
 
 

@@ -24,7 +24,11 @@
    [:generating? :boolean]
    [:errors [:vector :string]]
    [:loading? {:optional true}
-    :boolean]])
+    :boolean]
+      [:download-progress {:optional true}
+       [:maybe [:map
+                [:current :int]
+                [:total :int]]]]])
 
 (defn valid-page-data?
   "Validate QR codes page data against schema."
@@ -56,6 +60,10 @@
    [:errors [:vector :string]]
    [:loading? {:optional true}
     :boolean]
+   [:download-progress {:optional true}
+    [:maybe [:map
+             [:current :int]
+             [:total :int]]]]
    [:input-count :int]
    [:has-input? :boolean]
    [:can-download? :boolean]
@@ -96,4 +104,5 @@
    :preview-codes []
    :generating? false
    :errors []
-   :loading? false})
+   :loading? false
+   :download-progress nil})

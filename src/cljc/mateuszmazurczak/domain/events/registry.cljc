@@ -222,20 +222,28 @@
                        :description "Download generated QR codes in selected format."
                        :schema [:cat [:= :qr-codes/download]]
                        :handler-type :fx}
-   :qr-codes/worker-success {:category :page
-                             :description "Handle successful QR code batch generation."
-                             :schema [:cat [:= :qr-codes/worker-success] map?]
-                             :handler-type :fx}
+   :qr-codes/worker-ready {:category :page
+                           :description "Handle worker readiness for QR batch generation."
+                           :schema [:cat [:= :qr-codes/worker-ready] map?]
+                           :handler-type :fx}
+   :qr-codes/worker-progress {:category :page
+                              :description "Handle progress update from worker during QR generation."
+                              :schema [:cat [:= :qr-codes/worker-progress] map?]
+                              :handler-type :fx}
+   :qr-codes/worker-finalizing {:category :page
+                                :description "Handle worker starting finalization of archive (PDF/ZIP generation)."
+                                :schema [:cat [:= :qr-codes/worker-finalizing] map?]
+                                :handler-type :db}
+   :qr-codes/worker-done {:category :page
+                          :description "Handle completion of QR generation with final buffer."
+                          :schema [:cat [:= :qr-codes/worker-done] map?]
+                          :handler-type :fx}
    :qr-codes/worker-failure {:category :page
                              :description "Handle failed QR code batch generation."
                              :schema [:cat [:= :qr-codes/worker-failure] [:vector :string]]
-                             :handler-type :db}
-   :qr-codes/download-success {:category :page
-                               :description "Handle successful QR codes download."
-                               :schema [:cat [:= :qr-codes/download-success]]
-                               :handler-type :db}
+                             :handler-type :fx}
    :qr-codes/download-failure {:category :page
-                               :description "Handle failed QR codes download."
+                               :description "Handle failed download of final QR archive."
                                :schema [:cat [:= :qr-codes/download-failure] :any]
                                :handler-type :fx}
    :qr-codes/update-show-label {:category :page

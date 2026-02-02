@@ -48,3 +48,12 @@
    - filename: Suggested filename"
   [blob filename]
   (file-export/save-blob! blob filename))
+
+(defn save-array-buffer!
+  "Trigger browser download for an ArrayBuffer.
+   
+   Arguments:
+   - array-buffer: ArrayBuffer to download
+   - opts: {:filename string :format (:zip|:pdf)}"
+  [array-buffer opts]
+  (file-export/save-array-buffer! array-buffer opts))

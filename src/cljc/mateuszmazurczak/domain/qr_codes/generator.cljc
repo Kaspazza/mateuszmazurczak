@@ -15,7 +15,7 @@
 (def default-qr-pixel-size 300)
 (def min-qr-pixel-size 50)
 (def max-qr-pixel-size 1000)
-(def max-codes-per-batch 1000)
+(def max-codes-per-batch 100)
 
 ;; Pure Domain Functions
 
@@ -152,6 +152,15 @@
                         all-chunks)]
       (vec (remove str/blank? lines)))))
 
+(defn- escape-xml
+  [text]
+  (-> text
+      (str/replace "&" "&amp;")
+      (str/replace "<" "&lt;")
+      (str/replace ">" "&gt;")
+      (str/replace "\"" "&quot;")
+      (str/replace "'" "&apos;")))
+
 (defn matrix->svg-path
   "Convert QR matrix to SVG path data string. Pure function.
    Returns the 'd' attribute value for an SVG path element."
@@ -247,14 +256,15 @@
                 "\">"
                 (str/join ""
                           (map-indexed (fn [idx line]
-                                         (str "<tspan x=\""
-                                              (/ total-modules 2)
-                                              "\" "
-                                              "y=\""
-                                              (+ text-start-y (* idx line-height))
-                                              "\">"
-                                              line
-                                              "</tspan>"))
+                                         (let [escaped-line (escape-xml line)]
+                                           (str "<tspan x=\""
+                                                (/ total-modules 2)
+                                                "\" "
+                                                "y=\""
+                                                (+ text-start-y (* idx line-height))
+                                                "\">"
+                                                escaped-line
+                                                "</tspan>")))
                                        text-lines))
                 "</text>"))
          "</svg>")))
@@ -306,6 +316,7 @@
                             label (when show-label? content)
                             filename-idx (+ start-index idx)]
                         {:content content
+                         :qr-matrix qr-matrix
                          :svg (matrix->svg qr-matrix :output-size size :label label)
                          :svg-data (matrix->svg-data qr-matrix :output-size size :label label)
                          :filename (sanitize-filename content filename-idx)}))

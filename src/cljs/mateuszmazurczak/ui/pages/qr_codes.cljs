@@ -93,7 +93,10 @@
      (for [{:keys [value label]} format-options]
        ^{:key value}
        [select/select-item {:value (name value)}
-        label])]]])
+        label])]]
+   (when (= format :pdf)
+     [:p {:class "text-xs text-muted-foreground"}
+      (:format-pdf-description text)])])
 
 (defn- label-toggle
   "Toggle to show QR code value as label."
@@ -129,20 +132,24 @@
 
 (defn- action-buttons
   "Generate preview and download buttons."
-  [{:keys [has-input? can-download? loading? text handlers]}]
-  [:div {:class "flex flex-col sm:flex-row gap-3"}
-   (button/button {:variant :outline
-                   :disabled (not has-input?)
-                   :on-click (:on-generate-preview handlers)
-                   :class "flex-1"}
-                  [:> RefreshCw {:class "size-4 mr-2"}]
-                  (:generate-preview text))
-   (button/button {:variant :default
-                   :disabled (not can-download?)
-                   :on-click (:on-download handlers)
-                   :class "flex-1"}
-                  [:> Download {:class (str "size-4 mr-2" (when loading? " animate-spin"))}]
-                  (:download text))])
+  [{:keys [has-input? can-download? loading? text handlers download-progress]}]
+  [:div {:class "flex flex-col gap-2"}
+   [:div {:class "flex flex-col sm:flex-row gap-3"}
+    (button/button {:variant :outline
+                    :disabled (not has-input?)
+                    :on-click (:on-generate-preview handlers)
+                    :class "flex-1"}
+                   [:> RefreshCw {:class "size-4 mr-2"}]
+                   (:generate-preview text))
+    (button/button {:variant :default
+                    :disabled (not can-download?)
+                    :on-click (:on-download handlers)
+                    :class "flex-1"}
+                   [:> Download {:class (str "size-4 mr-2" (when loading? " animate-spin"))}]
+                   (:download text))]
+   (when (and download-progress (:download-progress text))
+     [:p {:class "text-sm text-muted-foreground"}
+      (:download-progress text)])])
 
 (defn qr-codes-page
   "QR Code Generator page."

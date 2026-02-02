@@ -90,6 +90,16 @@
   [blob filename]
   (FileSaver/saveAs blob filename))
 
+(defn save-array-buffer!
+  "Trigger browser download for an ArrayBuffer."
+  [array-buffer {:keys [filename format] :or {format :zip}}]
+  (let [mime-type (case format
+                    :pdf "application/pdf"
+                    :zip "application/zip"
+                    "application/octet-stream")
+        blob (js/Blob. #js [array-buffer] #js {:type mime-type})]
+    (save-blob! blob filename)))
+
 (defn download-zip!
   "Generate ZIP from QR codes and trigger download."
   [codes
@@ -199,4 +209,5 @@
    :download-pdf! download-pdf!
    :create-zip-from-codes create-zip-from-codes
    :create-pdf-from-codes create-pdf-from-codes
-   :save-blob! save-blob!})
+   :save-blob! save-blob!
+   :save-array-buffer! save-array-buffer!})

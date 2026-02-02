@@ -3,6 +3,7 @@
   (:require
    [mateuszmazurczak.application.qr-codes.page-data   :as page-data]
    [mateuszmazurczak.application.qr-codes.page-schema :as page-schema]
+   [mateuszmazurczak.domain.qr-codes.generator        :as gen]
    [mateuszmazurczak.domain.state.registry            :as state-registry]
    [mateuszmazurczak.ports.export                     :as export]
    [mateuszmazurczak.ports.logging                    :as log]
@@ -16,20 +17,37 @@
 
 (defn- handle-worker-message
   [event]
-  (let [{:keys [type request-id batches errors]}
-        (js->clj (.-data event) :keywordize-keys true)
-        {:keys [on-success on-failure format size]}
+  (let [data (.-data event)
+        type (aget data "type")
+        request-id (aget data "request-id")
+        {:keys [on-ready on-progress on-finalizing on-done on-failure]}
         (get-in @worker-state [:requests request-id])
-        message-type (keyword type)]
-    (swap! worker-state update :requests dissoc request-id)
+        message-type (if (keyword? type) (name type) type)]
     (case message-type
-      :worker-success
-      (when on-success
-        (rf/dispatch (conj on-success {:batches batches
-                                       :format format
-                                       :size size})))
-      :worker-failure
-      (when on-failure (rf/dispatch (conj on-failure errors)))
+      "qr-codes/ready"
+      (when on-ready
+        (let [total-batches (aget data "total-batches")]
+          (swap! worker-state assoc-in [:requests request-id :total-batches] total-batches)
+          (rf/dispatch (conj on-ready {:request-id request-id
+                                       :total-batches total-batches}))))
+      "qr-codes/progress"
+      (when on-progress
+        (rf/dispatch (conj on-progress {:request-id request-id
+                                        :batch-index (aget data "batch-index")
+                                        :total-batches (aget data "total-batches")
+                                        :current (aget data "current")
+                                        :total (aget data "total")})))
+      "qr-codes/finalizing"
+      (when on-finalizing
+        (rf/dispatch (conj on-finalizing {:request-id request-id
+                                          :format (keyword (aget data "format"))})))
+      "qr-codes/done"
+      (do (swap! worker-state update :requests dissoc request-id)
+          (when on-done (rf/dispatch (conj on-done {:request-id request-id
+                                                     :buffer (aget data "buffer")}))))
+      "qr-codes/error"
+      (do (swap! worker-state update :requests dissoc request-id)
+          (when on-failure (rf/dispatch (conj on-failure (js->clj (aget data "errors"))))))
       nil)))
 
 (defn- ensure-worker
@@ -42,32 +60,43 @@
         (swap! worker-state assoc :worker worker)
         worker))))
 
-(rf/reg-fx ::generate-qr-batches
-           (fn [{:keys [input size show-label? format on-success on-failure]}]
-             (let [worker (ensure-worker)
-                   request-id (str (random-uuid))]
+(rf/reg-fx ::init-qr-worker
+           (fn [{:keys [request-id input size format show-label? on-ready on-progress on-finalizing on-done on-failure]}]
+             (let [worker (ensure-worker)]
                (swap! worker-state assoc-in
                       [:requests request-id]
-                      {:on-success on-success
-                       :on-failure on-failure
-                       :format format
-                       :size size})
-               (.postMessage worker (clj->js {:request-id request-id
+                      {:on-ready on-ready
+                       :on-progress on-progress
+                       :on-finalizing on-finalizing
+                       :on-done on-done
+                       :on-failure on-failure})
+               (.postMessage worker (clj->js {:type "qr-codes/init"
+                                              :request-id request-id
                                               :input input
                                               :size size
+                                              :format format
                                               :show-label? show-label?})))))
 
-(rf/reg-fx ::download-qr-codes
-           (fn [{:keys [batches on-success on-failure]}]
-             (let [download-chain (reduce (fn [promise {:keys [codes opts]}]
-                                            (.then promise
-                                                   (fn [] (export/download-qr-codes! codes opts))))
-                                          (js/Promise.resolve)
-                                          batches)]
-               (-> download-chain
-                   (.then (fn [_] (when on-success (rf/dispatch on-success))))
-                   (.catch (fn [error]
-                             (when on-failure (rf/dispatch (conj on-failure error)))))))))
+(rf/reg-fx ::request-qr-batch
+           (fn [{:keys [request-id]}]
+             (let [worker (ensure-worker)]
+               (.postMessage worker (clj->js {:type "qr-codes/next"
+                                              :request-id request-id})))))
+
+(rf/reg-fx ::cancel-qr-worker
+           (fn [{:keys [request-id]}]
+             (let [worker (ensure-worker)]
+               (swap! worker-state update :requests dissoc request-id)
+               (.postMessage worker (clj->js {:type "qr-codes/cancel"
+                                              :request-id request-id})))))
+
+(rf/reg-fx ::save-qr-batch
+           (fn [{:keys [buffer opts on-success on-failure]}]
+             (try
+               (export/save-array-buffer! buffer opts)
+               (when on-success (rf/dispatch on-success))
+               (catch :default error
+                 (when on-failure (rf/dispatch (conj on-failure error)))))))
 
 (def handlers
   "QR codes page event handlers."
@@ -91,30 +120,73 @@
    (fn [db [_]] (update-in db state-registry/*qr-codes-page-path* page-data/generate-page-preview))
    :qr-codes/download
    (fn [{:keys [db]} [_]]
-     (let [page-data (get-in db state-registry/*qr-codes-page-path*)]
-       {:db (assoc-in db state-registry/*qr-codes-page-path* (assoc page-data :loading? true))
-        ::generate-qr-batches {:input (:input page-data)
-                               :size (:size page-data)
-                               :show-label? (:show-label? page-data)
-                               :format (:format page-data)
-                               :on-success [:qr-codes/worker-success]
-                               :on-failure [:qr-codes/worker-failure]}}))
-   :qr-codes/worker-success
-   (fn [{:keys [db]} [_ {:keys [batches format size]}]]
      (let [page-data (get-in db state-registry/*qr-codes-page-path*)
-           download-batches (page-data/build-download-batches {:batches batches
-                                                               :format format
-                                                               :size size})]
-       {:db (assoc-in db state-registry/*qr-codes-page-path* (assoc page-data :errors []))
-        ::download-qr-codes {:batches download-batches
-                             :on-success [:qr-codes/download-success]
-                             :on-failure [:qr-codes/download-failure]}}))
+           request-id (str (random-uuid))]
+       {:db (assoc-in db
+             state-registry/*qr-codes-page-path*
+             (assoc page-data :loading? true :errors [] :download-progress nil))
+        ::init-qr-worker {:request-id request-id
+                          :input (:input page-data)
+                          :size (:size page-data)
+                          :format (:format page-data)
+                          :show-label? (:show-label? page-data)
+                          :on-ready [:qr-codes/worker-ready]
+                          :on-progress [:qr-codes/worker-progress]
+                          :on-finalizing [:qr-codes/worker-finalizing]
+                          :on-done [:qr-codes/worker-done]
+                          :on-failure [:qr-codes/worker-failure]}}))
+   :qr-codes/worker-ready
+   (fn [{:keys [db]} [_ {:keys [request-id]}]]
+     (let [page-data (get-in db state-registry/*qr-codes-page-path*)
+           ;; Calculate total items from input
+           contents (gen/parse-input (:input page-data))
+           total-items (count contents)]
+       {:db (assoc-in db
+             state-registry/*qr-codes-page-path*
+             (assoc page-data
+                    :download-progress {:current 0 :total total-items}))
+        ::request-qr-batch {:request-id request-id}}))
+   :qr-codes/worker-progress
+   (fn [{:keys [db]} [_ {:keys [request-id current total]}]]
+     {:db (update-in db
+                     state-registry/*qr-codes-page-path*
+                     assoc
+                     :download-progress {:current current :total total})
+      ::request-qr-batch {:request-id request-id}})
+   :qr-codes/worker-finalizing
+   (fn [db [_ {:keys [format]}]]
+     (let [status-msg (case format
+                        :pdf "Generating PDF document..."
+                        :zip "Creating ZIP archive..."
+                        "Finalizing...")]
+       (update-in db
+                  state-registry/*qr-codes-page-path*
+                  assoc
+                  :download-progress {:current nil :total nil :status status-msg})))
+   :qr-codes/worker-done
+   (fn [{:keys [db]} [_ {:keys [buffer]}]]
+     (let [page-data (get-in db state-registry/*qr-codes-page-path*)
+           ;; Build filename for single archive
+           extension (case (:format page-data) :pdf "pdf" :zip "zip")
+           filename (str "qr-codes." extension)]
+       {:db (update-in db state-registry/*qr-codes-page-path* assoc :loading? false :download-progress nil)
+        ::save-qr-batch {:buffer buffer
+                         :opts {:filename filename}
+                         :on-success nil
+                         :on-failure [:qr-codes/download-failure]}}))
    :qr-codes/worker-failure
-   (fn [db [_ errors]]
-     (update-in db state-registry/*qr-codes-page-path* assoc :errors errors :loading? false))
-   :qr-codes/download-success
-   (fn [db [_]]
-     (update-in db state-registry/*qr-codes-page-path* assoc :loading? false))
+   (fn [{:keys [db]} [_ errors]]
+     (when-let [logger (get-in db state-registry/*logger-path*)]
+       (log/error! logger
+                   {:error (ex-info "QR code worker failed"
+                                    {:type ::worker-failed
+                                     :errors errors})}))
+     {:db (update-in db
+                     state-registry/*qr-codes-page-path*
+                     assoc
+                     :errors errors
+                     :loading? false
+                     :download-progress nil)})
    :qr-codes/download-failure
    (fn [{:keys [db]} [_ error]]
      (let [logger (get-in db state-registry/*logger-path*)]
@@ -122,4 +194,4 @@
                    {:error (ex-info "Failed to download QR codes"
                                     {:type ::download-failed
                                      :error error})})
-       {:db (update-in db state-registry/*qr-codes-page-path* assoc :loading? false)}))})
+       {:db (update-in db state-registry/*qr-codes-page-path* assoc :loading? false :download-progress nil)}))})

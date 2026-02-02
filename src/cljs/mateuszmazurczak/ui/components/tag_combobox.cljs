@@ -4,17 +4,17 @@
   Responsive component that uses popover on desktop and sheet on mobile.
   Allows filtering through existing tags and creating new ones if no match found."
   (:require
-   ["lucide-react"                           :refer [Check Plus]]
-   [clojure.string                           :as str]
-   [mateuszmazurczak.ui.components.button    :as mateuszmazurczak-button]
-   [mateuszmazurczak.ui.components.command   :as command]
-   [mateuszmazurczak.ui.components.popover   :as popover]
-   [mateuszmazurczak.ui.components.sheet     :as sheet]
-   [mateuszmazurczak.ui.hooks.use-is-mobile  :as use-mobile]
-   [mateuszmazurczak.utils.styles            :refer [merge-classes]]
-   [reagent.core                             :as    r
-                                             :refer [defc]]
-   [reagent.hooks                            :as hooks]))
+   ["lucide-react"                          :refer [Check Plus]]
+   [clojure.string                          :as str]
+   [mateuszmazurczak.ui.components.button   :as mateuszmazurczak-button]
+   [mateuszmazurczak.ui.components.command  :as command]
+   [mateuszmazurczak.ui.components.popover  :as popover]
+   [mateuszmazurczak.ui.components.sheet    :as sheet]
+   [mateuszmazurczak.ui.hooks.use-is-mobile :as use-mobile]
+   [mateuszmazurczak.utils.styles           :refer [merge-classes]]
+   [reagent.core                            :as    r
+                                            :refer [defc]]
+   [reagent.hooks                           :as hooks]))
 
 (defc tag-list
  "Command list component for tag selection.

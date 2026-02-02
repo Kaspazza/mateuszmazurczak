@@ -19,9 +19,7 @@
                      (gen/validate-request {:contents contents
                                             :size (:size page-data)
                                             :format (:format page-data)}))
-        errors (if (and validation (not (:valid? validation)))
-                 (:errors validation)
-                 [])]
+        errors (if (and validation (not (:valid? validation))) (:errors validation) [])]
     (assoc page-data :input input :preview-codes [] :errors errors)))
 
 (defn update-page-size
@@ -41,13 +39,11 @@
 
 (defn- parse-int-with-fallback
   [value fallback]
-  (let [parsed (js/parseInt value 10)]
-    (if (js/isNaN parsed) fallback parsed)))
+  (let [parsed (js/parseInt value 10)] (if (js/isNaN parsed) fallback parsed)))
 
 (defn- parse-float-with-fallback
   [value fallback]
-  (let [parsed (js/parseFloat value)]
-    (if (js/isNaN parsed) fallback parsed)))
+  (let [parsed (js/parseFloat value)] (if (js/isNaN parsed) fallback parsed)))
 
 (defn update-page-show-label
   "Toggle whether to show QR code value as label below QR code."
@@ -121,10 +117,7 @@
         extension (if (= format :pdf) ".pdf" ".zip")
         filename (if (= total-batches 1)
                    (str base-filename extension)
-                   (str base-filename
-                        "-part-"
-                        (format "%03d" (inc batch-index))
-                        extension))]
+                   (str base-filename "-part-" (format "%03d" (inc batch-index)) extension))]
     {:opts {:size size
             :format format
             :filename filename}}))
@@ -142,15 +135,22 @@
         qr-preview/valid-sizes))
 
 (def ^:private pdf-layout-presets
-  {:avery-5160 {:cols 3
-                :rows 10
-                :qr-size-cm 2.0}
-   :avery-5163 {:cols 2
-                :rows 5
-                :qr-size-cm 4.0}
-   :grid-6 {:cols 2
-            :rows 3
-            :qr-size-cm 5.0}})
+  {:per-page-30 {:cols 3
+                 :rows 10
+                 :qr-size-cm 2.0
+                 :description "Small labels, 30 per page"}
+   :per-page-10 {:cols 2
+                 :rows 5
+                 :qr-size-cm 4.0
+                 :description "Medium labels, 10 per page"}
+   :per-page-6 {:cols 2
+                :rows 3
+                :qr-size-cm 5.0
+                :description "Large scannable, 6 per page"}
+   :per-page-1 {:cols 1
+                :rows 1
+                :qr-size-cm 10.0
+                :description "Full page display, 1 per page"}})
 
 (def ^:private pdf-layout-defaults
   {:margin-cm 1.0
@@ -167,12 +167,14 @@
 (defn- build-pdf-layout-options
   "Build PDF layout options for UI selector."
   []
-  [{:value :avery-5160
-    :label [:i18n :pdf-layout-avery-5160]}
-   {:value :avery-5163
-    :label [:i18n :pdf-layout-avery-5163]}
-   {:value :grid-6
-    :label [:i18n :pdf-layout-grid-6]}
+  [{:value :per-page-30
+    :label [:i18n :pdf-layout-per-page-30]}
+   {:value :per-page-10
+    :label [:i18n :pdf-layout-per-page-10]}
+   {:value :per-page-6
+    :label [:i18n :pdf-layout-per-page-6]}
+   {:value :per-page-1
+    :label [:i18n :pdf-layout-per-page-1]}
    {:value :custom
     :label [:i18n :pdf-layout-custom]}])
 
@@ -239,16 +241,14 @@
                           :download-progress-zip [:i18n :download-progress-zip]
                           :download-progress-finalizing [:i18n :download-progress-finalizing]
                           "")
-
                         ;; Normal progress with current/total
                         (and download-progress (pos? (:total download-progress)))
-                        [:i18n :download-progress
+                        [:i18n
+                         :download-progress
                          {:1 (:current download-progress)
                           :2 (:total download-progress)}]
-
                         ;; No progress
-                        :else
-                        "")
+                        :else "")
    :showing-preview-count [:i18n
                            :showing-preview-count
                            {:1 preview-count

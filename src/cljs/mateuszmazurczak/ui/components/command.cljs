@@ -34,10 +34,9 @@
          Command
          (-> props
              (assoc :data-slot "command"
-                    :class (merge-classes
-                            "bg-popover text-popover-foreground"
-                            "flex h-full w-full flex-col overflow-hidden rounded-md"
-                            class))
+                    :class (merge-classes "bg-popover text-popover-foreground"
+                                          "flex h-full w-full flex-col overflow-hidden rounded-md"
+                                          class))
              (dissoc :class-name))]
         children))
 
@@ -114,10 +113,11 @@
     (.-Input Command)
     (-> props
         (assoc :data-slot "command-input"
-               :class (merge-classes
-                       "placeholder:text-muted-foreground"
-                       "flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-none"
-                       "disabled:cursor-not-allowed disabled:opacity-50" class))
+               :class
+               (merge-classes
+                "placeholder:text-muted-foreground"
+                "flex h-10 w-full rounded-md border-0 bg-transparent py-3 text-sm outline-none"
+                "disabled:cursor-not-allowed disabled:opacity-50" class))
         (dissoc :class-name))]])
 
 (defn command-list
@@ -144,12 +144,10 @@
   (into [:>
          (.-List Command)
          (-> props
-             (assoc
-              :data-slot "command-list"
-              :class
-              (merge-classes
-               "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto"
-               class))
+             (assoc :data-slot "command-list"
+                    :class (merge-classes
+                            "max-h-[300px] scroll-py-1 overflow-x-hidden overflow-y-auto"
+                            class))
              (dissoc :class-name))]
         children))
 

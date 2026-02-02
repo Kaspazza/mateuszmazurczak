@@ -357,5 +357,6 @@
               (recur (rest remaining)
                      (inc index)
                      (+ start-index (count batch))
-                     (conj batches {:index index
-                                    :codes (:codes result)})))))))))
+                     (conj batches
+                           {:index index
+                            :codes (:codes result)})))))))))

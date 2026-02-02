@@ -229,13 +229,15 @@
                            :schema [:cat [:= :qr-codes/worker-ready] map?]
                            :handler-type :fx}
    :qr-codes/worker-progress {:category :page
-                              :description "Handle progress update from worker during QR generation."
+                              :description
+                              "Handle progress update from worker during QR generation."
                               :schema [:cat [:= :qr-codes/worker-progress] map?]
                               :handler-type :fx}
-   :qr-codes/worker-finalizing {:category :page
-                                :description "Handle worker starting finalization of archive (PDF/ZIP generation)."
-                                :schema [:cat [:= :qr-codes/worker-finalizing] map?]
-                                :handler-type :db}
+   :qr-codes/worker-finalizing
+   {:category :page
+    :description "Handle worker starting finalization of archive (PDF/ZIP generation)."
+    :schema [:cat [:= :qr-codes/worker-finalizing] map?]
+    :handler-type :db}
    :qr-codes/worker-done {:category :page
                           :description "Handle completion of QR generation with final buffer."
                           :schema [:cat [:= :qr-codes/worker-done] map?]

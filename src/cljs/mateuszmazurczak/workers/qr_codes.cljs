@@ -1,24 +1,20 @@
 (ns mateuszmazurczak.workers.qr-codes
   "Web worker for QR code batch generation."
   (:require
-   [clojure.string :as str]
-   [mateuszmazurczak.domain.qr-codes.generator :as gen]
-   ["jszip" :as JSZip]
-   ["pdf-lib" :as pdf-lib]))
+   ["jszip"                                    :as JSZip]
+   ["pdf-lib"                                  :as pdf-lib]
+   [clojure.string                             :as str]
+   [mateuszmazurczak.domain.qr-codes.generator :as gen]))
 
 (defonce ^:private worker-state (atom nil))
 
 (defn- post!
-  ([payload]
-   (js/postMessage (clj->js payload)))
-  ([payload transfer]
-   (js/postMessage (clj->js payload) transfer)))
+  ([payload] (js/postMessage (clj->js payload)))
+  ([payload transfer] (js/postMessage (clj->js payload) transfer)))
 
 (defn- total-batches
   [total-items max-batch-size]
-  (if (pos? total-items)
-    (int (js/Math.ceil (/ total-items max-batch-size)))
-    0))
+  (if (pos? total-items) (int (js/Math.ceil (/ total-items max-batch-size))) 0))
 
 (defn- draw-qr-matrix-to-canvas
   "Render QR code matrix directly to OffscreenCanvas as PNG.
@@ -46,11 +42,9 @@
         canvas-height (int (* output-size (/ total-height-modules total-modules)))
         canvas (js/OffscreenCanvas. canvas-width canvas-height)
         ctx (.getContext canvas "2d")]
-    
     ;; Fill white background
     (set! (.-fillStyle ctx) "#FFFFFF")
     (.fillRect ctx 0 0 canvas-width canvas-height)
-    
     ;; Draw black QR modules
     (set! (.-fillStyle ctx) "#000000")
     (doseq [y (range size)
@@ -61,7 +55,6 @@
                  (* (+ y margin) module-scale)
                  module-scale
                  module-scale))
-    
     ;; Draw label if present
     (when has-label?
       (set! (.-fillStyle ctx) "#000000")
@@ -73,7 +66,6 @@
                      line
                      (/ canvas-width 2)
                      (+ text-start-y (* idx line-height module-scale))))))
-    
     ;; Return promise that resolves to PNG ArrayBuffer
     (-> (.convertToBlob canvas #js {:type "image/png"})
         (.then (fn [blob] (.arrayBuffer blob))))))
@@ -82,42 +74,45 @@
 (def ^:private a4-height-pt 842)
 (def ^:private points-per-inch 72)
 
-(defn- cm->pt
-  "Convert centimeters to PDF points."
-  [cm]
-  (* cm (/ points-per-inch 2.54)))
+(defn- cm->pt "Convert centimeters to PDF points." [cm] (* cm (/ points-per-inch 2.54)))
 
-(def ^:private default-pdf-layout-config
-  {:margin-cm 1.0
-   :spacing-cm 0.3
-   :cols 3
-   :rows 10
-   :qr-size-cm 2.0})
+(def ^:private max-codes-per-pdf
+  "Maximum codes per PDF file to avoid memory issues.
+   With 30 codes/page, 300 codes = 10 pages per PDF."
+  300)
 
 (defn- calculate-grid-layout
   "Calculate grid layout for multiple QR codes per page.
-   Returns {:codes-per-page :qr-size-pt :cols :rows :spacing-pt :margin-pt}"
+   
+   Expects layout-config with all required keys:
+   {:cols :rows :qr-size-cm :margin-cm :spacing-cm}
+   
+   Returns {:codes-per-page :qr-size-pt :cols :rows :spacing-pt :margin-pt :start-x :start-y}
+   Grid is centered on A4 page for professional appearance."
   [layout-config]
-  (let [{:keys [cols rows qr-size-cm margin-cm spacing-cm]}
-        (merge default-pdf-layout-config layout-config)
+  (let [{:keys [cols rows qr-size-cm margin-cm spacing-cm]} layout-config
         qr-size-pt (cm->pt qr-size-cm)
         margin-pt (cm->pt margin-cm)
         spacing-pt (cm->pt spacing-cm)
-        total-width (+ (* cols qr-size-pt)
-                       (* (max 0 (dec cols)) spacing-pt)
-                       (* 2 margin-pt))
-        total-height (+ (* rows qr-size-pt)
-                        (* (max 0 (dec rows)) spacing-pt)
-                        (* 2 margin-pt))]
-    (when (or (> total-width a4-width-pt)
-              (> total-height a4-height-pt))
+        ;; Calculate content dimensions (without page margins)
+        content-width (+ (* cols qr-size-pt) (* (max 0 (dec cols)) spacing-pt))
+        content-height (+ (* rows qr-size-pt) (* (max 0 (dec rows)) spacing-pt))
+        ;; Check if content + minimum margins fit on A4
+        min-required-width (+ content-width (* 2 margin-pt))
+        min-required-height (+ content-height (* 2 margin-pt))]
+    (when (or (> min-required-width a4-width-pt) (> min-required-height a4-height-pt))
       (throw (js/Error. "PDF layout does not fit A4 page")))
-    {:codes-per-page (* cols rows)
-     :qr-size-pt qr-size-pt
-     :cols cols
-     :rows rows
-     :spacing-pt spacing-pt
-     :margin-pt margin-pt}))
+    ;; Center the grid on the page
+    (let [start-x (/ (- a4-width-pt content-width) 2)
+          start-y (/ (- a4-height-pt content-height) 2)]
+      {:codes-per-page (* cols rows)
+       :qr-size-pt qr-size-pt
+       :cols cols
+       :rows rows
+       :spacing-pt spacing-pt
+       :margin-pt margin-pt
+       :start-x start-x     ; Centered horizontal start position
+       :start-y start-y}))) ; Centered vertical start position
 
 (defn- uint8array->array-buffer
   [bytes]
@@ -125,9 +120,7 @@
         offset (.-byteOffset bytes)
         length (.-byteLength bytes)]
     (if (zero? offset)
-      (if (= length (.-byteLength buffer))
-        buffer
-        (.slice buffer 0 length))
+      (if (= length (.-byteLength buffer)) buffer (.slice buffer 0 length))
       (.slice buffer offset (+ offset length)))))
 
 (defn- draw-qr-vector-on-pdf-page
@@ -141,7 +134,6 @@
         margin 4 ; Quiet zone (4 modules)
         total-modules (+ size (* 2 margin))
         module-size-pt (/ qr-size-pt total-modules)]
-    
     ;; Draw white background (with quiet zone)
     (.drawRectangle page
                     #js {:x x
@@ -149,7 +141,6 @@
                          :width qr-size-pt
                          :height qr-size-pt
                          :color (rgb 1 1 1)})
-    
     ;; Draw black modules as vector rectangles
     (doseq [row (range size)
             col (range size)
@@ -163,7 +154,6 @@
                              :width module-size-pt
                              :height module-size-pt
                              :color (rgb 0 0 0)})))
-    
     ;; Draw label if requested
     (when (and show-label? content)
       (let [font-size 8
@@ -179,33 +169,30 @@
 (defn- create-pdf-from-codes
   "Generate PDF with vector QR codes (resolution-independent).
    
-   Uses grid layout to fit multiple codes per page efficiently.
+   Uses centered grid layout for professional appearance.
    Each QR code is drawn as vector rectangles for infinite scalability."
   [codes _size show-label? layout-config]
   (let [PDFDocument (.-PDFDocument pdf-lib)
         layout (calculate-grid-layout layout-config)
-        {:keys [codes-per-page qr-size-pt cols spacing-pt margin-pt]} layout]
-    
-    (-> (.create PDFDocument)
-        (.then
-         (fn [pdf-doc]
-           ;; Partition codes into pages
-           (doseq [page-codes (partition-all codes-per-page codes)]
-             (let [page (.addPage pdf-doc #js [a4-width-pt a4-height-pt])]
-               ;; Draw each code in grid layout
-               (doseq [[idx {:keys [qr-matrix content]}] (map-indexed vector page-codes)]
-                 (let [col (mod idx cols)
-                       row (int (/ idx cols))
-                       x (+ margin-pt (* col (+ qr-size-pt spacing-pt)))
-                       ;; PDF Y-axis is bottom-up, calculate from bottom
-                       y (- a4-height-pt
-                            margin-pt
-                            qr-size-pt
-                            (* row (+ qr-size-pt spacing-pt)))]
-                   (draw-qr-vector-on-pdf-page page qr-matrix x y qr-size-pt content show-label?)))))
-           
-           (.save pdf-doc)))
-        (.then uint8array->array-buffer))))
+        {:keys [codes-per-page qr-size-pt cols spacing-pt start-x start-y]} layout]
+    (->
+      (.create PDFDocument)
+      (.then
+       (fn [pdf-doc]
+         ;; Partition codes into pages
+         (doseq [page-codes (partition-all codes-per-page codes)]
+           (let [page (.addPage pdf-doc #js [a4-width-pt a4-height-pt])]
+             ;; Draw each code in centered grid layout
+             (doseq [[idx {:keys [qr-matrix content]}] (map-indexed vector page-codes)]
+               (let [col (mod idx cols)
+                     row (int (/ idx cols))
+                     ;; Use centered start positions
+                     x (+ start-x (* col (+ qr-size-pt spacing-pt)))
+                     ;; PDF Y-axis is bottom-up, calculate from centered start
+                     y (- a4-height-pt start-y qr-size-pt (* row (+ qr-size-pt spacing-pt)))]
+                 (draw-qr-vector-on-pdf-page page qr-matrix x y qr-size-pt content show-label?)))))
+         (.save pdf-doc)))
+      (.then uint8array->array-buffer))))
 
 (defn- error->message
   [error]
@@ -227,10 +214,9 @@
               :errors (:errors validation)})
       (let [batch-size gen/max-codes-per-batch
             batches-total (total-batches (count contents) batch-size)
-            ;; Initialize accumulator based on format
-            accumulator (case format-key
-                          :zip (JSZip.)
-                          :pdf nil)]  ; PDF accumulator created at end
+            ;; For both ZIP and PDF, use ZIP accumulator
+            ;; PDF will be split into multiple smaller PDFs in the ZIP
+            accumulator (JSZip.)]
         (reset! worker-state {:request-id request-id
                               :contents contents
                               :size size
@@ -241,15 +227,40 @@
                               :batch-size batch-size
                               :total-batches batches-total
                               :accumulator accumulator
-                              :all-codes []})  ; Store all codes for PDF
+                              :pdf-chunk-codes []    ; Accumulate codes for current PDF chunk
+                              :pdf-file-counter 1})  ; Counter for PDF filenames
         (post! {:type "qr-codes/ready"
                 :request-id request-id
                 :total-batches batches-total})))))
 
+(defn- pad-number
+  "Zero-pad number to 3 digits for consistent filename sorting."
+  [n]
+  (let [s (str n)] (str (apply str (repeat (max 0 (- 3 (count s))) "0")) s)))
+
+(defn- flush-pdf-chunk!
+  "Generate PDF from accumulated chunk codes and add to ZIP.
+   Returns promise that resolves when PDF is added to ZIP."
+  [accumulator pdf-chunk-codes size show-label? pdf-layout-config file-counter]
+  (if (empty? pdf-chunk-codes)
+    (js/Promise.resolve)
+    (let [filename (str "qr-codes-" (pad-number file-counter) ".pdf")]
+      (-> (create-pdf-from-codes pdf-chunk-codes size show-label? pdf-layout-config)
+          (.then (fn [pdf-buffer] (.file accumulator filename pdf-buffer)))))))
+
 (defn- next-batch
   [request-id]
-  (let [{:keys [contents size format show-label? pdf-layout-config cursor batch-size
-                 total-batches accumulator all-codes]}
+  (let [{:keys [contents
+                size
+                format
+                show-label?
+                pdf-layout-config
+                cursor
+                batch-size
+                total-batches
+                accumulator
+                pdf-chunk-codes
+                pdf-file-counter]}
         @worker-state
         total-count (count contents)]
     (cond
@@ -257,24 +268,27 @@
       (post! {:type "qr-codes/error"
               :request-id request-id
               :errors ["Worker is not initialized for this request"]})
-
       (>= cursor total-count)
-      ;; All batches processed - finalize single archive
+      ;; All batches processed - finalize archive
       (do
-        ;; Notify UI that we're finalizing (this can take a while for PDF)
+        ;; Notify UI that we're finalizing
         (post! {:type "qr-codes/finalizing"
                 :request-id request-id
                 :format format})
-        (let [;; Get fresh state for finalization
-              final-state @worker-state
-              finalize-promise
-              (case format
-                :zip (.generateAsync accumulator #js {:type "arraybuffer"})
-                :pdf (create-pdf-from-codes (:all-codes final-state)
-                                            size
-                                            show-label?
-                                            (:pdf-layout-config final-state))
-                (js/Promise.reject (js/Error. "Unsupported format")))]
+        (let [final-state @worker-state
+              ;; For PDF format, flush any remaining codes in the chunk
+              finalize-promise (if (= format :pdf)
+                                 (-> (flush-pdf-chunk! (:accumulator final-state)
+                                                       (:pdf-chunk-codes final-state)
+                                                       size
+                                                       show-label?
+                                                       pdf-layout-config
+                                                       (:pdf-file-counter final-state))
+                                     (.then (fn [_]
+                                              (.generateAsync (:accumulator final-state)
+                                                              #js {:type "arraybuffer"}))))
+                                 ;; ZIP format just finalizes the accumulator
+                                 (.generateAsync accumulator #js {:type "arraybuffer"}))]
           (-> finalize-promise
               (.then (fn [buffer]
                        (reset! worker-state nil)
@@ -286,24 +300,22 @@
                         (reset! worker-state nil)
                         (post! {:type "qr-codes/error"
                                 :request-id request-id
-                                :errors [(str "Failed to finalize archive: " (error->message error))]}))))))
-
+                                :errors [(str "Failed to finalize archive: "
+                                              (error->message error))]}))))))
       :else
       ;; Process next batch and add to accumulator
       (let [end (min (+ cursor batch-size) total-count)
             batch (subvec contents cursor end)
             batch-index (int (/ cursor batch-size))
-            result (gen/generate-batch batch
-                                       :size size
-                                       :show-label? show-label?
-                                       :start-index cursor)]
+            result
+            (gen/generate-batch batch :size size :show-label? show-label? :start-index cursor)]
         (if (:success result)
           (let [codes (:codes result)
                 ;; Add to accumulator based on format
                 add-promise
                 (case format
                   :zip
-                  ;; Add files to ZIP progressively
+                  ;; Add PNG files to ZIP progressively
                   (reduce (fn [promise {:keys [content qr-matrix filename]}]
                             (.then promise
                                    (fn []
@@ -314,9 +326,25 @@
                           (js/Promise.resolve)
                           codes)
                   :pdf
-                  ;; For PDF, accumulate codes (render all at end)
-                  (do (swap! worker-state update :all-codes #(vec (concat % codes)))
-                      (js/Promise.resolve)))]
+                  ;; For PDF, accumulate codes in chunk, flush when chunk is full
+                  (let [new-chunk-codes (vec (concat pdf-chunk-codes codes))
+                        chunk-size (count new-chunk-codes)]
+                    (if (>= chunk-size max-codes-per-pdf)
+                      ;; Chunk is full - generate PDF and add to ZIP
+                      (-> (flush-pdf-chunk! accumulator
+                                            new-chunk-codes
+                                            size
+                                            show-label?
+                                            pdf-layout-config
+                                            pdf-file-counter)
+                          (.then (fn [_]
+                                   ;; Clear chunk and increment counter
+                                   (swap! worker-state assoc
+                                     :pdf-chunk-codes []
+                                     :pdf-file-counter (inc pdf-file-counter)))))
+                      ;; Chunk not full yet - just accumulate
+                      (do (swap! worker-state assoc :pdf-chunk-codes new-chunk-codes)
+                          (js/Promise.resolve)))))]
             (-> add-promise
                 (.then (fn [_]
                          (swap! worker-state assoc :cursor end)
@@ -330,7 +358,8 @@
                           (reset! worker-state nil)
                           (post! {:type "qr-codes/error"
                                   :request-id request-id
-                                  :errors [(str "Batch processing failed: " (error->message error))]})))))
+                                  :errors [(str "Batch processing failed: "
+                                                (error->message error))]})))))
           (do (reset! worker-state nil)
               (post! {:type "qr-codes/error"
                       :request-id request-id
@@ -338,8 +367,7 @@
 
 (defn- cancel-request
   [request-id]
-  (when (= request-id (:request-id @worker-state))
-    (reset! worker-state nil)))
+  (when (= request-id (:request-id @worker-state)) (reset! worker-state nil)))
 
 (defn- handle-message
   [^js event]

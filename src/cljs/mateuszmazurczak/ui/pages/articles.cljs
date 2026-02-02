@@ -16,7 +16,6 @@
       (fi18n/tr :articles)]
      [:p {:class "text-muted-foreground"}
       "Thoughts on software development, architecture, and more."]]
-    
     [:div {:class "grid gap-6 w-full"}
      (doall (for [{:keys [title id]
                    :as article}

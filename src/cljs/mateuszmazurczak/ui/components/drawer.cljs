@@ -1,8 +1,8 @@
 (ns mateuszmazurczak.ui.components.drawer
   "Drawer component based on Vaul drawer primitive."
   (:require
-   ["vaul"                          :refer [Drawer]]
-   [mateuszmazurczak.utils.styles   :as styles]))
+   ["vaul"                        :refer [Drawer]]
+   [mateuszmazurczak.utils.styles :as styles]))
 
 (def drawer-root (.-Root Drawer))
 (def drawer-trigger-primitive (.-Trigger Drawer))

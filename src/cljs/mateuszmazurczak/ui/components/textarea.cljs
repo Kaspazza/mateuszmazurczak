@@ -87,8 +87,6 @@
                            "bg-transparent px-3 py-2 text-base shadow-xs "
                            "transition-[color,box-shadow] outline-none focus-visible:ring-[3px] "
                            "disabled:cursor-not-allowed disabled:opacity-50 md:text-sm "
-                           (if auto-size?
-                             "field-sizing-content"
-                             "overflow-y-auto resize-y"))
+                           (if auto-size? "field-sizing-content" "overflow-y-auto resize-y"))
                       class))
        (dissoc :class-name :auto-size?))])

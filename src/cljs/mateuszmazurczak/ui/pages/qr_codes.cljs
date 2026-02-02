@@ -101,8 +101,14 @@
 
 (defn- pdf-layout-selector
   "PDF layout selector and custom controls."
-  [{:keys [format pdf-layout pdf-layout-options text handlers
-           pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
+  [{:keys [format
+           pdf-layout
+           pdf-layout-options
+           text
+           handlers
+           pdf-custom-cols
+           pdf-custom-rows
+           pdf-custom-qr-size-cm]}]
   (when (= format :pdf)
     [:div {:class "space-y-4"}
      [:div {:class "space-y-2"}
@@ -133,9 +139,8 @@
                         :min 1
                         :step 1
                         :value (str pdf-custom-cols)
-                        :on-change #((:on-update-pdf-custom handlers)
-                                      :cols
-                                      (.. % -target -value))}]]
+                        :on-change
+                        #((:on-update-pdf-custom handlers) :cols (.. % -target -value))}]]
          [:div {:class "space-y-2"}
           [label/label {:htmlFor "pdf-custom-rows"}
            (:pdf-custom-rows text)]
@@ -144,9 +149,8 @@
                         :min 1
                         :step 1
                         :value (str pdf-custom-rows)
-                        :on-change #((:on-update-pdf-custom handlers)
-                                      :rows
-                                      (.. % -target -value))}]]
+                        :on-change
+                        #((:on-update-pdf-custom handlers) :rows (.. % -target -value))}]]
          [:div {:class "space-y-2"}
           [label/label {:htmlFor "pdf-custom-size"}
            (:pdf-custom-size-cm text)]
@@ -230,8 +234,7 @@
        [input-section data]]
       [:div {:class "p-6 border rounded-lg bg-card space-y-6"}
        [format-selector data]
-       (when (= (:format data) :zip)
-         [size-selector data])
+       (when (= (:format data) :zip) [size-selector data])
        [pdf-layout-selector data]
        [label-toggle data]]
       [error-display data]

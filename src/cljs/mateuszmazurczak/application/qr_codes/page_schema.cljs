@@ -29,11 +29,15 @@
    [:errors [:vector :string]]
    [:loading? {:optional true}
     :boolean]
-      [:download-progress {:optional true}
-       [:maybe [:map
-                [:current {:optional true} [:maybe :int]]
-                [:total {:optional true} [:maybe :int]]
-                [:status-key {:optional true} :keyword]]]]])
+   [:download-progress {:optional true}
+    [:maybe
+     [:map
+      [:current {:optional true}
+       [:maybe :int]]
+      [:total {:optional true}
+       [:maybe :int]]
+      [:status-key {:optional true}
+       :keyword]]]]])
 
 (defn valid-page-data?
   "Validate QR codes page data against schema."
@@ -70,10 +74,14 @@
    [:loading? {:optional true}
     :boolean]
    [:download-progress {:optional true}
-    [:maybe [:map
-             [:current {:optional true} [:maybe :int]]
-             [:total {:optional true} [:maybe :int]]
-             [:status-key {:optional true} :keyword]]]]
+    [:maybe
+     [:map
+      [:current {:optional true}
+       [:maybe :int]]
+      [:total {:optional true}
+       [:maybe :int]]
+      [:status-key {:optional true}
+       :keyword]]]]
    [:input-count :int]
    [:has-input? :boolean]
    [:can-download? :boolean]
@@ -112,10 +120,10 @@
    :format :zip
    :error-correction :medium
    :show-label? false
-   :pdf-layout :avery-5160
-   :pdf-custom-cols 3
-   :pdf-custom-rows 10
-   :pdf-custom-qr-size-cm 2.0
+   :pdf-layout :per-page-6  ; 6 per page (2×3, 5cm) - large, scannable default
+   :pdf-custom-cols 4       ; Custom defaults distinct from all presets
+   :pdf-custom-rows 4
+   :pdf-custom-qr-size-cm 3.5
    :preview-codes []
    :generating? false
    :errors []

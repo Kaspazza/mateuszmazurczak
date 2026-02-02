@@ -7,9 +7,7 @@
 
 (defn about-me
   [{:keys [welcome-text description contact-info]}]
-  [:div {:class ["w-full"
-                 "overflow-hidden"
-                 "home-hero"]}
+  [:div {:class ["w-full" "overflow-hidden" "home-hero"]}
    [:div {:class ["flex"
                   "flex-col"
                   "lg:flex-row"
@@ -26,7 +24,9 @@
                   "pb-2"
                   "text-center"
                   "lg:text-left"]}
-    [:div {:class "block overflow-hidden self-center lg:self-end mx-auto lg:mx-0 -mb-4 lg:-mb-10 w-64 lg:w-[24rem]"}
+    [:div
+     {:class
+      "block overflow-hidden self-center lg:self-end mx-auto lg:mx-0 -mb-4 lg:-mb-10 w-64 lg:w-[24rem]"}
      [ui-img/optimized-img {:src "/img/mateusz_mazurczak.webp"
                             :alt "Mateusz Mazurczak"
                             :width 512

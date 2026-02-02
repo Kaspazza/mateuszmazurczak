@@ -14,8 +14,9 @@
                                                          useSensor
                                                          useSensors]]
    ["@dnd-kit/modifiers"                         :refer [restrictToVerticalAxis]]
-   ["@dnd-kit/sortable"                          :refer
-                                                 [SortableContext useSortable verticalListSortingStrategy]]
+   ["@dnd-kit/sortable"                          :refer [SortableContext
+                                                         useSortable
+                                                         verticalListSortingStrategy]]
    ["@dnd-kit/utilities"                         :refer [CSS]]
    ["@tanstack/react-table"                      :refer [flexRender
                                                          getCoreRowModel

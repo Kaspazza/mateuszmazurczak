@@ -92,7 +92,9 @@
 
 (defn save-array-buffer!
   "Trigger browser download for an ArrayBuffer."
-  [array-buffer {:keys [filename format] :or {format :zip}}]
+  [array-buffer
+   {:keys [filename format]
+    :or {format :zip}}]
   (let [mime-type (case format
                     :pdf "application/pdf"
                     :zip "application/zip"

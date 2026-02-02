@@ -2,6 +2,7 @@
   (:require
    ["lucide-react"                          :refer [Download QrCode RefreshCw]]
    [mateuszmazurczak.ui.components.button   :as button]
+   [mateuszmazurczak.ui.components.input    :as input]
    [mateuszmazurczak.ui.components.label    :as label]
    [mateuszmazurczak.ui.components.select   :as select]
    [mateuszmazurczak.ui.components.switch   :as switch]
@@ -98,6 +99,66 @@
      [:p {:class "text-xs text-muted-foreground"}
       (:format-pdf-description text)])])
 
+(defn- pdf-layout-selector
+  "PDF layout selector and custom controls."
+  [{:keys [format pdf-layout pdf-layout-options text handlers
+           pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
+  (when (= format :pdf)
+    [:div {:class "space-y-4"}
+     [:div {:class "space-y-2"}
+      [label/label {:htmlFor "pdf-layout"}
+       (:pdf-layout text)]
+      [select/select {:value (name pdf-layout)
+                      :on-value-change #((:on-update-pdf-layout handlers) (keyword %))}
+       [select/select-trigger {:id "pdf-layout"
+                               :class "w-full"}
+        [select/select-value {:placeholder (:select-pdf-layout text)}]]
+       [select/select-content {}
+        (for [{:keys [value label]} pdf-layout-options]
+          ^{:key value}
+          [select/select-item {:value (name value)}
+           label])]]
+      [:p {:class "text-xs text-muted-foreground"}
+       (:pdf-layout-description text)]]
+     (when (= pdf-layout :custom)
+       [:div {:class "space-y-3"}
+        [:p {:class "text-sm font-medium"}
+         (:pdf-custom-layout text)]
+        [:div {:class "grid grid-cols-1 sm:grid-cols-3 gap-3"}
+         [:div {:class "space-y-2"}
+          [label/label {:htmlFor "pdf-custom-cols"}
+           (:pdf-custom-cols text)]
+          [input/input {:id "pdf-custom-cols"
+                        :type "number"
+                        :min 1
+                        :step 1
+                        :value (str pdf-custom-cols)
+                        :on-change #((:on-update-pdf-custom handlers)
+                                      :cols
+                                      (.. % -target -value))}]]
+         [:div {:class "space-y-2"}
+          [label/label {:htmlFor "pdf-custom-rows"}
+           (:pdf-custom-rows text)]
+          [input/input {:id "pdf-custom-rows"
+                        :type "number"
+                        :min 1
+                        :step 1
+                        :value (str pdf-custom-rows)
+                        :on-change #((:on-update-pdf-custom handlers)
+                                      :rows
+                                      (.. % -target -value))}]]
+         [:div {:class "space-y-2"}
+          [label/label {:htmlFor "pdf-custom-size"}
+           (:pdf-custom-size-cm text)]
+          [input/input {:id "pdf-custom-size"
+                        :type "number"
+                        :min 0.5
+                        :step 0.1
+                        :value (str pdf-custom-qr-size-cm)
+                        :on-change #((:on-update-pdf-custom handlers)
+                                      :qr-size-cm
+                                      (.. % -target -value))}]]]])]))
+
 (defn- label-toggle
   "Toggle to show QR code value as label."
   [{:keys [show-label? text handlers]}]
@@ -168,9 +229,10 @@
       [:div {:class "p-6 border rounded-lg bg-card"}
        [input-section data]]
       [:div {:class "p-6 border rounded-lg bg-card space-y-6"}
-       [:div {:class "grid grid-cols-1 sm:grid-cols-2 gap-4"}
-        [size-selector data]
-        [format-selector data]]
+       [format-selector data]
+       (when (= (:format data) :zip)
+         [size-selector data])
+       [pdf-layout-selector data]
        [label-toggle data]]
       [error-display data]
       [:div {:class "p-6 border rounded-lg bg-card"}

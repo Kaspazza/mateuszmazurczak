@@ -9,6 +9,9 @@
 ;; Output format
 (def OutputFormat [:enum :zip :pdf])
 
+;; PDF layout options
+(def PdfLayout [:enum :avery-5160 :avery-5163 :grid-6 :custom])
+
 ;; QR code size (pixels)
 (def QrSize
   [:int {:min gen/min-qr-pixel-size

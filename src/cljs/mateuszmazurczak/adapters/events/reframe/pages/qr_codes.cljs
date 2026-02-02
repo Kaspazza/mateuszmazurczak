@@ -61,7 +61,8 @@
         worker))))
 
 (rf/reg-fx ::init-qr-worker
-           (fn [{:keys [request-id input size format show-label? on-ready on-progress on-finalizing on-done on-failure]}]
+           (fn [{:keys [request-id input size format show-label? pdf-layout-config
+                        on-ready on-progress on-finalizing on-done on-failure]}]
              (let [worker (ensure-worker)]
                (swap! worker-state assoc-in
                       [:requests request-id]
@@ -75,7 +76,8 @@
                                               :input input
                                               :size size
                                               :format format
-                                              :show-label? show-label?})))))
+                                              :show-label? show-label?
+                                              :pdf-layout-config pdf-layout-config})))))
 
 (rf/reg-fx ::request-qr-batch
            (fn [{:keys [request-id]}]
@@ -116,6 +118,19 @@
                                             state-registry/*qr-codes-page-path*
                                             page-data/update-page-show-label
                                             show-label?))
+   :qr-codes/update-pdf-layout
+   (fn [db [_ layout]]
+     (update-in db
+                state-registry/*qr-codes-page-path*
+                page-data/update-page-pdf-layout
+                layout))
+   :qr-codes/update-pdf-custom
+   (fn [db [_ field value]]
+     (update-in db
+                state-registry/*qr-codes-page-path*
+                page-data/update-page-pdf-custom
+                field
+                value))
    :qr-codes/generate-preview
    (fn [db [_]] (update-in db state-registry/*qr-codes-page-path* page-data/generate-page-preview))
    :qr-codes/download
@@ -130,6 +145,7 @@
                           :size (:size page-data)
                           :format (:format page-data)
                           :show-label? (:show-label? page-data)
+                          :pdf-layout-config (page-data/resolve-pdf-layout-config page-data)
                           :on-ready [:qr-codes/worker-ready]
                           :on-progress [:qr-codes/worker-progress]
                           :on-finalizing [:qr-codes/worker-finalizing]
@@ -155,14 +171,14 @@
       ::request-qr-batch {:request-id request-id}})
    :qr-codes/worker-finalizing
    (fn [db [_ {:keys [format]}]]
-     (let [status-msg (case format
-                        :pdf "Generating PDF document..."
-                        :zip "Creating ZIP archive..."
-                        "Finalizing...")]
+     (let [status-key (case format
+                        :pdf :download-progress-pdf
+                        :zip :download-progress-zip
+                        :download-progress-finalizing)]
        (update-in db
                   state-registry/*qr-codes-page-path*
                   assoc
-                  :download-progress {:current nil :total nil :status status-msg})))
+                  :download-progress {:current nil :total nil :status-key status-key})))
    :qr-codes/worker-done
    (fn [{:keys [db]} [_ {:keys [buffer]}]]
      (let [page-data (get-in db state-registry/*qr-codes-page-path*)

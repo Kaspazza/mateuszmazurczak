@@ -39,6 +39,16 @@
   [page-data format]
   (assoc page-data :format format))
 
+(defn- parse-int-with-fallback
+  [value fallback]
+  (let [parsed (js/parseInt value 10)]
+    (if (js/isNaN parsed) fallback parsed)))
+
+(defn- parse-float-with-fallback
+  [value fallback]
+  (let [parsed (js/parseFloat value)]
+    (if (js/isNaN parsed) fallback parsed)))
+
 (defn update-page-show-label
   "Toggle whether to show QR code value as label below QR code."
   [page-data show-label?]
@@ -48,6 +58,29 @@
             (qr-preview/generate-preview-codes (:input updated) (:size updated) show-label?)]
         (assoc updated :preview-codes codes :errors errors))
       updated)))
+
+(defn update-page-pdf-layout
+  "Update PDF layout preset selection."
+  [page-data layout]
+  (assoc page-data :pdf-layout layout))
+
+(defn update-page-pdf-custom
+  "Update custom PDF layout settings."
+  [page-data field value]
+  (case field
+    :cols (let [current (:pdf-custom-cols page-data)
+                parsed (parse-int-with-fallback value current)
+                next-value (max 1 parsed)]
+            (assoc page-data :pdf-custom-cols next-value))
+    :rows (let [current (:pdf-custom-rows page-data)
+                parsed (parse-int-with-fallback value current)
+                next-value (max 1 parsed)]
+            (assoc page-data :pdf-custom-rows next-value))
+    :qr-size-cm (let [current (:pdf-custom-qr-size-cm page-data)
+                      parsed (parse-float-with-fallback value current)
+                      next-value (max 0.5 parsed)]
+                  (assoc page-data :pdf-custom-qr-size-cm next-value))
+    page-data))
 
 (defn generate-page-preview
   "Generate preview codes for current input."
@@ -108,6 +141,21 @@
            :label (str size "px")})
         qr-preview/valid-sizes))
 
+(def ^:private pdf-layout-presets
+  {:avery-5160 {:cols 3
+                :rows 10
+                :qr-size-cm 2.0}
+   :avery-5163 {:cols 2
+                :rows 5
+                :qr-size-cm 4.0}
+   :grid-6 {:cols 2
+            :rows 3
+            :qr-size-cm 5.0}})
+
+(def ^:private pdf-layout-defaults
+  {:margin-cm 1.0
+   :spacing-cm 0.3})
+
 (defn- build-format-options
   "Build format options for UI selector."
   []
@@ -116,6 +164,29 @@
    {:value :pdf
     :label [:i18n :format-pdf]}])
 
+(defn- build-pdf-layout-options
+  "Build PDF layout options for UI selector."
+  []
+  [{:value :avery-5160
+    :label [:i18n :pdf-layout-avery-5160]}
+   {:value :avery-5163
+    :label [:i18n :pdf-layout-avery-5163]}
+   {:value :grid-6
+    :label [:i18n :pdf-layout-grid-6]}
+   {:value :custom
+    :label [:i18n :pdf-layout-custom]}])
+
+(defn resolve-pdf-layout-config
+  "Resolve PDF layout configuration for worker export."
+  [page-data]
+  (let [layout (:pdf-layout page-data)
+        custom-config {:cols (:pdf-custom-cols page-data)
+                       :rows (:pdf-custom-rows page-data)
+                       :qr-size-cm (:pdf-custom-qr-size-cm page-data)}
+        preset-config (get pdf-layout-presets layout custom-config)
+        layout-config (if (= layout :custom) custom-config preset-config)]
+    (merge pdf-layout-defaults layout-config)))
+
 (defn- build-handlers
   "Build handler dispatch markers for UI interactions."
   []
@@ -123,6 +194,8 @@
    :on-update-size [:dispatch [:qr-codes/update-size]]
    :on-update-format [:dispatch [:qr-codes/update-format]]
    :on-update-show-label [:dispatch [:qr-codes/update-show-label]]
+   :on-update-pdf-layout [:dispatch [:qr-codes/update-pdf-layout]]
+   :on-update-pdf-custom [:dispatch [:qr-codes/update-pdf-custom]]
    :on-generate-preview [:dispatch [:qr-codes/generate-preview]]
    :on-download [:dispatch [:qr-codes/download]]})
 
@@ -144,6 +217,14 @@
    :select-size [:i18n :select-size]
    :output-format [:i18n :output-format]
    :select-format [:i18n :select-format]
+   :format-pdf-description [:i18n :format-pdf-description]
+   :pdf-layout [:i18n :pdf-layout]
+   :select-pdf-layout [:i18n :select-pdf-layout]
+   :pdf-layout-description [:i18n :pdf-layout-description]
+   :pdf-custom-layout [:i18n :pdf-custom-layout]
+   :pdf-custom-cols [:i18n :pdf-custom-cols]
+   :pdf-custom-rows [:i18n :pdf-custom-rows]
+   :pdf-custom-size-cm [:i18n :pdf-custom-size-cm]
    :show-label [:i18n :show-label]
    :show-label-description [:i18n :show-label-description]
    :generate-preview [:i18n :generate-preview]
@@ -152,15 +233,19 @@
    :errors [:i18n :errors]
    :download-progress (cond
                         ;; Finalizing status (no current/total, just status message)
-                        (and download-progress (:status download-progress))
-                        (:status download-progress)
-                        
+                        (and download-progress (:status-key download-progress))
+                        (case (:status-key download-progress)
+                          :download-progress-pdf [:i18n :download-progress-pdf]
+                          :download-progress-zip [:i18n :download-progress-zip]
+                          :download-progress-finalizing [:i18n :download-progress-finalizing]
+                          "")
+
                         ;; Normal progress with current/total
                         (and download-progress (pos? (:total download-progress)))
                         [:i18n :download-progress
                          {:1 (:current download-progress)
                           :2 (:total download-progress)}]
-                        
+
                         ;; No progress
                         :else
                         "")
@@ -179,6 +264,7 @@
            derived
            {:size-options (build-size-options)
             :format-options (build-format-options)
+            :pdf-layout-options (build-pdf-layout-options)
             :preview-display-size qr-preview/preview-display-size
             :input-hint (build-input-hint input-count)
             :handlers (build-handlers)

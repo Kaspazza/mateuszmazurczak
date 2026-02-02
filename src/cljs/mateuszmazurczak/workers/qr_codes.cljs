@@ -87,27 +87,32 @@
   [cm]
   (* cm (/ points-per-inch 2.54)))
 
-(defn- calculate-qr-size-pt
-  "Calculate QR code size in points based on desired physical size and DPI.
-   Default: 2cm at 300 DPI for print quality."
-  [desired-cm]
-  (cm->pt desired-cm))
+(def ^:private default-pdf-layout-config
+  {:margin-cm 1.0
+   :spacing-cm 0.3
+   :cols 3
+   :rows 10
+   :qr-size-cm 2.0})
 
 (defn- calculate-grid-layout
   "Calculate grid layout for multiple QR codes per page.
    Returns {:codes-per-page :qr-size-pt :cols :rows :spacing-pt :margin-pt}"
-  []
-  (let [qr-size-cm 2.0 ; 2cm per code (good for handheld scanning)
-        qr-size-pt (calculate-qr-size-pt qr-size-cm)
-        margin-pt 36 ; 0.5 inch margin
-        spacing-pt 18 ; 0.25 inch between codes
-        available-width (- a4-width-pt (* 2 margin-pt))
-        available-height (- a4-height-pt (* 2 margin-pt))
-        ;; Calculate how many codes fit horizontally and vertically
-        cols (int (/ (+ available-width spacing-pt) (+ qr-size-pt spacing-pt)))
-        rows (int (/ (+ available-height spacing-pt) (+ qr-size-pt spacing-pt)))
-        codes-per-page (* cols rows)]
-    {:codes-per-page codes-per-page
+  [layout-config]
+  (let [{:keys [cols rows qr-size-cm margin-cm spacing-cm]}
+        (merge default-pdf-layout-config layout-config)
+        qr-size-pt (cm->pt qr-size-cm)
+        margin-pt (cm->pt margin-cm)
+        spacing-pt (cm->pt spacing-cm)
+        total-width (+ (* cols qr-size-pt)
+                       (* (max 0 (dec cols)) spacing-pt)
+                       (* 2 margin-pt))
+        total-height (+ (* rows qr-size-pt)
+                        (* (max 0 (dec rows)) spacing-pt)
+                        (* 2 margin-pt))]
+    (when (or (> total-width a4-width-pt)
+              (> total-height a4-height-pt))
+      (throw (js/Error. "PDF layout does not fit A4 page")))
+    {:codes-per-page (* cols rows)
      :qr-size-pt qr-size-pt
      :cols cols
      :rows rows
@@ -132,7 +137,7 @@
    This produces resolution-independent, infinitely scalable QR codes."
   [page qr-matrix x y qr-size-pt content show-label?]
   (let [{:keys [size matrix]} qr-matrix
-        rgb (.-rgb (.-default pdf-lib))
+        rgb (.-rgb pdf-lib)
         margin 4 ; Quiet zone (4 modules)
         total-modules (+ size (* 2 margin))
         module-size-pt (/ qr-size-pt total-modules)]
@@ -176,9 +181,9 @@
    
    Uses grid layout to fit multiple codes per page efficiently.
    Each QR code is drawn as vector rectangles for infinite scalability."
-  [codes _size show-label?]
+  [codes _size show-label? layout-config]
   (let [PDFDocument (.-PDFDocument pdf-lib)
-        layout (calculate-grid-layout)
+        layout (calculate-grid-layout layout-config)
         {:keys [codes-per-page qr-size-pt cols spacing-pt margin-pt]} layout]
     
     (-> (.create PDFDocument)
@@ -210,7 +215,7 @@
     :else (str error)))
 
 (defn- init-request
-  [{:keys [request-id input size format show-label?]}]
+  [{:keys [request-id input size format show-label? pdf-layout-config]}]
   (let [contents (vec (gen/parse-input input))
         format-key (if (keyword? format) format (keyword format))
         validation (gen/validate-request {:contents contents
@@ -231,6 +236,7 @@
                               :size size
                               :format format-key
                               :show-label? show-label?
+                              :pdf-layout-config pdf-layout-config
                               :cursor 0
                               :batch-size batch-size
                               :total-batches batches-total
@@ -242,7 +248,8 @@
 
 (defn- next-batch
   [request-id]
-  (let [{:keys [contents size format show-label? cursor batch-size total-batches accumulator all-codes]}
+  (let [{:keys [contents size format show-label? pdf-layout-config cursor batch-size
+                 total-batches accumulator all-codes]}
         @worker-state
         total-count (count contents)]
     (cond
@@ -263,7 +270,10 @@
               finalize-promise
               (case format
                 :zip (.generateAsync accumulator #js {:type "arraybuffer"})
-                :pdf (create-pdf-from-codes (:all-codes final-state) size show-label?)
+                :pdf (create-pdf-from-codes (:all-codes final-state)
+                                            size
+                                            show-label?
+                                            (:pdf-layout-config final-state))
                 (js/Promise.reject (js/Error. "Unsupported format")))]
           (-> finalize-promise
               (.then (fn [buffer]

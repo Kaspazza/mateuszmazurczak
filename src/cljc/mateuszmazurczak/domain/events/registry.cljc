@@ -8,7 +8,9 @@
    - :category - Logical grouping (:navigation, :page, :i18n)
    - :description - What this event does (behavior, not implementation)
    - :schema - Malli schema for validation
-   - :handler-type - :fx (effects) or :db (pure state update)")
+   - :handler-type - :fx (effects) or :db (pure state update)"
+  (:require
+   [mateuszmazurczak.domain.qr-codes.schema :as qr-codes]))
 
 (def events
   "Registry of all application events.
@@ -250,6 +252,14 @@
                                 :description
                                 "Toggle whether to show QR code value as label below QR code."
                                 :schema [:cat [:= :qr-codes/update-show-label] :boolean]
+                                :handler-type :db}
+   :qr-codes/update-pdf-layout {:category :page
+                                :description "Update PDF layout preset selection."
+                                :schema [:cat [:= :qr-codes/update-pdf-layout] qr-codes/PdfLayout]
+                                :handler-type :db}
+   :qr-codes/update-pdf-custom {:category :page
+                                :description "Update PDF custom layout values."
+                                :schema [:cat [:= :qr-codes/update-pdf-custom] keyword? :any]
                                 :handler-type :db}})
 
 (defn events-by-category

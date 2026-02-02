@@ -20,6 +20,10 @@
    [:format qr-schema/OutputFormat]
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
+   [:pdf-layout qr-schema/PdfLayout]
+   [:pdf-custom-cols [:int {:min 1}]]
+   [:pdf-custom-rows [:int {:min 1}]]
+   [:pdf-custom-qr-size-cm [:double {:min 0.5}]]
    [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
@@ -27,8 +31,9 @@
     :boolean]
       [:download-progress {:optional true}
        [:maybe [:map
-                [:current :int]
-                [:total :int]]]]])
+                [:current {:optional true} [:maybe :int]]
+                [:total {:optional true} [:maybe :int]]
+                [:status-key {:optional true} :keyword]]]]])
 
 (defn valid-page-data?
   "Validate QR codes page data against schema."
@@ -55,6 +60,10 @@
    [:format qr-schema/OutputFormat]
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
+   [:pdf-layout qr-schema/PdfLayout]
+   [:pdf-custom-cols [:int {:min 1}]]
+   [:pdf-custom-rows [:int {:min 1}]]
+   [:pdf-custom-qr-size-cm [:double {:min 0.5}]]
    [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
@@ -62,13 +71,15 @@
     :boolean]
    [:download-progress {:optional true}
     [:maybe [:map
-             [:current :int]
-             [:total :int]]]]
+             [:current {:optional true} [:maybe :int]]
+             [:total {:optional true} [:maybe :int]]
+             [:status-key {:optional true} :keyword]]]]
    [:input-count :int]
    [:has-input? :boolean]
    [:can-download? :boolean]
    [:size-options [:vector :any]]
    [:format-options [:vector :any]]
+   [:pdf-layout-options [:vector :any]]
    [:preview-count :int]
    [:preview-display-size :int]
    [:showing-preview? :boolean]
@@ -101,6 +112,10 @@
    :format :zip
    :error-correction :medium
    :show-label? false
+   :pdf-layout :avery-5160
+   :pdf-custom-cols 3
+   :pdf-custom-rows 10
+   :pdf-custom-qr-size-cm 2.0
    :preview-codes []
    :generating? false
    :errors []

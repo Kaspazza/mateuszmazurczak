@@ -12,7 +12,7 @@
 ;; =============================================================================
 
 (defn update-page-input
-  "Update input and clear preview."
+  "Update input and clear preview. Reset validation errors flag."
   [page-data input]
   (let [contents (gen/parse-input input)
         validation (when (seq contents)
@@ -20,7 +20,11 @@
                                             :size (:size page-data)
                                             :format (:format page-data)}))
         errors (if (and validation (not (:valid? validation))) (:errors validation) [])]
-    (assoc page-data :input input :preview-codes [] :errors errors)))
+    (assoc page-data 
+           :input input 
+           :preview-codes [] 
+           :errors errors
+           :show-validation-errors? false)))
 
 (defn update-page-size
   "Update size and regenerate preview if input exists."
@@ -37,13 +41,7 @@
   [page-data format]
   (assoc page-data :format format))
 
-(defn- parse-int-with-fallback
-  [value fallback]
-  (let [parsed (js/parseInt value 10)] (if (js/isNaN parsed) fallback parsed)))
 
-(defn- parse-float-with-fallback
-  [value fallback]
-  (let [parsed (js/parseFloat value)] (if (js/isNaN parsed) fallback parsed)))
 
 (defn update-page-show-label
   "Toggle whether to show QR code value as label below QR code."
@@ -61,22 +59,15 @@
   (assoc page-data :pdf-layout layout))
 
 (defn update-page-pdf-custom
-  "Update custom PDF layout settings."
+  "Update custom PDF layout settings. Stores raw string for free editing.
+   Reset validation errors flag when user edits."
   [page-data field value]
-  (case field
-    :cols (let [current (:pdf-custom-cols page-data)
-                parsed (parse-int-with-fallback value current)
-                next-value (max 1 parsed)]
-            (assoc page-data :pdf-custom-cols next-value))
-    :rows (let [current (:pdf-custom-rows page-data)
-                parsed (parse-int-with-fallback value current)
-                next-value (max 1 parsed)]
-            (assoc page-data :pdf-custom-rows next-value))
-    :qr-size-cm (let [current (:pdf-custom-qr-size-cm page-data)
-                      parsed (parse-float-with-fallback value current)
-                      next-value (max 0.5 parsed)]
-                  (assoc page-data :pdf-custom-qr-size-cm next-value))
-    page-data))
+  (let [updated (case field
+                  :cols (assoc page-data :pdf-custom-cols value)
+                  :rows (assoc page-data :pdf-custom-rows value)
+                  :qr-size-cm (assoc page-data :pdf-custom-qr-size-cm value)
+                  page-data)]
+    (assoc updated :show-validation-errors? false)))
 
 (defn generate-page-preview
   "Generate preview codes for current input."
@@ -84,6 +75,36 @@
   (let [{:keys [input size show-label?]} page-data
         {:keys [codes errors]} (qr-preview/generate-preview-codes input size show-label?)]
     (assoc page-data :preview-codes codes :errors errors :generating? false)))
+
+;; =============================================================================
+;; PDF Custom Layout Validation
+;; =============================================================================
+
+(defn- valid-positive-int?
+  "Check if value is a valid positive integer (>= min-value)."
+  [value min-value]
+  (let [parsed (js/parseInt value 10)]
+    (and (not (js/isNaN parsed)) (>= parsed min-value))))
+
+(defn- valid-positive-float?
+  "Check if value is a valid positive float (>= min-value)."
+  [value min-value]
+  (let [parsed (js/parseFloat value)]
+    (and (not (js/isNaN parsed)) (>= parsed min-value))))
+
+(defn validate-pdf-custom-settings
+  "Validate PDF custom layout settings. Returns vector of i18n markers."
+  [{:keys [pdf-layout pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
+  (when (= pdf-layout :custom)
+    (cond-> []
+      (not (valid-positive-int? pdf-custom-cols 1))
+      (conj [:i18n :error-pdf-cols-invalid])
+      
+      (not (valid-positive-int? pdf-custom-rows 1))
+      (conj [:i18n :error-pdf-rows-invalid])
+      
+      (not (valid-positive-float? pdf-custom-qr-size-cm 0.5))
+      (conj [:i18n :error-pdf-size-invalid]))))
 
 ;; =============================================================================
 ;; Derived State
@@ -96,7 +117,16 @@
         preview-count (count (:preview-codes page-data))
         has-input? (pos? input-count)
         loading? (:loading? page-data)
-        can-download? (and has-input? (empty? (:errors page-data)) (not loading?))
+        show-errors? (:show-validation-errors? page-data)
+        ;; Collect all validation errors
+        pdf-errors (validate-pdf-custom-settings page-data)
+        input-errors (when-not has-input?
+                       [[:i18n :error-no-qr-values]])
+        validation-errors (into (vec pdf-errors) input-errors)
+        ;; Only show validation errors if user tried to download
+        errors-to-show (if show-errors? validation-errors [])
+        all-errors (into (:errors page-data) errors-to-show)
+        can-download? (and has-input? (empty? validation-errors) (not loading?))
         showing-preview? (pos? preview-count)
         more-codes-count (- input-count preview-count)]
     {:input-count input-count
@@ -104,7 +134,8 @@
      :has-input? has-input?
      :can-download? can-download?
      :showing-preview? showing-preview?
-     :more-codes-count more-codes-count}))
+     :more-codes-count more-codes-count
+     :validation-errors errors-to-show}))
 
 ;; =============================================================================
 ;; Download Preparation
@@ -179,12 +210,13 @@
     :label [:i18n :pdf-layout-custom]}])
 
 (defn resolve-pdf-layout-config
-  "Resolve PDF layout configuration for worker export."
+  "Resolve PDF layout configuration for worker export.
+   Parses string values to numbers for custom layout."
   [page-data]
   (let [layout (:pdf-layout page-data)
-        custom-config {:cols (:pdf-custom-cols page-data)
-                       :rows (:pdf-custom-rows page-data)
-                       :qr-size-cm (:pdf-custom-qr-size-cm page-data)}
+        custom-config {:cols (js/parseInt (:pdf-custom-cols page-data) 10)
+                       :rows (js/parseInt (:pdf-custom-rows page-data) 10)
+                       :qr-size-cm (js/parseFloat (:pdf-custom-qr-size-cm page-data))}
         preset-config (get pdf-layout-presets layout custom-config)
         layout-config (if (= layout :custom) custom-config preset-config)]
     (merge pdf-layout-defaults layout-config)))
@@ -259,10 +291,13 @@
   "Enrich domain data with UI-specific concerns."
   [page-data]
   (let [derived (calculate-derived-state page-data)
-        {:keys [input-count preview-count]} derived]
+        {:keys [input-count preview-count validation-errors]} derived
+        ;; Combine base errors with validation errors (both as i18n markers)
+        all-errors (into (vec (:errors page-data)) validation-errors)]
     (merge page-data
            derived
-           {:size-options (build-size-options)
+           {:errors-i18n all-errors ; Store i18n markers separately
+            :size-options (build-size-options)
             :format-options (build-format-options)
             :pdf-layout-options (build-pdf-layout-options)
             :preview-display-size qr-preview/preview-display-size
@@ -283,8 +318,12 @@
    and validation to convert raw app-db data into component-ready UI data."
   [raw-data]
   (let [data (or raw-data (page-schema/initial-page-data))
-        ui-data (-> data
-                    enrich-with-ui-data
+        enriched (enrich-with-ui-data data)
+        ;; Translate error i18n markers
+        translated-errors (mapv fi18n/i18n-markers->translation (:errors-i18n enriched))
+        ui-data (-> enriched
+                    (assoc :errors translated-errors) ; Replace with translated errors
+                    (dissoc :errors-i18n) ; Remove i18n markers
                     fi18n/i18n-markers->translation
                     events/dispatch-markers->handlers)
         valid? (page-schema/valid-ui-data? ui-data)]

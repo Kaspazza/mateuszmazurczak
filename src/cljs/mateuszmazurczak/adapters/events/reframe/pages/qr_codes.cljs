@@ -148,7 +148,11 @@
                               request-id (str (random-uuid))]
                           {:db (assoc-in db
                                 state-registry/*qr-codes-page-path*
-                                (assoc page-data :loading? true :errors [] :download-progress nil))
+                                (assoc page-data 
+                                       :loading? true 
+                                       :errors [] 
+                                       :download-progress nil
+                                       :show-validation-errors? true))
                            ::init-qr-worker {:request-id request-id
                                              :input (:input page-data)
                                              :size (:size page-data)

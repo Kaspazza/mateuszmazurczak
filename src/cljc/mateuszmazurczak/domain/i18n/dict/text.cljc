@@ -132,6 +132,10 @@
     :showing-preview-count "Showing %1 of %2 codes"
     :more-codes-hidden "... and %1 more codes"
     :errors "Errors"
+    :error-no-qr-values "Please enter at least one QR code value"
+    :error-pdf-cols-invalid "Columns must be a positive integer (minimum 1)"
+    :error-pdf-rows-invalid "Rows must be a positive integer (minimum 1)"
+    :error-pdf-size-invalid "QR size must be at least 0.5 cm"
     ;; Error pages
     :page-data-validation-error "Page Data Validation Error"
     :page-data-error-description
@@ -277,6 +281,10 @@
     :showing-preview-count "Pokazuję %1 z %2 kodów"
     :more-codes-hidden "... i %1 więcej kodów"
     :errors "Błędy"
+    :error-no-qr-values "Proszę wprowadzić co najmniej jedną wartość kodu QR"
+    :error-pdf-cols-invalid "Kolumny muszą być liczbą całkowitą (minimum 1)"
+    :error-pdf-rows-invalid "Wiersze muszą być liczbą całkowitą (minimum 1)"
+    :error-pdf-size-invalid "Rozmiar QR musi wynosić co najmniej 0.5 cm"
     ;; Strony błędów
     :page-data-validation-error "Błąd Walidacji Danych Strony"
     :page-data-error-description

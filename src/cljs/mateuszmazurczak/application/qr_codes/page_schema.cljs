@@ -21,12 +21,13 @@
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
    [:pdf-layout qr-schema/PdfLayout]
-   [:pdf-custom-cols [:int {:min 1}]]
-   [:pdf-custom-rows [:int {:min 1}]]
-   [:pdf-custom-qr-size-cm [:double {:min 0.5}]]
+   [:pdf-custom-cols [:or :string [:int {:min 1}]]]
+   [:pdf-custom-rows [:or :string [:int {:min 1}]]]
+   [:pdf-custom-qr-size-cm [:or :string [:double {:min 0.5}]]]
    [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
+   [:show-validation-errors? :boolean]
    [:loading? {:optional true}
     :boolean]
    [:download-progress {:optional true}
@@ -65,12 +66,13 @@
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
    [:pdf-layout qr-schema/PdfLayout]
-   [:pdf-custom-cols [:int {:min 1}]]
-   [:pdf-custom-rows [:int {:min 1}]]
-   [:pdf-custom-qr-size-cm [:double {:min 0.5}]]
+   [:pdf-custom-cols [:or :string [:int {:min 1}]]]
+   [:pdf-custom-rows [:or :string [:int {:min 1}]]]
+   [:pdf-custom-qr-size-cm [:or :string [:double {:min 0.5}]]]
    [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
+   [:show-validation-errors? :boolean]
    [:loading? {:optional true}
     :boolean]
    [:download-progress {:optional true}
@@ -121,11 +123,12 @@
    :error-correction :medium
    :show-label? false
    :pdf-layout :per-page-6  ; 6 per page (2×3, 5cm) - large, scannable default
-   :pdf-custom-cols 4       ; Custom defaults distinct from all presets
-   :pdf-custom-rows 4
-   :pdf-custom-qr-size-cm 3.5
+   :pdf-custom-cols "4"       ; Custom defaults distinct from all presets (stored as strings)
+   :pdf-custom-rows "4"
+   :pdf-custom-qr-size-cm "3.5"
    :preview-codes []
    :generating? false
    :errors []
+   :show-validation-errors? false
    :loading? false
    :download-progress nil})

@@ -488,7 +488,13 @@
            highlighted-solution-id
            admin-logged-in?
            handlers]}]
-  (let [{:keys [on-give-consent on-delete-solution]} handlers]
+  (let [{:keys [on-give-consent on-delete-solution]} handlers
+        _ (js/console.log "solutions-container render:"
+                          (clj->js {:solutions-count (count solutions)
+                                    :loading? loading?
+                                    :gated? gated?
+                                    :solutions solutions
+                                    :highlighted-solution-id highlighted-solution-id}))]
     [:div {:class "space-y-4"}
      (cond
        loading? [:div {:class "text-center py-12"}

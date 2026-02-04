@@ -187,9 +187,9 @@
                                 ::request-qr-batch {:request-id request-id}})
    :qr-codes/worker-finalizing (fn [db [_ {:keys [format]}]]
                                  (let [status-key (case format
-                                                    :pdf :download-progress-pdf
-                                                    :zip :download-progress-zip
-                                                    :download-progress-finalizing)]
+                                                    :pdf :creating-pdf-document
+                                                    :zip :packaging-files
+                                                    :preparing-download)]
                                    (update-in db
                                               state-registry/*qr-codes-page-path*
                                               assoc

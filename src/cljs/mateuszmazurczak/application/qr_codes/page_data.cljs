@@ -265,22 +265,22 @@
    :download [:i18n :download]
    :preview [:i18n :preview]
    :errors [:i18n :errors]
-   :download-progress (cond
-                        ;; Finalizing status (no current/total, just status message)
-                        (and download-progress (:status-key download-progress))
-                        (case (:status-key download-progress)
-                          :download-progress-pdf [:i18n :download-progress-pdf]
-                          :download-progress-zip [:i18n :download-progress-zip]
-                          :download-progress-finalizing [:i18n :download-progress-finalizing]
-                          "")
-                        ;; Normal progress with current/total
-                        (and download-progress (pos? (:total download-progress)))
-                        [:i18n
-                         :download-progress
-                         {:1 (:current download-progress)
-                          :2 (:total download-progress)}]
-                        ;; No progress
-                        :else "")
+   :generating-qr-codes (cond
+                          ;; Finalizing status (no current/total, just status message)
+                          (and download-progress (:status-key download-progress))
+                          (case (:status-key download-progress)
+                            :creating-pdf-document [:i18n :creating-pdf-document]
+                            :packaging-files [:i18n :packaging-files]
+                            :preparing-download [:i18n :preparing-download]
+                            "")
+                          ;; Normal progress with current/total
+                          (and download-progress (pos? (:total download-progress)))
+                          [:i18n
+                           :generating-qr-codes
+                           {:1 (:current download-progress)
+                            :2 (:total download-progress)}]
+                          ;; No progress
+                          :else "")
    :showing-preview-count [:i18n
                            :showing-preview-count
                            {:1 preview-count

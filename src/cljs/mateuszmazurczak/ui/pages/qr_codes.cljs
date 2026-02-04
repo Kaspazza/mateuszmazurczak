@@ -208,9 +208,9 @@
                     :class "flex-1"}
                    [:> Download {:class (str "size-4 mr-2" (when loading? " animate-spin"))}]
                    (:download text))]
-   (when (and download-progress (:download-progress text))
+   (when (and download-progress (:generating-qr-codes text))
      [:p {:class "text-sm text-muted-foreground"}
-      (:download-progress text)])])
+      (:generating-qr-codes text)])])
 
 (defn qr-codes-page
   "QR Code Generator page."

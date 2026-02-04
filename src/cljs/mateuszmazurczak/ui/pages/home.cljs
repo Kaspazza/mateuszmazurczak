@@ -7,8 +7,29 @@
 
 (defn about-me
   [{:keys [welcome-text description contact-info]}]
-  [:div {:class ["w-full" "overflow-hidden" "home-hero"]}
-   [:div {:class ["flex"
+  [:div {:class ["w-full"
+                  "overflow-hidden"
+                  "relative"
+                  "bg-gradient-to-r"
+                  "from-[oklch(0.6270_0.2650_303.9/0.75)]"
+                  "via-[oklch(0.6270_0.2650_303.9/0.60)]"
+                  "to-[oklch(0.8600_0.030_300/0.85)]"
+                  "bg-cover"
+                  "bg-center"
+                  "bg-no-repeat"
+                  "before:content-['']"
+                  "before:absolute"
+                  "before:inset-[-8%_-4%_0]"
+                  "before:bg-[url('/img/code.webp')]"
+                  "before:bg-cover"
+                  "before:bg-[60%_40%]"
+                  "before:bg-no-repeat"
+                  "before:opacity-10"
+                  "before:pointer-events-none"
+                  "before:[transform:perspective(500px)_rotateX(6deg)_skewY(-2deg)]"
+                  "before:origin-top"]}
+   [:div {:class ["relative"
+                  "flex"
                   "flex-col"
                   "lg:flex-row"
                   "items-center"

@@ -1,9 +1,9 @@
 (ns mateuszmazurczak.adapters.events.reframe.pages.qr-codes
   "Re-frame adapter for QR codes page events."
   (:require
+   [mateuszmazurczak.application.qr-codes.input       :as qr-input]
    [mateuszmazurczak.application.qr-codes.page-data   :as page-data]
    [mateuszmazurczak.application.qr-codes.page-schema :as page-schema]
-   [mateuszmazurczak.domain.qr-codes.generator        :as gen]
    [mateuszmazurczak.domain.state.registry            :as state-registry]
    [mateuszmazurczak.ports.export                     :as export]
    [mateuszmazurczak.ports.logging                    :as log]
@@ -168,7 +168,7 @@
    :qr-codes/worker-ready (fn [{:keys [db]} [_ {:keys [request-id]}]]
                             (let [page-data (get-in db state-registry/*qr-codes-page-path*)
                                   ;; Calculate total items from input
-                                  contents (gen/parse-input (:input page-data))
+                                  contents (qr-input/parse-input (:input page-data))
                                   total-items (count contents)]
                               {:db (assoc-in db
                                     state-registry/*qr-codes-page-path*

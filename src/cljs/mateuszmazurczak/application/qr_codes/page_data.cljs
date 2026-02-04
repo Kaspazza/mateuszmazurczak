@@ -1,9 +1,10 @@
 (ns mateuszmazurczak.application.qr-codes.page-data
   "QR codes page data preparation - application layer orchestration."
   (:require
+   [mateuszmazurczak.application.qr-codes.export      :as qr-export]
+   [mateuszmazurczak.application.qr-codes.input       :as qr-input]
    [mateuszmazurczak.application.qr-codes.page-schema :as page-schema]
-   [mateuszmazurczak.domain.qr-codes.generator        :as gen]
-   [mateuszmazurczak.domain.qr-codes.preview          :as qr-preview]
+   [mateuszmazurczak.application.qr-codes.preview     :as qr-preview]
    [mateuszmazurczak.frontend-i18n                    :as fi18n]
    [mateuszmazurczak.ports.events                     :as events]))
 
@@ -14,11 +15,11 @@
 (defn update-page-input
   "Update input and clear preview. Reset validation errors flag."
   [page-data input]
-  (let [contents (gen/parse-input input)
+  (let [contents (qr-input/parse-input input)
         validation (when (seq contents)
-                     (gen/validate-request {:contents contents
-                                            :size (:size page-data)
-                                            :format (:format page-data)}))
+                     (qr-export/validate-export-request {:contents contents
+                                                         :size (:size page-data)
+                                                         :format (:format page-data)}))
         errors (if (and validation (not (:valid? validation))) (:errors validation) [])]
     (assoc page-data 
            :input input 

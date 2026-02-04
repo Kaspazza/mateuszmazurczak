@@ -4,7 +4,11 @@
    ["jszip"                                    :as JSZip]
    ["pdf-lib"                                  :as pdf-lib]
    [clojure.string                             :as str]
-   [mateuszmazurczak.domain.qr-codes.generator :as gen]))
+   [mateuszmazurczak.application.qr-codes.batch :as qr-batch]
+   [mateuszmazurczak.application.qr-codes.export :as qr-export]
+   [mateuszmazurczak.application.qr-codes.input :as qr-input]
+   [mateuszmazurczak.domain.qr-codes.generator  :as qr-gen]
+   [mateuszmazurczak.utils.text                :as text]))
 
 (defonce ^:private worker-state (atom nil))
 
@@ -28,7 +32,7 @@
         ;; Calculate label height if needed
         has-label? (and label (not (str/blank? label)))
         chars-per-line (max 20 (int (* total-modules 0.9)))
-        text-lines (when has-label? (gen/wrap-text label chars-per-line))
+        text-lines (when has-label? (text/wrap-text label chars-per-line))
         line-count (if has-label? (count text-lines) 0)
         font-size (* total-modules 0.055)
         line-height (* font-size 1.3)
@@ -203,16 +207,16 @@
 
 (defn- init-request
   [{:keys [request-id input size format show-label? pdf-layout-config]}]
-  (let [contents (vec (gen/parse-input input))
+  (let [contents (vec (qr-input/parse-input input))
         format-key (if (keyword? format) format (keyword format))
-        validation (gen/validate-request {:contents contents
-                                          :size size
-                                          :format format-key})]
+        validation (qr-export/validate-export-request {:contents contents
+                                                       :size size
+                                                       :format format-key})]
     (if-not (:valid? validation)
       (post! {:type "qr-codes/error"
               :request-id request-id
               :errors (:errors validation)})
-      (let [batch-size gen/max-codes-per-batch
+      (let [batch-size qr-gen/max-codes-per-batch
             batches-total (total-batches (count contents) batch-size)
             ;; For both ZIP and PDF, use ZIP accumulator
             ;; PDF will be split into multiple smaller PDFs in the ZIP
@@ -308,7 +312,7 @@
             batch (subvec contents cursor end)
             batch-index (int (/ cursor batch-size))
             result
-            (gen/generate-batch batch :size size :show-label? show-label? :start-index cursor)]
+            (qr-batch/generate-batch batch :size size :show-label? show-label? :start-index cursor)]
         (if (:success result)
           (let [codes (:codes result)
                 ;; Add to accumulator based on format

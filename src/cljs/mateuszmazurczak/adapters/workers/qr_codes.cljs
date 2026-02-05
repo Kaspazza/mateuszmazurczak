@@ -31,34 +31,24 @@
         request-id (aget data "request-id")
         message-type (if (keyword? type) (name type) type)]
     (case message-type
-      "qr-codes/ready"
-      {:type :ready
-       :request-id request-id
-       :total-batches (aget data "total-batches")}
-      
-      "qr-codes/progress"
-      {:type :progress
-       :request-id request-id
-       :batch-index (aget data "batch-index")
-       :total-batches (aget data "total-batches")
-       :current (aget data "current")
-       :total (aget data "total")}
-      
-      "qr-codes/finalizing"
-      {:type :finalizing
-       :request-id request-id
-       :format (keyword (aget data "format"))}
-      
-      "qr-codes/done"
-      {:type :done
-       :request-id request-id
-       :buffer (aget data "buffer")}
-      
-      "qr-codes/error"
-      {:type :error
-       :request-id request-id
-       :errors (js->clj (aget data "errors"))}
-      
+      "qr-codes/ready" {:type :ready
+                        :request-id request-id
+                        :total-batches (aget data "total-batches")}
+      "qr-codes/progress" {:type :progress
+                           :request-id request-id
+                           :batch-index (aget data "batch-index")
+                           :total-batches (aget data "total-batches")
+                           :current (aget data "current")
+                           :total (aget data "total")}
+      "qr-codes/finalizing" {:type :finalizing
+                             :request-id request-id
+                             :format (keyword (aget data "format"))}
+      "qr-codes/done" {:type :done
+                       :request-id request-id
+                       :buffer (aget data "buffer")}
+      "qr-codes/error" {:type :error
+                        :request-id request-id
+                        :errors (js->clj (aget data "errors"))}
       {:type :unknown
        :request-id request-id})))
 
@@ -77,17 +67,12 @@
       (when-let [dispatch (qr-processing/route-worker-message parsed callbacks)]
         ;; Return the dispatch vector to be handled by caller
         ;; This is the framework coupling point - caller can dispatch to re-frame
-        (when-let [on-dispatch (:on-dispatch callbacks)]
-          (on-dispatch dispatch)))
-      
+        (when-let [on-dispatch (:on-dispatch callbacks)] (on-dispatch dispatch)))
       ;; Update worker state based on message type
       (case (:type parsed)
         :ready
         (swap! worker-state assoc-in [:requests request-id :total-batches] (:total-batches parsed))
-        
-        (:done :error)
-        (swap! worker-state update :requests dissoc request-id)
-        
+        (:done :error) (swap! worker-state update :requests dissoc request-id)
         nil))))
 
 (defn- ensure-worker!
@@ -110,8 +95,7 @@
    
    Returns: nil"
   [message]
-  (let [worker (ensure-worker!)]
-    (.postMessage worker (clj->js message))))
+  (let [worker (ensure-worker!)] (.postMessage worker (clj->js message))))
 
 ;; =============================================================================
 ;; Public API

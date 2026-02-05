@@ -1,14 +1,14 @@
 (ns mateuszmazurczak.application.qr-codes.worker
   "Web worker for QR code batch generation."
   (:require
-   ["jszip"                                    :as JSZip]
-   ["pdf-lib"                                  :as pdf-lib]
-   [clojure.string                             :as str]
-   [mateuszmazurczak.application.qr-codes.batch :as qr-batch]
+   ["jszip"                                      :as JSZip]
+   ["pdf-lib"                                    :as pdf-lib]
+   [clojure.string                               :as str]
+   [mateuszmazurczak.application.qr-codes.batch  :as qr-batch]
    [mateuszmazurczak.application.qr-codes.export :as qr-export]
-   [mateuszmazurczak.application.qr-codes.input :as qr-input]
-   [mateuszmazurczak.domain.qr-codes.generator  :as qr-gen]
-   [mateuszmazurczak.utils.text                :as text]))
+   [mateuszmazurczak.application.qr-codes.input  :as qr-input]
+   [mateuszmazurczak.domain.qr-codes.generator   :as qr-gen]
+   [mateuszmazurczak.utils.text                  :as text]))
 
 (defonce ^:private worker-state (atom nil))
 

@@ -8,9 +8,13 @@
                    :title "Footer"})
 
 (defscene
- basic-footer
- "Footer component with social icons."
+ footer-basic
+ "Footer with social icons.
+
+  Custom component — not from shadcn/ui.
+  Simple footer layout for social links.
+
+  This component is app-aware (theme-driven icons)."
  []
- (mm-portfolio-utils/wrap-component
-  [:div {:class "p-6 bg-background"}
-   [sut/footer]]))
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6 bg-background"}
+                                     [sut/footer]]))

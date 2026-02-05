@@ -1,23 +1,76 @@
 (ns mateuszmazurczak.portfolio.ui-components.separator
   (:require
-   [mateuszmazurczak.portfolio.utils         :as mm-portfolio-utils]
-   [mateuszmazurczak.ui.components.separator :as sut]
-   [portfolio.reagent-18                     :refer-macros [defscene configure-scenes]]))
+   ["lucide-react"                            :refer [Slash]]
+   [mateuszmazurczak.portfolio.utils          :as mm-portfolio-utils]
+   [mateuszmazurczak.ui.components.breadcrumb :as breadcrumb]
+   [mateuszmazurczak.ui.components.separator  :as sut]
+   [portfolio.reagent-18                      :refer-macros [defscene configure-scenes]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Separator"})
 
 (defscene
- separator-orientations
- "Horizontal and vertical separators." 
+ separator-demo
+ "Horizontal and vertical separators.
+
+  Based on shadcn/ui Separator — https://ui.shadcn.com/docs/components/separator
+  Radix primitive: @radix-ui/react-separator
+
+  Use separators to divide sections or inline items."
  []
- (mm-portfolio-utils/wrap-component
-  [:div {:class "flex flex-col gap-6 p-6"}
-   [:div {:class "space-y-2"}
-    [:span {:class "text-sm"} "Section A"]
-    [sut/separator {}]
-    [:span {:class "text-sm"} "Section B"]]
-   [:div {:class "flex h-6 items-center gap-3"}
-    [:span {:class "text-sm"} "Item 1"]
-    [sut/separator {:orientation :vertical}]
-    [:span {:class "text-sm"} "Item 2"]]]))
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6 space-y-4"}
+                                     [:div {:class "space-y-1"}
+                                      [:h4 {:class "text-sm font-medium"}
+                                       "Radix Primitives"]
+                                      [:p {:class "text-muted-foreground text-sm"}
+                                       "An open-source UI component library."]]
+                                     [sut/separator {:class "my-4"}]
+                                     [:div {:class "flex h-5 items-center space-x-4 text-sm"}
+                                      [:div "Blog"]
+                                      [sut/separator {:orientation :vertical}]
+                                      [:div "Docs"]
+                                      [sut/separator {:orientation :vertical}]
+                                      [:div "Source"]]]))
+
+(defscene
+ breadcrumb-separator
+ "Separator used inside breadcrumb navigation.
+
+  Based on shadcn/ui Breadcrumb Separator — https://ui.shadcn.com/docs/components/breadcrumb
+  Radix primitive: @radix-ui/react-separator
+
+  Custom separators can be inserted between breadcrumb items."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
+                                     [breadcrumb/breadcrumb {}
+                                      [breadcrumb/breadcrumb-list {}
+                                       [breadcrumb/breadcrumb-item {}
+                                        [breadcrumb/breadcrumb-link {:href "#"}
+                                         "Home"]]
+                                       [breadcrumb/breadcrumb-separator {}
+                                        [:> Slash]]
+                                       [breadcrumb/breadcrumb-item {}
+                                        [breadcrumb/breadcrumb-link {:href "#"}
+                                         "Components"]]
+                                       [breadcrumb/breadcrumb-separator {}
+                                        [:> Slash]]
+                                       [breadcrumb/breadcrumb-item {}
+                                        [breadcrumb/breadcrumb-page {}
+                                         "Separator"]]]]]))
+
+(defscene
+ separator-custom
+ "Separator with custom styling.
+
+  Custom example — not from shadcn/ui.
+  Radix primitive: @radix-ui/react-separator
+
+  Add classes to adjust thickness or color."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6 space-y-3"}
+                                     [:p {:class "text-sm"}
+                                      "Primary accent"]
+                                     [sut/separator {:class "bg-primary h-[2px]"}]
+                                     [:p {:class "text-sm"}
+                                      "Muted divider"]
+                                     [sut/separator {:class "bg-muted h-[2px]"}]]))

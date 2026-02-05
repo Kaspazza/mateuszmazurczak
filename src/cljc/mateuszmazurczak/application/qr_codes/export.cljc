@@ -3,10 +3,9 @@
 
    Includes filename sanitization and export-format validation."
   (:require
-   [clojure.string :as str]
+   [clojure.string                             :as str]
    [mateuszmazurczak.domain.qr-codes.generator :as gen]
-   #?@(:cljs [[goog.string :as gstring]
-              [goog.string.format]])))
+   #?@(:cljs [[goog.string :as gstring] [goog.string.format]])))
 
 (defn sanitize-filename
   "Create safe filename from content string."

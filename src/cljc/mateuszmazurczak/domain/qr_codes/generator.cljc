@@ -46,9 +46,7 @@
   (let [sanitized (-> content
                       (str/replace #"[^a-zA-Z0-9]+" "_")
                       (str/replace #"^_+|_+$" ""))
-        truncated (if (> (count sanitized) 40)
-                    (subs sanitized 0 40)
-                    sanitized)
+        truncated (if (> (count sanitized) 40) (subs sanitized 0 40) sanitized)
         padded-index (pad-number (inc index))]
     (str "qr_" padded-index "_" truncated ".png")))
 
@@ -61,8 +59,7 @@
   "Validate QR code generation request (contents + size only)."
   [{:keys [contents size]}]
   (let [errors (cond-> []
-                 (or (nil? contents) (empty? contents))
-                 (conj "No QR code values provided")
+                 (or (nil? contents) (empty? contents)) (conj "No QR code values provided")
                  (and (some? size) (not (valid-size? size)))
                  (conj (str "Size must be between " min-qr-pixel-size " and " max-qr-pixel-size)))]
     {:valid? (empty? errors)

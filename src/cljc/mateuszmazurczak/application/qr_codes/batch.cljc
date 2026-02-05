@@ -2,8 +2,8 @@
   "Batch generation for QR codes in the application layer."
   (:require
    [mateuszmazurczak.application.qr-codes.export :as qr-export]
-   [mateuszmazurczak.application.qr-codes.svg :as qr-svg]
-   [mateuszmazurczak.domain.qr-codes.generator :as gen]))
+   [mateuszmazurczak.application.qr-codes.svg    :as qr-svg]
+   [mateuszmazurczak.domain.qr-codes.generator   :as gen]))
 
 (defn generate-batch
   "Generate multiple QR codes with both SVG string and render data.
@@ -23,17 +23,18 @@
       {:success false
        :errors (:errors validation)}
       {:success true
-       :codes (vec (map-indexed
-                    (fn [idx content]
-                      (let [qr-matrix (gen/generate-qr-matrix content :error-correction error-correction)
-                            label (when show-label? content)
-                            filename-idx (+ start-index idx)]
-                        {:content content
-                         :qr-matrix qr-matrix
-                         :svg (qr-svg/matrix->svg qr-matrix :output-size size :label label)
-                         :svg-data (qr-svg/matrix->svg-data qr-matrix :output-size size :label label)
-                         :filename (qr-export/sanitize-filename content filename-idx)}))
-                    contents))})))
+       :codes
+       (vec (map-indexed
+             (fn [idx content]
+               (let [qr-matrix (gen/generate-qr-matrix content :error-correction error-correction)
+                     label (when show-label? content)
+                     filename-idx (+ start-index idx)]
+                 {:content content
+                  :qr-matrix qr-matrix
+                  :svg (qr-svg/matrix->svg qr-matrix :output-size size :label label)
+                  :svg-data (qr-svg/matrix->svg-data qr-matrix :output-size size :label label)
+                  :filename (qr-export/sanitize-filename content filename-idx)}))
+             contents))})))
 
 (defn generate-batches
   "Generate QR codes in chunks based on max-codes-per-batch.

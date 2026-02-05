@@ -1,10 +1,10 @@
 (ns mateuszmazurczak.application.qr-codes.svg
   "SVG serialization for QR code matrices."
   (:require
-   [clojure.string :as str]
+   [clojure.string                             :as str]
    [mateuszmazurczak.domain.qr-codes.generator :as gen]
-   [mateuszmazurczak.utils.text :as text]
-   [mateuszmazurczak.utils.xml :as xml]))
+   [mateuszmazurczak.utils.text                :as text]
+   [mateuszmazurczak.utils.xml                 :as xml]))
 
 (defn matrix->svg-path
   "Convert QR matrix to SVG path data string. Pure function.

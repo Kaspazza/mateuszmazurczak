@@ -139,7 +139,8 @@
                         :min 1
                         :step 1
                         :value pdf-custom-cols
-                        :on-change #((:on-update-pdf-custom handlers) :cols (.. % -target -value))}]]
+                        :on-change
+                        #((:on-update-pdf-custom handlers) :cols (.. % -target -value))}]]
          [:div {:class "space-y-2"}
           [label/label {:htmlFor "pdf-custom-rows"}
            (:pdf-custom-rows text)]
@@ -148,7 +149,8 @@
                         :min 1
                         :step 1
                         :value pdf-custom-rows
-                        :on-change #((:on-update-pdf-custom handlers) :rows (.. % -target -value))}]]
+                        :on-change
+                        #((:on-update-pdf-custom handlers) :rows (.. % -target -value))}]]
          [:div {:class "space-y-2"}
           [label/label {:htmlFor "pdf-custom-size"}
            (:pdf-custom-size-cm text)]
@@ -157,7 +159,9 @@
                         :min 0.5
                         :step 0.1
                         :value pdf-custom-qr-size-cm
-                        :on-change #((:on-update-pdf-custom handlers) :qr-size-cm (.. % -target -value))}]]]])]))
+                        :on-change #((:on-update-pdf-custom handlers)
+                                      :qr-size-cm
+                                      (.. % -target -value))}]]]])]))
 
 (defn- label-toggle
   "Toggle to show QR code value as label."

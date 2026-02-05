@@ -2,32 +2,116 @@
   (:require
    [mateuszmazurczak.portfolio.utils      :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.button :as button]
+   [mateuszmazurczak.ui.components.input  :as input]
+   [mateuszmazurczak.ui.components.label  :as label]
    [mateuszmazurczak.ui.components.sheet  :as sut]
-   [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]]
-   [reagent.core                          :as r]))
+   [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Sheet"})
 
 (defscene
- basic-sheet
- "Sheet sliding from the right." 
+ sheet-demo
+ "Basic sheet with profile form.
+
+  Based on shadcn/ui Sheet — https://ui.shadcn.com/docs/components/sheet
+  Radix primitive: @radix-ui/react-dialog
+
+  Sheets slide in from an edge to reveal secondary content."
  []
- (let [open? (r/atom false)]
-   (fn []
-     (mm-portfolio-utils/wrap-component
-      [:div {:class "p-6"}
-       [:> sut/sheet {:open @open?
-                      :on-open-change #(reset! open? %)}
-        [:> sut/sheet-trigger {:as-child true}
-         (button/button {:variant :outline} "Open Sheet")]
-        [sut/sheet-content {:side :right}
-         [sut/sheet-header {}
-          [sut/sheet-title {} "Settings"]
-          [sut/sheet-description {} "Adjust your preferences."]]
-         [:div {:class "py-4 text-sm"}
-          "Sheet content goes here."]
-         [sut/sheet-footer {}
-          (button/button {:variant :outline
-                          :on-click #(reset! open? false)}
-                         "Close")]]]]))))
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6"}
+   [:>
+    sut/sheet
+    {}
+    [:> sut/sheet-trigger {:as-child true} (button/button {:variant :outline} "Open")]
+    [sut/sheet-content {}
+     [sut/sheet-header {}
+      [sut/sheet-title {}
+       "Edit profile"]
+      [sut/sheet-description {}
+       "Make changes to your profile here. Click save when you're done."]]
+     [:div {:class "grid flex-1 auto-rows-min gap-6 px-4"}
+      [:div {:class "grid gap-3"}
+       [label/label {:html-for "sheet-demo-name"}
+        "Name"]
+       [input/input {:id "sheet-demo-name"
+                     :default-value "Pedro Duarte"}]]
+      [:div {:class "grid gap-3"}
+       [label/label {:html-for "sheet-demo-username"}
+        "Username"]
+       [input/input {:id "sheet-demo-username"
+                     :default-value "@peduarte"}]]]
+     [sut/sheet-footer {}
+      (button/button {:type "submit"} "Save changes")
+      [:> sut/sheet-close {:as-child true} (button/button {:variant :outline} "Close")]]]]]))
+
+(defscene
+ sheet-side
+ "Sheets on all four sides.
+
+  Based on shadcn/ui Sheet — https://ui.shadcn.com/docs/components/sheet
+  Radix primitive: @radix-ui/react-dialog
+
+  Use :side to control where the sheet appears."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 grid grid-cols-2 gap-2"}
+   (for [side [:top :right :bottom :left]]
+     ^{:key side}
+     [:>
+      sut/sheet
+      {}
+      [:> sut/sheet-trigger {:as-child true} (button/button {:variant :outline} (name side))]
+      [sut/sheet-content {:side side}
+       [sut/sheet-header {}
+        [sut/sheet-title {}
+         "Edit profile"]
+        [sut/sheet-description {}
+         "Make changes to your profile here. Click save when you're done."]]
+       [:div {:class "grid gap-4 py-4"}
+        [:div {:class "grid grid-cols-4 items-center gap-4"}
+         [label/label {:html-for (str "sheet-name-" (name side))
+                       :class "text-right"}
+          "Name"]
+         [input/input {:id (str "sheet-name-" (name side))
+                       :default-value "Pedro Duarte"
+                       :class "col-span-3"}]]
+        [:div {:class "grid grid-cols-4 items-center gap-4"}
+         [label/label {:html-for (str "sheet-username-" (name side))
+                       :class "text-right"}
+          "Username"]
+         [input/input {:id (str "sheet-username-" (name side))
+                       :default-value "@peduarte"
+                       :class "col-span-3"}]]]
+       [sut/sheet-footer {}
+        [:> sut/sheet-close {:as-child true} (button/button {:type "submit"} "Save changes")]]]])]))
+
+(defscene
+ sheet-scrollable
+ "Sheet with scrollable content.
+
+  Custom example — not from shadcn/ui.
+  Radix primitive: @radix-ui/react-dialog
+
+  Use overflow classes to handle long content in sheets."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6"}
+   [:>
+    sut/sheet
+    {}
+    [:> sut/sheet-trigger {:as-child true} (button/button {:variant :outline} "Open Scrollable")]
+    [sut/sheet-content {:class "overflow-y-auto"}
+     [sut/sheet-header {}
+      [sut/sheet-title {}
+       "Release Notes"]
+      [sut/sheet-description {}
+       "Review recent changes before continuing."]]
+     [:div {:class "space-y-3 px-4"}
+      (for [idx (range 1 16)]
+        ^{:key idx}
+        [:p {:class "text-sm text-muted-foreground"}
+         (str "Release item " idx ": Updated feature details and fixes.")])]
+     [sut/sheet-footer {}
+      [:> sut/sheet-close {:as-child true} (button/button {:variant :outline} "Close")]]]]]))

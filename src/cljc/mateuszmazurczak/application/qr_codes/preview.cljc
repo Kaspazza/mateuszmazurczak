@@ -3,7 +3,7 @@
   (:require
    [mateuszmazurczak.application.qr-codes.batch :as qr-batch]
    [mateuszmazurczak.application.qr-codes.input :as qr-input]
-   [mateuszmazurczak.domain.qr-codes.generator :as gen]))
+   [mateuszmazurczak.domain.qr-codes.generator  :as gen]))
 
 ;; =============================================================================
 ;; Constants

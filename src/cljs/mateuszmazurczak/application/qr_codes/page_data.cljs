@@ -21,11 +21,7 @@
                                                          :size (:size page-data)
                                                          :format (:format page-data)}))
         errors (if (and validation (not (:valid? validation))) (:errors validation) [])]
-    (assoc page-data 
-           :input input 
-           :preview-codes [] 
-           :errors errors
-           :show-validation-errors? false)))
+    (assoc page-data :input input :preview-codes [] :errors errors :show-validation-errors? false)))
 
 (defn update-page-size
   "Update size and regenerate preview if input exists."
@@ -84,28 +80,22 @@
 (defn- valid-positive-int?
   "Check if value is a valid positive integer (>= min-value)."
   [value min-value]
-  (let [parsed (js/parseInt value 10)]
-    (and (not (js/isNaN parsed)) (>= parsed min-value))))
+  (let [parsed (js/parseInt value 10)] (and (not (js/isNaN parsed)) (>= parsed min-value))))
 
 (defn- valid-positive-float?
   "Check if value is a valid positive float (>= min-value)."
   [value min-value]
-  (let [parsed (js/parseFloat value)]
-    (and (not (js/isNaN parsed)) (>= parsed min-value))))
+  (let [parsed (js/parseFloat value)] (and (not (js/isNaN parsed)) (>= parsed min-value))))
 
 (defn validate-pdf-custom-settings
   "Validate PDF custom layout settings. Returns vector of i18n markers."
   [{:keys [pdf-layout pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
   (when (= pdf-layout :custom)
     (cond-> []
-      (not (valid-positive-int? pdf-custom-cols 1))
-      (conj [:i18n :error-pdf-cols-invalid])
-      
-      (not (valid-positive-int? pdf-custom-rows 1))
-      (conj [:i18n :error-pdf-rows-invalid])
-      
-      (not (valid-positive-float? pdf-custom-qr-size-cm 0.5))
-      (conj [:i18n :error-pdf-size-invalid]))))
+      (not (valid-positive-int? pdf-custom-cols 1)) (conj [:i18n :error-pdf-cols-invalid])
+      (not (valid-positive-int? pdf-custom-rows 1)) (conj [:i18n :error-pdf-rows-invalid])
+      (not (valid-positive-float? pdf-custom-qr-size-cm 0.5)) (conj [:i18n
+                                                                     :error-pdf-size-invalid]))))
 
 ;; =============================================================================
 ;; Derived State
@@ -121,8 +111,7 @@
         show-errors? (:show-validation-errors? page-data)
         ;; Collect all validation errors
         pdf-errors (validate-pdf-custom-settings page-data)
-        input-errors (when-not has-input?
-                       [[:i18n :error-no-qr-values]])
+        input-errors (when-not has-input? [[:i18n :error-no-qr-values]])
         validation-errors (into (vec pdf-errors) input-errors)
         ;; Only show validation errors if user tried to download
         errors-to-show (if show-errors? validation-errors [])

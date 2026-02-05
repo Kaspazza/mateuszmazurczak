@@ -25,37 +25,26 @@
   (let [{:keys [type request-id]} parsed-message
         {:keys [on-ready on-progress on-finalizing on-done on-failure]} callbacks]
     (case type
-      :ready
-      (when on-ready
-        (conj on-ready
-              {:request-id request-id
-               :total-batches (:total-batches parsed-message)}))
-      
-      :progress
-      (when on-progress
-        (conj on-progress
-              {:request-id request-id
-               :batch-index (:batch-index parsed-message)
-               :total-batches (:total-batches parsed-message)
-               :current (:current parsed-message)
-               :total (:total parsed-message)}))
-      
-      :finalizing
-      (when on-finalizing
-        (conj on-finalizing
-              {:request-id request-id
-               :format (:format parsed-message)}))
-      
-      :done
-      (when on-done
-        (conj on-done
-              {:request-id request-id
-               :buffer (:buffer parsed-message)}))
-      
-      :error
-      (when on-failure
-        (conj on-failure (:errors parsed-message)))
-      
+      :ready (when on-ready
+               (conj on-ready
+                     {:request-id request-id
+                      :total-batches (:total-batches parsed-message)}))
+      :progress (when on-progress
+                  (conj on-progress
+                        {:request-id request-id
+                         :batch-index (:batch-index parsed-message)
+                         :total-batches (:total-batches parsed-message)
+                         :current (:current parsed-message)
+                         :total (:total parsed-message)}))
+      :finalizing (when on-finalizing
+                    (conj on-finalizing
+                          {:request-id request-id
+                           :format (:format parsed-message)}))
+      :done (when on-done
+              (conj on-done
+                    {:request-id request-id
+                     :buffer (:buffer parsed-message)}))
+      :error (when on-failure (conj on-failure (:errors parsed-message)))
       nil)))
 
 ;; =============================================================================
@@ -159,9 +148,7 @@
                     :pdf "zip"
                     :zip "zip")
         filename (str "qr-codes." extension)]
-    {:page-data (assoc page-data
-                       :loading? false
-                       :download-progress nil)
+    {:page-data (assoc page-data :loading? false :download-progress nil)
      :save-batch {:buffer buffer
                   :opts {:filename filename}}}))
 
@@ -176,10 +163,7 @@
    
    Returns: {:page-data ... :log-error ex-info}"
   [page-data errors]
-  {:page-data (assoc page-data
-                     :errors errors
-                     :loading? false
-                     :download-progress nil)
+  {:page-data (assoc page-data :errors errors :loading? false :download-progress nil)
    :log-error (ex-info "QR code worker failed"
                        {:type ::worker-failed
                         :errors errors})})
@@ -195,9 +179,7 @@
    
    Returns: {:page-data ... :log-error ex-info}"
   [page-data error]
-  {:page-data (assoc page-data
-                     :loading? false
-                     :download-progress nil)
+  {:page-data (assoc page-data :loading? false :download-progress nil)
    :log-error (ex-info "Failed to download QR codes"
                        {:type ::download-failed
                         :error error})})

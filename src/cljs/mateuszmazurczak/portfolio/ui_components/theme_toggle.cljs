@@ -39,3 +39,22 @@
                                        :href "#"}
                                       {:title "Docs"
                                        :href "#"}]]))
+
+(defscene
+ theme-toggle-settings-row
+ "Theme toggle in a settings row.
+
+  Custom component — not from shadcn/ui.
+  Shows the toggle alongside descriptive text.
+
+  Useful for preference screens or settings panels."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-sm"}
+   [:div {:class "flex items-center justify-between rounded-md border px-4 py-3"}
+    [:div {:class "space-y-1"}
+     [:p {:class "text-sm font-medium"}
+      "Dark mode"]
+     [:p {:class "text-xs text-muted-foreground"}
+      "Switch theme for the application."]]
+    [sut/theme-toggle]]]))

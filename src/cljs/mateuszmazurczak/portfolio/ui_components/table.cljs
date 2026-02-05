@@ -1,5 +1,6 @@
 (ns mateuszmazurczak.portfolio.ui-components.table
   (:require
+   [clojure.string                               :as str]
    [mateuszmazurczak.portfolio.utils             :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.badge         :as badge]
    [mateuszmazurczak.ui.components.button        :as button]
@@ -127,41 +128,41 @@
   Useful for admin dashboards and data management."
  []
  (let [rows [{:id "PRJ-104"
-              :name "Marketing Site"
+              :title "Marketing Site"
               :status :active}
              {:id "PRJ-105"
-              :name "Mobile App"
+              :title "Mobile App"
               :status :paused}
              {:id "PRJ-106"
-              :name "Data Pipeline"
+              :title "Data Pipeline"
               :status :blocked}]
        row->view
-       (fn [{:keys [id name status]}] [sut/table-row {:key id}
-                                       [sut/table-cell {}
-                                        [:div {:class "font-medium"}
-                                         name]
-                                        [:div {:class "text-xs text-muted-foreground"}
-                                         id]]
-                                       [sut/table-cell {}
-                                        [badge/badge {:variant (case status
-                                                                 :active :default
-                                                                 :paused :secondary
-                                                                 :blocked :destructive
-                                                                 :default)}
-                                         (name status)]]
-                                       [sut/table-cell {:class "text-right"}
-                                        [dropdown-menu/dropdown-menu {}
-                                         [dropdown-menu/dropdown-menu-trigger {:as-child true}
-                                          (button/button {:variant :ghost
-                                                          :size :icon}
-                                                         "⋯")]
-                                         [dropdown-menu/dropdown-menu-content {:align "end"}
-                                          [dropdown-menu/dropdown-menu-item {}
-                                           "View"]
-                                          [dropdown-menu/dropdown-menu-item {}
-                                           "Edit"]
-                                          [dropdown-menu/dropdown-menu-item {}
-                                           "Archive"]]]]])]
+       (fn [{:keys [id title status]}] [sut/table-row {:key id}
+                                        [sut/table-cell {}
+                                         [:div {:class "font-medium"}
+                                          title]
+                                         [:div {:class "text-xs text-muted-foreground"}
+                                          id]]
+                                        [sut/table-cell {}
+                                         [badge/badge {:variant (case status
+                                                                  :active :default
+                                                                  :paused :secondary
+                                                                  :blocked :destructive
+                                                                  :default)}
+                                          (str/capitalize (name status))]]
+                                        [sut/table-cell {:class "text-right"}
+                                         [dropdown-menu/dropdown-menu {}
+                                          [dropdown-menu/dropdown-menu-trigger {:as-child true}
+                                           (button/button {:variant :ghost
+                                                           :size :icon}
+                                                          "⋯")]
+                                          [dropdown-menu/dropdown-menu-content {:align "end"}
+                                           [dropdown-menu/dropdown-menu-item {}
+                                            "View"]
+                                           [dropdown-menu/dropdown-menu-item {}
+                                            "Edit"]
+                                           [dropdown-menu/dropdown-menu-item {}
+                                            "Archive"]]]]])]
    (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
                                        [sut/table {}
                                         [sut/table-header {}

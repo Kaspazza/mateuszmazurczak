@@ -108,3 +108,21 @@
                                                                     :label label})
                                                   (reset! open? false))}
                label])]]]]]]))))
+
+(defscene
+ popover-text-only
+ "Simple popover with text content.
+
+  Based on shadcn/ui Popover — https://ui.shadcn.com/docs/components/popover
+  Radix primitive: @radix-ui/react-popover
+
+  Good for quick hints or short explanations."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6"}
+   [sut/popover {}
+    [sut/popover-trigger {:as-child true}
+     (button/button {:variant :outline} "Why this matters")]
+    [sut/popover-content {:class "w-72"}
+     [:p {:class "text-sm text-muted-foreground"}
+      "Popover content can be lightweight explanatory text or callouts."]]]]))

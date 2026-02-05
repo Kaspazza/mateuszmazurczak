@@ -95,6 +95,7 @@
   Based on shadcn/ui Command Dialog — https://ui.shadcn.com/docs/components/command
   Radix primitive: @radix-ui/react-dialog
 
+  Props are idiomatic kebab-case; Reagent converts to camelCase for Radix.
   Use this for global search or quick actions."
  []
  (let [open? (r/atom false)]

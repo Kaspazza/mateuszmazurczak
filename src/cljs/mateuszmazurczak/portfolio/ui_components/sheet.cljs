@@ -17,6 +17,9 @@
   Based on shadcn/ui Sheet — https://ui.shadcn.com/docs/components/sheet
   Radix primitive: @radix-ui/react-dialog
 
+  Note: `sheet`, `sheet-trigger`, and `sheet-close` are raw React defs and use `:>`.
+  Wrapper components like `sheet-content` are reagent fns and use `[sut/...`.
+
   Sheets slide in from an edge to reveal secondary content."
  []
  (mm-portfolio-utils/wrap-component

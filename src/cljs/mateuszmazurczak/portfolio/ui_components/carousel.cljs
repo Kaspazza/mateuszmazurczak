@@ -106,7 +106,7 @@
  []
  (let [api (r/atom nil)
        current (r/atom 0)
-       count (r/atom 0)]
+       total (r/atom 0)]
    (fn []
      (mm-portfolio-utils/wrap-component
       [:div {:class "p-6"}
@@ -114,7 +114,7 @@
                       (fn [carousel-api]
                         (reset! api carousel-api)
                         (when carousel-api
-                          (reset! count (count (.scrollSnapList carousel-api)))
+                          (reset! total (.-length (.scrollSnapList carousel-api)))
                           (reset! current (inc (.selectedScrollSnap carousel-api)))
                           (.on carousel-api
                                "select"
@@ -128,4 +128,4 @@
         [sut/carousel-previous {}]
         [sut/carousel-next {}]]
        [:div {:class "text-muted-foreground py-2 text-center text-sm"}
-        (str "Slide " @current " of " @count)]]))))
+        (str "Slide " @current " of " @total)]]))))

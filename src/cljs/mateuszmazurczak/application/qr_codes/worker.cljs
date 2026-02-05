@@ -1,4 +1,4 @@
-(ns mateuszmazurczak.workers.qr-codes
+(ns mateuszmazurczak.application.qr-codes.worker
   "Web worker for QR code batch generation."
   (:require
    ["jszip"                                    :as JSZip]

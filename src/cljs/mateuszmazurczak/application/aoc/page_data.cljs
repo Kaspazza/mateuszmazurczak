@@ -16,13 +16,7 @@
   [raw-data solutions-entities theme admin-logged-in? logger]
   (let [solution-ids (get-in raw-data
                              (page-schema/relative-path page-schema/*aoc-solution-ids-path*))
-        _ (log/log! logger
-                    {:level :info
-                     :id ::prepare-ui-data-start
-                     :msg "Starting prepare-ui-data"
-                     :data {:solution-ids solution-ids
-                            :solution-ids-count (count solution-ids)
-                            :entities-count (count solutions-entities)}})
+        
         user-solution-ids
         (get-in raw-data (page-schema/relative-path page-schema/*aoc-user-solution-ids-path*))
         denormalized-solutions (app-solution/denormalize-and-enrich-solutions
@@ -33,23 +27,13 @@
         solutions-text-raw
         (get-in raw-data (page-schema/relative-path page-schema/*aoc-solutions-text-path*))
         solutions-text (fi18n/i18n-markers->translation solutions-text-raw)
-        _ (log/log! logger
-                    {:level :info
-                     :id ::after-denormalization
-                     :msg "After denormalization"
-                     :data {:denormalized-count (count denormalized-solutions)
-                            :theme theme :solutions-text solutions-text
-                            :first-solution (first denormalized-solutions)}})
+        
         prepared-solutions
-        (->> denormalized-solutions
-             (mapv #(app-solution/enrich-solution-with-ui-context % theme solutions-text))
-             (app-solution/sort-solutions-for-display user-solution-ids))
-        _ (log/log! logger
-                    {:level :info
-                     :id ::after-preparation
-                     :msg "After UI enrichment and sorting"
-                     :data {:prepared-count (count prepared-solutions)
-                            :first-prepared (first prepared-solutions)}})
+        (-> (->> denormalized-solutions
+                 (mapv #(app-solution/enrich-solution-with-ui-context % theme solutions-text))
+                 )
+            (app-solution/sort-solutions-for-display user-solution-ids))
+        
         ui-data
         (-> raw-data
             events/dispatch-markers->handlers
@@ -64,20 +48,10 @@
                       admin-logged-in?)
             (update-in (page-schema/relative-path page-schema/*aoc-solutions-path*)
                        events/dispatch-markers->handlers))
-        _ (log/log! logger
-                    {:level :info
-                     :id ::before-validation
-                     :msg "Before validation"
-                     :data {:solutions-in-ui-data (get-in ui-data (page-schema/relative-path page-schema/*aoc-solutions-path*))
-                            :solutions-count (count (get-in ui-data (page-schema/relative-path page-schema/*aoc-solutions-path*)))}})
+        
         valid? (page-schema/valid-aoc-page-ui-data? ui-data)
         explanation (when-not valid? (page-schema/explain-aoc-page-ui-data ui-data))
-        _ (log/log! logger
-                    {:level (if valid? :info :error)
-                     :id ::validation-result
-                     :msg (if valid? "Validation passed" "Validation FAILED")
-                     :data {:valid? valid?
-                            :explanation explanation}})]
+        ]
     (when-not valid?
       (log/error! logger
                   {:error (ex-info "AOC page validation failed"

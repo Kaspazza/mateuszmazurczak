@@ -25,7 +25,7 @@
                                               }
              :mateuszmazurczak-share {:entries []}
              :qr-codes-worker {:depends-on #{:mateuszmazurczak-share}
-                               :init-fn mateuszmazurczak.workers.qr-codes/init
+                               :init-fn mateuszmazurczak.application.qr-codes.worker/init
                                :web-worker true}}
    :output-dir "resources/public/js/compiled"
    :release {:build-options {:cache-level :off}
@@ -39,7 +39,7 @@
    :target :browser}}
  :deps {:aliases [:cljs-deps :cljs-dev-deps
                   ;;debug - in production it breaks app
-                  ;;:1.12-cljs-storm
+                  ;; :1.12-cljs-storm
                   ]}
  :dev-http {8081 [".shadow-cljs/target/browser-test"]}
  :nrepl {:middleware [cider.nrepl/cider-middleware refactor-nrepl.middleware/wrap-refactor]

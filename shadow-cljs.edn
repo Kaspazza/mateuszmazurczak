@@ -18,7 +18,9 @@
    :devtools {:after-load mateuszmazurczak.frontend-core/re-render
               :repl-pprint true
                :http-port 8021
-              :preloads [flow-storm.storm-preload re-frisk.preload]
+              :preloads [
+                         ;; flow-storm.storm-preload
+                         re-frisk.preload]
               :watch-dir "resources/public"}
    :modules {:mateuszmazurczak-frontend-core {:depends-on #{:mateuszmazurczak-share}
                                               :init-fn mateuszmazurczak.frontend-core/init!

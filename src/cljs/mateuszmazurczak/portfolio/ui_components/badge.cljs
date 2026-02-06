@@ -1,6 +1,6 @@
 (ns mateuszmazurczak.portfolio.ui-components.badge
   (:require
-   ["lucide-react"                         :refer [BadgeCheck]]
+   ["lucide-react"                         :refer [BadgeCheck Bookmark]]
    [mateuszmazurczak.portfolio.utils       :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.badge   :as sut]
    [mateuszmazurczak.ui.components.spinner :as spinner]
@@ -33,14 +33,16 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "badge"
                 :description "Badge component"
-                :props [[":variant" "any, optional - Component prop"]
-                        [":class" "any, optional - Component prop"]
-                        [":as-child" "any, optional - Component prop"]]}]
+                :props [[":variant" "keyword, optional (default :default). One of: :default | :secondary | :destructive | :outline | :ghost | :link"]
+                        [":class" "string, optional - Additional Tailwind classes"]
+                        [":as-child" "boolean, optional (default false) - Use Radix Slot polymorphism"]
+                        [":on-click" "fn, optional - Click handler"]
+                        [":...dom-props" "map entries, optional - Forwarded to the rendered element"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[badge {}]"]]]]]]))
+                [:code "[badge {:variant :outline} \"Outline\"]"]]]]]]))
 
 (defscene
  badge-demo
@@ -61,12 +63,19 @@
     [sut/badge {:variant :destructive}
      "Destructive"]
     [sut/badge {:variant :outline}
-     "Outline"]]
+     "Outline"]
+    [sut/badge {:variant :ghost}
+     "Ghost"]
+    [sut/badge {:variant :link}
+     [:a {:href "#"} "Link"]]]
    [:div {:class "flex flex-wrap gap-2"}
     [sut/badge {:variant :secondary
                 :class "bg-blue-500 text-white"}
-     [:> BadgeCheck]
+     [:> BadgeCheck {:data-icon "inline-start"}]
      "Verified"]
+    [sut/badge {:variant :outline}
+     "Bookmark"
+     [:> Bookmark {:data-icon "inline-end"}]]
     [sut/badge {:class "h-5 min-w-5 rounded-full px-1 font-mono tabular-nums"}
      "8"]
     [sut/badge {:variant :destructive
@@ -116,6 +125,32 @@
                                       "Destructive"]]))
 
 (defscene
+ badge-ghost
+ "Ghost badge with no background.
+
+  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
+  Radix primitive: @radix-ui/react-slot
+
+  Use :ghost for minimal emphasis badges."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
+                                     [sut/badge {:variant :ghost}
+                                      "Ghost"]]))
+
+(defscene
+ badge-link
+ "Link-styled badge with underline on hover.
+
+  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
+  Radix primitive: @radix-ui/react-slot
+
+  Use :link for clickable text-style badges."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
+                                     [sut/badge {:variant :link}
+                                      [:a {:href "#"} "Link"]]]))
+
+(defscene
  spinner-badge
  "Badges paired with inline spinners.
 
@@ -126,14 +161,14 @@
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 flex flex-wrap items-center gap-4"}
                                      [sut/badge {}
-                                      [spinner/spinner {:class "size-4"}]
+                                      [spinner/spinner {:class "size-4" :data-icon "inline-start"}]
                                       "Syncing"]
                                      [sut/badge {:variant :secondary}
-                                      [spinner/spinner {:class "size-4"}]
+                                      [spinner/spinner {:class "size-4" :data-icon "inline-start"}]
                                       "Updating"]
                                      [sut/badge {:variant :outline}
-                                      [spinner/spinner {:class "size-4"}]
-                                      "Processing"]]))
+                                      "Processing"
+                                      [spinner/spinner {:class "size-4" :data-icon "inline-end"}]]]))
 
 (defscene
  badge-as-child

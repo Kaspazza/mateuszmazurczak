@@ -20,29 +20,32 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/badge.cljs"
             :filename "badge.cljs"}])
 
-(defscene api-reference
-          "Complete reference for all Badge component props and usage patterns."
-          []
-          (mm-portfolio-utils/wrap-component
-           [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Badge components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "badge"
-                :description "Badge component"
-                :props [[":variant" "keyword, optional (default :default). One of: :default | :secondary | :destructive | :outline | :ghost | :link"]
-                        [":class" "string, optional - Additional Tailwind classes"]
-                        [":as-child" "boolean, optional (default false) - Use Radix Slot polymorphism"]
-                        [":on-click" "fn, optional - Click handler"]
-                        [":...dom-props" "map entries, optional - Forwarded to the rendered element"]]}]
-              [:div {:class "border rounded-lg p-4 bg-muted/50"}
-               [:h4 {:class "text-sm font-semibold mb-2"}
-                "Usage Example"]
-               [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[badge {:variant :outline} \"Outline\"]"]]]]]]))
+(defscene
+ api-reference
+ "Complete reference for all Badge component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Badge components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card
+      {:component-name "badge"
+       :description "Badge component"
+       :props
+       [[":variant"
+         "keyword, optional (default :default). One of: :default | :secondary | :destructive | :outline | :ghost | :link"]
+        [":class" "string, optional - Additional Tailwind classes"]
+        [":as-child" "boolean, optional (default false) - Use Radix Slot polymorphism"]
+        [":on-click" "fn, optional - Click handler"]
+        [":...dom-props" "map entries, optional - Forwarded to the rendered element"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[badge {:variant :outline} \"Outline\"]"]]]]]]))
 
 (defscene
  badge-demo
@@ -67,7 +70,8 @@
     [sut/badge {:variant :ghost}
      "Ghost"]
     [sut/badge {:variant :link}
-     [:a {:href "#"} "Link"]]]
+     [:a {:href "#"}
+      "Link"]]]
    [:div {:class "flex flex-wrap gap-2"}
     [sut/badge {:variant :secondary
                 :class "bg-blue-500 text-white"}
@@ -148,7 +152,8 @@
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
                                      [sut/badge {:variant :link}
-                                      [:a {:href "#"} "Link"]]]))
+                                      [:a {:href "#"}
+                                       "Link"]]]))
 
 (defscene
  spinner-badge
@@ -161,14 +166,17 @@
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 flex flex-wrap items-center gap-4"}
                                      [sut/badge {}
-                                      [spinner/spinner {:class "size-4" :data-icon "inline-start"}]
+                                      [spinner/spinner {:class "size-4"
+                                                        :data-icon "inline-start"}]
                                       "Syncing"]
                                      [sut/badge {:variant :secondary}
-                                      [spinner/spinner {:class "size-4" :data-icon "inline-start"}]
+                                      [spinner/spinner {:class "size-4"
+                                                        :data-icon "inline-start"}]
                                       "Updating"]
                                      [sut/badge {:variant :outline}
                                       "Processing"
-                                      [spinner/spinner {:class "size-4" :data-icon "inline-end"}]]]))
+                                      [spinner/spinner {:class "size-4"
+                                                        :data-icon "inline-end"}]]]))
 
 (defscene
  badge-as-child

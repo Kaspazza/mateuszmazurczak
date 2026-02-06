@@ -21,54 +21,63 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/drawer.cljs"
             :filename "drawer.cljs"}])
 
-(defscene
- api-reference
- "Complete reference for all Drawer component props and usage patterns."
- []
- (mm-portfolio-utils/wrap-component
-  [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Drawer components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "drawer"
-       :description "Drawer component"
-       :props [[":open" "boolean, optional - Controlled open state"]
-               [":on-open-change" "function, optional - Callback (fn [open?])"]
-               [":direction" "keyword, optional (default :bottom). One of: :top | :right | :bottom | :left"]
-               [":should-scale-background" "boolean, optional - Scale background while open"]
-               [":modal" "boolean, optional (default true) - Modal behavior"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-trigger"
-                                             :description "Drawer trigger component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-close"
-                                             :description "Drawer close component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-overlay"
-                                             :description "Drawer overlay component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-content"
-                                             :description "Drawer content component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-header"
-                                             :description "Drawer header component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-footer"
-                                             :description "Drawer footer component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-title"
-                                             :description "Drawer title component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "drawer-description"
-                                             :description "Drawer description component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [:div {:class "border rounded-lg p-4 bg-muted/50"}
-      [:h4 {:class "text-sm font-semibold mb-2"}
-       "Usage Example"]
-      [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[drawer {}]"]]]]]]))
+(defscene api-reference
+          "Complete reference for all Drawer component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Drawer components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer"
+                :description "Drawer component"
+                :props
+                [[":open" "boolean, optional - Controlled open state"]
+                 [":on-open-change" "function, optional - Callback (fn [open?])"]
+                 [":direction"
+                  "keyword, optional (default :bottom). One of: :top | :right | :bottom | :left"]
+                 [":should-scale-background" "boolean, optional - Scale background while open"]
+                 [":modal" "boolean, optional (default true) - Modal behavior"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-trigger"
+                :description "Drawer trigger component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-close"
+                :description "Drawer close component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-overlay"
+                :description "Drawer overlay component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-content"
+                :description "Drawer content component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-header"
+                :description "Drawer header component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-footer"
+                :description "Drawer footer component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-title"
+                :description "Drawer title component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "drawer-description"
+                :description "Drawer description component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[drawer {}]"]]]]]]))
 
 (defscene
  bottom-drawer

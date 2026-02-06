@@ -29,63 +29,78 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Loader components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "circular-loader"
-                                             :description "Circular loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "classic-loader"
-                                             :description "Classic loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "pulse-loader"
-                                             :description "Pulse loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "pulse-dot-loader"
-                                             :description "Pulse dot loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dots-loader"
-                                             :description "Dots loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "typing-loader"
-                                             :description "Typing loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "wave-loader"
-                                             :description "Wave loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "bars-loader"
-                                             :description "Bars loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "terminal-loader"
-                                             :description "Terminal loader component"
-                                             :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "text-blink-loader"
-                                             :description "Text blink loader component"
-                                             :props [[":text" "string, optional (default 'Thinking') - Text label"]
-                                                     [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "text-shimmer-loader"
-                                             :description "Text shimmer loader component"
-                                             :props [[":text" "string, optional (default 'Thinking') - Text label"]
-                                                     [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "text-dots-loader"
-                                             :description "Text dots loader component"
-                                             :props [[":text" "string, optional (default 'Thinking') - Text label"]
-                                                     [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "loader"
-                                             :description "Loader component"
-                                             :props [[":variant" "keyword, optional (default :circular). One of: :circular | :classic | :pulse | :pulse-dot | :dots | :typing | :wave | :bars | :terminal | :text-blink | :text-shimmer | :loading-dots"]
-                                                     [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-                                                     [":text" "string, optional (default 'Thinking') - Text label"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "circular-loader"
+       :description "Circular loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "classic-loader"
+       :description "Classic loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "pulse-loader"
+       :description "Pulse loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "pulse-dot-loader"
+       :description "Pulse dot loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dots-loader"
+       :description "Dots loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "typing-loader"
+       :description "Typing loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "wave-loader"
+       :description "Wave loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "bars-loader"
+       :description "Bars loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "terminal-loader"
+       :description "Terminal loader component"
+       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "text-blink-loader"
+       :description "Text blink loader component"
+       :props [[":text" "string, optional (default 'Thinking') - Text label"]
+               [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "text-shimmer-loader"
+       :description "Text shimmer loader component"
+       :props [[":text" "string, optional (default 'Thinking') - Text label"]
+               [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "text-dots-loader"
+       :description "Text dots loader component"
+       :props [[":text" "string, optional (default 'Thinking') - Text label"]
+               [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "loader"
+       :description "Loader component"
+       :props
+       [[":variant"
+         "keyword, optional (default :circular). One of: :circular | :classic | :pulse | :pulse-dot | :dots | :typing | :wave | :bars | :terminal | :text-blink | :text-shimmer | :loading-dots"]
+        [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
+        [":text" "string, optional (default 'Thinking') - Text label"]
+        [":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

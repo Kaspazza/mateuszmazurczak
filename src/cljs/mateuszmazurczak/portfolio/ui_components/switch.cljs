@@ -24,22 +24,22 @@
 (defscene api-reference
           "Complete reference for all Switch component props and usage patterns."
           []
-          (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-4xl"}
-                                              [:div {:class "space-y-6"}
-                                               [:div
-                                                [:p {:class "text-sm text-muted-foreground"}
-                                                 "All available props for Switch components."]]
-                                               [:div {:class "space-y-4"}
-                                                [mm-portfolio-utils/api-component-card
-                                                 {:component-name "switch"
-                                                  :description "Switch component"
-                                                  :props [[":class"
-                                                           "string, optional - Additional Tailwind classes"]]}]
-                                                [:div {:class "border rounded-lg p-4 bg-muted/50"}
-                                                 [:h4 {:class "text-sm font-semibold mb-2"}
-                                                  "Usage Example"]
-                                                 [:pre {:class "text-xs overflow-x-auto"}
-                                                  [:code "[switch {}]"]]]]]]))
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Switch components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "switch"
+                :description "Switch component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[switch {}]"]]]]]]))
 
 (defscene
  switch-demo

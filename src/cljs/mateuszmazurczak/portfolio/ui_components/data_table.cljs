@@ -37,26 +37,32 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Data Table components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "drag-handle-cell-ui"
-                                             :description "Drag handle cell ui component"
-                                             :props [[":listeners" "map, required - DnD listeners map from @dnd-kit"]
-                                                     [":attributes" "map, required - DnD attributes map from @dnd-kit"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "faceted-filter-ui"
-                                             :description "Faceted filter ui component"
-                                             :props
-                                             [[":title" "string, required - Human-readable title"]
-                                              [":options" "vector<map>, required - Options. Each option: {:label string :value string :icon component?}"]
-                                              [":selected-values" "set<string>, required - Selected filter values"]
-                                              [":on-change" "function, required - Callback (fn [new-selected-set])"]
-                                              [":facet-counts" "map<string, number>, optional - Counts by option value"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "drag-handle-cell-ui"
+       :description "Drag handle cell ui component"
+       :props [[":listeners" "map, required - DnD listeners map from @dnd-kit"]
+               [":attributes" "map, required - DnD attributes map from @dnd-kit"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "faceted-filter-ui"
+       :description "Faceted filter ui component"
+       :props
+       [[":title" "string, required - Human-readable title"]
+        [":options"
+         "vector<map>, required - Options. Each option: {:label string :value string :icon component?}"]
+        [":selected-values" "set<string>, required - Selected filter values"]
+        [":on-change" "function, required - Callback (fn [new-selected-set])"]
+        [":facet-counts" "map<string, number>, optional - Counts by option value"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "toolbar-ui"
        :description "Toolbar ui component"
        :props [[":text-filter-value" "string, optional - Current text filter value"]
-               [":on-text-filter-change" "function, optional - Callback (fn [value]) for text filter changes"]
-               [":text-placeholder" "string, optional (default 'Filter items...') - Text filter placeholder"]
+               [":on-text-filter-change"
+                "function, optional - Callback (fn [value]) for text filter changes"]
+               [":text-placeholder"
+                "string, optional (default 'Filter items...') - Text filter placeholder"]
                [":faceted-filters" "vector<map>, optional - Faceted filter configs"]
-               [":is-filtered?" "boolean, optional (default false) - Whether any filters are active"]
+               [":is-filtered?"
+                "boolean, optional (default false) - Whether any filters are active"]
                [":on-reset-filters" "function, optional - Callback (fn []) to clear filters"]
                [":toolbar-end" "hiccup | component, optional - Right-side toolbar content"]]}]
      [mm-portfolio-utils/api-component-card
@@ -64,7 +70,8 @@
        :description "Column header ui component"
        :props [[":title" "string, required - Human-readable title"]
                [":can-sort?" "boolean, optional (default false) - Whether column is sortable"]
-               [":sort-state" "string | false | nil, optional - One of: 'asc' | 'desc' | false | nil"]
+               [":sort-state"
+                "string | false | nil, optional - One of: 'asc' | 'desc' | false | nil"]
                [":on-toggle-sort" "function, optional - Callback (fn [descending?])"]
                [":on-clear-sort" "function, optional - Callback (fn [])"]
                [":on-toggle-visibility" "function, optional - Callback (fn [])"]

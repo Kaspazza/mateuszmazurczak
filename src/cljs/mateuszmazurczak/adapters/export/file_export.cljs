@@ -25,11 +25,11 @@
       [(js/parseFloat (second width-match)) (js/parseFloat (second height-match))]
       [size size])))
 
-(defn- svg-to-png-blob
-  "Convert SVG string to PNG Blob via Canvas.
+(defn- svg-to-image-blob
+  "Convert SVG string to PNG or JPG Blob via Canvas.
    Automatically detects SVG dimensions to handle labels correctly.
    Returns a Promise that resolves to a Blob."
-  [svg-string base-size]
+  [svg-string base-size image-format]
   (js/Promise.
    (fn [resolve reject]
      (let [[width height] (extract-svg-dimensions svg-string base-size)
@@ -37,18 +37,22 @@
            canvas (js/document.createElement "canvas")
            ctx (.getContext canvas "2d")
            blob (js/Blob. #js [svg-string] #js {:type "image/svg+xml"})
-           url (js/URL.createObjectURL blob)]
+           url (js/URL.createObjectURL blob)
+           mime-type (case image-format
+                       :jpg "image/jpeg"
+                       "image/png")]
        (set! (.-width canvas) width)
        (set! (.-height canvas) height)
        (set! (.-onload img)
              (fn []
                (js/URL.revokeObjectURL url)
                (.drawImage ctx img 0 0 width height)
-               (.toBlob
-                canvas
-                (fn [png-blob]
-                  (if png-blob (resolve png-blob) (reject (js/Error. "Failed to create PNG blob"))))
-                "image/png")))
+               (.toBlob canvas
+                        (fn [image-blob]
+                          (if image-blob
+                            (resolve image-blob)
+                            (reject (js/Error. "Failed to create image blob"))))
+                        mime-type)))
        (set! (.-onerror img) (fn [e] (js/URL.revokeObjectURL url) (reject e)))
        (set! (.-src img) url)))))
 
@@ -56,7 +60,7 @@
   "Convert SVG string to PNG ArrayBuffer via Canvas.
    Returns a Promise that resolves to ArrayBuffer."
   [svg-string size]
-  (-> (svg-to-png-blob svg-string size)
+  (-> (svg-to-image-blob svg-string size :png)
       (.then (fn [blob] (.arrayBuffer blob)))))
 
 ;; =============================================================================
@@ -64,14 +68,22 @@
 ;; =============================================================================
 
 (defn create-zip-from-codes
-  "Create a ZIP file from generated QR codes."
-  [codes size]
-  (let [zip (JSZip.)]
-    (-> (js/Promise.all (clj->js (map (fn [{:keys [svg filename]}]
-                                        (-> (svg-to-png-blob svg size)
-                                            (.then (fn [png-blob] (.file zip filename png-blob)))))
-                                      codes)))
-        (.then (fn [_] (.generateAsync zip #js {:type "blob"}))))))
+  "Create a ZIP file from generated QR codes as PNG or JPG files."
+  ([codes size] (create-zip-from-codes codes size :png))
+  ([codes size image-format]
+   (let [zip (JSZip.)
+         extension (case image-format
+                     :jpg ".jpg"
+                     ".png")]
+     (-> (js/Promise.all (clj->js (map (fn [{:keys [svg filename]}]
+                                         (-> (svg-to-image-blob svg size image-format)
+                                             (.then (fn [image-blob]
+                                                      (let [image-filename (str/replace filename
+                                                                                        #"\.png$"
+                                                                                        extension)]
+                                                        (.file zip image-filename image-blob))))))
+                                       codes)))
+         (.then (fn [_] (.generateAsync zip #js {:type "blob"})))))))
 
 (defn create-zip-from-svgs
   "Create a ZIP file with SVG files (no PNG conversion)."
@@ -97,21 +109,25 @@
     :or {format :zip}}]
   (let [mime-type (case format
                     :pdf "application/pdf"
+                    :jpg "application/zip"
                     :zip "application/zip"
                     "application/octet-stream")
         blob (js/Blob. #js [array-buffer] #js {:type mime-type})]
     (save-blob! blob filename)))
 
 (defn download-zip!
-  "Generate ZIP from QR codes and trigger download."
+  "Generate ZIP from QR codes and trigger download.
+   Supports PNG files (:zip) or JPG files (:jpg) inside the ZIP."
   [codes
-   {:keys [size filename as-svg?]
+   {:keys [size filename as-svg? format]
     :or {size 300
          filename "qr-codes.zip"
-         as-svg? false}}]
-  (-> (if as-svg? (create-zip-from-svgs codes) (create-zip-from-codes codes size))
-      (.then (fn [blob] (save-blob! blob filename)))
-      (.catch (fn [err] (js/console.error "Failed to create ZIP:" err) (throw err)))))
+         as-svg? false
+         format :zip}}]
+  (let [image-format (if (= format :jpg) :jpg :png)]
+    (-> (if as-svg? (create-zip-from-svgs codes) (create-zip-from-codes codes size image-format))
+        (.then (fn [blob] (save-blob! blob filename)))
+        (.catch (fn [err] (js/console.error "Failed to create ZIP:" err) (throw err))))))
 
 ;; =============================================================================
 ;; PDF Export (using pdf-lib)
@@ -198,6 +214,7 @@
     :as opts}]
   (case format
     :zip (download-zip! codes opts)
+    :jpg (download-zip! codes opts)
     :pdf (download-pdf! codes opts)))
 
 ;; =============================================================================

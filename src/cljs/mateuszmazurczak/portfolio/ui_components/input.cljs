@@ -31,11 +31,11 @@
               [:p {:class "text-sm text-muted-foreground"}
                "All available props for Input components."]]
              [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "input"
-                                                      :description "Input component"
-                                                      :props
-                                                      [[":class" "string, optional - Additional Tailwind classes"]
-                                                       [":type" "string, optional (default 'text') - HTML input type"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "input"
+                :description "Input component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]
+                        [":type" "string, optional (default 'text') - HTML input type"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

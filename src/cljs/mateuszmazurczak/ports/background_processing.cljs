@@ -11,7 +11,7 @@
    
    Arguments:
    - request-id: Unique identifier for this request
-   - config: {:input :size :format :show-label? :pdf-layout-config}
+   - config: {:input :size :format :show-label? :png-config :pdf-layout-config}
    - callbacks: {:on-ready :on-progress :on-finalizing :on-done :on-failure}
                 Each callback receives parsed message data
    

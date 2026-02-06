@@ -72,6 +72,7 @@
                      :size (:size page-data)
                      :format (:format page-data)
                      :show-label? (:show-label? page-data)
+                     :png-config (page-data/resolve-png-config page-data)
                      :pdf-layout-config (page-data/resolve-pdf-layout-config page-data)}}))
 
 (defn handle-worker-ready
@@ -119,12 +120,13 @@
    
    Arguments:
    - page-data: Current page state
-   - format: Output format (:pdf or :zip)
+   - format: Output format (:pdf, :jpg, or :zip)
    
    Returns: {:page-data ...}"
   [page-data format]
   (let [status-key (case format
                      :pdf :creating-pdf-document
+                     :jpg :packaging-files
                      :zip :packaging-files
                      :preparing-download)]
     {:page-data (assoc page-data
@@ -146,6 +148,7 @@
   [page-data buffer]
   (let [extension (case (:format page-data)
                     :pdf "zip"
+                    :jpg "zip"
                     :zip "zip")
         filename (str "qr-codes." extension)]
     {:page-data (assoc page-data :loading? false :download-progress nil)

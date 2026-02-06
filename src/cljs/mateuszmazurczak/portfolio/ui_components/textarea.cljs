@@ -34,7 +34,8 @@
                {:component-name "textarea"
                 :description "Textarea component"
                 :props [[":class" "string, optional - Additional Tailwind classes"]
-                        [":auto-size?" "boolean, optional (default false) - Enable textarea autosizing"]]}]
+                        [":auto-size?"
+                         "boolean, optional (default false) - Enable textarea autosizing"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

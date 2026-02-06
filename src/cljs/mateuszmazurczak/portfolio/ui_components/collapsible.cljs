@@ -20,31 +20,33 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/collapsible.cljs"
             :filename "collapsible.cljs"}])
 
-(defscene
- api-reference
- "Complete reference for all Collapsible component props and usage patterns."
- []
- (mm-portfolio-utils/wrap-component
-  [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Collapsible components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "collapsible"
-                                             :description "Collapsible component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "collapsible-trigger"
-                                             :description "Collapsible trigger component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "collapsible-content"
-                                             :description "Collapsible content component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [:div {:class "border rounded-lg p-4 bg-muted/50"}
-      [:h4 {:class "text-sm font-semibold mb-2"}
-       "Usage Example"]
-      [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[collapsible {}]"]]]]]]))
+(defscene api-reference
+          "Complete reference for all Collapsible component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Collapsible components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "collapsible"
+                :description "Collapsible component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "collapsible-trigger"
+                :description "Collapsible trigger component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "collapsible-content"
+                :description "Collapsible content component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[collapsible {}]"]]]]]]))
 
 (defscene
  collapsible-basic

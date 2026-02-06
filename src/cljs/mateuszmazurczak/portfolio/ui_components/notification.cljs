@@ -19,60 +19,63 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/notification.cljs"
             :filename "notification.cljs"}])
 
-(defscene api-reference
-          "Complete reference for all Notification component props and usage patterns."
-          []
-          (mm-portfolio-utils/wrap-component
-           [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Notification components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "toaster"
-                                                      :description "Toaster component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card
-               {:component-name "show-toast"
-                :description "Show toast component"
-                :props [[":description" "string, optional - Secondary toast message"]
-                        [":action" "map, optional - Action config {:label string :on-click fn}"]
-                        [":duration" "number, optional - Toast duration in milliseconds"]
-                        [":position" "string, optional (default 'top-right'). One of: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'"]
-                        [":cancel" "map, optional - Cancel config {:label string :on-click fn}"]
-                        [":id" "string | number, optional - Custom toast id"]
-                        [":important" "boolean, optional - Prevent dismissal"]
-                        [":on-dismiss" "function, optional - Callback (fn []) on dismiss"]
-                        [":on-auto-close" "function, optional - Callback (fn []) on auto-close"]]}]
-              [mm-portfolio-utils/api-component-card {:component-name "show-success"
-                                                      :description "Show success component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "show-error"
-                                                      :description "Show error component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "show-info"
-                                                      :description "Show info component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "show-warning"
-                                                      :description "Show warning component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "show-loading"
-                                                      :description "Show loading component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "show-promise"
-                                                      :description "Show promise component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "dismiss-toast"
-                                                      :description "Dismiss toast component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "custom-toast"
-                                                      :description "Custom toast component"
-                                                      :props []}]
-              [:div {:class "border rounded-lg p-4 bg-muted/50"}
-               [:h4 {:class "text-sm font-semibold mb-2"}
-                "Usage Example"]
-               [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[toaster {}]"]]]]]]))
+(defscene
+ api-reference
+ "Complete reference for all Notification component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Notification components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "toaster"
+                                             :description "Toaster component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "show-toast"
+       :description "Show toast component"
+       :props
+       [[":description" "string, optional - Secondary toast message"]
+        [":action" "map, optional - Action config {:label string :on-click fn}"]
+        [":duration" "number, optional - Toast duration in milliseconds"]
+        [":position"
+         "string, optional (default 'top-right'). One of: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'"]
+        [":cancel" "map, optional - Cancel config {:label string :on-click fn}"]
+        [":id" "string | number, optional - Custom toast id"]
+        [":important" "boolean, optional - Prevent dismissal"]
+        [":on-dismiss" "function, optional - Callback (fn []) on dismiss"]
+        [":on-auto-close" "function, optional - Callback (fn []) on auto-close"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "show-success"
+                                             :description "Show success component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "show-error"
+                                             :description "Show error component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "show-info"
+                                             :description "Show info component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "show-warning"
+                                             :description "Show warning component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "show-loading"
+                                             :description "Show loading component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "show-promise"
+                                             :description "Show promise component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "dismiss-toast"
+                                             :description "Dismiss toast component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "custom-toast"
+                                             :description "Custom toast component"
+                                             :props []}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[toaster {}]"]]]]]]))
 
 (defscene
  toast-basic

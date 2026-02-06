@@ -30,44 +30,48 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Image components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "optimized-img"
-                                             :description "Optimized img component"
-                                             :props
-                                             [[":src" "string, required - Image source URL"]
-                                              [":alt" "string, required - Alt text for accessibility"]
-                                              [":width" "number, required - Explicit image width in pixels"]
-                                              [":height" "number, required - Explicit image height in pixels"]
-                                              [":loading" "string, optional (default 'lazy'). One of: 'lazy' | 'eager'"]
-                                              [":fetchpriority" "string, optional (default 'auto'). One of: 'high' | 'low' | 'auto'"]
-                                              [":class" "string, optional - Additional CSS classes"]
-                                              [":on-load" "function, optional - Callback on successful image load"]
-                                              [":on-error" "function, optional - Callback on image load error"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "progressive-img"
-                                             :description "Progressive img component"
-                                             :props
-                                             [[":src" "string, required - Image source URL"]
-                                              [":placeholder" "string, required - Placeholder image URL"]
-                                              [":alt" "string, required - Alt text for accessibility"]
-                                              [":width" "number, required - Explicit image width in pixels"]
-                                              [":height" "number, required - Explicit image height in pixels"]
-                                              [":loading" "string, optional (default 'lazy'). One of: 'lazy' | 'eager'"]
-                                              [":class" "string, optional - Additional CSS classes"]
-                                              [":img-class" "string, optional - Additional CSS classes for img element"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "responsive-img"
-                                             :description "Responsive img component"
-                                             :props [[":sources" "vector<map>, optional - Picture sources with :srcset and optional :media/:type"]
-                                                     [":src" "string, required - Image source URL"]
-                                                     [":alt" "string, required - Alt text for accessibility"]
-                                                     [":width" "number, required - Explicit image width in pixels"]
-                                                     [":height" "number, required - Explicit image height in pixels"]
-                                                     [":loading" "string, optional (default 'lazy'). One of: 'lazy' | 'eager'"]
-                                                     [":class" "string, optional - Additional CSS classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "avatar-img"
-                                             :description "Avatar img component"
-                                             :props [[":src" "string, required - Image source URL"]
-                                                     [":alt" "string, required - Alt text for accessibility"]
-                                                     [":size" "number, optional (default 40) - Avatar size in pixels"]
-                                                     [":class" "string, optional - Additional CSS classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "optimized-img"
+       :description "Optimized img component"
+       :props [[":src" "string, required - Image source URL"]
+               [":alt" "string, required - Alt text for accessibility"]
+               [":width" "number, required - Explicit image width in pixels"]
+               [":height" "number, required - Explicit image height in pixels"]
+               [":loading" "string, optional (default 'lazy'). One of: 'lazy' | 'eager'"]
+               [":fetchpriority"
+                "string, optional (default 'auto'). One of: 'high' | 'low' | 'auto'"]
+               [":class" "string, optional - Additional CSS classes"]
+               [":on-load" "function, optional - Callback on successful image load"]
+               [":on-error" "function, optional - Callback on image load error"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "progressive-img"
+       :description "Progressive img component"
+       :props [[":src" "string, required - Image source URL"]
+               [":placeholder" "string, required - Placeholder image URL"]
+               [":alt" "string, required - Alt text for accessibility"]
+               [":width" "number, required - Explicit image width in pixels"]
+               [":height" "number, required - Explicit image height in pixels"]
+               [":loading" "string, optional (default 'lazy'). One of: 'lazy' | 'eager'"]
+               [":class" "string, optional - Additional CSS classes"]
+               [":img-class" "string, optional - Additional CSS classes for img element"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "responsive-img"
+       :description "Responsive img component"
+       :props [[":sources"
+                "vector<map>, optional - Picture sources with :srcset and optional :media/:type"]
+               [":src" "string, required - Image source URL"]
+               [":alt" "string, required - Alt text for accessibility"]
+               [":width" "number, required - Explicit image width in pixels"]
+               [":height" "number, required - Explicit image height in pixels"]
+               [":loading" "string, optional (default 'lazy'). One of: 'lazy' | 'eager'"]
+               [":class" "string, optional - Additional CSS classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "avatar-img"
+       :description "Avatar img component"
+       :props [[":src" "string, required - Image source URL"]
+               [":alt" "string, required - Alt text for accessibility"]
+               [":size" "number, optional (default 40) - Avatar size in pixels"]
+               [":class" "string, optional - Additional CSS classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

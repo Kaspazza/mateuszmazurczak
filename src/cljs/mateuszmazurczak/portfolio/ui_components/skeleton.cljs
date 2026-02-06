@@ -21,22 +21,22 @@
 (defscene api-reference
           "Complete reference for all Skeleton component props and usage patterns."
           []
-          (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-4xl"}
-                                              [:div {:class "space-y-6"}
-                                               [:div
-                                                [:p {:class "text-sm text-muted-foreground"}
-                                                 "All available props for Skeleton components."]]
-                                               [:div {:class "space-y-4"}
-                                                [mm-portfolio-utils/api-component-card
-                                                 {:component-name "skeleton"
-                                                  :description "Skeleton component"
-                                                  :props [[":class"
-                                                           "string, optional - Additional Tailwind classes"]]}]
-                                                [:div {:class "border rounded-lg p-4 bg-muted/50"}
-                                                 [:h4 {:class "text-sm font-semibold mb-2"}
-                                                  "Usage Example"]
-                                                 [:pre {:class "text-xs overflow-x-auto"}
-                                                  [:code "[skeleton {}]"]]]]]]))
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Skeleton components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "skeleton"
+                :description "Skeleton component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[skeleton {}]"]]]]]]))
 
 (defscene
  skeleton-demo

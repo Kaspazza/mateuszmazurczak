@@ -37,56 +37,71 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Dropdown Menu components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu"
-                                             :description "Dropdown menu component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-trigger"
-                                             :description "Dropdown menu trigger component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-group"
-                                             :description "Dropdown menu group component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-portal"
-                                             :description "Dropdown menu portal component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-sub"
-                                             :description "Dropdown menu sub component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-radio-group"
-                                             :description "Dropdown menu radio group component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-sub-trigger"
-                                             :description "Dropdown menu sub trigger component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]
-                                                     [":inset" "boolean, optional (default false) - Add left inset padding"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-sub-content"
-                                             :description "Dropdown menu sub content component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-content"
-                                             :description "Dropdown menu content component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]
-                                                     [":side-offset" "number, optional (default 4) - Distance from trigger"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-item"
-                                             :description "Dropdown menu item component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]
-                                                     [":inset" "boolean, optional (default false) - Add left inset padding"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-checkbox-item"
-                                             :description "Dropdown menu checkbox item component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]
-                                                     [":checked" "boolean | 'indeterminate', optional - Checked state"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-radio-item"
-                                             :description "Dropdown menu radio item component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-label"
-                                             :description "Dropdown menu label component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]
-                                                     [":inset" "boolean, optional (default false) - Add left inset padding"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-separator"
-                                             :description "Dropdown menu separator component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-shortcut"
-                                             :description "Dropdown menu shortcut component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu"
+       :description "Dropdown menu component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-trigger"
+       :description "Dropdown menu trigger component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-group"
+       :description "Dropdown menu group component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-portal"
+       :description "Dropdown menu portal component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-sub"
+       :description "Dropdown menu sub component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-radio-group"
+       :description "Dropdown menu radio group component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-sub-trigger"
+       :description "Dropdown menu sub trigger component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]
+               [":inset" "boolean, optional (default false) - Add left inset padding"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-sub-content"
+       :description "Dropdown menu sub content component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-content"
+       :description "Dropdown menu content component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]
+               [":side-offset" "number, optional (default 4) - Distance from trigger"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-item"
+       :description "Dropdown menu item component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]
+               [":inset" "boolean, optional (default false) - Add left inset padding"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-checkbox-item"
+       :description "Dropdown menu checkbox item component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]
+               [":checked" "boolean | 'indeterminate', optional - Checked state"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-radio-item"
+       :description "Dropdown menu radio item component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-label"
+       :description "Dropdown menu label component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]
+               [":inset" "boolean, optional (default false) - Add left inset padding"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-separator"
+       :description "Dropdown menu separator component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dropdown-menu-shortcut"
+       :description "Dropdown menu shortcut component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

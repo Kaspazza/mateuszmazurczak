@@ -22,41 +22,47 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/empty.cljs"
             :filename "empty.cljs"}])
 
-(defscene
- api-reference
- "Complete reference for all Empty component props and usage patterns."
- []
- (mm-portfolio-utils/wrap-component
-  [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Empty components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "empty"
-                                             :description "Empty component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "empty-header"
-                                             :description "Empty header component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "empty-media"
-                                             :description "Empty media component"
-                                             :props [[":variant" "keyword, optional (default :default). One of: :default | :icon"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "empty-title"
-                                             :description "Empty title component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "empty-description"
-                                             :description "Empty description component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "empty-content"
-                                             :description "Empty content component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [:div {:class "border rounded-lg p-4 bg-muted/50"}
-      [:h4 {:class "text-sm font-semibold mb-2"}
-       "Usage Example"]
-      [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[empty {}]"]]]]]]))
+(defscene api-reference
+          "Complete reference for all Empty component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Empty components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "empty"
+                :description "Empty component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "empty-header"
+                :description "Empty header component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "empty-media"
+                :description "Empty media component"
+                :props [[":variant"
+                         "keyword, optional (default :default). One of: :default | :icon"]
+                        [":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "empty-title"
+                :description "Empty title component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "empty-description"
+                :description "Empty description component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "empty-content"
+                :description "Empty content component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[empty {}]"]]]]]]))
 
 (defscene
  empty-demo

@@ -50,6 +50,18 @@
         (assoc updated :preview-codes codes :errors errors))
       updated)))
 
+(defn update-page-png-background
+  "Update PNG background mode (:transparent or :white).
+   Reset validation errors flag when user edits."
+  [page-data background]
+  (assoc page-data :png-background background :show-validation-errors? false))
+
+(defn update-page-png-margin
+  "Update PNG quiet-zone margin (modules). Stores raw string for free editing.
+   Reset validation errors flag when user edits."
+  [page-data margin]
+  (assoc page-data :png-margin margin :show-validation-errors? false))
+
 (defn update-page-pdf-layout
   "Update PDF layout preset selection."
   [page-data layout]
@@ -88,14 +100,21 @@
   (let [parsed (js/parseFloat value)] (and (not (js/isNaN parsed)) (>= parsed min-value))))
 
 (defn validate-pdf-custom-settings
-  "Validate PDF custom layout settings. Returns vector of i18n markers."
-  [{:keys [pdf-layout pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
-  (when (= pdf-layout :custom)
+  "Validate PDF layout settings. Returns vector of i18n markers."
+  [{:keys [format pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
+  (when (= format :pdf)
     (cond-> []
       (not (valid-positive-int? pdf-custom-cols 1)) (conj [:i18n :error-pdf-cols-invalid])
       (not (valid-positive-int? pdf-custom-rows 1)) (conj [:i18n :error-pdf-rows-invalid])
       (not (valid-positive-float? pdf-custom-qr-size-cm 0.5)) (conj [:i18n
                                                                      :error-pdf-size-invalid]))))
+
+(defn validate-png-settings
+  "Validate image export quiet-zone settings. Returns vector of i18n markers."
+  [{:keys [format png-background png-margin]}]
+  (when (or (= format :jpg) (and (= format :zip) (= png-background :white)))
+    (cond-> []
+      (not (valid-positive-int? png-margin 0)) (conj [:i18n :error-png-margin-invalid]))))
 
 ;; =============================================================================
 ;; Derived State
@@ -111,11 +130,11 @@
         show-errors? (:show-validation-errors? page-data)
         ;; Collect all validation errors
         pdf-errors (validate-pdf-custom-settings page-data)
+        png-errors (validate-png-settings page-data)
         input-errors (when-not has-input? [[:i18n :error-no-qr-values]])
-        validation-errors (into (vec pdf-errors) input-errors)
+        validation-errors (into [] (concat pdf-errors png-errors input-errors))
         ;; Only show validation errors if user tried to download
         errors-to-show (if show-errors? validation-errors [])
-        all-errors (into (:errors page-data) errors-to-show)
         can-download? (and has-input? (empty? validation-errors) (not loading?))
         showing-preview? (pos? preview-count)
         more-codes-count (- input-count preview-count)]
@@ -147,31 +166,23 @@
 ;; UI Data Builders
 ;; =============================================================================
 
+(defn- px->print-cm
+  "Convert pixels to approximate print size in cm at 300 DPI."
+  [px]
+  (let [cm (/ (* px 2.54) 300)]
+    (if (== (Math/floor cm) cm) (str (int cm) "cm") (str (.toFixed cm 1) "cm"))))
+
 (defn- build-size-options
-  "Build size options for UI selector."
+  "Build size options for UI selector.
+   Shows pixel size with approximate print size at 300 DPI."
   []
   (mapv (fn [size]
           {:value size
-           :label (str size "px")})
+           :label [:i18n
+                   :size-option-label
+                   {:1 size
+                    :2 (px->print-cm size)}]})
         qr-preview/valid-sizes))
-
-(def ^:private pdf-layout-presets
-  {:per-page-30 {:cols 3
-                 :rows 10
-                 :qr-size-cm 2.0
-                 :description "Small labels, 30 per page"}
-   :per-page-10 {:cols 2
-                 :rows 5
-                 :qr-size-cm 4.0
-                 :description "Medium labels, 10 per page"}
-   :per-page-6 {:cols 2
-                :rows 3
-                :qr-size-cm 5.0
-                :description "Large scannable, 6 per page"}
-   :per-page-1 {:cols 1
-                :rows 1
-                :qr-size-cm 10.0
-                :description "Full page display, 1 per page"}})
 
 (def ^:private pdf-layout-defaults
   {:margin-cm 1.0
@@ -182,6 +193,8 @@
   []
   [{:value :zip
     :label [:i18n :format-zip]}
+   {:value :jpg
+    :label [:i18n :format-jpg]}
    {:value :pdf
     :label [:i18n :format-pdf]}])
 
@@ -201,15 +214,18 @@
 
 (defn resolve-pdf-layout-config
   "Resolve PDF layout configuration for worker export.
-   Parses string values to numbers for custom layout."
+   Parses user-entered columns/rows/QR size values."
   [page-data]
-  (let [layout (:pdf-layout page-data)
-        custom-config {:cols (js/parseInt (:pdf-custom-cols page-data) 10)
+  (let [layout-config {:cols (js/parseInt (:pdf-custom-cols page-data) 10)
                        :rows (js/parseInt (:pdf-custom-rows page-data) 10)
-                       :qr-size-cm (js/parseFloat (:pdf-custom-qr-size-cm page-data))}
-        preset-config (get pdf-layout-presets layout custom-config)
-        layout-config (if (= layout :custom) custom-config preset-config)]
+                       :qr-size-cm (js/parseFloat (:pdf-custom-qr-size-cm page-data))}]
     (merge pdf-layout-defaults layout-config)))
+
+(defn resolve-png-config
+  "Resolve PNG export configuration for worker export."
+  [page-data]
+  {:background (:png-background page-data)
+   :margin (js/parseInt (:png-margin page-data) 10)})
 
 (defn- build-handlers
   "Build handler dispatch markers for UI interactions."
@@ -218,6 +234,8 @@
    :on-update-size [:dispatch [:qr-codes/update-size]]
    :on-update-format [:dispatch [:qr-codes/update-format]]
    :on-update-show-label [:dispatch [:qr-codes/update-show-label]]
+   :on-update-png-background [:dispatch [:qr-codes/update-png-background]]
+   :on-update-png-margin [:dispatch [:qr-codes/update-png-margin]]
    :on-update-pdf-layout [:dispatch [:qr-codes/update-pdf-layout]]
    :on-update-pdf-custom [:dispatch [:qr-codes/update-pdf-custom]]
    :on-generate-preview [:dispatch [:qr-codes/generate-preview]]
@@ -241,6 +259,12 @@
    :select-size [:i18n :select-size]
    :output-format [:i18n :output-format]
    :select-format [:i18n :select-format]
+   :png-background [:i18n :png-background]
+   :select-png-background [:i18n :select-png-background]
+   :png-background-transparent [:i18n :png-background-transparent]
+   :png-background-white [:i18n :png-background-white]
+   :png-margin [:i18n :png-margin]
+   :png-margin-description [:i18n :png-margin-description]
    :format-pdf-description [:i18n :format-pdf-description]
    :pdf-layout [:i18n :pdf-layout]
    :select-pdf-layout [:i18n :select-pdf-layout]

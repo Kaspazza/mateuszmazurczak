@@ -20,28 +20,31 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/button.cljs"
             :filename "button.cljs"}])
 
-(defscene api-reference
-          "Complete reference for all Button component props and usage patterns."
-          []
-          (mm-portfolio-utils/wrap-component
-           [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Button components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "button"
-                :description "Button component"
-                :props [[":variant" "keyword, optional (default :default). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
-                        [":size" "keyword, optional (default :default). One of: :default | :sm | :lg | :icon"]
-                        [":class" "string, optional - Additional Tailwind classes"]
-                        [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
-              [:div {:class "border rounded-lg p-4 bg-muted/50"}
-               [:h4 {:class "text-sm font-semibold mb-2"}
-                "Usage Example"]
-               [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[button {}]"]]]]]]))
+(defscene
+ api-reference
+ "Complete reference for all Button component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Button components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card
+      {:component-name "button"
+       :description "Button component"
+       :props
+       [[":variant"
+         "keyword, optional (default :default). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
+        [":size" "keyword, optional (default :default). One of: :default | :sm | :lg | :icon"]
+        [":class" "string, optional - Additional Tailwind classes"]
+        [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[button {}]"]]]]]]))
 
 (defscene
  button-default

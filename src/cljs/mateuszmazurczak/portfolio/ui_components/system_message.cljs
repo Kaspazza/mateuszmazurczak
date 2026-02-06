@@ -32,7 +32,8 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "system-message"
                 :description "System message component"
-                :props [[":variant" "keyword, optional (default :action). One of: :action | :error | :warning"]
+                :props [[":variant"
+                         "keyword, optional (default :action). One of: :action | :error | :warning"]
                         [":fill" "boolean, optional (default false) - Filled background style"]
                         [":icon" "react-component | hiccup, optional - Custom icon component"]
                         [":icon-hidden?" "boolean, optional (default false) - Hide icon"]

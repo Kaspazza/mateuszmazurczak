@@ -213,8 +213,8 @@
                           :schema [:cat [:= :qr-codes/update-size] :int]
                           :handler-type :db}
    :qr-codes/update-format {:category :page
-                            :description "Update output format (:zip or :pdf)."
-                            :schema [:cat [:= :qr-codes/update-format] [:enum :zip :pdf]]
+                            :description "Update output format (:zip, :jpg, or :pdf)."
+                            :schema [:cat [:= :qr-codes/update-format] [:enum :zip :jpg :pdf]]
                             :handler-type :db}
    :qr-codes/generate-preview {:category :page
                                :description "Generate preview QR codes from input."
@@ -254,6 +254,15 @@
                                 :description
                                 "Toggle whether to show QR code value as label below QR code."
                                 :schema [:cat [:= :qr-codes/update-show-label] :boolean]
+                                :handler-type :db}
+   :qr-codes/update-png-background
+   {:category :page
+    :description "Update PNG background mode (:transparent or :white)."
+    :schema [:cat [:= :qr-codes/update-png-background] [:enum :transparent :white]]
+    :handler-type :db}
+   :qr-codes/update-png-margin {:category :page
+                                :description "Update PNG white background margin (modules)."
+                                :schema [:cat [:= :qr-codes/update-png-margin] :any]
                                 :handler-type :db}
    :qr-codes/update-pdf-layout {:category :page
                                 :description "Update PDF layout preset selection."

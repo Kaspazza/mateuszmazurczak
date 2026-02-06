@@ -21,13 +21,12 @@
   (if (pos? total-items) (int (js/Math.ceil (/ total-items max-batch-size))) 0))
 
 (defn- draw-qr-matrix-to-canvas
-  "Render QR code matrix directly to OffscreenCanvas as PNG.
+  "Render QR code matrix directly to OffscreenCanvas as PNG or JPG.
    No SVG conversion needed - fast and reliable.
    
-   Algorithm: Direct pixel rendering with margin and optional label."
-  [qr-matrix output-size label]
+   Algorithm: Direct pixel rendering with configurable margin and optional label."
+  [qr-matrix output-size label image-format margin background-mode]
   (let [{:keys [size matrix]} qr-matrix
-        margin 4
         total-modules (+ size (* 2 margin))
         ;; Calculate label height if needed
         has-label? (and label (not (str/blank? label)))
@@ -45,10 +44,15 @@
         canvas-width output-size
         canvas-height (int (* output-size (/ total-height-modules total-modules)))
         canvas (js/OffscreenCanvas. canvas-width canvas-height)
-        ctx (.getContext canvas "2d")]
-    ;; Fill white background
-    (set! (.-fillStyle ctx) "#FFFFFF")
-    (.fillRect ctx 0 0 canvas-width canvas-height)
+        ctx (.getContext canvas "2d")
+        mime-type (case image-format
+                    :jpg "image/jpeg"
+                    "image/png")
+        white-background? (or (= image-format :jpg) (= background-mode :white))]
+    ;; Keep PNG transparent by default, fill white for JPG or white PNG mode
+    (if white-background?
+      (do (set! (.-fillStyle ctx) "#FFFFFF") (.fillRect ctx 0 0 canvas-width canvas-height))
+      (.clearRect ctx 0 0 canvas-width canvas-height))
     ;; Draw black QR modules
     (set! (.-fillStyle ctx) "#000000")
     (doseq [y (range size)
@@ -70,8 +74,8 @@
                      line
                      (/ canvas-width 2)
                      (+ text-start-y (* idx line-height module-scale))))))
-    ;; Return promise that resolves to PNG ArrayBuffer
-    (-> (.convertToBlob canvas #js {:type "image/png"})
+    ;; Return promise that resolves to image ArrayBuffer
+    (-> (.convertToBlob canvas #js {:type mime-type})
         (.then (fn [blob] (.arrayBuffer blob))))))
 
 (def ^:private a4-width-pt 595)
@@ -83,7 +87,7 @@
 (def ^:private max-codes-per-pdf
   "Maximum codes per PDF file to avoid memory issues.
    With 30 codes/page, 300 codes = 10 pages per PDF."
-  300)
+  900)
 
 (defn- calculate-grid-layout
   "Calculate grid layout for multiple QR codes per page.
@@ -206,9 +210,18 @@
     :else (str error)))
 
 (defn- init-request
-  [{:keys [request-id input size format show-label? pdf-layout-config]}]
+  [{:keys [request-id input size format show-label? png-config pdf-layout-config]}]
   (let [contents (vec (qr-input/parse-input input))
         format-key (if (keyword? format) format (keyword format))
+        raw-background (get png-config :background)
+        background-key (cond
+                         (keyword? raw-background) raw-background
+                         (string? raw-background) (keyword raw-background)
+                         :else :transparent)
+        raw-margin (get png-config :margin 4)
+        parsed-margin (js/parseInt (str raw-margin) 10)
+        normalized-png-config {:background (if (= background-key :white) :white :transparent)
+                               :margin (if (js/isNaN parsed-margin) 4 (max 0 parsed-margin))}
         validation (qr-export/validate-export-request {:contents contents
                                                        :size size
                                                        :format format-key})]
@@ -226,6 +239,7 @@
                               :size size
                               :format format-key
                               :show-label? show-label?
+                              :png-config normalized-png-config
                               :pdf-layout-config pdf-layout-config
                               :cursor 0
                               :batch-size batch-size
@@ -258,6 +272,7 @@
                 size
                 format
                 show-label?
+                png-config
                 pdf-layout-config
                 cursor
                 batch-size
@@ -315,6 +330,8 @@
             (qr-batch/generate-batch batch :size size :show-label? show-label? :start-index cursor)]
         (if (:success result)
           (let [codes (:codes result)
+                png-background (get png-config :background :transparent)
+                png-margin (if (= png-background :white) (max 0 (get png-config :margin 4)) 4)
                 ;; Add to accumulator based on format
                 add-promise
                 (case format
@@ -324,11 +341,30 @@
                             (.then promise
                                    (fn []
                                      (let [label (when show-label? content)]
-                                       (-> (draw-qr-matrix-to-canvas qr-matrix size label)
+                                       (-> (draw-qr-matrix-to-canvas qr-matrix
+                                                                     size
+                                                                     label
+                                                                     :png
+                                                                     png-margin
+                                                                     png-background)
                                            (.then (fn [png-buffer]
                                                     (.file accumulator filename png-buffer))))))))
                           (js/Promise.resolve)
                           codes)
+                  :jpg
+                  ;; Add JPG files to ZIP progressively
+                  (reduce
+                   (fn [promise {:keys [content qr-matrix filename]}]
+                     (.then
+                      promise
+                      (fn []
+                        (let [label (when show-label? content)
+                              jpg-filename (str/replace filename #"\.png$" ".jpg")]
+                          (-> (draw-qr-matrix-to-canvas qr-matrix size label :jpg png-margin :white)
+                              (.then (fn [jpg-buffer]
+                                       (.file accumulator jpg-filename jpg-buffer))))))))
+                   (js/Promise.resolve)
+                   codes)
                   :pdf
                   ;; For PDF, accumulate codes in chunk, flush when chunk is full
                   (let [new-chunk-codes (vec (concat pdf-chunk-codes codes))

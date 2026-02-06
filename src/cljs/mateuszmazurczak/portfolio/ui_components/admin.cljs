@@ -18,32 +18,35 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/admin.cljs"
             :filename "admin.cljs"}])
 
-(defscene api-reference
-          "Complete reference for all Admin component props and usage patterns."
-          []
-          (mm-portfolio-utils/wrap-component
-           [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Admin components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "admin-badge"
-                :description "Admin badge component"
-                :props [[":text" "map, required - UI text map with labels used by the component"]
-                        [":on-logout" "function, required - Callback (fn []) triggered on logout click"]]}]
-              [mm-portfolio-utils/api-component-card
-               {:component-name "delete-solution-button"
-                :description "Delete solution button component"
-                :props [[":solution-id" "string | number, required - Solution identifier passed to delete callback"]
-                        [":text" "map, required - UI text map with labels used by the component"]
-                        [":on-delete" "function, required - Callback (fn [solution-id]) triggered after confirmation"]]}]
-              [:div {:class "border rounded-lg p-4 bg-muted/50"}
-               [:h4 {:class "text-sm font-semibold mb-2"}
-                "Usage Example"]
-               [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[admin-badge {}]"]]]]]]))
+(defscene
+ api-reference
+ "Complete reference for all Admin component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Admin components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card
+      {:component-name "admin-badge"
+       :description "Admin badge component"
+       :props [[":text" "map, required - UI text map with labels used by the component"]
+               [":on-logout" "function, required - Callback (fn []) triggered on logout click"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "delete-solution-button"
+       :description "Delete solution button component"
+       :props [[":solution-id"
+                "string | number, required - Solution identifier passed to delete callback"]
+               [":text" "map, required - UI text map with labels used by the component"]
+               [":on-delete"
+                "function, required - Callback (fn [solution-id]) triggered after confirmation"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[admin-badge {}]"]]]]]]))
 
 (defscene
  admin-badge

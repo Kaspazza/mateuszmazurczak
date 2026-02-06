@@ -26,8 +26,8 @@
   (let [{:keys [errors]} (gen/validate-request {:contents contents
                                                 :size size})
         format-errors (cond-> []
-                        (and (some? format) (not (#{:zip :pdf} format)))
-                        (conj "Format must be :zip or :pdf"))
+                        (and (some? format) (not (#{:zip :jpg :pdf} format)))
+                        (conj "Format must be :zip, :jpg, or :pdf"))
         all-errors (into (vec errors) format-errors)]
     {:valid? (empty? all-errors)
      :errors all-errors}))

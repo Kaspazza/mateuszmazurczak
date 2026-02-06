@@ -20,42 +20,45 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/tooltip.cljs"
             :filename "tooltip.cljs"}])
 
-(defscene api-reference
-          "Complete reference for all Tooltip component props and usage patterns."
-          []
-          (mm-portfolio-utils/wrap-component
-           [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Tooltip components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "tooltip"
-                :description "Tooltip component"
-                :props [[":trigger" "hiccup, required - Tooltip trigger element"]
-                        [":content" "string | hiccup, required - Tooltip content"]
-                        [":side" "keyword, optional (default :top). One of: :top | :right | :bottom | :left"]
-                        [":side-offset" "number, optional (default 4) - Distance from trigger"]
-                        [":align" "keyword, optional (default :center). One of: :start | :center | :end"]
-                        [":align-offset" "number, optional (default 0) - Alignment offset in pixels"]
-                        [":collision-padding" "number, optional (default 0) - Viewport collision padding"]
-                        [":avoid-collisions?" "boolean, optional (default true) - Auto reposition to stay in viewport"]
-                        [":sticky" "keyword, optional (default :partial). One of: :partial | :always"]
-                        [":delay-duration" "number, optional (default 700) - Open delay in ms"]
-                        [":skip-delay-duration" "number, optional (default 300) - Delay-skip window in ms"]
-                        [":open" "boolean, optional - Controlled open state"]
-                        [":default-open" "boolean, optional - Uncontrolled initial open state"]
-                        [":on-open-change" "function, optional - Callback (fn [open?])"]
-                        [":content-class" "string, optional - Additional classes for content"]
-                        [":content-hidden?" "boolean, optional (default false) - Hide tooltip content"]
-                        [":trigger-as-child?" "boolean, optional (default false) - Render trigger via Slot"]
-                        [":disable-hoverable-content?" "boolean, optional (default false) - Disable hoverable content"]]}]
-              [:div {:class "border rounded-lg p-4 bg-muted/50"}
-               [:h4 {:class "text-sm font-semibold mb-2"}
-                "Usage Example"]
-               [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[tooltip {}]"]]]]]]))
+(defscene
+ api-reference
+ "Complete reference for all Tooltip component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Tooltip components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card
+      {:component-name "tooltip"
+       :description "Tooltip component"
+       :props [[":trigger" "hiccup, required - Tooltip trigger element"]
+               [":content" "string | hiccup, required - Tooltip content"]
+               [":side" "keyword, optional (default :top). One of: :top | :right | :bottom | :left"]
+               [":side-offset" "number, optional (default 4) - Distance from trigger"]
+               [":align" "keyword, optional (default :center). One of: :start | :center | :end"]
+               [":align-offset" "number, optional (default 0) - Alignment offset in pixels"]
+               [":collision-padding" "number, optional (default 0) - Viewport collision padding"]
+               [":avoid-collisions?"
+                "boolean, optional (default true) - Auto reposition to stay in viewport"]
+               [":sticky" "keyword, optional (default :partial). One of: :partial | :always"]
+               [":delay-duration" "number, optional (default 700) - Open delay in ms"]
+               [":skip-delay-duration" "number, optional (default 300) - Delay-skip window in ms"]
+               [":open" "boolean, optional - Controlled open state"]
+               [":default-open" "boolean, optional - Uncontrolled initial open state"]
+               [":on-open-change" "function, optional - Callback (fn [open?])"]
+               [":content-class" "string, optional - Additional classes for content"]
+               [":content-hidden?" "boolean, optional (default false) - Hide tooltip content"]
+               [":trigger-as-child?" "boolean, optional (default false) - Render trigger via Slot"]
+               [":disable-hoverable-content?"
+                "boolean, optional (default false) - Disable hoverable content"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[tooltip {}]"]]]]]]))
 
 (defscene
  tooltip-demo

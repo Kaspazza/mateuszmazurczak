@@ -24,8 +24,7 @@ Documentation: https://www.radix-ui.com/primitives/docs/components/slot"
   [variant]
   (case variant
     :default "bg-primary text-primary-foreground [&_a]:hover:bg-primary/80"
-    :secondary
-    "bg-secondary text-secondary-foreground [&_a]:hover:bg-secondary/80"
+    :secondary "bg-secondary text-secondary-foreground [&_a]:hover:bg-secondary/80"
     :destructive
     "bg-destructive/10 text-destructive [&_a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20"
     :outline "border-border text-foreground [&_a]:hover:bg-muted [&_a]:hover:text-muted-foreground"
@@ -74,8 +73,6 @@ Documentation: https://www.radix-ui.com/primitives/docs/components/slot"
     (into [:>
            component
            (-> props
-               (assoc :data-slot "badge"
-                      :data-variant (name variant)
-                      :class combined-classes)
+               (assoc :data-slot "badge" :data-variant (name variant) :class combined-classes)
                (dissoc :class-name :variant :as-child))]
           children)))

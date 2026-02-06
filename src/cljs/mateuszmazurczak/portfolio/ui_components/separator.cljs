@@ -34,8 +34,10 @@
                {:component-name "separator"
                 :description "Separator component"
                 :props [[":class" "string, optional - Additional Tailwind classes"]
-                        [":orientation" "keyword, optional (default :horizontal). One of: :horizontal | :vertical"]
-                        [":decorative" "boolean, optional (default true) - Decorative vs semantic separator"]]}]
+                        [":orientation"
+                         "keyword, optional (default :horizontal). One of: :horizontal | :vertical"]
+                        [":decorative"
+                         "boolean, optional (default true) - Decorative vs semantic separator"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

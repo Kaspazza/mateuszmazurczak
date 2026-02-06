@@ -12,7 +12,7 @@
 ;; Constants
 (def default-qr-pixel-size 300)
 (def min-qr-pixel-size 50)
-(def max-qr-pixel-size 1000)
+(def max-qr-pixel-size 2000)
 (def max-codes-per-batch 100)
 
 ;; Pure Domain Functions

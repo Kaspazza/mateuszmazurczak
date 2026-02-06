@@ -94,74 +94,76 @@
      (for [{:keys [value label]} format-options]
        ^{:key value}
        [select/select-item {:value (name value)}
-        label])]]
-   (when (= format :pdf)
-     [:p {:class "text-xs text-muted-foreground"}
-      (:format-pdf-description text)])])
+        label])]]])
+
+(defn- png-options
+  "Image export options for background and quiet-zone margin."
+  [{:keys [format text handlers png-background png-margin]}]
+  (when (contains? #{:zip :jpg} format)
+    [:div {:class "space-y-3"}
+     (when (= format :zip)
+       [:div {:class "space-y-2"}
+        [label/label {:htmlFor "png-background"}
+         (:png-background text)]
+        [select/select {:value (name png-background)
+                        :on-value-change #((:on-update-png-background handlers) (keyword %))}
+         [select/select-trigger {:id "png-background"
+                                 :class "w-full"}
+          [select/select-value {:placeholder (:select-png-background text)}]]
+         [select/select-content {}
+          [select/select-item {:value "transparent"}
+           (:png-background-transparent text)]
+          [select/select-item {:value "white"}
+           (:png-background-white text)]]]])
+     (when (or (= format :jpg) (and (= format :zip) (= png-background :white)))
+       [:div {:class "space-y-2"}
+        [label/label {:htmlFor "png-margin"}
+         (:png-margin text)]
+        [input/input {:id "png-margin"
+                      :type "number"
+                      :min 0
+                      :step 1
+                      :value png-margin
+                      :on-change #((:on-update-png-margin handlers) (.. % -target -value))}]
+        [:p {:class "text-xs text-muted-foreground"}
+         (:png-margin-description text)]])]))
 
 (defn- pdf-layout-selector
-  "PDF layout selector and custom controls."
-  [{:keys [format
-           pdf-layout
-           pdf-layout-options
-           text
-           handlers
-           pdf-custom-cols
-           pdf-custom-rows
-           pdf-custom-qr-size-cm]}]
+  "PDF layout controls (always visible for PDF format)."
+  [{:keys [format text handlers pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
   (when (= format :pdf)
-    [:div {:class "space-y-4"}
-     [:div {:class "space-y-2"}
-      [label/label {:htmlFor "pdf-layout"}
-       (:pdf-layout text)]
-      [select/select {:value (name pdf-layout)
-                      :on-value-change #((:on-update-pdf-layout handlers) (keyword %))}
-       [select/select-trigger {:id "pdf-layout"
-                               :class "w-full"}
-        [select/select-value {:placeholder (:select-pdf-layout text)}]]
-       [select/select-content {}
-        (for [{:keys [value label]} pdf-layout-options]
-          ^{:key value}
-          [select/select-item {:value (name value)}
-           label])]]
-      [:p {:class "text-xs text-muted-foreground"}
-       (:pdf-layout-description text)]]
-     (when (= pdf-layout :custom)
-       [:div {:class "space-y-3"}
-        [:p {:class "text-sm font-medium"}
-         (:pdf-custom-layout text)]
-        [:div {:class "grid grid-cols-1 sm:grid-cols-3 gap-3"}
-         [:div {:class "space-y-2"}
-          [label/label {:htmlFor "pdf-custom-cols"}
-           (:pdf-custom-cols text)]
-          [input/input {:id "pdf-custom-cols"
-                        :type "number"
-                        :min 1
-                        :step 1
-                        :value pdf-custom-cols
-                        :on-change
-                        #((:on-update-pdf-custom handlers) :cols (.. % -target -value))}]]
-         [:div {:class "space-y-2"}
-          [label/label {:htmlFor "pdf-custom-rows"}
-           (:pdf-custom-rows text)]
-          [input/input {:id "pdf-custom-rows"
-                        :type "number"
-                        :min 1
-                        :step 1
-                        :value pdf-custom-rows
-                        :on-change
-                        #((:on-update-pdf-custom handlers) :rows (.. % -target -value))}]]
-         [:div {:class "space-y-2"}
-          [label/label {:htmlFor "pdf-custom-size"}
-           (:pdf-custom-size-cm text)]
-          [input/input {:id "pdf-custom-size"
-                        :type "number"
-                        :min 0.5
-                        :step 0.1
-                        :value pdf-custom-qr-size-cm
-                        :on-change #((:on-update-pdf-custom handlers)
-                                      :qr-size-cm
-                                      (.. % -target -value))}]]]])]))
+    [:div {:class "space-y-3"}
+     [:p {:class "text-xs text-muted-foreground"}
+      (:pdf-layout-description text)]
+     [:div {:class "grid grid-cols-1 sm:grid-cols-3 gap-3"}
+      [:div {:class "space-y-2"}
+       [label/label {:htmlFor "pdf-custom-cols"}
+        (:pdf-custom-cols text)]
+       [input/input {:id "pdf-custom-cols"
+                     :type "number"
+                     :min 1
+                     :step 1
+                     :value pdf-custom-cols
+                     :on-change #((:on-update-pdf-custom handlers) :cols (.. % -target -value))}]]
+      [:div {:class "space-y-2"}
+       [label/label {:htmlFor "pdf-custom-rows"}
+        (:pdf-custom-rows text)]
+       [input/input {:id "pdf-custom-rows"
+                     :type "number"
+                     :min 1
+                     :step 1
+                     :value pdf-custom-rows
+                     :on-change #((:on-update-pdf-custom handlers) :rows (.. % -target -value))}]]
+      [:div {:class "space-y-2"}
+       [label/label {:htmlFor "pdf-custom-size"}
+        (:pdf-custom-size-cm text)]
+       [input/input {:id "pdf-custom-size"
+                     :type "number"
+                     :min 0.5
+                     :step 0.1
+                     :value pdf-custom-qr-size-cm
+                     :on-change
+                     #((:on-update-pdf-custom handlers) :qr-size-cm (.. % -target -value))}]]]]))
 
 (defn- label-toggle
   "Toggle to show QR code value as label."
@@ -234,7 +236,8 @@
        [input-section data]]
       [:div {:class "p-6 border rounded-lg bg-card space-y-6"}
        [format-selector data]
-       (when (= (:format data) :zip) [size-selector data])
+       (when (contains? #{:zip :jpg} (:format data)) [size-selector data])
+       [png-options data]
        [pdf-layout-selector data]
        [label-toggle data]]
       [error-display data]

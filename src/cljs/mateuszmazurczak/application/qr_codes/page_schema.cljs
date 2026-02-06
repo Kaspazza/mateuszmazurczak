@@ -20,6 +20,12 @@
    [:format qr-schema/OutputFormat]
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
+   [:png-background [:enum :transparent :white]]
+   [:png-margin
+    [:or
+     :string
+     [:int {:min 0
+            :max 40}]]]
    [:pdf-layout qr-schema/PdfLayout]
    [:pdf-custom-cols [:or :string [:int {:min 1}]]]
    [:pdf-custom-rows [:or :string [:int {:min 1}]]]
@@ -65,6 +71,12 @@
    [:format qr-schema/OutputFormat]
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
+   [:png-background [:enum :transparent :white]]
+   [:png-margin
+    [:or
+     :string
+     [:int {:min 0
+            :max 40}]]]
    [:pdf-layout qr-schema/PdfLayout]
    [:pdf-custom-cols [:or :string [:int {:min 1}]]]
    [:pdf-custom-rows [:or :string [:int {:min 1}]]]
@@ -122,10 +134,12 @@
    :format :zip
    :error-correction :medium
    :show-label? false
-   :pdf-layout :per-page-6  ; 6 per page (2×3, 5cm) - large, scannable default
-   :pdf-custom-cols "4"       ; Custom defaults distinct from all presets (stored as strings)
-   :pdf-custom-rows "4"
-   :pdf-custom-qr-size-cm "3.5"
+   :png-background :transparent
+   :png-margin "4"
+   :pdf-layout :custom
+   :pdf-custom-cols "1"
+   :pdf-custom-rows "1"
+   :pdf-custom-qr-size-cm "2.0"
    :preview-codes []
    :generating? false
    :errors []

@@ -31,28 +31,33 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Message components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "message"
-                                             :description "Message component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "message-avatar"
-                                             :description "Message avatar component"
-                                             :props [[":src" "string, required - Avatar image URL"]
-                                                     [":alt" "string, required - Avatar alt text"]
-                                                     [":fallback" "string, optional - Avatar fallback text (e.g. initials)"]
-                                                     [":delay-ms" "number, optional - Delay before fallback appears (ms)"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "message-content"
-                                             :description "Message content component"
-                                             :props [[":markdown?" "boolean, optional (default false) - Render content as markdown"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "message-actions"
-                                             :description "Message actions component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "message-action"
-                                             :description "Message action component"
-                                             :props [[":tooltip" "string | hiccup, required - Tooltip content"]
-                                                     [":side" "keyword, optional (default :top). One of: :top | :right | :bottom | :left"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "message"
+       :description "Message component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "message-avatar"
+       :description "Message avatar component"
+       :props [[":src" "string, required - Avatar image URL"]
+               [":alt" "string, required - Avatar alt text"]
+               [":fallback" "string, optional - Avatar fallback text (e.g. initials)"]
+               [":delay-ms" "number, optional - Delay before fallback appears (ms)"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "message-content"
+       :description "Message content component"
+       :props [[":markdown?" "boolean, optional (default false) - Render content as markdown"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "message-actions"
+       :description "Message actions component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "message-action"
+       :description "Message action component"
+       :props [[":tooltip" "string | hiccup, required - Tooltip content"]
+               [":side" "keyword, optional (default :top). One of: :top | :right | :bottom | :left"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

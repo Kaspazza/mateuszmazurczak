@@ -46,7 +46,8 @@
                {:component-name "popover-content"
                 :description "Popover content component"
                 :props [[":class" "string, optional - Additional Tailwind classes"]
-                        [":align" "string, optional (default 'center'). One of: 'start' | 'center' | 'end'"]
+                        [":align"
+                         "string, optional (default 'center'). One of: 'start' | 'center' | 'end'"]
                         [":sideOffset" "number, optional (default 4) - Distance from trigger"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}

@@ -58,6 +58,14 @@
                                             state-registry/*qr-codes-page-path*
                                             page-data/update-page-show-label
                                             show-label?))
+   :qr-codes/update-png-background (fn [db [_ background]]
+                                     (update-in db
+                                                state-registry/*qr-codes-page-path*
+                                                page-data/update-page-png-background
+                                                background))
+   :qr-codes/update-png-margin
+   (fn [db [_ margin]]
+     (update-in db state-registry/*qr-codes-page-path* page-data/update-page-png-margin margin))
    :qr-codes/update-pdf-layout
    (fn [db [_ layout]]
      (update-in db state-registry/*qr-codes-page-path* page-data/update-page-pdf-layout layout))

@@ -21,28 +21,29 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/radio_group.cljs"
             :filename "radio_group.cljs"}])
 
-(defscene
- api-reference
- "Complete reference for all Radio Group component props and usage patterns."
- []
- (mm-portfolio-utils/wrap-component
-  [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Radio Group components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "radio-group"
-                                             :description "Radio group component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "radio-group-item"
-                                             :description "Radio group item component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [:div {:class "border rounded-lg p-4 bg-muted/50"}
-      [:h4 {:class "text-sm font-semibold mb-2"}
-       "Usage Example"]
-      [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[radio-group {}]"]]]]]]))
+(defscene api-reference
+          "Complete reference for all Radio Group component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Radio Group components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "radio-group"
+                :description "Radio group component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "radio-group-item"
+                :description "Radio group item component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[radio-group {}]"]]]]]]))
 
 (defscene
  radio-group-demo

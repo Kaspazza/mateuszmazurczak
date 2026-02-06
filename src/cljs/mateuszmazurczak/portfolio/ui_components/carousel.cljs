@@ -30,22 +30,30 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Carousel components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "carousel-content"
-                                             :description "Carousel content component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "carousel-item"
-                                             :description "Carousel item component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "carousel-previous"
-                                             :description "Carousel previous component"
-                                             :props [[":variant" "keyword, optional (default :outline). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
-                                                     [":size" "keyword, optional (default :icon). One of: :default | :sm | :lg | :icon"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "carousel-next"
-                                             :description "Carousel next component"
-                                             :props [[":variant" "keyword, optional (default :outline). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
-                                                     [":size" "keyword, optional (default :icon). One of: :default | :sm | :lg | :icon"]
-                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "carousel-content"
+       :description "Carousel content component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "carousel-item"
+       :description "Carousel item component"
+       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "carousel-previous"
+       :description "Carousel previous component"
+       :props
+       [[":variant"
+         "keyword, optional (default :outline). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
+        [":size" "keyword, optional (default :icon). One of: :default | :sm | :lg | :icon"]
+        [":class" "string, optional - Additional Tailwind classes"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "carousel-next"
+       :description "Carousel next component"
+       :props
+       [[":variant"
+         "keyword, optional (default :outline). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
+        [":size" "keyword, optional (default :icon). One of: :default | :sm | :lg | :icon"]
+        [":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

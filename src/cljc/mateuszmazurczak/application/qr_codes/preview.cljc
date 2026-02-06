@@ -13,9 +13,9 @@
   "Size for QR code preview display (actual export uses configured size)."
   150)
 
-(def valid-sizes "Valid QR code sizes in pixels." [100 200 300 400 500])
+(def valid-sizes "Valid QR code sizes in pixels." [200 300 500 800 1000 1200 1500 2000])
 
-(def valid-formats "Valid output formats." #{:zip :pdf})
+(def valid-formats "Valid output formats." #{:zip :jpg :pdf})
 
 ;; =============================================================================
 ;; Preview Generation

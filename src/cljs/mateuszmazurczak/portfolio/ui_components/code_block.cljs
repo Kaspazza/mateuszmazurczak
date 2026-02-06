@@ -19,34 +19,35 @@
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/code_block.cljs"
             :filename "code_block.cljs"}])
 
-(defscene
- api-reference
- "Complete reference for all Code Block component props and usage patterns."
- []
- (mm-portfolio-utils/wrap-component
-  [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Code Block components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "code-block"
-                                             :description "Code block component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "highlight"
-                                             :description "Highlight component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "hello"
-                                             :description "Hello component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "code-block-group"
-                                             :description "Code block group component"
-                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
-     [:div {:class "border rounded-lg p-4 bg-muted/50"}
-      [:h4 {:class "text-sm font-semibold mb-2"}
-       "Usage Example"]
-      [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[code-block {}]"]]]]]]))
+(defscene api-reference
+          "Complete reference for all Code Block component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Code Block components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "code-block"
+                :description "Code block component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [mm-portfolio-utils/api-component-card {:component-name "highlight"
+                                                      :description "Highlight component"
+                                                      :props []}]
+              [mm-portfolio-utils/api-component-card {:component-name "hello"
+                                                      :description "Hello component"
+                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "code-block-group"
+                :description "Code block group component"
+                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[code-block {}]"]]]]]]))
 
 (defscene
  code-block-single

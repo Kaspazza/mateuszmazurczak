@@ -106,12 +106,12 @@
    
    Arguments:
    - request-id: Unique request identifier
-   - config: {:input :size :format :show-label? :pdf-layout-config}
+   - config: {:input :size :format :show-label? :png-config :pdf-layout-config}
    - callbacks: {:on-ready :on-progress :on-finalizing :on-done :on-failure :on-dispatch}
                 on-dispatch is called with dispatch vectors for framework integration
    
    Returns: nil (side effect only)"
-  [request-id {:keys [input size format show-label? pdf-layout-config]} callbacks]
+  [request-id {:keys [input size format show-label? png-config pdf-layout-config]} callbacks]
   (swap! worker-state assoc-in [:requests request-id] callbacks)
   (send-message! {:type "qr-codes/init"
                   :request-id request-id
@@ -119,6 +119,7 @@
                   :size size
                   :format format
                   :show-label? show-label?
+                  :png-config png-config
                   :pdf-layout-config pdf-layout-config}))
 
 (defn request-next-batch!

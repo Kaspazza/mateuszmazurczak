@@ -35,35 +35,35 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "drawer"
        :description "Drawer component"
-       :props [[":open" "any, optional - Component prop"]
-               [":on-open-change" "any, optional - Component prop"]
-               [":direction" "any, optional - Component prop"]
-               [":should-scale-background" "any, optional - Component prop"]
-               [":modal" "any, optional - Component prop"]]}]
+       :props [[":open" "boolean, optional - Controlled open state"]
+               [":on-open-change" "function, optional - Callback (fn [open?])"]
+               [":direction" "keyword, optional (default :bottom). One of: :top | :right | :bottom | :left"]
+               [":should-scale-background" "boolean, optional - Scale background while open"]
+               [":modal" "boolean, optional (default true) - Modal behavior"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-trigger"
                                              :description "Drawer trigger component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-close"
                                              :description "Drawer close component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-overlay"
                                              :description "Drawer overlay component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-content"
                                              :description "Drawer content component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-header"
                                              :description "Drawer header component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-footer"
                                              :description "Drawer footer component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-title"
                                              :description "Drawer title component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "drawer-description"
                                              :description "Drawer description component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

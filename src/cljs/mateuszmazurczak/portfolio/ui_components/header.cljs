@@ -33,38 +33,35 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card {:component-name "base-header"
                                              :description "Base header component"
-                                             :props [[":size" "any, optional - Component prop"]
-                                                     [":sticky?" "any, optional - Component prop"]
-                                                     [":border?" "any, optional - Component prop"]
-                                                     [":class" "any, optional - Component prop"]]}]
+                                             :props [[":size" "keyword, optional (default :full). One of: :full | :half"]
+                                                     [":sticky?" "boolean, optional - Sticky positioning"]
+                                                     [":border?" "boolean, optional - Render border styles"]
+                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "transparent-header-comp"
                                              :description "Transparent header comp component"
-                                             :props [[":size" "any, optional - Component prop"]
-                                                     [":sticky?" "any, optional - Component prop"]
-                                                     [":border?" "any, optional - Component prop"]
-                                                     [":logo" "any, optional - Component prop"]
-                                                     [":right-section"
-                                                      "any, optional - Component prop"]
-                                                     [":class" "any, optional - Component prop"]]}]
+                                             :props [[":size" "keyword, optional (default :full). One of: :full | :half"]
+                                                     [":sticky?" "boolean, optional - Sticky positioning"]
+                                                     [":border?" "boolean, optional - Render border styles"]
+                                                     [":logo" "hiccup | component, optional - Logo/content shown on the left"]
+                                                     [":right-section" "hiccup | component, optional - Right-side header content"]
+                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "header-comp"
                                              :description "Header comp component"
-                                             :props [[":size" "any, optional - Component prop"]
-                                                     [":logo" "any, optional - Component prop"]
-                                                     [":sticky?" "any, optional - Component prop"]
-                                                     [":border?" "any, optional - Component prop"]
-                                                     [":right-section"
-                                                      "any, optional - Component prop"]
-                                                     [":class" "any, optional - Component prop"]]}]
+                                             :props [[":size" "keyword, optional (default :full). One of: :full | :half"]
+                                                     [":logo" "hiccup | component, optional - Logo/content shown on the left"]
+                                                     [":sticky?" "boolean, optional - Sticky positioning"]
+                                                     [":border?" "boolean, optional - Render border styles"]
+                                                     [":right-section" "hiccup | component, optional - Right-side header content"]
+                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "lang-select"
                                              :description "Lang select component"
-                                             :props [[":ui-text"
-                                                      "any, optional - Component prop"]]}]
+                                             :props []}]
      [mm-portfolio-utils/api-component-card {:component-name "transparent-header"
                                              :description "Transparent header component"
-                                             :props [[":size" "any, optional - Component prop"]
-                                                     [":border?" "any, optional - Component prop"]
-                                                     [":sticky?" "any, optional - Component prop"]
-                                                     [":class" "any, optional - Component prop"]]}]
+                                             :props [[":size" "keyword, optional (default :full). One of: :full | :half"]
+                                                     [":border?" "boolean, optional - Render border styles"]
+                                                     [":sticky?" "boolean, optional - Sticky positioning"]
+                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "toggle-header-border"
                                              :description "Toggle header border component"
                                              :props []}]

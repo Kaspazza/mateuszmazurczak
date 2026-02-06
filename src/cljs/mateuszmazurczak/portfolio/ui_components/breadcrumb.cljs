@@ -37,27 +37,27 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card {:component-name "breadcrumb"
                                              :description "Breadcrumb component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-list"
                                              :description "Breadcrumb list component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-item"
                                              :description "Breadcrumb item component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-link"
                                              :description "Breadcrumb link component"
-                                             :props [[":class" "any, optional - Component prop"]
-                                                     [":as-child"
-                                                      "any, optional - Component prop"]]}]
+                                             :props [[":href" "string, optional - Link URL"]
+                                                     [":class" "string, optional - Additional Tailwind classes"]
+                                                     [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-page"
                                              :description "Breadcrumb page component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-separator"
                                              :description "Breadcrumb separator component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-ellipsis"
                                              :description "Breadcrumb ellipsis component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

@@ -31,14 +31,14 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "admin-badge"
                 :description "Admin badge component"
-                :props [[":text" "any, optional - Component prop"]
-                        [":on-logout" "any, optional - Component prop"]]}]
+                :props [[":text" "map, required - UI text map with labels used by the component"]
+                        [":on-logout" "function, required - Callback (fn []) triggered on logout click"]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "delete-solution-button"
                 :description "Delete solution button component"
-                :props [[":solution-id" "any, optional - Component prop"]
-                        [":text" "any, optional - Component prop"]
-                        [":on-delete" "any, optional - Component prop"]]}]
+                :props [[":solution-id" "string | number, required - Solution identifier passed to delete callback"]
+                        [":text" "map, required - UI text map with labels used by the component"]
+                        [":on-delete" "function, required - Callback (fn [solution-id]) triggered after confirmation"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

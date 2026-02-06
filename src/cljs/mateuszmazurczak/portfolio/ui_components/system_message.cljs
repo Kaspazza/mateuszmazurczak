@@ -32,12 +32,12 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "system-message"
                 :description "System message component"
-                :props [[":variant" "any, optional - Component prop"]
-                        [":fill" "any, optional - Component prop"]
-                        [":icon" "any, optional - Component prop"]
-                        [":icon-hidden?" "any, optional - Component prop"]
-                        [":cta" "any, optional - Component prop"]
-                        [":class" "any, optional - Component prop"]]}]
+                :props [[":variant" "keyword, optional (default :action). One of: :action | :error | :warning"]
+                        [":fill" "boolean, optional (default false) - Filled background style"]
+                        [":icon" "react-component | hiccup, optional - Custom icon component"]
+                        [":icon-hidden?" "boolean, optional (default false) - Hide icon"]
+                        [":cta" "map, optional - CTA config {:label string :on-click fn}"]
+                        [":class" "string, optional - Additional Tailwind classes"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

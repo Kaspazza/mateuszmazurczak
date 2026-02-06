@@ -35,28 +35,28 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card {:component-name "table"
                                              :description "Table component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "table-header"
                                              :description "Table header component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "table-body"
                                              :description "Table body component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "table-footer"
                                              :description "Table footer component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "table-row"
                                              :description "Table row component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "table-head"
                                              :description "Table head component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "table-cell"
                                              :description "Table cell component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "table-caption"
                                              :description "Table caption component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

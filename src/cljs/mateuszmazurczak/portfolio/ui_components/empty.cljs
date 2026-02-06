@@ -35,23 +35,23 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card {:component-name "empty"
                                              :description "Empty component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "empty-header"
                                              :description "Empty header component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "empty-media"
                                              :description "Empty media component"
-                                             :props [[":variant" "any, optional - Component prop"]
-                                                     [":class" "any, optional - Component prop"]]}]
+                                             :props [[":variant" "keyword, optional (default :default). One of: :default | :icon"]
+                                                     [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "empty-title"
                                              :description "Empty title component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "empty-description"
                                              :description "Empty description component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "empty-content"
                                              :description "Empty content component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

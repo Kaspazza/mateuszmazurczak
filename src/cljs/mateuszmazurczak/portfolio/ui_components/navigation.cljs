@@ -31,16 +31,16 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "navigation"
                 :description "Navigation component"
-                :props [[":href" "any, optional - Component prop"]
-                        [":text" "any, optional - Component prop"]
-                        [":on-click" "any, optional - Component prop"]]}]
+                :props [[":href" "string, required - Link target URL"]
+                        [":text" "string, required - Link label"]
+                        [":on-click" "function, optional - Click callback (fn [event])"]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "back-navigation"
                 :description "Back navigation component"
-                :props [[":href" "any, optional - Component prop"]
-                        [":text" "any, optional - Component prop"]
-                        [":dark?" "any, optional - Component prop"]
-                        [":on-click" "any, optional - Component prop"]]}]
+                :props [[":href" "string, required - Link target URL"]
+                        [":text" "string, required - Link label"]
+                        [":dark?" "boolean, optional (default false) - Use dark styling"]
+                        [":on-click" "function, optional - Click callback (fn [event])"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

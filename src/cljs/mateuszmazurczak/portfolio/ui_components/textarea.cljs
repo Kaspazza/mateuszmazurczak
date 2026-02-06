@@ -33,8 +33,8 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "textarea"
                 :description "Textarea component"
-                :props [[":class" "any, optional - Component prop"]
-                        [":auto-size?" "any, optional - Component prop"]]}]
+                :props [[":class" "string, optional - Additional Tailwind classes"]
+                        [":auto-size?" "boolean, optional (default false) - Enable textarea autosizing"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

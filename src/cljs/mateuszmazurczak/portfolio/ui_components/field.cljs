@@ -34,39 +34,37 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card {:component-name "field-set"
                                              :description "Field set component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-legend"
                                              :description "Field legend component"
-                                             :props [[":class" "any, optional - Component prop"]
-                                                     [":variant"
-                                                      "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]
+                                                     [":variant" "keyword, optional (default :legend). One of: :legend | :label"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-group"
                                              :description "Field group component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field"
                                              :description "Field component"
-                                             :props [[":class" "any, optional - Component prop"]
-                                                     [":orientation"
-                                                      "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]
+                                                     [":orientation" "keyword, optional (default :vertical). One of: :vertical | :horizontal | :responsive"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-content"
                                              :description "Field content component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-label"
                                              :description "Field label component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-title"
                                              :description "Field title component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-description"
                                              :description "Field description component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-separator"
                                              :description "Field separator component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "field-error"
                                              :description "Field error component"
-                                             :props [[":class" "any, optional - Component prop"]
-                                                     [":errors" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]
+                                                     [":errors" "vector<map>, optional - Error maps, each with :message string"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

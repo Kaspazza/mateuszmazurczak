@@ -50,24 +50,23 @@
                                              :props []}]
      [mm-portfolio-utils/api-component-card {:component-name "dialog-overlay"
                                              :description "Dialog overlay component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "dialog-content"
                                              :description "Dialog content component"
-                                             :props [[":class" "any, optional - Component prop"]
-                                                     [":showCloseButton"
-                                                      "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]
+                                                     [":showCloseButton" "boolean, optional (default true) - Show close button"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "dialog-header"
                                              :description "Dialog header component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "dialog-footer"
                                              :description "Dialog footer component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "dialog-title"
                                              :description "Dialog title component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "dialog-description"
                                              :description "Dialog description component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

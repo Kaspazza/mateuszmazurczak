@@ -34,35 +34,35 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card {:component-name "command"
                                              :description "Command component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-dialog"
        :description "Command dialog component"
-       :props [[":title" "any, optional - Component prop"]
-               [":description" "any, optional - Component prop"]
-               [":class" "any, optional - Component prop"]
-               [":showCloseButton" "any, optional - Component prop"]]}]
+       :props [[":title" "string, optional (default 'Command Palette') - Dialog title"]
+               [":description" "string, optional (default 'Search for a command to run...') - Dialog description"]
+               [":class" "string, optional - Additional Tailwind classes"]
+               [":showCloseButton" "boolean, optional (default true) - Show close button in dialog"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "command-input"
                                              :description "Command input component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "command-list"
                                              :description "Command list component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "command-empty"
                                              :description "Command empty component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "command-group"
                                              :description "Command group component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "command-separator"
                                              :description "Command separator component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "command-item"
                                              :description "Command item component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "command-shortcut"
                                              :description "Command shortcut component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

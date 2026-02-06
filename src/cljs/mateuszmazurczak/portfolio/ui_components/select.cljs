@@ -42,22 +42,22 @@
                                              :props []}]
      [mm-portfolio-utils/api-component-card {:component-name "select-trigger"
                                              :description "Select trigger component"
-                                             :props [[":class" "any, optional - Component prop"]
-                                                     [":size" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]
+                                                     [":size" "string, optional (default 'default'). One of: 'default' | 'sm'"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "select-content"
                                              :description "Select content component"
-                                             :props [[":class" "any, optional - Component prop"]
-                                                     [":position" "any, optional - Component prop"]
-                                                     [":align" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]
+                                                     [":position" "string, optional (default 'popper') - Popper strategy value"]
+                                                     [":align" "string, optional (default 'center'). One of: 'start' | 'center' | 'end'"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "select-label"
                                              :description "Select label component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "select-item"
                                              :description "Select item component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "select-separator"
                                              :description "Select separator component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

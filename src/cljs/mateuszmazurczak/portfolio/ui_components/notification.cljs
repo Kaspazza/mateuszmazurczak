@@ -35,15 +35,15 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "show-toast"
                 :description "Show toast component"
-                :props [[":description" "any, optional - Component prop"]
-                        [":action" "any, optional - Component prop"]
-                        [":duration" "any, optional - Component prop"]
-                        [":position" "any, optional - Component prop"]
-                        [":cancel" "any, optional - Component prop"]
-                        [":id" "any, optional - Component prop"]
-                        [":important" "any, optional - Component prop"]
-                        [":on-dismiss" "any, optional - Component prop"]
-                        [":on-auto-close" "any, optional - Component prop"]]}]
+                :props [[":description" "string, optional - Secondary toast message"]
+                        [":action" "map, optional - Action config {:label string :on-click fn}"]
+                        [":duration" "number, optional - Toast duration in milliseconds"]
+                        [":position" "string, optional (default 'top-right'). One of: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'"]
+                        [":cancel" "map, optional - Cancel config {:label string :on-click fn}"]
+                        [":id" "string | number, optional - Custom toast id"]
+                        [":important" "boolean, optional - Prevent dismissal"]
+                        [":on-dismiss" "function, optional - Callback (fn []) on dismiss"]
+                        [":on-auto-close" "function, optional - Callback (fn []) on auto-close"]]}]
               [mm-portfolio-utils/api-component-card {:component-name "show-success"
                                                       :description "Show success component"
                                                       :props []}]

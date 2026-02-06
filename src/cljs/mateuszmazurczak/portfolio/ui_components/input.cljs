@@ -34,8 +34,8 @@
               [mm-portfolio-utils/api-component-card {:component-name "input"
                                                       :description "Input component"
                                                       :props
-                                                      [[":class" "any, optional - Component prop"]
-                                                       [":type" "any, optional - Component prop"]]}]
+                                                      [[":class" "string, optional - Additional Tailwind classes"]
+                                                       [":type" "string, optional (default 'text') - HTML input type"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

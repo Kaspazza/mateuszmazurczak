@@ -33,10 +33,10 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "button"
                 :description "Button component"
-                :props [[":variant" "any, optional - Component prop"]
-                        [":size" "any, optional - Component prop"]
-                        [":class" "any, optional - Component prop"]
-                        [":as-child" "any, optional - Component prop"]]}]
+                :props [[":variant" "keyword, optional (default :default). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
+                        [":size" "keyword, optional (default :default). One of: :default | :sm | :lg | :icon"]
+                        [":class" "string, optional - Additional Tailwind classes"]
+                        [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]

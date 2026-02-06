@@ -35,21 +35,21 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper"
        :description "Stepper component"
-       :props [[":current-step" "any, optional - Component prop"]
-               [":on-step-change" "any, optional - Component prop"]
-               [":variant" "any, optional - Component prop"]
-               [":label-orientation" "any, optional - Component prop"]
-               [":reverse-progress?" "any, optional - Component prop"]
-               [":class" "any, optional - Component prop"]]}]
+       :props [[":current-step" "string | keyword | number, required - Active step id"]
+               [":on-step-change" "function, optional - Callback (fn [step-id])"]
+               [":variant" "keyword, optional (default :horizontal). One of: :horizontal | :vertical | :circle"]
+               [":label-orientation" "keyword, optional (default :horizontal). One of: :horizontal | :vertical"]
+               [":reverse-progress?" "boolean, optional (default false) - Reverse completed-step direction"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "stepper-title"
                                              :description "Stepper title component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "stepper-description"
                                              :description "Stepper description component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "stepper-controls"
                                              :description "Stepper controls component"
-                                             :props [[":class" "any, optional - Component prop"]]}]
+                                             :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

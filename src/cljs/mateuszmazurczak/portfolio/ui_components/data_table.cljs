@@ -39,52 +39,51 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card {:component-name "drag-handle-cell-ui"
                                              :description "Drag handle cell ui component"
-                                             :props [[":listeners" "any, optional - Component prop"]
-                                                     [":attributes"
-                                                      "any, optional - Component prop"]]}]
+                                             :props [[":listeners" "map, required - DnD listeners map from @dnd-kit"]
+                                                     [":attributes" "map, required - DnD attributes map from @dnd-kit"]]}]
      [mm-portfolio-utils/api-component-card {:component-name "faceted-filter-ui"
                                              :description "Faceted filter ui component"
                                              :props
-                                             [[":title" "any, optional - Component prop"]
-                                              [":options" "any, optional - Component prop"]
-                                              [":selected-values" "any, optional - Component prop"]
-                                              [":on-change" "any, optional - Component prop"]
-                                              [":facet-counts" "any, optional - Component prop"]]}]
+                                             [[":title" "string, required - Human-readable title"]
+                                              [":options" "vector<map>, required - Options. Each option: {:label string :value string :icon component?}"]
+                                              [":selected-values" "set<string>, required - Selected filter values"]
+                                              [":on-change" "function, required - Callback (fn [new-selected-set])"]
+                                              [":facet-counts" "map<string, number>, optional - Counts by option value"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "toolbar-ui"
        :description "Toolbar ui component"
-       :props [[":text-filter-value" "any, optional - Component prop"]
-               [":on-text-filter-change" "any, optional - Component prop"]
-               [":text-placeholder" "any, optional - Component prop"]
-               [":faceted-filters" "any, optional - Component prop"]
-               [":is-filtered?" "any, optional - Component prop"]
-               [":on-reset-filters" "any, optional - Component prop"]
-               [":toolbar-end" "any, optional - Component prop"]]}]
+       :props [[":text-filter-value" "string, optional - Current text filter value"]
+               [":on-text-filter-change" "function, optional - Callback (fn [value]) for text filter changes"]
+               [":text-placeholder" "string, optional (default 'Filter items...') - Text filter placeholder"]
+               [":faceted-filters" "vector<map>, optional - Faceted filter configs"]
+               [":is-filtered?" "boolean, optional (default false) - Whether any filters are active"]
+               [":on-reset-filters" "function, optional - Callback (fn []) to clear filters"]
+               [":toolbar-end" "hiccup | component, optional - Right-side toolbar content"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "column-header-ui"
        :description "Column header ui component"
-       :props [[":title" "any, optional - Component prop"]
-               [":can-sort?" "any, optional - Component prop"]
-               [":sort-state" "any, optional - Component prop"]
-               [":on-toggle-sort" "any, optional - Component prop"]
-               [":on-clear-sort" "any, optional - Component prop"]
-               [":on-toggle-visibility" "any, optional - Component prop"]
-               [":class" "any, optional - Component prop"]]}]
+       :props [[":title" "string, required - Human-readable title"]
+               [":can-sort?" "boolean, optional (default false) - Whether column is sortable"]
+               [":sort-state" "string | false | nil, optional - One of: 'asc' | 'desc' | false | nil"]
+               [":on-toggle-sort" "function, optional - Callback (fn [descending?])"]
+               [":on-clear-sort" "function, optional - Callback (fn [])"]
+               [":on-toggle-visibility" "function, optional - Callback (fn [])"]
+               [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "pagination-ui"
        :description "Pagination ui component"
-       :props [[":page-size" "any, optional - Component prop"]
-               [":page-index" "any, optional - Component prop"]
-               [":page-count" "any, optional - Component prop"]
-               [":selected-count" "any, optional - Component prop"]
-               [":total-count" "any, optional - Component prop"]
-               [":can-previous?" "any, optional - Component prop"]
-               [":can-next?" "any, optional - Component prop"]
-               [":on-page-size-change" "any, optional - Component prop"]
-               [":on-first-page" "any, optional - Component prop"]
-               [":on-previous-page" "any, optional - Component prop"]
-               [":on-next-page" "any, optional - Component prop"]
-               [":on-last-page" "any, optional - Component prop"]]}]
+       :props [[":page-size" "number, required - Current page size"]
+               [":page-index" "number, required - Current page index (0-based)"]
+               [":page-count" "number, required - Total page count"]
+               [":selected-count" "number, optional (default 0) - Number of selected rows"]
+               [":total-count" "number, required - Total row count"]
+               [":can-previous?" "boolean, required - Whether previous page is available"]
+               [":can-next?" "boolean, required - Whether next page is available"]
+               [":on-page-size-change" "function, required - Callback (fn [size])"]
+               [":on-first-page" "function, optional - Callback (fn [])"]
+               [":on-previous-page" "function, optional - Callback (fn [])"]
+               [":on-next-page" "function, optional - Callback (fn [])"]
+               [":on-last-page" "function, optional - Callback (fn [])"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

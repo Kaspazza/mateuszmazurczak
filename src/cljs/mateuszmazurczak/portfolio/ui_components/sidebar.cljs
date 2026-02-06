@@ -4,10 +4,137 @@
    [mateuszmazurczak.portfolio.utils       :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.sidebar :as sut]
    [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]
-   [reagent.core                           :as r]))
+   [reagent.core                           :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Sidebar"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Pure presentational sidebar components."
+            :npm-install "npm install @radix-ui/react-slot lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.sidebar)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/sidebar.cljs"
+            :filename "sidebar.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Sidebar component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Sidebar components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar"
+                                             :description "Sidebar component"
+                                             :props
+                                             [[":open?" "any, optional - Component prop"]
+                                              [":is-mobile" "any, optional - Component prop"]
+                                              [":on-open-change" "any, optional - Component prop"]
+                                              [":side" "any, optional - Component prop"]
+                                              [":variant" "any, optional - Component prop"]
+                                              [":collapsible" "any, optional - Component prop"]
+                                              [":class" "any, optional - Component prop"]
+                                              [":style" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-trigger"
+                                             :description "Sidebar trigger component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":on-click"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-rail"
+                                             :description "Sidebar rail component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":on-click"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-inset"
+                                             :description "Sidebar inset component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-input"
+                                             :description "Sidebar input component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-header"
+                                             :description "Sidebar header component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-footer"
+                                             :description "Sidebar footer component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-separator"
+                                             :description "Sidebar separator component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-content"
+                                             :description "Sidebar content component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-group"
+                                             :description "Sidebar group component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-group-label"
+                                             :description "Sidebar group label component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":as-child"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-group-action"
+                                             :description "Sidebar group action component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":as-child"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-group-content"
+                                             :description "Sidebar group content component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu"
+                                             :description "Sidebar menu component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-item"
+                                             :description "Sidebar menu item component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-button"
+                                             :description "Sidebar menu button component"
+                                             :props
+                                             [[":class" "any, optional - Component prop"]
+                                              [":as-child" "any, optional - Component prop"]
+                                              [":is-active?" "any, optional - Component prop"]
+                                              [":tooltip" "any, optional - Component prop"]
+                                              [":variant" "any, optional - Component prop"]
+                                              [":size" "any, optional - Component prop"]
+                                              [":collapsed?" "any, optional - Component prop"]
+                                              [":is-mobile" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-action"
+                                             :description "Sidebar menu action component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":as-child" "any, optional - Component prop"]
+                                                     [":show-on-hover?"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-badge"
+                                             :description "Sidebar menu badge component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-skeleton"
+                                             :description "Sidebar menu skeleton component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":show-icon?"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-sub"
+                                             :description "Sidebar menu sub component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-sub-item"
+                                             :description "Sidebar menu sub item component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sidebar-menu-sub-button"
+                                             :description "Sidebar menu sub button component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":as-child" "any, optional - Component prop"]
+                                                     [":size" "any, optional - Component prop"]
+                                                     [":is-active?"
+                                                      "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[sidebar {}]"]]]]]]))
 
 (defscene
  sidebar-demo

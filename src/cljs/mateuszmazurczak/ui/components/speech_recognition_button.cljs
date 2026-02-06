@@ -1,5 +1,10 @@
 (ns mateuszmazurczak.ui.components.speech-recognition-button
-  "Microphone button component with speech recognition functionality."
+  "Microphone button component with speech recognition functionality.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["lucide-react"                              :refer [Mic]]
    ["react-speech-recognition"                  :default SpeechRecognition

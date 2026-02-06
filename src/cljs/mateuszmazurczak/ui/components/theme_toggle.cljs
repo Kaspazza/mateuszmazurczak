@@ -1,5 +1,10 @@
 (ns mateuszmazurczak.ui.components.theme-toggle
-  "Theme toggle component for switching between light and dark themes."
+  "Theme toggle component for switching between light and dark themes.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["lucide-react"                :refer [Moon Sun]]
    [mateuszmazurczak.ports.events :as events]

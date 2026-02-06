@@ -1,5 +1,10 @@
 (ns mateuszmazurczak.ui.components.app-skeleton
-  "App initialization loading screen component."
+  "App initialization loading screen component.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.ui.components.skeleton :as skeleton]))
 

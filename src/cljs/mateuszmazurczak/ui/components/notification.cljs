@@ -17,7 +17,12 @@
   (toast \"Event has been created\"
          {:description \"Sunday, December 03, 2023 at 9:00 AM\"
           :action {:label \"Undo\"
-                   :on-click #(js/console.log \"Undo\")}})"
+                   :on-click #(js/console.log \"Undo\")}})
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["lucide-react" :refer [CircleCheckIcon InfoIcon Loader2Icon OctagonXIcon TriangleAlertIcon]]
    ["sonner"       :refer [Toaster toast]]

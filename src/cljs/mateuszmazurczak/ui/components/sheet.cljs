@@ -5,7 +5,13 @@
   Commonly used for navigation menus, filters, and secondary content.
   Built on @radix-ui/react-dialog for accessibility.
   
-  Docs: https://www.radix-ui.com/docs/primitives/components/dialog"
+  Docs: https://www.radix-ui.com/docs/primitives/components/dialog
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/dialog"
   (:require
    ["@radix-ui/react-dialog"      :as DialogPrimitive]
    ["lucide-react"                :refer [X]]

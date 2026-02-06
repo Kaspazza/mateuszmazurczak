@@ -7,10 +7,52 @@
    [mateuszmazurczak.ui.components.label   :as label]
    [mateuszmazurczak.ui.components.popover :as sut]
    [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]
-   [reagent.core                           :as r]))
+   [reagent.core                           :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Popover"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Popover component for displaying floating content relative to a trigger."
+            :npm-install "npm install @radix-ui/react-popover"
+            :source-code (embed-source mateuszmazurczak.ui.components.popover)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/popover.cljs"
+            :filename "popover.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Popover component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Popover components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card {:component-name "popover"
+                                                      :description "Popover component"
+                                                      :props []}]
+              [mm-portfolio-utils/api-component-card {:component-name "popover-trigger"
+                                                      :description "Popover trigger component"
+                                                      :props []}]
+              [mm-portfolio-utils/api-component-card {:component-name "popover-anchor"
+                                                      :description "Popover anchor component"
+                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "popover-content"
+                :description "Popover content component"
+                :props [[":class" "any, optional - Component prop"]
+                        [":align" "any, optional - Component prop"]
+                        [":sideOffset" "any, optional - Component prop"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[popover {}]"]]]]]]))
 
 (defscene
  popover-demo

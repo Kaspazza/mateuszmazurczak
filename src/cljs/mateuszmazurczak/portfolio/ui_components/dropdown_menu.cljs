@@ -10,10 +10,90 @@
    [mateuszmazurczak.ui.components.label         :as label]
    [mateuszmazurczak.ui.components.textarea      :as textarea]
    [portfolio.reagent-18                         :refer-macros [defscene configure-scenes]]
-   [reagent.core                                 :as r]))
+   [reagent.core                                 :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Dropdown Menu"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Dropdown menu component for displaying a menu of actions."
+            :npm-install "npm install @radix-ui/react-dropdown-menu lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.dropdown_menu)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/dropdown_menu.cljs"
+            :filename "dropdown_menu.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Dropdown Menu component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Dropdown Menu components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu"
+                                             :description "Dropdown menu component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-trigger"
+                                             :description "Dropdown menu trigger component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-group"
+                                             :description "Dropdown menu group component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-portal"
+                                             :description "Dropdown menu portal component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-sub"
+                                             :description "Dropdown menu sub component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-radio-group"
+                                             :description "Dropdown menu radio group component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-sub-trigger"
+                                             :description "Dropdown menu sub trigger component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":inset" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-sub-content"
+                                             :description "Dropdown menu sub content component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-content"
+                                             :description "Dropdown menu content component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":side-offset"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-item"
+                                             :description "Dropdown menu item component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":inset" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-checkbox-item"
+                                             :description "Dropdown menu checkbox item component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":checked"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-radio-item"
+                                             :description "Dropdown menu radio item component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-label"
+                                             :description "Dropdown menu label component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":inset" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-separator"
+                                             :description "Dropdown menu separator component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dropdown-menu-shortcut"
+                                             :description "Dropdown menu shortcut component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[dropdown-menu {}]"]]]]]]))
 
 (defscene
  dropdown-menu-demo

@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.command
   "Command palette component built on cmdk (Command Menu Dialog Kit).
-  https://cmdk.paco.me/"
+  https://cmdk.paco.me/
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["cmdk"                                :refer [Command]]
    ["lucide-react"                        :refer [SearchIcon]]

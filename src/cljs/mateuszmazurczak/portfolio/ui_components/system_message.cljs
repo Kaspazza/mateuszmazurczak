@@ -2,10 +2,47 @@
   (:require
    [mateuszmazurczak.portfolio.utils              :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.system-message :as sut]
-   [portfolio.reagent-18                          :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                          :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "System Message"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description
+            "System message component for displaying notifications, alerts, and status messages."
+            :npm-install "npm install lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.system_message)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/system_message.cljs"
+            :filename "system_message.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all System Message component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for System Message components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "system-message"
+                :description "System message component"
+                :props [[":variant" "any, optional - Component prop"]
+                        [":fill" "any, optional - Component prop"]
+                        [":icon" "any, optional - Component prop"]
+                        [":icon-hidden?" "any, optional - Component prop"]
+                        [":cta" "any, optional - Component prop"]
+                        [":class" "any, optional - Component prop"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[system-message {}]"]]]]]]))
 
 (defscene
  system-message-default

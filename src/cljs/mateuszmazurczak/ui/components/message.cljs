@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.message
   "Message component for chat interfaces.
-  Provides structured message display with avatar, content, and actions."
+  Provides structured message display with avatar, content, and actions.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.ui.components.avatar   :as mateuszmazurczak-avatar]
    [mateuszmazurczak.ui.components.markdown :as mateuszmazurczak-markdown]

@@ -3,10 +3,76 @@
    [mateuszmazurczak.portfolio.utils            :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.header       :as sut]
    [mateuszmazurczak.ui.components.theme-toggle :as theme-toggle]
-   [portfolio.reagent-18                        :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                        :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Header"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description
+            "Header component with support for dark/light theme and language selection."
+            :npm-install "No external dependencies"
+            :source-code (embed-source mateuszmazurczak.ui.components.header)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/header.cljs"
+            :filename "header.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Header component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Header components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "base-header"
+                                             :description "Base header component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":sticky?" "any, optional - Component prop"]
+                                                     [":border?" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "transparent-header-comp"
+                                             :description "Transparent header comp component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":sticky?" "any, optional - Component prop"]
+                                                     [":border?" "any, optional - Component prop"]
+                                                     [":logo" "any, optional - Component prop"]
+                                                     [":right-section"
+                                                      "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "header-comp"
+                                             :description "Header comp component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":logo" "any, optional - Component prop"]
+                                                     [":sticky?" "any, optional - Component prop"]
+                                                     [":border?" "any, optional - Component prop"]
+                                                     [":right-section"
+                                                      "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "lang-select"
+                                             :description "Lang select component"
+                                             :props [[":ui-text"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "transparent-header"
+                                             :description "Transparent header component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":border?" "any, optional - Component prop"]
+                                                     [":sticky?" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "toggle-header-border"
+                                             :description "Toggle header border component"
+                                             :props []}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[base-header {}]"]]]]]]))
 
 (defscene
  header-basic

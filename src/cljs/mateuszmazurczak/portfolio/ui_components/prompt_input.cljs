@@ -5,10 +5,41 @@
    [mateuszmazurczak.ui.components.button       :as button]
    [mateuszmazurczak.ui.components.prompt-input :as sut]
    [portfolio.reagent-18                        :refer-macros [defscene configure-scenes]]
-   [reagent.core                                :as r]))
+   [reagent.core                                :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Prompt Input"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Prompt input component for chat interfaces with auto-resizing textarea."
+            :npm-install "npm install react"
+            :source-code (embed-source mateuszmazurczak.ui.components.prompt_input)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/prompt_input.cljs"
+            :filename "prompt_input.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Prompt Input component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Prompt Input components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card {:component-name "prompt-input-actions"
+                                                      :description "Prompt input actions component"
+                                                      :props [[":class"
+                                                               "any, optional - Component prop"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[prompt-input-actions {}]"]]]]]]))
 
 (defscene
  prompt-input-basic

@@ -5,10 +5,70 @@
    [mateuszmazurczak.ui.components.drawer :as sut]
    [mateuszmazurczak.ui.components.input  :as input]
    [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]]
-   [reagent.core                          :as r]))
+   [reagent.core                          :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Drawer"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Drawer component based on Vaul drawer primitive."
+            :npm-install "npm install vaul"
+            :source-code (embed-source mateuszmazurczak.ui.components.drawer)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/drawer.cljs"
+            :filename "drawer.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Drawer component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Drawer components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card
+      {:component-name "drawer"
+       :description "Drawer component"
+       :props [[":open" "any, optional - Component prop"]
+               [":on-open-change" "any, optional - Component prop"]
+               [":direction" "any, optional - Component prop"]
+               [":should-scale-background" "any, optional - Component prop"]
+               [":modal" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-trigger"
+                                             :description "Drawer trigger component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-close"
+                                             :description "Drawer close component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-overlay"
+                                             :description "Drawer overlay component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-content"
+                                             :description "Drawer content component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-header"
+                                             :description "Drawer header component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-footer"
+                                             :description "Drawer footer component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-title"
+                                             :description "Drawer title component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "drawer-description"
+                                             :description "Drawer description component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[drawer {}]"]]]]]]))
 
 (defscene
  bottom-drawer

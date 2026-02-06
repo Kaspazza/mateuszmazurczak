@@ -7,7 +7,12 @@
   - Modern formats (WebP/AVIF) with fallback
   - Responsive images for different screen sizes
   - Loading states
-  - Alt text for accessibility"
+  - Alt text for accessibility
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]
    [reagent.core                  :as r]))

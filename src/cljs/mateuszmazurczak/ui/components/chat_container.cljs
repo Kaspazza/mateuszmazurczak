@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.chat-container
   "Chat container component with auto-scroll-to-bottom functionality.
-  Uses use-stick-to-bottom library for smooth scrolling behavior."
+  Uses use-stick-to-bottom library for smooth scrolling behavior.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["use-stick-to-bottom"         :refer [StickToBottom]]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

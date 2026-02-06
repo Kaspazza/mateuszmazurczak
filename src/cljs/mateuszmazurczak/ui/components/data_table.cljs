@@ -4,7 +4,12 @@
   A comprehensive data table built on TanStack Table with full feature support:
   sorting, filtering, faceting, pagination, row selection.
   
-  All TanStack Table interactions happen in this component"
+  All TanStack Table interactions happen in this component
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["@dnd-kit/core"                              :refer [DndContext
                                                          KeyboardSensor

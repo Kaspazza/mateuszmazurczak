@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.popover
   "Popover component for displaying floating content relative to a trigger.
-  https://www.radix-ui.com/primitives/docs/components/popover"
+  https://www.radix-ui.com/primitives/docs/components/popover
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/popover"
   (:require
    ["@radix-ui/react-popover"     :as RadixPopover]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

@@ -86,7 +86,13 @@
        :open @open?
        :on-open-change #(when-not (and % @force-closed?)
                          (reset! open? %))}]])
-  ```"
+  ```
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/tooltip"
   (:require
    ["@radix-ui/react-tooltip"     :as TooltipPrimitive]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

@@ -2,7 +2,12 @@
   "Input component for forms.
   
   A styled native HTML input element with comprehensive styling for text, file,
-  and other input types."
+  and other input types.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 

@@ -4,7 +4,13 @@
   A thin line that visually or semantically separates content.
   Built on @radix-ui/react-separator for accessibility.
   
-  Docs: https://www.radix-ui.com/docs/primitives/components/separator"
+  Docs: https://www.radix-ui.com/docs/primitives/components/separator
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/separator"
   (:require
    ["@radix-ui/react-separator"   :as SeparatorPrimitive]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

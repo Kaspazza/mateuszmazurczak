@@ -2,10 +2,95 @@
   (:require
    [mateuszmazurczak.portfolio.utils      :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.loader :as sut]
-   [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Loader"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Comprehensive loader/spinner components with multiple variants and sizes."
+            :npm-install "npm install 10px 6px 8px"
+            :source-code (embed-source mateuszmazurczak.ui.components.loader)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/loader.cljs"
+            :filename "loader.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Loader component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Loader components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "circular-loader"
+                                             :description "Circular loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "classic-loader"
+                                             :description "Classic loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "pulse-loader"
+                                             :description "Pulse loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "pulse-dot-loader"
+                                             :description "Pulse dot loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dots-loader"
+                                             :description "Dots loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "typing-loader"
+                                             :description "Typing loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "wave-loader"
+                                             :description "Wave loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "bars-loader"
+                                             :description "Bars loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "terminal-loader"
+                                             :description "Terminal loader component"
+                                             :props [[":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "text-blink-loader"
+                                             :description "Text blink loader component"
+                                             :props [[":text" "any, optional - Component prop"]
+                                                     [":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "text-shimmer-loader"
+                                             :description "Text shimmer loader component"
+                                             :props [[":text" "any, optional - Component prop"]
+                                                     [":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "text-dots-loader"
+                                             :description "Text dots loader component"
+                                             :props [[":text" "any, optional - Component prop"]
+                                                     [":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "loader"
+                                             :description "Loader component"
+                                             :props [[":variant" "any, optional - Component prop"]
+                                                     [":size" "any, optional - Component prop"]
+                                                     [":text" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[circular-loader {}]"]]]]]]))
 
 (defscene
  loader-all-variants

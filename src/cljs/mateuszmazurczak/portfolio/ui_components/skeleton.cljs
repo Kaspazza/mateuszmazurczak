@@ -2,10 +2,41 @@
   (:require
    [mateuszmazurczak.portfolio.utils        :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.skeleton :as sut]
-   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Skeleton"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Skeleton component for loading placeholders."
+            :npm-install "No external dependencies"
+            :source-code (embed-source mateuszmazurczak.ui.components.skeleton)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/skeleton.cljs"
+            :filename "skeleton.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Skeleton component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-4xl"}
+                                              [:div {:class "space-y-6"}
+                                               [:div
+                                                [:p {:class "text-sm text-muted-foreground"}
+                                                 "All available props for Skeleton components."]]
+                                               [:div {:class "space-y-4"}
+                                                [mm-portfolio-utils/api-component-card
+                                                 {:component-name "skeleton"
+                                                  :description "Skeleton component"
+                                                  :props [[":class"
+                                                           "any, optional - Component prop"]]}]
+                                                [:div {:class "border rounded-lg p-4 bg-muted/50"}
+                                                 [:h4 {:class "text-sm font-semibold mb-2"}
+                                                  "Usage Example"]
+                                                 [:pre {:class "text-xs overflow-x-auto"}
+                                                  [:code "[skeleton {}]"]]]]]]))
 
 (defscene
  skeleton-demo

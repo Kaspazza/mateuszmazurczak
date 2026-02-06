@@ -3,10 +3,59 @@
    [mateuszmazurczak.portfolio.utils       :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.button  :as button]
    [mateuszmazurczak.ui.components.tooltip :as sut]
-   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Tooltip"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description
+            "Self-contained tooltip component for displaying contextual information on hover/focus."
+            :npm-install "npm install @radix-ui/react-tooltip"
+            :source-code (embed-source mateuszmazurczak.ui.components.tooltip)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/tooltip.cljs"
+            :filename "tooltip.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Tooltip component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Tooltip components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "tooltip"
+                :description "Tooltip component"
+                :props [[":trigger" "any, optional - Component prop"]
+                        [":content" "any, optional - Component prop"]
+                        [":side" "any, optional - Component prop"]
+                        [":side-offset" "any, optional - Component prop"]
+                        [":align" "any, optional - Component prop"]
+                        [":align-offset" "any, optional - Component prop"]
+                        [":collision-padding" "any, optional - Component prop"]
+                        [":avoid-collisions?" "any, optional - Component prop"]
+                        [":sticky" "any, optional - Component prop"]
+                        [":delay-duration" "any, optional - Component prop"]
+                        [":skip-delay-duration" "any, optional - Component prop"]
+                        [":open" "any, optional - Component prop"]
+                        [":default-open" "any, optional - Component prop"]
+                        [":on-open-change" "any, optional - Component prop"]
+                        [":content-class" "any, optional - Component prop"]
+                        [":content-hidden?" "any, optional - Component prop"]
+                        [":trigger-as-child?" "any, optional - Component prop"]
+                        [":disable-hoverable-content?" "any, optional - Component prop"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[tooltip {}]"]]]]]]))
 
 (defscene
  tooltip-demo

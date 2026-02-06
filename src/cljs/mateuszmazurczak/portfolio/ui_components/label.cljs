@@ -5,10 +5,41 @@
    [mateuszmazurczak.ui.components.input    :as input]
    [mateuszmazurczak.ui.components.label    :as sut]
    [mateuszmazurczak.ui.components.textarea :as textarea]
-   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Label"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Label component for form fields with accessibility support."
+            :npm-install "npm install @radix-ui/react-label"
+            :source-code (embed-source mateuszmazurczak.ui.components.label)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/label.cljs"
+            :filename "label.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Label component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-4xl"}
+                                              [:div {:class "space-y-6"}
+                                               [:div
+                                                [:p {:class "text-sm text-muted-foreground"}
+                                                 "All available props for Label components."]]
+                                               [:div {:class "space-y-4"}
+                                                [mm-portfolio-utils/api-component-card
+                                                 {:component-name "label"
+                                                  :description "Label component"
+                                                  :props [[":class"
+                                                           "any, optional - Component prop"]]}]
+                                                [:div {:class "border rounded-lg p-4 bg-muted/50"}
+                                                 [:h4 {:class "text-sm font-semibold mb-2"}
+                                                  "Usage Example"]
+                                                 [:pre {:class "text-xs overflow-x-auto"}
+                                                  [:code "[label {}]"]]]]]]))
 
 (defscene
  label-demo

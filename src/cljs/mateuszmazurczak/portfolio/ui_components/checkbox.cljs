@@ -5,10 +5,41 @@
    [mateuszmazurczak.ui.components.field    :as field]
    [mateuszmazurczak.ui.components.label    :as label]
    [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]]
-   [reagent.core                            :as r]))
+   [reagent.core                            :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Checkbox"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Checkbox component with built-in check indicator."
+            :npm-install "npm install @radix-ui/react-checkbox lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.checkbox)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/checkbox.cljs"
+            :filename "checkbox.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Checkbox component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-4xl"}
+                                              [:div {:class "space-y-6"}
+                                               [:div
+                                                [:p {:class "text-sm text-muted-foreground"}
+                                                 "All available props for Checkbox components."]]
+                                               [:div {:class "space-y-4"}
+                                                [mm-portfolio-utils/api-component-card
+                                                 {:component-name "checkbox"
+                                                  :description "Checkbox component"
+                                                  :props [[":class"
+                                                           "any, optional - Component prop"]]}]
+                                                [:div {:class "border rounded-lg p-4 bg-muted/50"}
+                                                 [:h4 {:class "text-sm font-semibold mb-2"}
+                                                  "Usage Example"]
+                                                 [:pre {:class "text-xs overflow-x-auto"}
+                                                  [:code "[checkbox {}]"]]]]]]))
 
 (defscene
  checkbox-demo

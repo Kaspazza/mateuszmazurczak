@@ -4,10 +4,44 @@
    [mateuszmazurczak.portfolio.utils       :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.button  :as button]
    [mateuszmazurczak.ui.components.spinner :as spinner]
-   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Button"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Button component with support for multiple variants and sizes."
+            :npm-install "npm install @radix-ui/react-slot"
+            :source-code (embed-source mateuszmazurczak.ui.components.button)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/button.cljs"
+            :filename "button.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Button component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Button components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "button"
+                :description "Button component"
+                :props [[":variant" "any, optional - Component prop"]
+                        [":size" "any, optional - Component prop"]
+                        [":class" "any, optional - Component prop"]
+                        [":as-child" "any, optional - Component prop"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[button {}]"]]]]]]))
 
 (defscene
  button-default

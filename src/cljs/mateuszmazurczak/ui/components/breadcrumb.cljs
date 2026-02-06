@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.breadcrumb
   "Breadcrumb navigation component for displaying hierarchical page location.
-  https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/"
+  https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/slot"
   (:require
    ["@radix-ui/react-slot"        :refer [Slot]]
    ["lucide-react"                :refer [ChevronRight MoreHorizontal]]

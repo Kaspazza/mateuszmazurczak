@@ -5,10 +5,69 @@
    [mateuszmazurczak.ui.components.button  :as button]
    [mateuszmazurczak.ui.components.command :as sut]
    [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]
-   [reagent.core                           :as r]))
+   [reagent.core                           :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Command"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Command palette component built on cmdk (Command Menu Dialog Kit)."
+            :npm-install "npm install cmdk lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.command)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/command.cljs"
+            :filename "command.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Command component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Command components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "command"
+                                             :description "Command component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "command-dialog"
+       :description "Command dialog component"
+       :props [[":title" "any, optional - Component prop"]
+               [":description" "any, optional - Component prop"]
+               [":class" "any, optional - Component prop"]
+               [":showCloseButton" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "command-input"
+                                             :description "Command input component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "command-list"
+                                             :description "Command list component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "command-empty"
+                                             :description "Command empty component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "command-group"
+                                             :description "Command group component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "command-separator"
+                                             :description "Command separator component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "command-item"
+                                             :description "Command item component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "command-shortcut"
+                                             :description "Command shortcut component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[command {}]"]]]]]]))
 
 (defscene
  command-demo

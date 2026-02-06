@@ -4,10 +4,65 @@
    [mateuszmazurczak.ui.components.field  :as field]
    [mateuszmazurczak.ui.components.select :as sut]
    [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]]
-   [reagent.core                          :as r]))
+   [reagent.core                          :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Select"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "https://www.radix-ui.com/primitives/docs/components/select."
+            :npm-install "npm install @radix-ui/react-select"
+            :source-code (embed-source mateuszmazurczak.ui.components.select)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/select.cljs"
+            :filename "select.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Select component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Select components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "select"
+                                             :description "Select component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "select-group"
+                                             :description "Select group component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "select-value"
+                                             :description "Select value component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "select-trigger"
+                                             :description "Select trigger component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":size" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "select-content"
+                                             :description "Select content component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":position" "any, optional - Component prop"]
+                                                     [":align" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "select-label"
+                                             :description "Select label component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "select-item"
+                                             :description "Select item component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "select-separator"
+                                             :description "Select separator component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[select {}]"]]]]]]))
 
 (defscene
  select-demo

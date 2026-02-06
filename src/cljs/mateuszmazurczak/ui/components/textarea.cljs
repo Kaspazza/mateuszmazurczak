@@ -2,7 +2,12 @@
   "Textarea component for forms.
   
   A styled native HTML textarea element with comprehensive styling for
-  multi-line text input."
+  multi-line text input.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 

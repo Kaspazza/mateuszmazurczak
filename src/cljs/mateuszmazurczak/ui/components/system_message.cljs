@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.system-message
   "System message component for displaying notifications, alerts, and status messages.
-  Supports multiple variants (action, error, warning) with optional icons and CTAs."
+  Supports multiple variants (action, error, warning) with optional icons and CTAs.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["lucide-react"                        :refer [AlertCircle AlertTriangle Info]]
    [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]

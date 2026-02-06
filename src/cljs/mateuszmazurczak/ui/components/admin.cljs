@@ -1,5 +1,10 @@
 (ns mateuszmazurczak.ui.components.admin
-  "Admin UI components."
+  "Admin UI components.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["lucide-react"                        :refer [Shield Trash2]]
    [mateuszmazurczak.ui.components.button :as button]))

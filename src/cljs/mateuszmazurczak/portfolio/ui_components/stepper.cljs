@@ -5,10 +5,56 @@
    [mateuszmazurczak.ui.components.button  :as button]
    [mateuszmazurczak.ui.components.stepper :as sut]
    [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]
-   [reagent.core                           :as r]))
+   [reagent.core                           :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Stepper"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Pure presentational stepper components using React Context."
+            :npm-install "npm install react"
+            :source-code (embed-source mateuszmazurczak.ui.components.stepper)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/stepper.cljs"
+            :filename "stepper.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Stepper component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Stepper components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card
+      {:component-name "stepper"
+       :description "Stepper component"
+       :props [[":current-step" "any, optional - Component prop"]
+               [":on-step-change" "any, optional - Component prop"]
+               [":variant" "any, optional - Component prop"]
+               [":label-orientation" "any, optional - Component prop"]
+               [":reverse-progress?" "any, optional - Component prop"]
+               [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "stepper-title"
+                                             :description "Stepper title component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "stepper-description"
+                                             :description "Stepper description component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "stepper-controls"
+                                             :description "Stepper controls component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[stepper {}]"]]]]]]))
 
 (defn- step-data
   []

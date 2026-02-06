@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.checkbox
   "Checkbox component with built-in check indicator.
-  https://www.radix-ui.com/primitives/docs/components/checkbox"
+  https://www.radix-ui.com/primitives/docs/components/checkbox
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/checkbox"
   (:require
    ["@radix-ui/react-checkbox"    :as CheckboxPrimitive]
    ["lucide-react"                :refer [Check]]

@@ -17,7 +17,13 @@
          \"Toggle\"]]
      [sidebar-content {}
        ;; menu items
-       ]]"
+       ]]
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/slot"
   (:require
    ["@radix-ui/react-slot"                   :refer [Slot]]
    ["lucide-react"                           :refer [PanelLeft]]

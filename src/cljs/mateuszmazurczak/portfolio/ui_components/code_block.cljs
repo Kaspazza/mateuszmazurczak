@@ -3,10 +3,50 @@
    [mateuszmazurczak.portfolio.utils          :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.button     :as button]
    [mateuszmazurczak.ui.components.code-block :as sut]
-   [portfolio.reagent-18                      :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                      :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Code Block"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Code block component with syntax highlighting using Shiki."
+            :npm-install "npm install shiki"
+            :source-code (embed-source mateuszmazurczak.ui.components.code_block)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/code_block.cljs"
+            :filename "code_block.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Code Block component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Code Block components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "code-block"
+                                             :description "Code block component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "highlight"
+                                             :description "Highlight component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "hello"
+                                             :description "Hello component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "code-block-group"
+                                             :description "Code block group component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[code-block {}]"]]]]]]))
 
 (defscene
  code-block-single

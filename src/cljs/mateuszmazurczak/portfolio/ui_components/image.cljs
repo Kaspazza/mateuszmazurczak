@@ -2,10 +2,77 @@
   (:require
    [mateuszmazurczak.portfolio.utils     :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.image :as sut]
-   [portfolio.reagent-18                 :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                 :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Image"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description
+            "Optimized image components with lazy loading, responsive images, and modern formats."
+            :npm-install "No external dependencies"
+            :source-code (embed-source mateuszmazurczak.ui.components.image)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/image.cljs"
+            :filename "image.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Image component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Image components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "optimized-img"
+                                             :description "Optimized img component"
+                                             :props
+                                             [[":src" "any, optional - Component prop"]
+                                              [":alt" "any, optional - Component prop"]
+                                              [":width" "any, optional - Component prop"]
+                                              [":height" "any, optional - Component prop"]
+                                              [":loading" "any, optional - Component prop"]
+                                              [":fetchpriority" "any, optional - Component prop"]
+                                              [":class" "any, optional - Component prop"]
+                                              [":on-load" "any, optional - Component prop"]
+                                              [":on-error" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "progressive-img"
+                                             :description "Progressive img component"
+                                             :props
+                                             [[":src" "any, optional - Component prop"]
+                                              [":placeholder" "any, optional - Component prop"]
+                                              [":alt" "any, optional - Component prop"]
+                                              [":width" "any, optional - Component prop"]
+                                              [":height" "any, optional - Component prop"]
+                                              [":loading" "any, optional - Component prop"]
+                                              [":class" "any, optional - Component prop"]
+                                              [":img-class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "responsive-img"
+                                             :description "Responsive img component"
+                                             :props [[":sources" "any, optional - Component prop"]
+                                                     [":src" "any, optional - Component prop"]
+                                                     [":alt" "any, optional - Component prop"]
+                                                     [":width" "any, optional - Component prop"]
+                                                     [":height" "any, optional - Component prop"]
+                                                     [":loading" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "avatar-img"
+                                             :description "Avatar img component"
+                                             :props [[":src" "any, optional - Component prop"]
+                                                     [":alt" "any, optional - Component prop"]
+                                                     [":size" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[optimized-img {}]"]]]]]]))
 
 (defscene
  optimized-image

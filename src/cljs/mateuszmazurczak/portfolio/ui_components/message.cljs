@@ -4,10 +4,60 @@
    [mateuszmazurczak.portfolio.utils       :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.button  :as button]
    [mateuszmazurczak.ui.components.message :as sut]
-   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Message"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Message component for chat interfaces."
+            :npm-install "No external dependencies"
+            :source-code (embed-source mateuszmazurczak.ui.components.message)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/message.cljs"
+            :filename "message.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Message component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Message components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "message"
+                                             :description "Message component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "message-avatar"
+                                             :description "Message avatar component"
+                                             :props [[":src" "any, optional - Component prop"]
+                                                     [":alt" "any, optional - Component prop"]
+                                                     [":fallback" "any, optional - Component prop"]
+                                                     [":delay-ms" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "message-content"
+                                             :description "Message content component"
+                                             :props [[":markdown?" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "message-actions"
+                                             :description "Message actions component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "message-action"
+                                             :description "Message action component"
+                                             :props [[":tooltip" "any, optional - Component prop"]
+                                                     [":side" "any, optional - Component prop"]
+                                                     [":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[message {}]"]]]]]]))
 
 (defscene
  message-basic

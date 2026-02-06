@@ -5,10 +5,73 @@
    [mateuszmazurczak.ui.components.input    :as input]
    [mateuszmazurczak.ui.components.select   :as select]
    [mateuszmazurczak.ui.components.textarea :as textarea]
-   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Field"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Field component for building accessible form layouts."
+            :npm-install "No external dependencies"
+            :source-code (embed-source mateuszmazurczak.ui.components.field)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/field.cljs"
+            :filename "field.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Field component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Field components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "field-set"
+                                             :description "Field set component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-legend"
+                                             :description "Field legend component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":variant"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-group"
+                                             :description "Field group component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field"
+                                             :description "Field component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":orientation"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-content"
+                                             :description "Field content component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-label"
+                                             :description "Field label component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-title"
+                                             :description "Field title component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-description"
+                                             :description "Field description component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-separator"
+                                             :description "Field separator component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "field-error"
+                                             :description "Field error component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":errors" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[field-set {}]"]]]]]]))
 
 (defscene
  field-with-input

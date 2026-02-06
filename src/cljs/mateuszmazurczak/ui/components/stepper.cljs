@@ -5,7 +5,13 @@
   - Context-based: stepper provider shares state with child components
   - Composable: small components that work together
   - UI copied 1:1 from shadcn/ui stepper example
-  - Purely presentational: parent manages current-step state"
+  - Purely presentational: parent manages current-step state
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on shadcn/ui component patterns.
+Documentation: https://ui.shadcn.com/docs/components"
   (:require
    ["react"                               :as react]
    [mateuszmazurczak.ui.components.button :as mateuszmazurczak-button]

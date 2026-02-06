@@ -5,10 +5,58 @@
    [mateuszmazurczak.ui.components.input  :as input]
    [mateuszmazurczak.ui.components.label  :as label]
    [mateuszmazurczak.ui.components.sheet  :as sut]
-   [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                  :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Sheet"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description
+            "Sheet (drawer/slide-out) component for modal content that slides in from edges."
+            :npm-install "npm install @radix-ui/react-dialog lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.sheet)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/sheet.cljs"
+            :filename "sheet.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Sheet component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Sheet components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "sheet-overlay"
+                                             :description "Sheet overlay component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sheet-content"
+                                             :description "Sheet content component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":side" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sheet-header"
+                                             :description "Sheet header component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sheet-footer"
+                                             :description "Sheet footer component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sheet-title"
+                                             :description "Sheet title component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "sheet-description"
+                                             :description "Sheet description component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[sheet-overlay {}]"]]]]]]))
 
 (defscene
  sheet-demo

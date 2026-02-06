@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.dropdown-menu
   "Dropdown menu component for displaying a menu of actions.
-  https://www.radix-ui.com/primitives/docs/components/dropdown-menu"
+  https://www.radix-ui.com/primitives/docs/components/dropdown-menu
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/dropdown-menu"
   (:require
    ["@radix-ui/react-dropdown-menu" :as DropdownMenuPrimitive]
    ["lucide-react"                  :refer [Check ChevronRight Circle]]

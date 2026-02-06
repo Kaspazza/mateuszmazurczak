@@ -4,10 +4,42 @@
    [mateuszmazurczak.ui.components.button   :as button]
    [mateuszmazurczak.ui.components.label    :as label]
    [mateuszmazurczak.ui.components.textarea :as sut]
-   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Textarea"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Textarea component for forms."
+            :npm-install "No external dependencies"
+            :source-code (embed-source mateuszmazurczak.ui.components.textarea)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/textarea.cljs"
+            :filename "textarea.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Textarea component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Textarea components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "textarea"
+                :description "Textarea component"
+                :props [[":class" "any, optional - Component prop"]
+                        [":auto-size?" "any, optional - Component prop"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[textarea {}]"]]]]]]))
 
 (defscene
  textarea-demo

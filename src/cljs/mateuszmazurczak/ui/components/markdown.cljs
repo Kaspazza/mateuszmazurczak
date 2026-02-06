@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.markdown
   "Markdown component with syntax highlighting and rich formatting.
-  Uses react-markdown with remark plugins for GFM and line breaks."
+  Uses react-markdown with remark plugins for GFM and line breaks.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["marked"                                  :refer [marked]]
    ["react-markdown"                          :default ReactMarkdown]

@@ -2,10 +2,40 @@
   (:require
    [mateuszmazurczak.portfolio.utils        :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.markdown :as sut]
-   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                    :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Markdown"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Markdown component with syntax highlighting and rich formatting."
+            :npm-install "npm install marked react-markdown remark-breaks remark-gfm"
+            :source-code (embed-source mateuszmazurczak.ui.components.markdown)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/markdown.cljs"
+            :filename "markdown.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Markdown component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-4xl"}
+                                              [:div {:class "space-y-6"}
+                                               [:div
+                                                [:p {:class "text-sm text-muted-foreground"}
+                                                 "All available props for Markdown components."]]
+                                               [:div {:class "space-y-4"}
+                                                [mm-portfolio-utils/api-component-card
+                                                 {:component-name "hello"
+                                                  :description "Hello component"
+                                                  :props []}]
+                                                [:div {:class "border rounded-lg p-4 bg-muted/50"}
+                                                 [:h4 {:class "text-sm font-semibold mb-2"}
+                                                  "Usage Example"]
+                                                 [:pre {:class "text-xs overflow-x-auto"}
+                                                  [:code "[hello {}]"]]]]]]))
 
 (defscene
  markdown-headings

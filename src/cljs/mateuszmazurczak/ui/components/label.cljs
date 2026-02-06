@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.label
   "Label component for form fields with accessibility support.
-  https://www.radix-ui.com/primitives/docs/components/label"
+  https://www.radix-ui.com/primitives/docs/components/label
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/label"
   (:require
    ["@radix-ui/react-label"       :as RadixLabel]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

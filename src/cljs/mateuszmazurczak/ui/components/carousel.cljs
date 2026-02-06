@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.carousel
   "Carousel component built on top of Embla Carousel.
-  https://www.embla-carousel.com/"
+  https://www.embla-carousel.com/
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["embla-carousel-react"                :as embla-carousel]
    ["lucide-react"                        :refer [ArrowLeft ArrowRight]]

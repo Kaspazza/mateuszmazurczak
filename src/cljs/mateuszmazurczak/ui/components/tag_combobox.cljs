@@ -2,7 +2,12 @@
   "Tag combobox component for selecting existing tags or creating new ones.
   
   Responsive component that uses popover on desktop and sheet on mobile.
-  Allows filtering through existing tags and creating new ones if no match found."
+  Allows filtering through existing tags and creating new ones if no match found.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["lucide-react"                          :refer [Check Plus]]
    [clojure.string                          :as str]

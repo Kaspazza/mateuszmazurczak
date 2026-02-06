@@ -4,10 +4,43 @@
    [mateuszmazurczak.portfolio.utils       :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.badge   :as sut]
    [mateuszmazurczak.ui.components.spinner :as spinner]
-   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]))
+   [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Badge"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Badge component with support for multiple variants."
+            :npm-install "npm install @radix-ui/react-slot"
+            :source-code (embed-source mateuszmazurczak.ui.components.badge)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/badge.cljs"
+            :filename "badge.cljs"}])
+
+(defscene api-reference
+          "Complete reference for all Badge component props and usage patterns."
+          []
+          (mm-portfolio-utils/wrap-component
+           [:div {:class "p-6 max-w-4xl"}
+            [:div {:class "space-y-6"}
+             [:div
+              [:p {:class "text-sm text-muted-foreground"}
+               "All available props for Badge components."]]
+             [:div {:class "space-y-4"}
+              [mm-portfolio-utils/api-component-card
+               {:component-name "badge"
+                :description "Badge component"
+                :props [[":variant" "any, optional - Component prop"]
+                        [":class" "any, optional - Component prop"]
+                        [":as-child" "any, optional - Component prop"]]}]
+              [:div {:class "border rounded-lg p-4 bg-muted/50"}
+               [:h4 {:class "text-sm font-semibold mb-2"}
+                "Usage Example"]
+               [:pre {:class "text-xs overflow-x-auto"}
+                [:code "[badge {}]"]]]]]]))
 
 (defscene
  badge-demo

@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.badge
   "Badge component with support for multiple variants.
-  Supports polymorphic rendering via :as-child prop."
+  Supports polymorphic rendering via :as-child prop.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/slot"
   (:require
    ["@radix-ui/react-slot"        :refer [Slot]]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

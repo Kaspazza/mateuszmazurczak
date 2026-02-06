@@ -7,10 +7,62 @@
    [mateuszmazurczak.ui.components.drawer        :as drawer]
    [mateuszmazurczak.ui.components.dropdown-menu :as dropdown-menu]
    [portfolio.reagent-18                         :refer-macros [defscene configure-scenes]]
-   [reagent.core                                 :as r]))
+   [reagent.core                                 :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Breadcrumb"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description
+            "Breadcrumb navigation component for displaying hierarchical page location."
+            :npm-install "npm install @radix-ui/react-slot lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.breadcrumb)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/breadcrumb.cljs"
+            :filename "breadcrumb.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Breadcrumb component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Breadcrumb components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "breadcrumb"
+                                             :description "Breadcrumb component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-list"
+                                             :description "Breadcrumb list component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-item"
+                                             :description "Breadcrumb item component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-link"
+                                             :description "Breadcrumb link component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":as-child"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-page"
+                                             :description "Breadcrumb page component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-separator"
+                                             :description "Breadcrumb separator component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "breadcrumb-ellipsis"
+                                             :description "Breadcrumb ellipsis component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[breadcrumb {}]"]]]]]]))
 
 (defscene
  breadcrumb-demo

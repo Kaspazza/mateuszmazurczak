@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.radio-group
   "Radio Group component built on Radix UI primitives.
-  https://www.radix-ui.com/primitives/docs/components/radio-group"
+  https://www.radix-ui.com/primitives/docs/components/radio-group
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/radio-group"
   (:require
    ["@radix-ui/react-radio-group" :as RadioGroupPrimitive]
    ["lucide-react"                :refer [CircleIcon]]

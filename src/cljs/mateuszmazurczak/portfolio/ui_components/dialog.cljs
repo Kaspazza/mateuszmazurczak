@@ -9,10 +9,70 @@
    [mateuszmazurczak.ui.components.input   :as input]
    [mateuszmazurczak.ui.components.label   :as label]
    [portfolio.reagent-18                   :refer-macros [defscene configure-scenes]]
-   [reagent.core                           :as r]))
+   [reagent.core                           :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Dialog"})
+
+(defscene installation
+          "Install dependencies and copy the component code into your project."
+          []
+          [mm-portfolio-utils/installation-scene
+           {:description "Dialog (modal) component with overlay and content area."
+            :npm-install "npm install @radix-ui/react-dialog lucide-react"
+            :source-code (embed-source mateuszmazurczak.ui.components.dialog)
+            :namespace-path "src/cljs/mateuszmazurczak/ui/components/dialog.cljs"
+            :filename "dialog.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Dialog component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Dialog components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "dialog"
+                                             :description "Dialog component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-trigger"
+                                             :description "Dialog trigger component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-portal"
+                                             :description "Dialog portal component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-close"
+                                             :description "Dialog close component"
+                                             :props []}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-overlay"
+                                             :description "Dialog overlay component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-content"
+                                             :description "Dialog content component"
+                                             :props [[":class" "any, optional - Component prop"]
+                                                     [":showCloseButton"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-header"
+                                             :description "Dialog header component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-footer"
+                                             :description "Dialog footer component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-title"
+                                             :description "Dialog title component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "dialog-description"
+                                             :description "Dialog description component"
+                                             :props [[":class" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[dialog {}]"]]]]]]))
 
 (defn- profile-form
   [{:keys [class]}]

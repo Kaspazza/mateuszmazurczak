@@ -8,12 +8,89 @@
    [mateuszmazurczak.ui.components.data-table    :as sut]
    [mateuszmazurczak.ui.components.dropdown-menu :as dropdown-menu]
    [portfolio.reagent-18                         :refer-macros [defscene configure-scenes]]
-   [reagent.core                                 :as r]))
+   [reagent.core                                 :as r])
+  (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
                    :title "Data Table"})
 
-;; Sample data
+(defscene
+ installation
+ "Install dependencies and copy the component code into your project."
+ []
+ [mm-portfolio-utils/installation-scene
+  {:description "Data table component with sorting, filtering, pagination, and selection."
+   :npm-install
+   "npm install @dnd-kit/core @dnd-kit/modifiers @dnd-kit/sortable @dnd-kit/utilities @tanstack/react-table lucide-react"
+   :source-code (embed-source mateuszmazurczak.ui.components.data_table)
+   :namespace-path "src/cljs/mateuszmazurczak/ui/components/data_table.cljs"
+   :filename "data_table.cljs"}])
+
+(defscene
+ api-reference
+ "Complete reference for all Data Table component props and usage patterns."
+ []
+ (mm-portfolio-utils/wrap-component
+  [:div {:class "p-6 max-w-4xl"}
+   [:div {:class "space-y-6"}
+    [:div
+     [:p {:class "text-sm text-muted-foreground"}
+      "All available props for Data Table components."]]
+    [:div {:class "space-y-4"}
+     [mm-portfolio-utils/api-component-card {:component-name "drag-handle-cell-ui"
+                                             :description "Drag handle cell ui component"
+                                             :props [[":listeners" "any, optional - Component prop"]
+                                                     [":attributes"
+                                                      "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card {:component-name "faceted-filter-ui"
+                                             :description "Faceted filter ui component"
+                                             :props
+                                             [[":title" "any, optional - Component prop"]
+                                              [":options" "any, optional - Component prop"]
+                                              [":selected-values" "any, optional - Component prop"]
+                                              [":on-change" "any, optional - Component prop"]
+                                              [":facet-counts" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "toolbar-ui"
+       :description "Toolbar ui component"
+       :props [[":text-filter-value" "any, optional - Component prop"]
+               [":on-text-filter-change" "any, optional - Component prop"]
+               [":text-placeholder" "any, optional - Component prop"]
+               [":faceted-filters" "any, optional - Component prop"]
+               [":is-filtered?" "any, optional - Component prop"]
+               [":on-reset-filters" "any, optional - Component prop"]
+               [":toolbar-end" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "column-header-ui"
+       :description "Column header ui component"
+       :props [[":title" "any, optional - Component prop"]
+               [":can-sort?" "any, optional - Component prop"]
+               [":sort-state" "any, optional - Component prop"]
+               [":on-toggle-sort" "any, optional - Component prop"]
+               [":on-clear-sort" "any, optional - Component prop"]
+               [":on-toggle-visibility" "any, optional - Component prop"]
+               [":class" "any, optional - Component prop"]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "pagination-ui"
+       :description "Pagination ui component"
+       :props [[":page-size" "any, optional - Component prop"]
+               [":page-index" "any, optional - Component prop"]
+               [":page-count" "any, optional - Component prop"]
+               [":selected-count" "any, optional - Component prop"]
+               [":total-count" "any, optional - Component prop"]
+               [":can-previous?" "any, optional - Component prop"]
+               [":can-next?" "any, optional - Component prop"]
+               [":on-page-size-change" "any, optional - Component prop"]
+               [":on-first-page" "any, optional - Component prop"]
+               [":on-previous-page" "any, optional - Component prop"]
+               [":on-next-page" "any, optional - Component prop"]
+               [":on-last-page" "any, optional - Component prop"]]}]
+     [:div {:class "border rounded-lg p-4 bg-muted/50"}
+      [:h4 {:class "text-sm font-semibold mb-2"}
+       "Usage Example"]
+      [:pre {:class "text-xs overflow-x-auto"}
+       [:code "[drag-handle-cell-ui {}]"]]]]]]))
+
 (defn make-task-data
   []
   [{:id "TASK-001"

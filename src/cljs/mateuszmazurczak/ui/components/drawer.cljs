@@ -1,5 +1,10 @@
 (ns mateuszmazurczak.ui.components.drawer
-  "Drawer component based on Vaul drawer primitive."
+  "Drawer component based on Vaul drawer primitive.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["vaul"                        :refer [Drawer]]
    [mateuszmazurczak.utils.styles :as styles]))

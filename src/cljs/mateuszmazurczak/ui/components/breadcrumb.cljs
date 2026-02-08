@@ -146,7 +146,7 @@ Documentation: https://www.radix-ui.com/primitives/docs/components/slot"
        (assoc :role "presentation"
               :aria-hidden "true"
               :data-slot "breadcrumb-separator"
-              :class (merge-classes "[&>svg]:w-3.5 [&>svg]:h-3.5" class))
+              :class (merge-classes "[&>svg]:size-3.5" class))
        (dissoc :class-name))
    (if (seq children) (first children) (r/as-element [:> ChevronRight]))])
 

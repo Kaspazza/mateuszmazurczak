@@ -272,7 +272,7 @@ Documentation: https://www.radix-ui.com/primitives/docs/components/tooltip"
                     "data-[side=left]:slide-in-from-right-2 "
                     "data-[side=right]:slide-in-from-left-2 "
                     "data-[side=top]:slide-in-from-bottom-2 "
-                    "origin-[--radix-tooltip-content-transform-origin]")
+                    "origin-(--radix-tooltip-content-transform-origin)")
                content-class)}
        side (assoc :side (name side))
        align (assoc :align (name align))

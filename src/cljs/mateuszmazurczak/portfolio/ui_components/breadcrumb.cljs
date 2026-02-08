@@ -89,11 +89,10 @@
      [sut/breadcrumb-separator {}]
      [sut/breadcrumb-item {}
       [dropdown-menu/dropdown-menu {}
-       [dropdown-menu/dropdown-menu-trigger {:as-child true}
-        [:button {:class "flex items-center gap-1"}
-         [sut/breadcrumb-ellipsis {}]
-         [:span {:class "sr-only"}
-          "Toggle menu"]]]
+       [dropdown-menu/dropdown-menu-trigger {:class "flex items-center gap-1"}
+        [sut/breadcrumb-ellipsis {:class "size-4"}]
+        [:span {:class "sr-only"}
+         "Toggle menu"]]
        [dropdown-menu/dropdown-menu-content {:align "start"}
         [dropdown-menu/dropdown-menu-item {}
          "Documentation"]

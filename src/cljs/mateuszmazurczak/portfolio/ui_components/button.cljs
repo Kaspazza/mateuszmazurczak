@@ -37,7 +37,8 @@
        :props
        [[":variant"
          "keyword, optional (default :default). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
-        [":size" "keyword, optional (default :default). One of: :default | :sm | :lg | :icon"]
+        [":size"
+         "keyword, optional (default :default). One of: :xs | :sm | :default | :lg | :icon | :icon-xs | :icon-sm | :icon-lg"]
         [":class" "string, optional - Additional Tailwind classes"]
         [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
@@ -187,9 +188,12 @@
   Based on shadcn/ui Button — https://ui.shadcn.com/docs/components/button
   Radix primitive: @radix-ui/react-slot
 
-  Our wrapper supports :sm, :default, :lg, and :icon sizes."
+  Our wrapper supports :xs, :sm, :default, :lg, and icon sizes (:icon, :icon-xs, :icon-sm, :icon-lg)."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 flex flex-wrap items-center gap-3"}
+                                     (button/button {:variant :outline
+                                                     :size :xs}
+                                                    "XS")
                                      (button/button {:variant :outline
                                                      :size :sm}
                                                     "Small")
@@ -222,8 +226,8 @@
  button-xs-size
  "Extra-small button size for dense interfaces.
 
-  Custom extension — not part of shadcn/ui.
-  Our wrapper adds :xs for compact toolbars or inline actions."
+  Aligned with the current shadcn style profile.
+  Use :size :xs for compact toolbars or inline actions."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
                                      (button/button {:size :xs

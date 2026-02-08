@@ -48,7 +48,8 @@ Custom component implementation."
   children]
  (let [use-embla-carousel (or (gobj/get embla-carousel "default") embla-carousel)
        embla-opts (clj->js (assoc opts :axis (if (= orientation :horizontal) "x" "y")))
-       [carousel-ref api] (use-embla-carousel embla-opts (clj->js plugins))
+       embla-plugins (clj->js (or plugins []))
+       [carousel-ref api] (use-embla-carousel embla-opts embla-plugins)
        [can-scroll-prev set-can-scroll-prev] (rhooks/use-state false)
        [can-scroll-next set-can-scroll-next] (rhooks/use-state false)
        on-select (rhooks/use-callback (fn [embla-api]
@@ -105,19 +106,22 @@ Custom component implementation."
     :as props}
    &
    children]
-  (let [{:keys [carousel-ref orientation]} (use-carousel)]
+  (let [{:keys [carousel-ref orientation]} (use-carousel)
+        normalized-children
+        (mapcat (fn [child]
+                  (if (and (sequential? child) (sequential? (first child))) child [child]))
+         children)]
     [:div {:ref carousel-ref
            :class "overflow-hidden"
            :data-slot "carousel-content"}
      (into [:div
-            (-> props
+            (-> (dissoc props :class)
                 (assoc :class (merge-classes
                                "flex"
                                (if (= orientation :horizontal) "-ml-4" "-mt-4 flex-col")
                                class)
-                       :data-slot "carousel-content-inner")
-                (dissoc :class))]
-           children)]))
+                       :data-slot "carousel-content-inner"))]
+           normalized-children)]))
 
 (defn carousel-item
   "Carousel item. Individual slide in the carousel.
@@ -134,14 +138,13 @@ Custom component implementation."
    children]
   (let [{:keys [orientation]} (use-carousel)]
     (into [:div
-           (-> props
+           (-> (dissoc props :class)
                (assoc :role "group"
                       :aria-roledescription "slide"
                       :data-slot "carousel-item"
                       :class (merge-classes "min-w-0 shrink-0 grow-0 basis-full"
                                             (if (= orientation :horizontal) "pl-4" "pt-4")
-                                            class))
-               (dissoc :class))]
+                                            class)))]
           children)))
 
 (defn carousel-previous
@@ -160,7 +163,7 @@ Custom component implementation."
     :as props}]
   (let [{:keys [orientation scroll-prev can-scroll-prev]} (use-carousel)]
     [mateuszmazurczak-button/button
-     (-> props
+     (-> (dissoc props :class)
          (assoc :variant variant
                 :size size
                 :class (merge-classes "absolute size-8 rounded-full"
@@ -170,8 +173,7 @@ Custom component implementation."
                                       class)
                 :disabled (not can-scroll-prev)
                 :on-click scroll-prev
-                :data-slot "carousel-previous")
-         (dissoc :class))
+                :data-slot "carousel-previous"))
      [:> ArrowLeft]
      [:span {:class "sr-only"}
       "Previous slide"]]))
@@ -192,7 +194,7 @@ Custom component implementation."
     :as props}]
   (let [{:keys [orientation scroll-next can-scroll-next]} (use-carousel)]
     [mateuszmazurczak-button/button
-     (-> props
+     (-> (dissoc props :class)
          (assoc :variant variant
                 :size size
                 :class (merge-classes "absolute size-8 rounded-full"
@@ -202,8 +204,7 @@ Custom component implementation."
                                       class)
                 :disabled (not can-scroll-next)
                 :on-click scroll-next
-                :data-slot "carousel-next")
-         (dissoc :class))
+                :data-slot "carousel-next"))
      [:> ArrowRight]
      [:span {:class "sr-only"}
       "Next slide"]]))

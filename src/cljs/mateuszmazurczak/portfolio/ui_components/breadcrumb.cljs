@@ -89,16 +89,16 @@
      [sut/breadcrumb-separator {}]
      [sut/breadcrumb-item {}
       [dropdown-menu/dropdown-menu {}
-       [dropdown-menu/dropdown-menu-trigger {:class "flex items-center gap-1"}
+       [dropdown-menu/dropdown-menu-trigger {:class "flex items-center gap-1 cursor-pointer"}
         [sut/breadcrumb-ellipsis {:class "size-4"}]
         [:span {:class "sr-only"}
          "Toggle menu"]]
        [dropdown-menu/dropdown-menu-content {:align "start"}
-        [dropdown-menu/dropdown-menu-item {}
+        [dropdown-menu/dropdown-menu-item {:class "cursor-pointer"}
          "Documentation"]
-        [dropdown-menu/dropdown-menu-item {}
+        [dropdown-menu/dropdown-menu-item {:class "cursor-pointer"}
          "Themes"]
-        [dropdown-menu/dropdown-menu-item {}
+        [dropdown-menu/dropdown-menu-item {:class "cursor-pointer"}
          "GitHub"]]]]
      [sut/breadcrumb-separator {}]
      [sut/breadcrumb-item {}
@@ -108,6 +108,30 @@
      [sut/breadcrumb-item {}
       [sut/breadcrumb-page {}
        "Breadcrumb"]]]]]))
+
+(defscene
+ breadcrumb-simple
+ "Simple breadcrumb link example.
+
+  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
+  Radix primitive: @radix-ui/react-separator
+
+  Use breadcrumb-link for navigable segments and breadcrumb-page for current."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
+                                     [sut/breadcrumb {}
+                                      [sut/breadcrumb-list {}
+                                       [sut/breadcrumb-item {}
+                                        [sut/breadcrumb-link {:href "#"}
+                                         "Home"]]
+                                       [sut/breadcrumb-separator {}]
+                                       [sut/breadcrumb-item {}
+                                        [sut/breadcrumb-link {:href "#"}
+                                         "Components"]]
+                                       [sut/breadcrumb-separator {}]
+                                       [sut/breadcrumb-item {}
+                                        [sut/breadcrumb-page {}
+                                         "Breadcrumb"]]]]]))
 
 (defscene
  breadcrumb-ellipsis
@@ -136,6 +160,32 @@
      [sut/breadcrumb-item {}
       [sut/breadcrumb-page {}
        "Breadcrumb"]]]]]))
+
+(defscene
+ breadcrumb-separator
+ "Breadcrumb with custom separator icon.
+
+  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
+  Radix primitives: @radix-ui/react-separator
+
+  Custom separators can be inserted per segment."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
+                                     [sut/breadcrumb {}
+                                      [sut/breadcrumb-list {}
+                                       [sut/breadcrumb-item {}
+                                        [sut/breadcrumb-link {:href "#"}
+                                         "Home"]]
+                                       [sut/breadcrumb-separator {}
+                                        [:> Slash]]
+                                       [sut/breadcrumb-item {}
+                                        [sut/breadcrumb-link {:href "#"}
+                                         "Components"]]
+                                       [sut/breadcrumb-separator {}
+                                        [:> Slash]]
+                                       [sut/breadcrumb-item {}
+                                        [sut/breadcrumb-page {}
+                                         "Breadcrumb"]]]]]))
 
 (defscene
  breadcrumb-dropdown
@@ -174,31 +224,7 @@
       [sut/breadcrumb-page {}
        "Breadcrumb"]]]]]))
 
-(defscene
- breadcrumb-separator
- "Breadcrumb with custom separator icon.
 
-  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
-  Radix primitives: @radix-ui/react-separator
-
-  Custom separators can be inserted per segment."
- []
- (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
-                                     [sut/breadcrumb {}
-                                      [sut/breadcrumb-list {}
-                                       [sut/breadcrumb-item {}
-                                        [sut/breadcrumb-link {:href "#"}
-                                         "Home"]]
-                                       [sut/breadcrumb-separator {}
-                                        [:> Slash]]
-                                       [sut/breadcrumb-item {}
-                                        [sut/breadcrumb-link {:href "#"}
-                                         "Components"]]
-                                       [sut/breadcrumb-separator {}
-                                        [:> Slash]]
-                                       [sut/breadcrumb-item {}
-                                        [sut/breadcrumb-page {}
-                                         "Breadcrumb"]]]]]))
 
 (defscene
  breadcrumb-responsive
@@ -279,26 +305,3 @@
                              :on-click #(reset! open? false)}
                             "Close")]]]]]]]))))
 
-(defscene
- breadcrumb-link
- "Simple breadcrumb link example.
-
-  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
-  Radix primitive: @radix-ui/react-separator
-
-  Use breadcrumb-link for navigable segments and breadcrumb-page for current."
- []
- (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
-                                     [sut/breadcrumb {}
-                                      [sut/breadcrumb-list {}
-                                       [sut/breadcrumb-item {}
-                                        [sut/breadcrumb-link {:href "#"}
-                                         "Home"]]
-                                       [sut/breadcrumb-separator {}]
-                                       [sut/breadcrumb-item {}
-                                        [sut/breadcrumb-link {:href "#"}
-                                         "Components"]]
-                                       [sut/breadcrumb-separator {}]
-                                       [sut/breadcrumb-item {}
-                                        [sut/breadcrumb-page {}
-                                         "Breadcrumb"]]]]]))

@@ -3,7 +3,6 @@
    ["lucide-react"                               :refer [ChevronDown Slash]]
    [mateuszmazurczak.portfolio.utils             :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.breadcrumb    :as sut]
-   [mateuszmazurczak.ui.components.button        :as button]
    [mateuszmazurczak.ui.components.drawer        :as drawer]
    [mateuszmazurczak.ui.components.dropdown-menu :as dropdown-menu]
    [portfolio.reagent-18                         :refer-macros [defscene configure-scenes]]
@@ -235,7 +234,8 @@
 
   This example shows both desktop (dropdown) and mobile (drawer) patterns."
  []
- (let [open? (r/atom false)
+ (let [dropdown-open? (r/atom false)
+       drawer-open? (r/atom false)
        items [{:href "#"
                :label "Home"}
               {:href "#"
@@ -248,60 +248,63 @@
    (fn []
      (mm-portfolio-utils/wrap-component
       [:div {:class "p-6 space-y-6"}
-       [sut/breadcrumb {}
-        [sut/breadcrumb-list {}
-         [sut/breadcrumb-item {}
-          [sut/breadcrumb-link {:href (:href (first items))}
-           (:label (first items))]]
-         [sut/breadcrumb-separator {}]
-         [sut/breadcrumb-item {}
-          [dropdown-menu/dropdown-menu {:open @open?
-                                        :on-open-change #(reset! open? %)}
-           [dropdown-menu/dropdown-menu-trigger {:as-child true}
-            [:button {:class "flex items-center gap-1"
-                      :aria-label "Toggle menu"}
-             [sut/breadcrumb-ellipsis {}]]]
-           [dropdown-menu/dropdown-menu-content {:align "start"}
-            (for [{:keys [href label]} (subvec (vec items) 1 3)]
-              ^{:key label}
-              [dropdown-menu/dropdown-menu-item {}
-               [:a {:href (or href "#")}
-                label]])]]]
-         [sut/breadcrumb-separator {}]
-         [sut/breadcrumb-item {}
-          [sut/breadcrumb-link {:href "#"
-                                :class "max-w-20 truncate"}
-           "Data Fetching"]]
-         [sut/breadcrumb-separator {}]
-         [sut/breadcrumb-item {}
-          [sut/breadcrumb-page {:class "max-w-20 truncate"}
-           "Caching and Revalidating"]]]]
-       [sut/breadcrumb {}
-        [sut/breadcrumb-list {}
-         [sut/breadcrumb-item {}
-          [sut/breadcrumb-link {:href (:href (first items))}
-           (:label (first items))]]
-         [sut/breadcrumb-separator {}]
-         [sut/breadcrumb-item {}
-          [drawer/drawer {:open @open?
-                          :on-open-change #(reset! open? %)}
-           [drawer/drawer-trigger {}
-            [:button {:aria-label "Toggle menu"}
-             [sut/breadcrumb-ellipsis {}]]]
-           [drawer/drawer-content {}
-            [drawer/drawer-header {:class "text-left"}
-             [drawer/drawer-title {}
-              "Navigate to"]
-             [drawer/drawer-description {}
-              "Select a page to navigate to."]]
-            [:div {:class "grid gap-1 px-4"}
+       [:div {:class "hidden md:block"}
+        [sut/breadcrumb {}
+         [sut/breadcrumb-list {}
+          [sut/breadcrumb-item {}
+           [sut/breadcrumb-link {:href (:href (first items))}
+            (:label (first items))]]
+          [sut/breadcrumb-separator {}]
+          [sut/breadcrumb-item {}
+           [dropdown-menu/dropdown-menu {:open @dropdown-open?
+                                         :on-open-change #(reset! dropdown-open? %)}
+            [dropdown-menu/dropdown-menu-trigger {:as-child true}
+             [:button {:class "flex items-center gap-1"
+                       :aria-label "Toggle menu"}
+              [sut/breadcrumb-ellipsis {}]]]
+            [dropdown-menu/dropdown-menu-content {:align "start"}
              (for [{:keys [href label]} (subvec (vec items) 1 3)]
                ^{:key label}
-               [:a {:href (or href "#")
-                    :class "py-1 text-sm"}
-                label])]
-            [drawer/drawer-footer {:class "pt-4"}
-             (button/button {:variant :outline
-                             :on-click #(reset! open? false)}
-                            "Close")]]]]]]]))))
+               [dropdown-menu/dropdown-menu-item {}
+                [:a {:href (or href "#")}
+                 label]])]]]
+          [sut/breadcrumb-separator {}]
+          [sut/breadcrumb-item {}
+           [sut/breadcrumb-link {:href "#"
+                                 :class "max-w-20 truncate"}
+            "Data Fetching"]]
+          [sut/breadcrumb-separator {}]
+          [sut/breadcrumb-item {}
+           [sut/breadcrumb-page {:class "max-w-20 truncate"}
+            "Caching and Revalidating"]]]]]
+       [:div {:class "md:hidden"}
+        [sut/breadcrumb {}
+         [sut/breadcrumb-list {}
+          [sut/breadcrumb-item {}
+           [sut/breadcrumb-link {:href (:href (first items))}
+            (:label (first items))]]
+          [sut/breadcrumb-separator {}]
+          [sut/breadcrumb-item {}
+           [drawer/drawer {:open @drawer-open?
+                           :on-open-change #(reset! drawer-open? %)}
+            [drawer/drawer-trigger {:class "cursor-pointer"
+                                    :aria-label "Toggle menu"}
+             [sut/breadcrumb-ellipsis {}]]
+            [drawer/drawer-content {}
+             [drawer/drawer-header {:class "text-left"}
+              [drawer/drawer-title {}
+               "Navigate to"]
+              [drawer/drawer-description {}
+               "Select a page to navigate to."]]
+             [:div {:class "grid gap-1 px-4"}
+              (for [{:keys [href label]} (subvec (vec items) 1 3)]
+                ^{:key label}
+                [:a {:href (or href "#")
+                     :class "py-1 text-sm"}
+                 label])]
+             [drawer/drawer-footer {:class "pt-4"}
+              [drawer/drawer-close
+               {:class
+                "inline-flex h-10 w-full items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"}
+               "Close"]]]]]]]]]))))
 

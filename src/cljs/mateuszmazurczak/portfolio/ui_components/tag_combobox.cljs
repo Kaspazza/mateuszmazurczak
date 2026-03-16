@@ -15,7 +15,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Tag combobox component for selecting existing tags or creating new ones."
             :npm-install "npm install lucide-react"
-            :source-code (embed-source mateuszmazurczak.ui.components.tag_combobox)
+            :source-code (embed-source "mateuszmazurczak.ui.components.tag_combobox")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/tag_combobox.cljs"
             :filename "tag_combobox.cljs"}])
 
@@ -29,14 +29,32 @@
               [:p {:class "text-sm text-muted-foreground"}
                "All available props for Tag Combobox components."]]
              [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "component"
-                                                      :description "Component"
-                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "tag-combobox"
+                :description "Responsive tag selector that supports both choosing existing tags and creating new tags. Uses Popover on desktop and Sheet on mobile for better ergonomics."
+                :props [[":tags" "set<string> | vector<string>, required - Available tags shown in the list."]
+                        [":selected-tag" "string | nil, optional - Currently selected tag."]
+                        [":on-select" "function, optional - Called when user selects a tag: (fn [tag] ...)."]
+                        [":on-create" "function, optional - Called when user creates a new tag: (fn [new-tag] ...)."]
+                        [":placeholder" "string, optional (default \"+ Add tag\") - Trigger button text when no tag is selected."]
+                        [":class" "string, optional - Additional Tailwind classes merged into the trigger button."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "The component is controlled by your state: keep :selected-tag in sync via :on-select."]
+                [:li "To allow creating missing tags, provide :on-create and persist the new tag in your tag source."]
+                [:li "Desktop and mobile render different containers (Popover vs Sheet) but share the same API."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[tag_combobox {}]"]]]]]]))
+                [:code "(let [tags (r/atom #{\"bug\" \"feature\"})\n      selected (r/atom nil)]\n  [tag-combobox {:tags @tags\n                 :selected-tag @selected\n                 :on-select #(reset! selected %)\n                 :on-create (fn [new-tag]\n                              (swap! tags conj new-tag)\n                              (reset! selected new-tag))}])"]]
+               [:div {:class "flex flex-wrap gap-2 mt-3"}
+                [:a {:href "https://ui.shadcn.com/docs/components/combobox"
+                     :target "_blank"
+                     :rel "noopener noreferrer"
+                     :class "inline-flex items-center text-sm text-primary hover:underline"}
+                 "Combobox Pattern (shadcn) →"]]]]]]))
 
 (defscene
  basic-tag-selection

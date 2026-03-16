@@ -15,7 +15,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Toast notification component using Sonner."
             :npm-install "npm install lucide-react sonner"
-            :source-code (embed-source mateuszmazurczak.ui.components.notification)
+            :source-code (embed-source "mateuszmazurczak.ui.components.notification")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/notification.cljs"
             :filename "notification.cljs"}])
 
@@ -30,58 +30,96 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Notification components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "toaster"
-                                             :description "Toaster component"
-                                             :props []}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "toaster"
+       :description "Sonner provider component. Mount once near app root before calling show-* helpers."
+       :props [["arguments" "(toaster) or (toaster {:position ... :richColors ...})"]
+               ["supported options" "All Sonner Toaster props are accepted and forwarded."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "show-toast"
-       :description "Show toast component"
-       :props
-       [[":description" "string, optional - Secondary toast message"]
-        [":action" "map, optional - Action config {:label string :on-click fn}"]
-        [":duration" "number, optional - Toast duration in milliseconds"]
-        [":position"
-         "string, optional (default 'top-right'). One of: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'"]
-        [":cancel" "map, optional - Cancel config {:label string :on-click fn}"]
-        [":id" "string | number, optional - Custom toast id"]
-        [":important" "boolean, optional - Prevent dismissal"]
-        [":on-dismiss" "function, optional - Callback (fn []) on dismiss"]
-        [":on-auto-close" "function, optional - Callback (fn []) on auto-close"]]}]
-     [mm-portfolio-utils/api-component-card {:component-name "show-success"
-                                             :description "Show success component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "show-error"
-                                             :description "Show error component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "show-info"
-                                             :description "Show info component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "show-warning"
-                                             :description "Show warning component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "show-loading"
-                                             :description "Show loading component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "show-promise"
-                                             :description "Show promise component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "dismiss-toast"
-                                             :description "Dismiss toast component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "custom-toast"
-                                             :description "Custom toast component"
-                                             :props []}]
+       :description "Generic toast helper around sonner/toast."
+       :props [["arity" "(show-toast message) or (show-toast message options)"]
+               ["message" "string, required - Primary toast text."]
+               ["options/:description" "string, optional - Secondary text."]
+               ["options/:action" "map, optional - {:label string :on-click fn}."]
+               ["options/:cancel" "map, optional - {:label string :on-click fn}."]
+               ["options/:duration" "number, optional - Duration in ms."]
+               ["options/:position" "string, optional (default \"top-right\") - Sonner position."]
+               ["options/:id" "string | number, optional - Custom toast id."]
+               ["options/:important" "boolean, optional - Prevent dismissal."]
+               ["options/:on-dismiss" "function, optional - Callback (fn [])."]
+               ["options/:on-auto-close" "function, optional - Callback (fn [])."]
+               ["returns" "toast id from Sonner."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "show-success"
+       :description "Success-themed toast helper."
+       :props [["arity" "(show-success message) or (show-success message options)"]
+               ["message" "string, required - Toast title text."]
+               ["options" "map, optional - Sonner toast options."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "show-error"
+       :description "Error-themed toast helper."
+       :props [["arity" "(show-error message) or (show-error message options)"]
+               ["message" "string, required - Toast title text."]
+               ["options" "map, optional - Sonner toast options."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "show-info"
+       :description "Info-themed toast helper."
+       :props [["arity" "(show-info message) or (show-info message options)"]
+               ["message" "string, required - Toast title text."]
+               ["options" "map, optional - Sonner toast options."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "show-warning"
+       :description "Warning-themed toast helper."
+       :props [["arity" "(show-warning message) or (show-warning message options)"]
+               ["message" "string, required - Toast title text."]
+               ["options" "map, optional - Sonner toast options."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "show-loading"
+       :description "Loading toast helper (returns id for later dismissal/update)."
+       :props [["arity" "(show-loading message) or (show-loading message options)"]
+               ["message" "string, required - Loading text."]
+               ["options" "map, optional - Sonner toast options."]
+               ["returns" "toast id."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "show-promise"
+       :description "Promise lifecycle toast helper (loading/success/error)."
+       :props [["arity" "(show-promise promise messages options)"]
+               ["promise" "js/Promise or thenable, required."]
+               ["messages" "map, required - {:loading :success :error} labels/content."]
+               ["options" "map, optional - Sonner options."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "dismiss-toast"
+       :description "Dismiss one toast by id, or all toasts when called without args."
+       :props [["arity" "(dismiss-toast) or (dismiss-toast toast-id)"]
+               ["toast-id" "string | number, optional - Toast id to dismiss."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "custom-toast"
+       :description "Render custom Reagent/React content in a toast."
+       :props [["arity" "(custom-toast component options)"]
+               ["component" "hiccup vector or React element, required."]
+               ["options" "map, optional - Sonner options."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Mount [toaster] once in app root; helper functions won't render anything by themselves."]
+       [:li "These APIs are function calls (show-toast, dismiss-toast, etc.), not components."]
+       [:li "Action/cancel callbacks are wrapped for Sonner; keep side effects idempotent."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[toaster {}]"]]]]]]))
+       [:code "[:<>\n [toaster {:position \"top-right\"}]\n [button {:on-click #(show-success \"Saved\" {:description \"Profile updated\"})}\n  \"Notify\"]\n [button {:on-click #(let [id (show-loading \"Uploading...\")]\n                       (js/setTimeout #(dismiss-toast id) 1500))}\n  \"Loading demo\"]]"]]
+      [:div {:class "flex flex-wrap gap-2 mt-3"}
+       [:a {:href "https://sonner.emilkowal.ski"
+            :target "_blank"
+            :rel "noopener noreferrer"
+            :class "inline-flex items-center text-sm text-primary hover:underline"}
+        "Sonner Docs →"]]]]]]))
 
 (defscene
  toast-basic
  "Basic toast notification.
-
-  Custom component — not from shadcn/ui.
   Uses Sonner for toast rendering.
 
   Call show-toast with a simple message."
@@ -94,8 +132,6 @@
 (defscene
  toast-with-description
  "Toast with description text.
-
-  Custom component — not from shadcn/ui.
   Use :description to provide context."
  []
  (mm-portfolio-utils/wrap-component
@@ -109,8 +145,6 @@
 (defscene
  toast-with-action
  "Toast with action button.
-
-  Custom component — not from shadcn/ui.
   Use :action for undo or follow-up steps."
  []
  (mm-portfolio-utils/wrap-component
@@ -126,8 +160,6 @@
 (defscene
  toast-duration
  "Toast with custom duration.
-
-  Custom component — not from shadcn/ui.
   Use :duration for longer or shorter visibility."
  []
  (mm-portfolio-utils/wrap-component

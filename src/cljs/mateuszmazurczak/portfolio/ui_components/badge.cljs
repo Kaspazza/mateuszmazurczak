@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Badge component with support for multiple variants."
             :npm-install "npm install @radix-ui/react-slot"
-            :source-code (embed-source mateuszmazurczak.ui.components.badge)
+            :source-code (embed-source "mateuszmazurczak.ui.components.badge")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/badge.cljs"
             :filename "badge.cljs"}])
 
@@ -33,7 +33,7 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "badge"
-       :description "Badge component"
+       :description "Compact status/metadata pill with variant styling and optional slot polymorphism."
        :props
        [[":variant"
          "keyword, optional (default :default). One of: :default | :secondary | :destructive | :outline | :ghost | :link"]
@@ -41,6 +41,11 @@
         [":as-child" "boolean, optional (default false) - Use Radix Slot polymorphism"]
         [":on-click" "fn, optional - Click handler"]
         [":...dom-props" "map entries, optional - Forwarded to the rendered element"]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Use semantic variants (:destructive, :secondary) for meaning—not only color differences."]
+       [:li "For link-like badges, either use :variant :link or :as-child true with an anchor."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

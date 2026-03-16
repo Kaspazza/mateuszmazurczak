@@ -16,7 +16,7 @@
            {:description
             "Self-contained tooltip component for displaying contextual information on hover/focus."
             :npm-install "npm install @radix-ui/react-tooltip"
-            :source-code (embed-source mateuszmazurczak.ui.components.tooltip)
+            :source-code (embed-source "mateuszmazurczak.ui.components.tooltip")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/tooltip.cljs"
             :filename "tooltip.cljs"}])
 
@@ -29,7 +29,7 @@
    [:div {:class "space-y-6"}
     [:div
      [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Tooltip components."]]
+      "All available props for Tooltip components."]]]
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "tooltip"
@@ -54,11 +54,22 @@
                [":trigger-as-child?" "boolean, optional (default false) - Render trigger via Slot"]
                [":disable-hoverable-content?"
                 "boolean, optional (default false) - Disable hoverable content"]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Prefer trigger-as-child? false when trigger is a Reagent component wrapper."]
+       [:li "Tooltips should provide supplementary info only; don't hide critical actions/content inside them."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[tooltip {}]"]]]]]]))
+       [:code "[tooltip {:trigger [button {:variant :outline} \"Hover me\"]\n          :content \"Helpful context\"\n          :side :top}]" ]]
+      [:div {:class "flex flex-wrap gap-2 mt-3"}
+       [:a {:href "https://www.radix-ui.com/primitives/docs/components/tooltip"
+            :target "_blank"
+            :rel "noopener noreferrer"
+            :class "inline-flex items-center text-sm text-primary hover:underline"}
+        "Radix Tooltip Docs →"]]]]]))
 
 (defscene
  tooltip-demo

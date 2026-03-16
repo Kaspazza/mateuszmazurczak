@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Drawer component based on Vaul drawer primitive."
             :npm-install "npm install vaul"
-            :source-code (embed-source mateuszmazurczak.ui.components.drawer)
+            :source-code (embed-source "mateuszmazurczak.ui.components.drawer")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/drawer.cljs"
             :filename "drawer.cljs"}])
 
@@ -73,11 +73,17 @@
                {:component-name "drawer-description"
                 :description "Drawer description component"
                 :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Choose :modal false only when background interaction is intentional and safe."]
+                [:li "Use :direction to match platform UX (bottom for mobile action sheets, side for navigation/tools)."]
+                [:li "Prefer controlled mode (:open + :on-open-change) when drawers integrate with route/state orchestration."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[drawer {}]"]]]]]]))
+                [:code "[drawer {:open @open? :on-open-change #(reset! open? %)}\n [drawer-trigger {:as-child true} [button {:variant :outline} \"Open\"]]\n [drawer-content {}\n  [drawer-header {} [drawer-title {} \"Confirm\"]]\n  [drawer-footer {} [button {} \"Continue\"]]] ]" ]]]]]]))
 
 (defscene
  bottom-drawer
@@ -215,3 +221,54 @@
            "This drawer is configured with :should-scale-background false"]]
          [sut/drawer-footer {}
           (button/button {:on-click #(reset! open? false)} "Close")]]]]))))
+
+(defscene
+ top-drawer
+ "Top drawer variant.
+
+  Useful for non-critical announcements or quick filters sliding from top."
+ []
+ (let [open? (r/atom false)]
+   (fn []
+     (mm-portfolio-utils/wrap-component
+      [:div {:class "p-4"}
+       [sut/drawer {:open @open?
+                    :on-open-change #(reset! open? %)
+                    :direction :top}
+        [sut/drawer-trigger {}
+         (button/button {:variant :outline} "Open Top Drawer")]
+        [sut/drawer-content {}
+         [sut/drawer-header {}
+          [sut/drawer-title {}
+           "Quick Filters"]
+          [sut/drawer-description {}
+           "Apply fast filters without leaving current context."]]
+         [sut/drawer-footer {}
+          (button/button {:on-click #(reset! open? false)} "Apply")]]]]))))
+
+(defscene
+ left-drawer-non-modal
+ "Left drawer with non-modal behavior.
+
+  Demonstrates :direction :left and :modal false for side-by-side workflows."
+ []
+ (let [open? (r/atom false)]
+   (fn []
+     (mm-portfolio-utils/wrap-component
+      [:div {:class "p-4"}
+       [sut/drawer {:open @open?
+                    :on-open-change #(reset! open? %)
+                    :direction :left
+                    :modal false}
+        [sut/drawer-trigger {}
+         (button/button {:variant :outline} "Open Left Non-Modal")]
+        [sut/drawer-content {:class "w-80"}
+         [sut/drawer-header {}
+          [sut/drawer-title {}
+           "Inspector"]
+          [sut/drawer-description {}
+           "Background stays interactive while this panel is open."]]
+         [sut/drawer-footer {}
+          (button/button {:variant :outline
+                          :on-click #(reset! open? false)}
+                         "Close")]]]]))))

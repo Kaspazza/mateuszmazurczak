@@ -22,7 +22,7 @@
   {:description "Data table component with sorting, filtering, pagination, and selection."
    :npm-install
    "npm install @dnd-kit/core @dnd-kit/modifiers @dnd-kit/sortable @dnd-kit/utilities @tanstack/react-table lucide-react"
-   :source-code (embed-source mateuszmazurczak.ui.components.data_table)
+   :source-code (embed-source "mateuszmazurczak.ui.components.data_table")
    :namespace-path "src/cljs/mateuszmazurczak/ui/components/data_table.cljs"
    :filename "data_table.cljs"}])
 
@@ -38,64 +38,88 @@
       "All available props for Data Table components."]]
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
+      {:component-name "data-table"
+       :description "Feature-rich TanStack table wrapper with built-in sorting, filtering, faceting, pagination, row selection, expandable rows, and optional drag-and-drop row reordering."
+       :props [[":columns" "js-array | vector, required - TanStack column definitions."]
+               [":data" "js-array | vector, required - Row data source."]
+               [":initial-page-size" "number, optional (default 25) - Initial page size."]
+               [":initial-column-visibility" "map, optional (default {}) - Initial visibility by column id."]
+               [":toolbar-config" "map, optional - Toolbar configuration for search/faceted filters/custom end content."]
+               [":empty-state" "hiccup | component, optional - Rendered when there is no data at all."]
+               [":no-results-state" "hiccup | component | function, optional - Rendered when filters produce zero rows."]
+               [":render-sub-component" "function, optional - Expanded row renderer: (fn [row] ...)."]
+               [":get-row-can-expand" "function, optional - Row expandability predicate: (fn [row] boolean)."]
+               [":dnd-config" "map, optional - DnD config {:get-row-id fn :on-drag-end fn}."]]}]
+     [mm-portfolio-utils/api-component-card
       {:component-name "drag-handle-cell-ui"
-       :description "Drag handle cell ui component"
-       :props [[":listeners" "map, required - DnD listeners map from @dnd-kit"]
-               [":attributes" "map, required - DnD attributes map from @dnd-kit"]]}]
+       :description "Reusable drag handle cell for DnD-enabled tables."
+       :props [[":listeners" "map, required - DnD listeners map from @dnd-kit."]
+               [":attributes" "map, required - DnD attributes map from @dnd-kit."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "faceted-filter-ui"
-       :description "Faceted filter ui component"
-       :props
-       [[":title" "string, required - Human-readable title"]
-        [":options"
-         "vector<map>, required - Options. Each option: {:label string :value string :icon component?}"]
-        [":selected-values" "set<string>, required - Selected filter values"]
-        [":on-change" "function, required - Callback (fn [new-selected-set])"]
-        [":facet-counts" "map<string, number>, optional - Counts by option value"]]}]
+       :description "Popover multi-select filter used by toolbar-ui."
+       :props [[":title" "string, required - Human-readable filter title."]
+               [":options" "vector<map>, required - Filter options: {:label :value :icon?}."]
+               [":selected-values" "set<string>, required - Selected option values."]
+               [":on-change" "function, required - Callback: (fn [new-selected-set])."]
+               [":facet-counts" "map<string, number>, optional - Count per option value."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "toolbar-ui"
-       :description "Toolbar ui component"
-       :props [[":text-filter-value" "string, optional - Current text filter value"]
-               [":on-text-filter-change"
-                "function, optional - Callback (fn [value]) for text filter changes"]
-               [":text-placeholder"
-                "string, optional (default 'Filter items...') - Text filter placeholder"]
-               [":faceted-filters" "vector<map>, optional - Faceted filter configs"]
-               [":is-filtered?"
-                "boolean, optional (default false) - Whether any filters are active"]
-               [":on-reset-filters" "function, optional - Callback (fn []) to clear filters"]
-               [":toolbar-end" "hiccup | component, optional - Right-side toolbar content"]]}]
+       :description "Top toolbar with text filter, faceted filters, reset action, and optional right-side custom content."
+       :props [[":text-filter-value" "string, optional - Current text filter value."]
+               [":on-text-filter-change" "function, optional - Callback: (fn [value])."]
+               [":text-placeholder" "string, optional (default \"Filter items...\") - Search placeholder."]
+               [":faceted-filters" "vector<map>, optional - Faceted filter configs."]
+               [":is-filtered?" "boolean, optional (default false) - Whether any filters are active."]
+               [":on-reset-filters" "function, optional - Reset callback: (fn [])."]
+               [":toolbar-end" "hiccup | component, optional - Right-side content."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "column-header-ui"
-       :description "Column header ui component"
-       :props [[":title" "string, required - Human-readable title"]
-               [":can-sort?" "boolean, optional (default false) - Whether column is sortable"]
-               [":sort-state"
-                "string | false | nil, optional - One of: 'asc' | 'desc' | false | nil"]
-               [":on-toggle-sort" "function, optional - Callback (fn [descending?])"]
-               [":on-clear-sort" "function, optional - Callback (fn [])"]
-               [":on-toggle-visibility" "function, optional - Callback (fn [])"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Column header with sort controls and optional visibility dropdown actions."
+       :props [[":title" "string, required - Column label."]
+               [":can-sort?" "boolean, optional (default false) - Sorting enabled flag."]
+               [":sort-state" "string | false | nil, optional - 'asc' | 'desc' | false | nil."]
+               [":on-toggle-sort" "function, optional - Callback: (fn [descending?])."]
+               [":on-clear-sort" "function, optional - Clears sorting: (fn [])."]
+               [":on-toggle-visibility" "function, optional - Hides column: (fn [])."]
+               [":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "pagination-ui"
-       :description "Pagination ui component"
-       :props [[":page-size" "number, required - Current page size"]
-               [":page-index" "number, required - Current page index (0-based)"]
-               [":page-count" "number, required - Total page count"]
-               [":selected-count" "number, optional (default 0) - Number of selected rows"]
-               [":total-count" "number, required - Total row count"]
-               [":can-previous?" "boolean, required - Whether previous page is available"]
-               [":can-next?" "boolean, required - Whether next page is available"]
-               [":on-page-size-change" "function, required - Callback (fn [size])"]
-               [":on-first-page" "function, optional - Callback (fn [])"]
-               [":on-previous-page" "function, optional - Callback (fn [])"]
-               [":on-next-page" "function, optional - Callback (fn [])"]
-               [":on-last-page" "function, optional - Callback (fn [])"]]}]
+       :description "Bottom pagination controls with page size selector and navigation buttons."
+       :props [[":page-size" "number, required - Current page size."]
+               [":page-index" "number, required - Current 0-based page index."]
+               [":page-count" "number, required - Total page count."]
+               [":selected-count" "number, optional (default 0) - Selected row count."]
+               [":total-count" "number, required - Total row count."]
+               [":can-previous?" "boolean, required - Previous page availability."]
+               [":can-next?" "boolean, required - Next page availability."]
+               [":on-page-size-change" "function, required - Callback: (fn [size])."]
+               [":on-first-page" "function, optional - Callback: (fn [])."]
+               [":on-previous-page" "function, optional - Callback: (fn [])."]
+               [":on-next-page" "function, optional - Callback: (fn [])."]
+               [":on-last-page" "function, optional - Callback: (fn [])."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "For best performance and stable selection/expansion state, provide stable row ids via :dnd-config/:get-row-id or table getRowId behavior."]
+       [:li "Use :no-results-state for filtered-empty UX and :empty-state for true empty datasets; they serve different states."]
+       [:li "When enabling drag-and-drop, both :get-row-id and :on-drag-end should be provided in :dnd-config."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[drag-handle-cell-ui {}]"]]]]]]))
+       [:code "[data-table {:columns columns\n             :data rows\n             :initial-page-size 10\n             :toolbar-config {:text-filter {:column-id \"title\"\n                                            :placeholder \"Search tasks...\"}}\n             :dnd-config {:get-row-id (fn [row] (aget row \"id\"))\n                          :on-drag-end (fn [active-id over-id] ... )}}]"]]
+      [:div {:class "flex flex-wrap gap-2 mt-3"}
+       [:a {:href "https://tanstack.com/table/latest"
+            :target "_blank"
+            :rel "noopener noreferrer"
+            :class "inline-flex items-center text-sm text-primary hover:underline"}
+        "TanStack Table Docs →"]
+       [:a {:href "https://dndkit.com"
+            :target "_blank"
+            :rel "noopener noreferrer"
+            :class "inline-flex items-center text-sm text-primary hover:underline"}
+        "dnd-kit Docs →"]]]]]]))
 
 (defn make-task-data
   []

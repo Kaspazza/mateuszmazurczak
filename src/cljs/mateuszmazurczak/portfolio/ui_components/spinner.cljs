@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Spinner component for loading states."
             :npm-install "npm install lucide-react"
-            :source-code (embed-source mateuszmazurczak.ui.components.spinner)
+            :source-code (embed-source "mateuszmazurczak.ui.components.spinner")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/spinner.cljs"
             :filename "spinner.cljs"}])
 
@@ -32,13 +32,21 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "spinner"
-                :description "Spinner component"
-                :props [[":class" "string, optional - Additional CSS classes"]]}]
+                :description "Lucide Loader2-based spinner with built-in accessibility defaults."
+                :props [[":class" "string, optional - Additional CSS classes."]
+                        [":role" "string, optional (default \"status\") - Accessibility role."]
+                        [":aria-label" "string, optional (default \"Loading\") - Screen reader label."]
+                        ["additional props" "map entries, optional - Forwarded to underlying icon element."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Default icon size is size-4; override with :class for larger/smaller spinners."]
+                [:li "Spinner is purely presentational—pair with status text in long-running operations."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[spinner {}]"]]]]]]))
+                [:code "[:div {:class \"flex items-center gap-2\"}\n [spinner {:class \"size-4\"}]\n [:span \"Loading data...\"]]" ]]]]]]))
 
 (defscene
  spinner-basic

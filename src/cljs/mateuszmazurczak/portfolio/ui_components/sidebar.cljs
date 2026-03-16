@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Pure presentational sidebar components."
             :npm-install "npm install @radix-ui/react-slot lucide-react"
-            :source-code (embed-source mateuszmazurczak.ui.components.sidebar)
+            :source-code (embed-source "mateuszmazurczak.ui.components.sidebar")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/sidebar.cljs"
             :filename "sidebar.cljs"}])
 
@@ -145,11 +145,17 @@
                [":as-child" "boolean, optional (default false) - Render via Radix Slot"]
                [":size" "keyword, optional (default :md). One of: :sm | :md"]
                [":is-active?" "boolean, optional - Active state"]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Sidebar behavior depends on provider/root composition; keep sidebar-provider at layout root."]
+       [:li "Use :collapsible and :variant together intentionally—they affect both layout and interaction patterns."]
+       [:li "For mobile flows, test with :is-mobile true and off-canvas variants to avoid inaccessible navigation states."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[sidebar {}]"]]]]]]))
+       [:code "[sidebar-provider {}\n [sidebar {:variant :inset}\n  [sidebar-header {}]\n  [sidebar-content {}]\n  [sidebar-footer {}]]\n [sidebar-inset {} [:main {:class \"p-4\"} \"Content\"]]]" ]]]]]]))
 
 (defscene
  sidebar-demo

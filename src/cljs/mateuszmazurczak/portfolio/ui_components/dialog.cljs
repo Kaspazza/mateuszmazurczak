@@ -21,7 +21,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Dialog (modal) component with overlay and content area."
             :npm-install "npm install @radix-ui/react-dialog lucide-react"
-            :source-code (embed-source mateuszmazurczak.ui.components.dialog)
+            :source-code (embed-source "mateuszmazurczak.ui.components.dialog")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/dialog.cljs"
             :filename "dialog.cljs"}])
 
@@ -35,49 +35,76 @@
               [:p {:class "text-sm text-muted-foreground"}
                "All available props for Dialog components."]]
              [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "dialog"
-                                                      :description "Dialog component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "dialog-trigger"
-                                                      :description "Dialog trigger component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "dialog-portal"
-                                                      :description "Dialog portal component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "dialog-close"
-                                                      :description "Dialog close component"
-                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "dialog"
+                :description "Radix Dialog root that controls modal open/close state and accessibility semantics."
+                :props [[":open" "boolean, optional - Controlled open state."]
+                        [":defaultOpen" "boolean, optional - Uncontrolled initial open state."]
+                        [":onOpenChange" "function, optional - Callback when state changes: (fn [open?] ...)."]
+                        [":modal" "boolean, optional (default true) - Whether dialog behaves as modal."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Root."]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "dialog-trigger"
+                :description "Interactive trigger that opens the dialog."
+                :props [[":asChild" "boolean, optional - Compose with child component."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Trigger."]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "dialog-portal"
+                :description "Portal wrapper to render dialog outside normal DOM hierarchy."
+                :props [["additional props" "map entries, optional - Forwarded to Radix Dialog.Portal."]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "dialog-close"
+                :description "Control that closes the dialog when activated."
+                :props [[":asChild" "boolean, optional - Compose with child component."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Close."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-overlay"
-                :description "Dialog overlay component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Backdrop layer behind dialog content."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Overlay."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-content"
-                :description "Dialog content component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]
-                        [":showCloseButton"
-                         "boolean, optional (default true) - Show close button"]]}]
+                :description "Main dialog panel with built-in overlay + optional corner close button."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        [":showCloseButton" "boolean, optional (default true) - Show top-right close icon button."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Content."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-header"
-                :description "Dialog header component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Layout wrapper for dialog-title and dialog-description."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to underlying div."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-footer"
-                :description "Dialog footer component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Responsive action area (stacked on mobile, row-aligned on desktop)."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to underlying div."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-title"
-                :description "Dialog title component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Accessible title announced by screen readers (aria-labelledby)."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Title."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-description"
-                :description "Dialog description component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Accessible supporting text announced by screen readers (aria-describedby)."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Description."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Use :asChild (camelCase) for trigger/close when wrapping existing button components."]
+                [:li "For accessible dialogs, always include dialog-title and usually dialog-description."]
+                [:li "Choose controlled mode (:open + :onOpenChange) OR uncontrolled mode (:defaultOpen)."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[dialog {}]"]]]]]]))
+                [:code "[dialog {:open @open?\n         :onOpenChange #(reset! open? %)}\n [dialog-trigger {:asChild true}\n  [button {:variant :outline} \"Open\"]]\n [dialog-content {:class \"sm:max-w-[425px]\"}\n  [dialog-header {}\n   [dialog-title {} \"Edit profile\"]\n   [dialog-description {} \"Update details and save.\"]]\n  [dialog-footer {}\n   [dialog-close {:asChild true} [button {:variant :outline} \"Cancel\"]]\n   [button {:type \"submit\"} \"Save\"]]]]"]]
+               [:div {:class "flex flex-wrap gap-2 mt-3"}
+                [:a {:href "https://www.radix-ui.com/primitives/docs/components/dialog"
+                     :target "_blank"
+                     :rel "noopener noreferrer"
+                     :class "inline-flex items-center text-sm text-primary hover:underline"}
+                 "Radix Dialog Docs →"]]]]]]))
 
 (defn- profile-form
   [{:keys [class]}]

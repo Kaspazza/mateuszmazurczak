@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "https://www.radix-ui.com/primitives/docs/components/select."
             :npm-install "npm install @radix-ui/react-select"
-            :source-code (embed-source mateuszmazurczak.ui.components.select)
+            :source-code (embed-source "mateuszmazurczak.ui.components.select")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/select.cljs"
             :filename "select.cljs"}])
 
@@ -31,44 +31,68 @@
      [:p {:class "text-sm text-muted-foreground"}
       "All available props for Select components."]]
     [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card {:component-name "select"
-                                             :description "Select component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "select-group"
-                                             :description "Select group component"
-                                             :props []}]
-     [mm-portfolio-utils/api-component-card {:component-name "select-value"
-                                             :description "Select value component"
-                                             :props []}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "select"
+       :description "Radix Select root for controlled/uncontrolled single-value selection."
+       :props [[":value" "string, optional - Controlled selected value."]
+               [":default-value" "string, optional - Uncontrolled initial value."]
+               [":on-value-change" "function, optional - Callback when selection changes."]
+               [":disabled" "boolean, optional - Disables the control."]
+               [":name" "string, optional - Form field name."]
+               [":required" "boolean, optional - Marks field as required."]
+               ["additional props" "map entries, optional - Forwarded to Radix Select.Root."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "select-group"
+       :description "Groups related select items under a label."
+       :props [["additional props" "map entries, optional - Forwarded to Radix Select.Group."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "select-value"
+       :description "Displays selected item text inside trigger."
+       :props [[":placeholder" "string, optional - Placeholder when no value is selected."]
+               ["additional props" "map entries, optional - Forwarded to Radix Select.Value."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-trigger"
-       :description "Select trigger component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":size" "string, optional (default 'default'). One of: 'default' | 'sm'"]]}]
+       :description "Button-like trigger opening the select menu."
+       :props [[":size" "string, optional (default \"default\"). One of: \"default\" | \"sm\"."]
+               [":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to Radix Select.Trigger."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-content"
-       :description "Select content component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":position" "string, optional (default 'popper') - Popper strategy value"]
-               [":align"
-                "string, optional (default 'center'). One of: 'start' | 'center' | 'end'"]]}]
+       :description "Portaled options container with popper positioning and scroll buttons."
+       :props [[":position" "string, optional (default \"popper\") - Radix positioning mode."]
+               [":align" "string, optional (default \"center\"). One of: \"start\" | \"center\" | \"end\"."]
+               [":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-label"
-       :description "Select label component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Section label inside select content."
+       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-item"
-       :description "Select item component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Selectable option item in select content."
+       :props [[":value" "string, required - Option value."]
+               [":disabled" "boolean, optional - Disables option."]
+               [":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-separator"
-       :description "Select separator component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Visual separator between item groups."
+       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Use either controlled (:value + :on-value-change) or uncontrolled (:default-value) mode."]
+       [:li "select-content is portaled, so stacking context/z-index should be managed at app layout level."]
+       [:li "Use :aria-invalid on select-trigger via forwarded props when integrating validation styling."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[select {}]"]]]]]]))
+       [:code "(let [value (r/atom \"banana\")]\n  [select {:value @value :on-value-change #(reset! value %)}\n   [select-trigger {:class \"w-[180px]\"}\n    [select-value {:placeholder \"Select a fruit\"}]]\n   [select-content {}\n    [select-item {:value \"apple\"} \"Apple\"]\n    [select-item {:value \"banana\"} \"Banana\"]]])"]]
+      [:div {:class "flex flex-wrap gap-2 mt-3"}
+       [:a {:href "https://www.radix-ui.com/primitives/docs/components/select"
+            :target "_blank"
+            :rel "noopener noreferrer"
+            :class "inline-flex items-center text-sm text-primary hover:underline"}
+        "Radix Select Docs →"]]]]]]))
 
 (defscene
  select-demo
@@ -184,6 +208,30 @@
        "Human Resources"]]]
     [field/field-description {}
      "Select your department or area of work."]]]))
+
+(defscene
+ select-invalid
+ "Invalid select state with helper error text.
+
+  Based on shadcn/ui Select — https://ui.shadcn.com/docs/components/select
+  Radix primitive: @radix-ui/react-select
+
+  Pass :aria-invalid on select-trigger and show error copy beneath field."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-sm space-y-2"}
+                                     [field/field {}
+                                      [field/field-label {}
+                                       "Department"]
+                                      [sut/select {:default-value nil}
+                                       [sut/select-trigger {:aria-invalid true}
+                                        [sut/select-value {:placeholder "Choose department"}]]
+                                       [sut/select-content {}
+                                        [sut/select-item {:value "engineering"}
+                                         "Engineering"]
+                                        [sut/select-item {:value "design"}
+                                         "Design"]]]
+                                      [field/field-description {:class "text-destructive"}
+                                       "Department is required."]]]))
 
 (defscene
  select-disabled-items

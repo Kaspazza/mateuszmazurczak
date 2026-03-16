@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Separator component for visual dividers."
             :npm-install "npm install @radix-ui/react-separator"
-            :source-code (embed-source mateuszmazurczak.ui.components.separator)
+            :source-code (embed-source "mateuszmazurczak.ui.components.separator")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/separator.cljs"
             :filename "separator.cljs"}])
 
@@ -38,11 +38,22 @@
                          "keyword, optional (default :horizontal). One of: :horizontal | :vertical"]
                         [":decorative"
                          "boolean, optional (default true) - Decorative vs semantic separator"]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Set :decorative false when the separator conveys semantic structure for assistive technologies."]
+                [:li "Use vertical separators only in containers with explicit height."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[separator {}]"]]]]]]))
+                [:code "[:div {:class \"space-y-3\"}\n [:p \"Section A\"]\n [separator {:orientation :horizontal}]\n [:p \"Section B\"]]" ]]
+               [:div {:class "flex flex-wrap gap-2 mt-3"}
+                [:a {:href "https://www.radix-ui.com/primitives/docs/components/separator"
+                     :target "_blank"
+                     :rel "noopener noreferrer"
+                     :class "inline-flex items-center text-sm text-primary hover:underline"}
+                 "Radix Separator Docs →"]]]]]]))
 
 (defscene
  separator-demo

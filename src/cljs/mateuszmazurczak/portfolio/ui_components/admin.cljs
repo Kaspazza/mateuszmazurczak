@@ -14,7 +14,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Admin UI components."
             :npm-install "npm install lucide-react"
-            :source-code (embed-source mateuszmazurczak.ui.components.admin)
+            :source-code (embed-source "mateuszmazurczak.ui.components.admin")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/admin.cljs"
             :filename "admin.cljs"}])
 
@@ -31,28 +31,29 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "admin-badge"
-       :description "Admin badge component"
-       :props [[":text" "map, required - UI text map with labels used by the component"]
-               [":on-logout" "function, required - Callback (fn []) triggered on logout click"]]}]
+       :description "Admin header badge with logout action."
+       :props [[":text" "map, required - Must include keys :admin-mode and :admin-logout."]
+               [":on-logout" "function, required - Callback (fn []) triggered on logout click."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "delete-solution-button"
-       :description "Delete solution button component"
-       :props [[":solution-id"
-                "string | number, required - Solution identifier passed to delete callback"]
-               [":text" "map, required - UI text map with labels used by the component"]
-               [":on-delete"
-                "function, required - Callback (fn [solution-id]) triggered after confirmation"]]}]
+       :description "Destructive admin action with confirmation prompt."
+       :props [[":solution-id" "string | number, required - Solution identifier passed to delete callback."]
+               [":text" "map, required - Must include keys :confirm-delete and :delete."]
+               [":on-delete" "function, required - Callback (fn [solution-id]) after confirmation."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "The :text map is part of public contract; missing expected keys will result in missing labels."]
+       [:li "Keep :on-delete idempotent and server-validated; this control is only a UI guard, not authorization."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[admin-badge {}]"]]]]]]))
+       [:code "[:div {:class \"space-y-2\"}\n [admin-badge {:text {:admin-mode \"Admin mode\"\n                      :admin-logout \"Logout\"}\n               :on-logout #(js/console.log \"logout\")} ]\n [delete-solution-button {:solution-id \"sol-123\"\n                          :text {:confirm-delete \"Delete this solution?\"\n                                 :delete \"Delete\"}\n                          :on-delete #(js/console.log %)}]]"]]]]]]))
 
 (defscene
  admin-badge
  "Admin badge with logout action.
-
-  Custom component — not from shadcn/ui.
   Used in admin-only headers.
 
   Pass translated text via :text map."
@@ -65,8 +66,6 @@
 (defscene
  admin-delete-button
  "Admin delete button with confirmation.
-
-  Custom component — not from shadcn/ui.
   Wraps a destructive button with confirm prompt.
 
   Use :text for localized copy."
@@ -81,8 +80,6 @@
 (defscene
  admin-panel
  "Combined admin controls.
-
-  Custom component — not from shadcn/ui.
   Demonstrates using admin badge and delete button together."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 space-y-4"}

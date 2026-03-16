@@ -18,7 +18,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Table component primitives for building data tables."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.table)
+            :source-code (embed-source "mateuszmazurczak.ui.components.table")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/table.cljs"
             :filename "table.cljs"}])
 
@@ -34,41 +34,56 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "table"
-                :description "Table component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Table wrapper that adds horizontal overflow container and forwards extra props to <table>."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to native <table>."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-header"
-                :description "Table header component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Semantic <thead> section with row border styling."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to <thead>."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-body"
-                :description "Table body component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Semantic <tbody> container for data rows."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to <tbody>."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-footer"
-                :description "Table footer component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Semantic <tfoot> section with muted background and stronger typography."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to <tfoot>."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-row"
-                :description "Table row component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Table row with hover and selected-state styling via data-state attribute."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        [":data-state" "string, optional - e.g. \"selected\" for selected row styling."]
+                        ["additional props" "map entries, optional - Forwarded to <tr>."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-head"
-                :description "Table head component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Header cell (<th>) with default left alignment and checkbox spacing helpers."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to <th>."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-cell"
-                :description "Table cell component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Body/footer cell (<td>) with whitespace and checkbox alignment helpers."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to <td>."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-caption"
-                :description "Table caption component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Caption text shown below table body (caption-bottom styling)."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to <caption>."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "table wraps <table> in an overflow-x container, so horizontal scroll is built in."]
+                [:li "Use table-row {:data-state \"selected\"} to activate selected-row styling."]
+                [:li "Checkbox alignment utilities are already included in table-head/table-cell styles."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[table {}]"]]]]]]))
+                [:code "[table {}\n [table-header {}\n  [table-row {}\n   [table-head {} \"Name\"]\n   [table-head {} \"Status\"]]]\n [table-body {}\n  [table-row {:data-state \"selected\"}\n   [table-cell {} \"Project Alpha\"]\n   [table-cell {} \"Active\"]]]]" ]]]]]]))
 
 (defscene
  table-demo

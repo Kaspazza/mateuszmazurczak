@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Microphone button component with speech recognition functionality."
             :npm-install "npm install lucide-react react-speech-recognition"
-            :source-code (embed-source mateuszmazurczak.ui.components.speech_recognition_button)
+            :source-code (embed-source "mateuszmazurczak.ui.components.speech_recognition_button")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/speech_recognition_button.cljs"
             :filename "speech_recognition_button.cljs"}])
 
@@ -31,20 +31,34 @@
               [:p {:class "text-sm text-muted-foreground"}
                "All available props for Speech Recognition Button components."]]
              [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "component"
-                                                      :description "Component"
-                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "speech-recognition-button"
+                :description "Microphone action button built on react-speech-recognition. Starts/stops listening and streams transcript text through a callback."
+                :props [[":on-transcript-change" "function, optional - Called whenever transcript updates: (fn [text] ...)."]
+                        [":language" "string, optional (default \"en-US\") - Speech recognition locale, e.g. \"pl-PL\" or \"en-US\"."]
+                        [":continuous" "boolean, optional (default true) - Continue listening after pauses in speech."]
+                        [":class" "string, optional - Additional classes applied to the prompt-input action wrapper."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Best used inside prompt-input-actions, because it renders a prompt-input-action wrapper internally."]
+                [:li "When browser speech recognition is unsupported, the component renders a disabled button fallback."]
+                [:li "For production UX, pair with visible text state so users can confirm recognized transcript."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[speech_recognition_button {}]"]]]]]]))
+                [:code "(let [value (r/atom \"\")]\n  [prompt-input {:value @value\n                 :on-value-change #(reset! value %)}\n   [prompt-input-textarea {:placeholder \"Speak or type...\"}]\n   [prompt-input-actions {}\n    [speech-recognition-button {:language \"en-US\"\n                                :on-transcript-change #(reset! value %)}]]])"]]
+               [:div {:class "flex flex-wrap gap-2 mt-3"}
+                [:a {:href "https://www.npmjs.com/package/react-speech-recognition"
+                     :target "_blank"
+                     :rel "noopener noreferrer"
+                     :class "inline-flex items-center text-sm text-primary hover:underline"}
+                 "react-speech-recognition Docs →"]]]]]]))
 
 (defscene
  speech-recognition-standalone
  "Standalone speech recognition action.
-
-  Custom component — not from shadcn/ui.
   Wraps react-speech-recognition for microphone input.
 
   Use inside prompt-input actions for best UX."
@@ -65,8 +79,6 @@
 (defscene
  speech-recognition-in-prompt
  "Speech recognition inside prompt input.
-
-  Custom component — not from shadcn/ui.
   Demonstrates composition with prompt-input."
  []
  (let [value (r/atom "")]
@@ -82,8 +94,6 @@
 (defscene
  speech-recognition-transcript
  "Transcript display with live updates.
-
-  Custom component — not from shadcn/ui.
   Shows how to mirror transcript into the UI."
  []
  (let [value (r/atom "")]

@@ -13,8 +13,8 @@
           []
           [mm-portfolio-utils/installation-scene
            {:description "Frontend based implementation of footer."
-            :npm-install "npm install footer"
-            :source-code (embed-source mateuszmazurczak.ui.components.footer)
+            :npm-install "No external dependencies"
+            :source-code (embed-source "mateuszmazurczak.ui.components.footer")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/footer.cljs"
             :filename "footer.cljs"}])
 
@@ -29,19 +29,22 @@
                                                [:div {:class "space-y-4"}
                                                 [mm-portfolio-utils/api-component-card
                                                  {:component-name "footer"
-                                                  :description "Footer component"
-                                                  :props []}]
+                                                  :description "Application footer showing social icon links. Zero-arity component that reads current theme from app state."
+                                                  :props [["arguments" "No props. Render as [footer]."]]}]
+                                                [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+                                                 [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+                                                 [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                                                  [:li "This component is not configurable via props and should not be called with an empty map."]
+                                                  [:li "Depends on theme state subscription ([:theme/current]) for icon style variants."]]]
                                                 [:div {:class "border rounded-lg p-4 bg-muted/50"}
                                                  [:h4 {:class "text-sm font-semibold mb-2"}
                                                   "Usage Example"]
                                                  [:pre {:class "text-xs overflow-x-auto"}
-                                                  [:code "[footer {}]"]]]]]]))
+                                                  [:code "[:footer {:class \"mt-8\"}\n [footer]]"]]]]]]))
 
 (defscene
  footer-basic
  "Footer with social icons.
-
-  Custom component — not from shadcn/ui.
   Simple footer layout for social links.
 
   This component is app-aware (theme-driven icons)."
@@ -52,8 +55,6 @@
 (defscene
  footer-in-layout
  "Footer inside a page layout.
-
-  Custom component — not from shadcn/ui.
   Demonstrates the footer anchoring the bottom of a page.
 
   Useful for marketing or landing pages."
@@ -70,8 +71,6 @@
 (defscene
  footer-on-muted
  "Footer on muted background.
-
-  Custom component — not from shadcn/ui.
   Shows how the footer reads on a tinted surface.
 
   Use for dashboards or side panels."

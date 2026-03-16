@@ -14,8 +14,8 @@
           []
           [mm-portfolio-utils/installation-scene
            {:description "Theme toggle component for switching between light and dark themes."
-            :npm-install "npm install lucide-react relative sr-only"
-            :source-code (embed-source mateuszmazurczak.ui.components.theme_toggle)
+            :npm-install "npm install lucide-react"
+            :source-code (embed-source "mateuszmazurczak.ui.components.theme_toggle")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/theme_toggle.cljs"
             :filename "theme_toggle.cljs"}])
 
@@ -29,20 +29,25 @@
               [:p {:class "text-sm text-muted-foreground"}
                "All available props for Theme Toggle components."]]
              [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "theme-toggle"
-                                                      :description "Theme toggle component"
-                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "theme-toggle"
+                :description "Zero-arity theme switch button. Reads current theme from app state and dispatches an event to toggle between light and dark modes."
+                :props [["arguments" "No props. Render as [theme-toggle]."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "This component takes no props and should be rendered as [theme-toggle] (without props map)."]
+                [:li "Internal behavior: subscribes to [:theme/current] and dispatches [:theme/toggle] on click."]
+                [:li "Requires theme state/events wiring in your system (ports.state + ports.events adapters)."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[theme-toggle {}]"]]]]]]))
+                [:code "[:div {:class \"flex items-center justify-between\"}\n [:span {:class \"text-sm\"} \"Theme\"]\n [theme-toggle]]"]]]]]]))
 
 (defscene
  theme-toggle-basic
  "Theme toggle button.
-
-  Custom component — not from shadcn/ui.
   Uses app theme state to toggle light/dark mode.
 
   Include in headers or settings panels."
@@ -53,8 +58,6 @@
 (defscene
  theme-toggle-in-header
  "Theme toggle inside a header.
-
-  Custom component — not from shadcn/ui.
   Demonstrates composition with header component."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "relative h-20 bg-background"}
@@ -73,8 +76,6 @@
 (defscene
  theme-toggle-settings-row
  "Theme toggle in a settings row.
-
-  Custom component — not from shadcn/ui.
   Shows the toggle alongside descriptive text.
 
   Useful for preference screens or settings panels."

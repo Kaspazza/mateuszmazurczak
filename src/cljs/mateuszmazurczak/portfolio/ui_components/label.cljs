@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Label component for form fields with accessibility support."
             :npm-install "npm install @radix-ui/react-label"
-            :source-code (embed-source mateuszmazurczak.ui.components.label)
+            :source-code (embed-source "mateuszmazurczak.ui.components.label")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/label.cljs"
             :filename "label.cljs"}])
 
@@ -33,13 +33,20 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "label"
-                :description "Label component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Accessible form label wrapper around Radix Label primitive."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        [":html-for" "string, optional - Associates label with control id."]
+                        ["additional props" "map entries, optional - Forwarded to underlying label element."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "For proper click/focus behavior, pair :html-for with matching input :id."]
+                [:li "Labels support nested interactive layouts, but keep text concise for accessibility."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[label {}]"]]]]]]))
+                [:code "[:div {:class \"space-y-2\"}\n [label {:html-for \"email\"} \"Email\"]\n [input {:id \"email\" :type \"email\" :placeholder \"you@example.com\"}]]" ]]]]]]))
 
 (defscene
  label-demo

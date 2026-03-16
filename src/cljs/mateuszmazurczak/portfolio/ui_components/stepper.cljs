@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Pure presentational stepper components using React Context."
             :npm-install "npm install react"
-            :source-code (embed-source mateuszmazurczak.ui.components.stepper)
+            :source-code (embed-source "mateuszmazurczak.ui.components.stepper")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/stepper.cljs"
             :filename "stepper.cljs"}])
 
@@ -34,34 +34,52 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper"
-       :description "Stepper component"
-       :props
-       [[":current-step" "string | keyword | number, required - Active step id"]
-        [":on-step-change" "function, optional - Callback (fn [step-id])"]
-        [":variant"
-         "keyword, optional (default :horizontal). One of: :horizontal | :vertical | :circle"]
-        [":label-orientation"
-         "keyword, optional (default :horizontal). One of: :horizontal | :vertical"]
-        [":reverse-progress?"
-         "boolean, optional (default false) - Reverse completed-step direction"]
-        [":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Root context provider for multi-step flows. Coordinates active step state shared by navigation and panels."
+       :props [[":current-step" "string | keyword | number, required - Active step id."]
+               [":on-step-change" "function, optional - Callback when step changes: (fn [step-id])."]
+               [":variant" "keyword, optional (default :horizontal). :horizontal | :vertical | :circle."]
+               [":label-orientation" "keyword, optional (default :horizontal). :horizontal | :vertical."]
+               [":reverse-progress?" "boolean, optional (default false) - Marks progress in reverse direction."]
+               [":class" "string, optional - Additional Tailwind classes."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "stepper-navigation"
+       :description "Navigation container that auto-indexes stepper-step children and injects step metadata."
+       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "stepper-step"
+       :description "Interactive step node with indicator, title/description slots, and optional icon override."
+       :props [[":id" "keyword | string | number, required - Step identifier."]
+               [":disabled?" "boolean, optional - Disables interaction for this step."]
+               [":icon" "hiccup | React element, optional - Replaces numeric step indicator."]
+               [":class" "string, optional - Additional Tailwind classes."]]}]
+     [mm-portfolio-utils/api-component-card
+      {:component-name "stepper-panel"
+       :description "Content panel bound to a specific step id; renders only when active."
+       :props [[":id" "keyword | string | number, required - Step id this panel belongs to."]
+               [":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-title"
-       :description "Stepper title component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Title text slot for step labels."
+       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-description"
-       :description "Stepper description component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Secondary description text slot for step labels."
+       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-controls"
-       :description "Stepper controls component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Layout container for navigation buttons (Back/Next/Finish)."
+       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "stepper-step and stepper-panel require stepper context; use them inside [stepper ...]."]
+       [:li "Each stepper-step :id should have a corresponding stepper-panel :id for complete UX."]
+       [:li "stepper-navigation auto-injects index metadata; avoid manually setting :index/:total props."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[stepper {}]"]]]]]]))
+       [:code "(let [current (r/atom :details)]\n  [stepper {:current-step @current\n            :on-step-change #(reset! current %)}\n   [stepper-navigation {}\n    [stepper-step {:id :details} [stepper-title {} \"Details\"]]\n    [stepper-step {:id :billing} [stepper-title {} \"Billing\"]]]\n   [stepper-panel {:id :details} [:div \"Details form\"]]\n   [stepper-panel {:id :billing} [:div \"Billing form\"]]])"]]]]]]))
 
 (defn- step-data
   []
@@ -78,8 +96,6 @@
 (defscene
  stepper-horizontal
  "Horizontal stepper with panels.
-
-  Custom component — not from shadcn/ui.
   Uses React Context to share step state across components.
 
   Best for linear multi-step flows."
@@ -124,8 +140,6 @@
 (defscene
  stepper-vertical
  "Vertical stepper layout.
-
-  Custom component — not from shadcn/ui.
   Use :variant :vertical for stacked steps and panels."
  []
  (let [steps (step-data)
@@ -157,8 +171,6 @@
 (defscene
  stepper-circle
  "Circle stepper variant.
-
-  Custom component — not from shadcn/ui.
   Use :variant :circle to show step count and progress ring."
  []
  (let [steps (step-data)
@@ -180,8 +192,6 @@
 (defscene
  stepper-reverse-progress
  "Reverse progress for newest-first lists.
-
-  Custom component — not from shadcn/ui.
   Use :reverse-progress? to mark later steps as completed."
  []
  (let [steps (step-data)
@@ -203,8 +213,6 @@
 (defscene
  stepper-disabled-steps
  "Stepper with disabled steps.
-
-  Custom component — not from shadcn/ui.
   Disabled steps are not interactive and appear muted."
  []
  (let [steps (step-data)
@@ -226,8 +234,6 @@
 (defscene
  stepper-label-orientation
  "Vertical label orientation.
-
-  Custom component — not from shadcn/ui.
   Use :label-orientation :vertical for compact headers."
  []
  (let [steps (step-data)
@@ -249,8 +255,6 @@
 (defscene
  stepper-custom-icons
  "Stepper with custom icons per step.
-
-  Custom component — not from shadcn/ui.
   Provide an :icon to override the step number."
  []
  (let [steps [{:id :account
@@ -278,8 +282,6 @@
 (defscene
  stepper-form-content
  "Stepper panels with form-like content.
-
-  Custom component — not from shadcn/ui.
   Panels can host any content, including forms or summaries."
  []
  (let [current-step (r/atom :details)]

@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Switch component for toggle controls."
             :npm-install "npm install @radix-ui/react-switch"
-            :source-code (embed-source mateuszmazurczak.ui.components.switch)
+            :source-code (embed-source "mateuszmazurczak.ui.components.switch")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/switch.cljs"
             :filename "switch.cljs"}])
 
@@ -33,13 +33,33 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "switch"
-                :description "Switch component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Radix-based boolean toggle control with accessible switch semantics. Additional props are forwarded to the underlying Radix Switch.Root."
+                :props [[":checked" "boolean, optional - Controlled checked state."]
+                        [":default-checked" "boolean, optional - Uncontrolled initial checked state."]
+                        [":on-checked-change" "function, optional - Callback when state changes: (fn [checked?] ...)."]
+                        [":disabled" "boolean, optional - Disables interaction."]
+                        [":required" "boolean, optional - Marks field as required for forms."]
+                        [":name" "string, optional - Form field name."]
+                        [":value" "string, optional - Form field value."]
+                        [":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to Radix Switch.Root."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Use controlled mode (:checked + :on-checked-change) when external state drives related UI."]
+                [:li "Switch includes built-in disabled styling; avoid layering custom pointer-events overrides unless needed."]
+                [:li "Associate with a label using matching :id and :html-for for better accessibility."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[switch {}]"]]]]]]))
+                [:code "(let [enabled? (r/atom false)]\n  [:div {:class \"flex items-center gap-2\"}\n   [switch {:id \"notifications\"\n            :checked @enabled?\n            :on-checked-change #(reset! enabled? %)\n            :name \"notifications\"\n            :value \"enabled\"}]\n   [label {:html-for \"notifications\"} \"Enable notifications\"]])"]]
+               [:div {:class "flex flex-wrap gap-2 mt-3"}
+                [:a {:href "https://www.radix-ui.com/primitives/docs/components/switch"
+                     :target "_blank"
+                     :rel "noopener noreferrer"
+                     :class "inline-flex items-center text-sm text-primary hover:underline"}
+                 "Radix Switch Docs →"]]]]]]))
 
 (defscene
  switch-demo
@@ -91,6 +111,25 @@
                                                    :checked true}]
                                       [:span {:class "text-sm text-muted-foreground"}
                                        "Locked setting"]]]))
+
+(defscene
+ switch-invalid
+ "Invalid switch state for form validation.
+
+  Based on shadcn/ui Switch — https://ui.shadcn.com/docs/components/switch
+  Radix primitive: @radix-ui/react-switch
+
+  Use :aria-invalid true and helper text for validation feedback."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6 space-y-2"}
+                                     [:div {:class "flex items-center gap-2"}
+                                      [sut/switch {:id "terms-invalid"
+                                                   :aria-invalid true
+                                                   :checked false}]
+                                      [label/label {:html-for "terms-invalid"}
+                                       "Accept terms"]]
+                                     [:p {:class "text-destructive text-sm"}
+                                      "You must accept terms to continue."]]))
 
 (defscene
  switch-controlled

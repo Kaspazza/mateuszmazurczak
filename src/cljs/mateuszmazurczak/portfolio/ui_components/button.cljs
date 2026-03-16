@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Button component with support for multiple variants and sizes."
             :npm-install "npm install @radix-ui/react-slot"
-            :source-code (embed-source mateuszmazurczak.ui.components.button)
+            :source-code (embed-source "mateuszmazurczak.ui.components.button")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/button.cljs"
             :filename "button.cljs"}])
 
@@ -33,19 +33,40 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "button"
-       :description "Button component"
+       :description "Polymorphic button primitive with variant + size systems. Supports regular button rendering or slot-based composition via :as-child. Additional props are forwarded to the underlying element."
        :props
        [[":variant"
          "keyword, optional (default :default). One of: :default | :destructive | :outline | :secondary | :ghost | :link"]
         [":size"
          "keyword, optional (default :default). One of: :xs | :sm | :default | :lg | :icon | :icon-xs | :icon-sm | :icon-lg"]
-        [":class" "string, optional - Additional Tailwind classes"]
-        [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
+        [":as-child" "boolean, optional (default false) - Render using Radix Slot and pass styles/behavior to the child element."]
+        [":disabled" "boolean, optional - Disables interaction and applies disabled styles."]
+        [":type" "string, optional - Native button type: \"button\" | \"submit\" | \"reset\"."]
+        [":on-click" "function, optional - Click handler: (fn [event] ...)."]
+        [":class" "string, optional - Additional Tailwind classes."]
+        ["additional props" "map entries, optional - Forwarded to the rendered element (button or slotted child)."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Use :type \"submit\" inside forms to trigger native form submission semantics."]
+       [:li "When :as-child is true, ensure the child is an interactive element (<a>, <button>, etc.) for accessibility."]
+       [:li "Prefer semantic variants (:destructive for dangerous actions) over one-off color overrides."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[button {}]"]]]]]]))
+       [:code "[:div {:class \"flex items-center gap-2\"}\n [button {:variant :default\n          :on-click #(js/console.log \"continue\")}\n  \"Continue\"]\n [button {:variant :outline\n          :size :icon\n          :aria-label \"Open settings\"}\n  [:> ArrowUpRight]]\n [button {:as-child true}\n  [:a {:href \"/docs\"} \"Documentation\"]]]"]]
+      [:div {:class "flex flex-wrap gap-2 mt-3"}
+       [:a {:href "https://ui.shadcn.com/docs/components/button"
+            :target "_blank"
+            :rel "noopener noreferrer"
+            :class "inline-flex items-center text-sm text-primary hover:underline"}
+        "shadcn Button Docs →"]
+       [:a {:href "https://www.radix-ui.com/primitives/docs/utilities/slot"
+            :target "_blank"
+            :rel "noopener noreferrer"
+            :class "inline-flex items-center text-sm text-primary hover:underline"}
+        "Radix Slot Docs →"]]]]]]))
 
 (defscene
  button-default

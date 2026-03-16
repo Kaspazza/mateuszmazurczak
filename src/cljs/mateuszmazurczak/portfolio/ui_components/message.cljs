@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Message component for chat interfaces."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.message)
+            :source-code (embed-source "mateuszmazurczak.ui.components.message")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/message.cljs"
             :filename "message.cljs"}])
 
@@ -28,47 +28,60 @@
   [:div {:class "p-6 max-w-4xl"}
    [:div {:class "space-y-6"}
     [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Message components."]]
+     [:p {:class "text-sm text-muted-foreground mb-4"}
+      "Message primitives adapted from Prompt Kit chat patterns. All available props for Message components."]
+     [:div {:class "flex flex-wrap gap-2"}
+      [:a {:href "https://www.prompt-kit.com/docs/message"
+           :target "_blank"
+           :rel "noopener noreferrer"
+           :class "inline-flex items-center text-sm text-primary hover:underline"}
+       "Prompt Kit Message Docs →"]]]
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "message"
-       :description "Message component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Root chat message row container. Additional props are forwarded to the wrapper element."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to wrapper element."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-avatar"
-       :description "Message avatar component"
-       :props [[":src" "string, required - Avatar image URL"]
-               [":alt" "string, required - Avatar alt text"]
-               [":fallback" "string, optional - Avatar fallback text (e.g. initials)"]
-               [":delay-ms" "number, optional - Delay before fallback appears (ms)"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Avatar renderer for message sender identity."
+       :props [[":src" "string, required - Avatar image URL."]
+               [":alt" "string, required - Avatar alt text."]
+               [":fallback" "string, optional - Fallback initials/text."]
+               [":delay-ms" "number, optional - Delay before fallback appears."]
+               [":class" "string, optional - Additional Tailwind classes."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-content"
-       :description "Message content component"
-       :props [[":markdown?" "boolean, optional (default false) - Render content as markdown"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Message body container with optional markdown rendering mode."
+       :props [[":markdown?" "boolean, optional (default false) - Render children/content as markdown."]
+               [":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to content container."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-actions"
-       :description "Message actions component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Action row container for per-message controls (copy/delete/etc.)."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to action row container."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-action"
-       :description "Message action component"
-       :props [[":tooltip" "string | hiccup, required - Tooltip content"]
-               [":side" "keyword, optional (default :top). One of: :top | :right | :bottom | :left"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Tooltip-wrapped message action slot."
+       :props [[":tooltip" "string | hiccup, required - Tooltip content."]
+               [":side" "keyword, optional (default :top). :top | :right | :bottom | :left."]
+               [":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to tooltip wrapper."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Compose message-avatar + message-content consistently for predictable row alignment."]
+       [:li "Use message-content {:markdown? true} only for trusted/escaped content paths."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[message {}]"]]]]]]))
+       [:code "[message {:class \"items-start gap-3\"}\n [message-avatar {:src \"https://placehold.co/40x40\" :alt \"Assistant\" :fallback \"AI\"}]\n [:div {:class \"space-y-2\"}\n  [message-content {:markdown? true} \"**Hello** from the assistant\"]\n  [message-actions {}\n   [message-action {:tooltip \"Copy\"} [button {:size :icon} [:> Copy]]]]]]" ]]]]]]))
 
 (defscene
  message-basic
  "Basic message with avatar and content.
-
-  Custom component — not from shadcn/ui.
   Uses avatar + markdown composition internally.
 
   Use for simple chat messages."
@@ -84,8 +97,6 @@
 (defscene
  message-avatar-fallback
  "Message showing avatar fallback.
-
-  Custom component — not from shadcn/ui.
   Useful when image URLs fail or are missing."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
@@ -99,8 +110,6 @@
 (defscene
  message-markdown
  "Message with markdown rendering.
-
-  Custom component — not from shadcn/ui.
   Uses the Markdown component internally.
 
   Useful for rich assistant responses."
@@ -117,8 +126,6 @@
 (defscene
  message-actions
  "Message with action buttons.
-
-  Custom component — not from shadcn/ui.
   Actions are wrapped with tooltips.
 
   Use for copy, delete, or feedback actions."
@@ -145,8 +152,6 @@
 (defscene
  message-user-vs-assistant
  "User vs assistant message styling.
-
-  Custom component — not from shadcn/ui.
   Use classes to align and style different roles.
 
   Helpful for chat UIs with role-based presentation."

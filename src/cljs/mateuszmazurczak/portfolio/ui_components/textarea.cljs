@@ -16,7 +16,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Textarea component for forms."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.textarea)
+            :source-code (embed-source "mateuszmazurczak.ui.components.textarea")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/textarea.cljs"
             :filename "textarea.cljs"}])
 
@@ -32,15 +32,31 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "textarea"
-                :description "Textarea component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]
-                        [":auto-size?"
-                         "boolean, optional (default false) - Enable textarea autosizing"]]}]
+                :description "Styled native textarea with optional autosizing behavior. Additional props are forwarded to underlying <textarea>."
+                :props [[":value" "string, optional - Controlled value."]
+                        [":default-value" "string, optional - Uncontrolled initial value."]
+                        [":placeholder" "string, optional - Placeholder text."]
+                        [":disabled" "boolean, optional - Disables textarea."]
+                        [":required" "boolean, optional - Marks textarea as required."]
+                        [":rows" "number, optional - Visible row count."]
+                        [":cols" "number, optional - Visible column count."]
+                        [":on-change" "function, optional - Change handler."]
+                        [":on-blur" "function, optional - Blur handler."]
+                        [":on-focus" "function, optional - Focus handler."]
+                        [":auto-size?" "boolean, optional (default true) - Uses field-sizing-content when true."]
+                        [":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to native <textarea>."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Default :auto-size? is true (not false). Disable it when you need manual resize handles."]
+                [:li "Use :aria-invalid true to trigger built-in destructive validation styles."]
+                [:li "Prefer controlled mode for forms with validation/state sync."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[textarea {}]"]]]]]]))
+                [:code "[:div {:class \"space-y-2 max-w-sm\"}\n [textarea {:placeholder \"Tell us about your project\"}]\n [textarea {:aria-invalid true\n            :default-value \"too short\"\n            :auto-size? false}]]"]]]]]]))
 
 (defscene
  textarea-demo
@@ -81,6 +97,25 @@
                                       "Your message"]
                                      [sut/textarea {:id "message"
                                                     :placeholder "Type your message here."}]]))
+
+(defscene
+ textarea-invalid
+ "Invalid textarea state with inline error.
+
+  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
+  Native element: <textarea>
+
+  Pair :aria-invalid with error messaging for clear validation feedback."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-sm space-y-2"}
+                                     [label/label {:html-for "feedback-invalid"}
+                                      "Feedback"]
+                                     [sut/textarea {:id "feedback-invalid"
+                                                    :aria-invalid true
+                                                    :default-value "bad"
+                                                    :placeholder "Tell us what happened..."}]
+                                     [:p {:class "text-destructive text-sm"}
+                                      "Feedback should be at least 10 characters."]]))
 
 (defscene
  textarea-with-button

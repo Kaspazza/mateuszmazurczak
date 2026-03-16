@@ -14,7 +14,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "App initialization loading screen component."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.app_skeleton)
+            :source-code (embed-source "mateuszmazurczak.ui.components.app_skeleton")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/app_skeleton.cljs"
             :filename "app_skeleton.cljs"}])
 
@@ -28,39 +28,21 @@
               [:p {:class "text-sm text-muted-foreground"}
                "All available props for App Skeleton components."]]
              [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "navigation-skeleton"
-                                                      :description "Navigation skeleton component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "spacer"
-                                                      :description "Spacer component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "sidebar-user-bottom-profile"
-                                                      :description
-                                                      "Sidebar user bottom profile component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "sidebar-header"
-                                                      :description "Sidebar header component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "sidebar-skeleton"
-                                                      :description "Sidebar skeleton component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "header"
-                                                      :description "Header component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "page-content"
-                                                      :description "Page content component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "main-content-skeleton"
-                                                      :description "Main content skeleton component"
-                                                      :props []}]
-              [mm-portfolio-utils/api-component-card {:component-name "app-loading"
-                                                      :description "App loading component"
-                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "app-loading"
+                :description "Public app bootstrap skeleton. Composes internal sidebar/header/content placeholders into a full-screen loading shell."
+                :props [["arguments" "No props. Render as [app-loading]."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Only app-loading should be treated as stable public API."]
+                [:li "Other helper functions in this namespace are internal composition details and may change."]
+                [:li "Use this during app initialization/loading only; replace with real layout after bootstrap."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[navigation-skeleton {}]"]]]]]]))
+                [:code "(if app-ready?\n  [main-layout]\n  [app-loading])"]]]]]]))
 
 (defscene
  app-loading

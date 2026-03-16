@@ -106,8 +106,9 @@ Custom component implementation."
                    :aria-roledescription "carousel"
                    :data-slot "carousel"}]
             children)])))
+
 (defc carousel-content
- "Carousel content wrapper. Contains the carousel items.
+  "Carousel content wrapper. Contains the carousel items.
   
   Props:
   - `:class` - Additional Tailwind classes
@@ -116,24 +117,24 @@ Custom component implementation."
   [carousel-content {}
     [carousel-item {} \"Slide 1\"]
     [carousel-item {} \"Slide 2\"]]"
- [{:keys [class]
-   :as props}
-  &
-  children]
- (let [ctx (use-carousel)
-       carousel-ref (gobj/get ctx "carousel-ref")
-       orientation (gobj/get ctx "orientation")]
-   [:div {:ref carousel-ref
-          :class "overflow-hidden"
-          :data-slot "carousel-content"}
-    (into [:div
-           (-> (dissoc props :class)
-               (assoc :class (merge-classes
-                              "flex"
-                              (if (= orientation :horizontal) "-ml-4" "-mt-4 flex-col")
-                              class)
-                      :data-slot "carousel-content-inner"))]
-          children)]))
+  [{:keys [class]
+    :as props}
+   &
+   children]
+  (let [ctx (use-carousel)
+        carousel-ref (gobj/get ctx "carousel-ref")
+        orientation (gobj/get ctx "orientation")]
+    [:div {:ref carousel-ref
+           :class "overflow-hidden"
+           :data-slot "carousel-content"}
+     (into [:div
+            (-> (dissoc props :class)
+                (assoc :class (merge-classes
+                               "flex"
+                               (if (= orientation :horizontal) "-ml-4" "-mt-4 flex-col")
+                               class)
+                       :data-slot "carousel-content-inner"))]
+           children)]))
 
 (defc carousel-item
  "Carousel item. Individual slide in the carousel.

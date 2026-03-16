@@ -19,7 +19,7 @@
            {:description
             "Breadcrumb navigation component for displaying hierarchical page location."
             :npm-install "npm install @radix-ui/react-slot lucide-react"
-            :source-code (embed-source mateuszmazurczak.ui.components.breadcrumb)
+            :source-code (embed-source "mateuszmazurczak.ui.components.breadcrumb")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/breadcrumb.cljs"
             :filename "breadcrumb.cljs"}])
 
@@ -35,39 +35,47 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb"
-                :description "Breadcrumb component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Root nav wrapper for hierarchical page location trail."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        [":separator" "hiccup/component, optional - Reserved custom separator prop on root (children separators still control rendering)."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-list"
-                :description "Breadcrumb list component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Ordered list container for breadcrumb items."
+                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-item"
-                :description "Breadcrumb item component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "List item wrapper for a single crumb segment."
+                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-link"
-                :description "Breadcrumb link component"
-                :props [[":href" "string, optional - Link URL"]
-                        [":class" "string, optional - Additional Tailwind classes"]
-                        [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
+                :description "Navigable breadcrumb segment."
+                :props [[":href" "string, optional - Destination URL."]
+                        [":as-child" "boolean, optional (default false) - Render via Radix Slot."]
+                        [":class" "string, optional - Additional Tailwind classes."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-page"
-                :description "Breadcrumb page component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Current-page segment (non-clickable) with aria-current semantics."
+                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-separator"
-                :description "Breadcrumb separator component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Visual separator between segments; renders ChevronRight by default, or custom children when provided."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["children" "optional - Custom separator content; overrides default icon."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-ellipsis"
-                :description "Breadcrumb ellipsis component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Collapsed-path indicator used when intermediate crumbs are hidden."
+                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "breadcrumb-page sets aria-current=page and should represent the final/current segment."]
+                [:li "Use children in breadcrumb-separator to override the default ChevronRight icon."]
+                [:li "For long paths, pair breadcrumb-ellipsis with dropdown/drawer to reveal hidden ancestors."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[breadcrumb {}]"]]]]]]))
+                [:code "[breadcrumb {}\n [breadcrumb-list {}\n  [breadcrumb-item {} [breadcrumb-link {:href \"/\"} \"Home\"]]\n  [breadcrumb-separator {}]\n  [breadcrumb-item {} [breadcrumb-page {} \"Settings\"]]]]" ]]]]]]))
 
 (defscene
  breadcrumb-demo

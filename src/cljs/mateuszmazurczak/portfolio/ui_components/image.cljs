@@ -2,7 +2,8 @@
   (:require
    [mateuszmazurczak.portfolio.utils     :as mm-portfolio-utils]
    [mateuszmazurczak.ui.components.image :as sut]
-   [portfolio.reagent-18                 :refer-macros [defscene configure-scenes]])
+   [portfolio.reagent-18                 :refer-macros [defscene configure-scenes]]
+   [reagent.core                         :as r])
   (:require-macros [mateuszmazurczak.portfolio.macros :refer [embed-source]]))
 
 (configure-scenes {:collection :ui-components
@@ -15,7 +16,7 @@
            {:description
             "Optimized image components with lazy loading, responsive images, and modern formats."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.image)
+            :source-code (embed-source "mateuszmazurczak.ui.components.image")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/image.cljs"
             :filename "image.cljs"}])
 
@@ -67,22 +68,26 @@
                [":class" "string, optional - Additional CSS classes"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar-img"
-       :description "Avatar img component"
+       :description "Avatar image helper with fixed square size and rounded styling."
        :props [[":src" "string, required - Image source URL"]
                [":alt" "string, required - Alt text for accessibility"]
                [":size" "number, optional (default 40) - Avatar size in pixels"]
                [":class" "string, optional - Additional CSS classes"]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "optimized-img expects explicit :width and :height to prevent layout shift."]
+       [:li "Use :on-error to capture failed loads and render fallback UI when needed."]
+       [:li "responsive-img sources should be ordered from most specific to least specific."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[optimized-img {}]"]]]]]]))
+       [:code "[optimized-img {:src \"https://placehold.co/640x360/png\"\n                :alt \"Demo banner\"\n                :width 640\n                :height 360\n                :class \"rounded-md border\"}]" ]]]]]]))
 
 (defscene
  optimized-image
  "Optimized image with explicit sizing.
-
-  Custom component — not from shadcn/ui.
   Encourages explicit width/height to prevent layout shift.
 
   Use for hero and content images."
@@ -97,8 +102,6 @@
 (defscene
  avatar-image
  "Avatar image helper.
-
-  Custom component — not from shadcn/ui.
   Use for small circular user images."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 flex items-center gap-4"}
@@ -115,8 +118,6 @@
 (defscene
  responsive-image
  "Responsive image with multiple sources.
-
-  Custom component — not from shadcn/ui.
   Use picture sources for multiple sizes and formats."
  []
  (mm-portfolio-utils/wrap-component
@@ -135,8 +136,6 @@
 (defscene
  progressive-image
  "Progressive image with placeholder.
-
-  Custom component — not from shadcn/ui.
   Uses a blurred placeholder until load completes."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6"}
@@ -147,3 +146,22 @@
                                                            :width 320
                                                            :height 200
                                                            :class "rounded-lg border"}]]))
+
+(defscene
+ image-error-state
+ "Image load error handling.
+  Demonstrates :on-error callback and fallback messaging."
+ []
+ (let [failed? (r/atom false)]
+   (fn []
+     (mm-portfolio-utils/wrap-component
+      [:div {:class "p-6 space-y-2"}
+       [sut/optimized-img {:src "https://invalid.example.com/missing-image.png"
+                           :alt "Broken image demo"
+                           :width 320
+                           :height 200
+                           :class "rounded-lg border"
+                           :on-error #(reset! failed? true)}]
+       (when @failed?
+         [:p {:class "text-sm text-destructive"}
+          "Image failed to load. Showing fallback copy."])]))))

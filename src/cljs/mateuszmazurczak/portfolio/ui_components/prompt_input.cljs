@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Prompt input component for chat interfaces with auto-resizing textarea."
             :npm-install "npm install react"
-            :source-code (embed-source mateuszmazurczak.ui.components.prompt_input)
+            :source-code (embed-source "mateuszmazurczak.ui.components.prompt_input")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/prompt_input.cljs"
             :filename "prompt_input.cljs"}])
 
@@ -28,24 +28,62 @@
            [:div {:class "p-6 max-w-4xl"}
             [:div {:class "space-y-6"}
              [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Prompt Input components."]]
+              [:p {:class "text-sm text-muted-foreground mb-4"}
+               "Prompt input primitives adapted from Prompt Kit patterns. All available props for Prompt Input components."]
+              [:div {:class "flex flex-wrap gap-2"}
+               [:a {:href "https://www.prompt-kit.com/docs/prompt-input"
+                    :target "_blank"
+                    :rel "noopener noreferrer"
+                    :class "inline-flex items-center text-sm text-primary hover:underline"}
+                "Prompt Kit Prompt Input Docs →"]]]
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
+               {:component-name "prompt-input"
+                :description "Root composition component for chat-like input. Provides context used by prompt-input-textarea and prompt-input-action children, including disabled/loading and submit behavior. Additional props are forwarded to the wrapper div."
+                :props [[":is-loading?" "boolean, optional (default false) - Visual loading/disabled state for the whole prompt input."]
+                        [":value" "string, optional - Controlled textarea value."]
+                        [":on-value-change" "function, optional - Called when text changes: (fn [new-value] ...)."]
+                        [":max-height" "number | string, optional (default 240) - Maximum textarea height before scrolling."]
+                        [":on-submit" "function, optional - Triggered on Enter (without Shift)."]
+                        [":disabled?" "boolean, optional (default false) - Disables interactions and applies muted styles."]
+                        [":on-click" "function, optional - Click handler for root container (focus behavior is preserved)."]
+                        [":class" "string, optional - Additional Tailwind classes for root container."]
+                        ["additional props" "map entries, optional - Forwarded to root div."]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "prompt-input-textarea"
+                :description "Auto-resizing textarea that consumes prompt-input context. Must be nested inside prompt-input. Additional props are forwarded to textarea component."
+                :props [[":disable-autosize?" "boolean, optional (default false) - Disables automatic textarea height adjustment."]
+                        [":placeholder" "string, optional - Placeholder text."]
+                        [":on-key-down" "function, optional - Additional keydown handler (runs after submit handling)."]
+                        [":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to textarea."]]}]
+              [mm-portfolio-utils/api-component-card
                {:component-name "prompt-input-actions"
-                :description "Prompt input actions component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Horizontal container for action buttons (send, attach, mic, etc.). Additional props are forwarded to container div."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to container div."]]}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "prompt-input-action"
+                :description "Tooltip-wrapped action slot. Enhances first child with stopPropagation and disabled state from prompt-input context."
+                :props [[":tooltip" "string | hiccup, required - Tooltip content."]
+                        [":side" "keyword, optional (default :top) - Tooltip side: :top | :bottom | :left | :right."]
+                        [":class" "string, optional - Classes for tooltip content container."]
+                        ["additional props" "map entries, optional - Forwarded to tooltip component."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "prompt-input-textarea and prompt-input-action require prompt-input context and will throw if used standalone."]
+                [:li "Enter submits via :on-submit, while Shift+Enter inserts a newline."]
+                [:li "If you pass :value (controlled mode), keep it synchronized with :on-value-change to avoid stale UI."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[prompt-input-actions {}]"]]]]]]))
+                [:code "(let [value (r/atom \"\")]\n  [prompt-input {:value @value\n                 :on-value-change #(reset! value %)\n                 :on-submit #(js/console.log \"submit\" @value)}\n   [prompt-input-textarea {:placeholder \"Type your message...\"}]\n   [prompt-input-actions {}\n    [prompt-input-action {:tooltip \"Attach\"} [button {:size :icon} ...]]\n    [prompt-input-action {:tooltip \"Send\"} [button {:size :icon} ...]]]])"]]]]]]))
 
 (defscene
  prompt-input-basic
  "Basic prompt input with send action.
-
-  Custom component — not from shadcn/ui.
   Provides shared context for textarea + actions.
 
   Useful for chat or command input fields."
@@ -67,8 +105,6 @@
 (defscene
  prompt-input-multiple-actions
  "Prompt input with multiple actions.
-
-  Custom component — not from shadcn/ui.
   Use prompt-input-action to wrap action buttons with tooltips."
  []
  (let [value (r/atom "")]
@@ -95,8 +131,6 @@
 (defscene
  prompt-input-disabled
  "Disabled prompt input state.
-
-  Custom component — not from shadcn/ui.
   Use :disabled? or :is-loading? for disabled styling."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-xl"}
@@ -112,8 +146,6 @@
 (defscene
  prompt-input-loading
  "Prompt input with loading state.
-
-  Custom component — not from shadcn/ui.
   Use :is-loading? when responses are pending."
  []
  (let [value (r/atom "Working on it...")]

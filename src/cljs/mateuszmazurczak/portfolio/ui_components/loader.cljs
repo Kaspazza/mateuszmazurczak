@@ -13,8 +13,8 @@
           []
           [mm-portfolio-utils/installation-scene
            {:description "Comprehensive loader/spinner components with multiple variants and sizes."
-            :npm-install "npm install 10px 6px 8px"
-            :source-code (embed-source mateuszmazurczak.ui.components.loader)
+            :npm-install "No external dependencies"
+            :source-code (embed-source "mateuszmazurczak.ui.components.loader")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/loader.cljs"
             :filename "loader.cljs"}])
 
@@ -101,17 +101,20 @@
         [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
         [":text" "string, optional (default 'Thinking') - Text label"]
         [":class" "string, optional - Additional Tailwind classes"]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Text variants use :text, while non-text variants ignore it; choose variant intentionally."]
+       [:li "Prefer semantic loading copy for long operations (e.g., 'Syncing invoices...') over generic labels."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[circular-loader {}]"]]]]]]))
+       [:code "[:div {:class \"flex items-center gap-3\"}\n [loader {:variant :circular :size :sm}]\n [loader {:variant :pulse-dot :size :md}]\n [loader {:variant :text-shimmer :text \"Generating\"}]]" ]]]]]]))
 
 (defscene
  loader-all-variants
  "All loader variants in a single grid.
-
-  Custom component — not from shadcn/ui.
   Built with pure CSS animations and Tailwind classes.
 
   Variants: :circular, :classic, :pulse, :pulse-dot, :dots, :typing,
@@ -142,8 +145,6 @@
 (defscene
  loader-sizes
  "Loader size comparison.
-
-  Custom component — not from shadcn/ui.
   All loaders support :sm, :md, :lg sizes."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 flex items-center gap-6"}
@@ -157,8 +158,6 @@
 (defscene
  loader-text-variants
  "Text-based loaders with custom text.
-
-  Custom component — not from shadcn/ui.
   Text variants: :text-blink, :text-shimmer, :loading-dots."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 space-y-3"}
@@ -175,8 +174,6 @@
 (defscene
  loader-component
  "Unified loader component with :variant prop.
-
-  Custom component — not from shadcn/ui.
   Use the single `loader` function to switch animations per state."
  []
  (mm-portfolio-utils/wrap-component [:div {:class "p-6 flex items-center gap-6"}

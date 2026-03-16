@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Input component for forms."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.input)
+            :source-code (embed-source "mateuszmazurczak.ui.components.input")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/input.cljs"
             :filename "input.cljs"}])
 
@@ -33,14 +33,29 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "input"
-                :description "Input component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]
-                        [":type" "string, optional (default 'text') - HTML input type"]]}]
+                :description "Styled native input element. Supports controlled/uncontrolled form patterns and forwards additional props to underlying <input>."
+                :props [[":type" "string, optional (default \"text\") - Native input type."]
+                        [":value" "string, optional - Controlled value."]
+                        [":default-value" "string, optional - Uncontrolled initial value."]
+                        [":placeholder" "string, optional - Placeholder text."]
+                        [":disabled" "boolean, optional - Disables input."]
+                        [":required" "boolean, optional - Marks input as required."]
+                        [":on-change" "function, optional - Change handler."]
+                        [":on-blur" "function, optional - Blur handler."]
+                        [":on-focus" "function, optional - Focus handler."]
+                        [":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to native <input>."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Prefer either controlled (:value + :on-change) or uncontrolled (:default-value), not both."]
+                [:li "Use :aria-invalid true to trigger built-in invalid styling for validation states."]
+                [:li "All native input attributes (autocomplete, min, max, accept, etc.) are forwarded."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[input {}]"]]]]]]))
+                [:code "[:div {:class \"space-y-2 max-w-sm\"}\n [input {:type \"email\"\n         :placeholder \"you@example.com\"\n         :required true}]\n [input {:type \"text\"\n         :aria-invalid true\n         :default-value \"bad value\"}]]"]]]]]]))
 
 (defscene
  input-demo
@@ -83,6 +98,25 @@
                                      [sut/input {:disabled true
                                                  :type "email"
                                                  :placeholder "Email"}]]))
+
+(defscene
+ input-invalid
+ "Invalid input state with validation message.
+
+  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
+  Native element: <input>
+
+  Use :aria-invalid true and helper/error text for validation feedback."
+ []
+ (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-sm space-y-2"}
+                                     [label/label {:html-for "email-invalid"}
+                                      "Email"]
+                                     [sut/input {:id "email-invalid"
+                                                 :type "email"
+                                                 :aria-invalid true
+                                                 :default-value "not-an-email"}]
+                                     [:p {:class "text-destructive text-sm"}
+                                      "Please enter a valid email address."]]))
 
 (defscene
  input-with-label

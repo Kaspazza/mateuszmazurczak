@@ -18,7 +18,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "empty component."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.empty)
+            :source-code (embed-source "mateuszmazurczak.ui.components.empty")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/empty.cljs"
             :filename "empty.cljs"}])
 
@@ -34,35 +34,46 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "empty"
-                :description "Empty component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Root empty-state layout wrapper."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to wrapper element."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-header"
-                :description "Empty header component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Header section for media/title/description."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to wrapper element."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-media"
-                :description "Empty media component"
-                :props [[":variant"
-                         "keyword, optional (default :default). One of: :default | :icon"]
-                        [":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Visual media slot for icon/avatar/illustration."
+                :props [[":variant" "keyword, optional (default :default). :default | :icon."]
+                        [":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to media wrapper."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-title"
-                :description "Empty title component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Primary empty-state headline."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to title element."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-description"
-                :description "Empty description component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Supporting explanation text for empty state."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to description element."]]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-content"
-                :description "Empty content component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Action/content area (buttons, links, forms)."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        ["additional props" "map entries, optional - Forwarded to content wrapper."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "empty-media :variant :icon applies a bordered icon container; use :default for richer custom media."]
+                [:li "Links rendered in empty-description receive built-in underline styling."]
+                [:li "Compose empty-content for primary CTAs to keep visual hierarchy clear."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[empty {}]"]]]]]]))
+                [:code "[empty {}\n [empty-header {}\n  [empty-media {:variant :icon} [:> Inbox]]\n  [empty-title {} \"No invoices yet\"]\n  [empty-description {} \"Create your first invoice to get started.\"]]\n [empty-content {}\n  [button {} \"Create invoice\"]]]" ]]]]]]))
 
 (defscene
  empty-demo

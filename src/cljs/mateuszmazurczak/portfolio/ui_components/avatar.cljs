@@ -15,7 +15,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Avatar component based on Radix UI primitives."
             :npm-install "npm install @radix-ui/react-avatar"
-            :source-code (embed-source mateuszmazurczak.ui.components.avatar)
+            :source-code (embed-source "mateuszmazurczak.ui.components.avatar")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/avatar.cljs"
             :filename "avatar.cljs"}])
 
@@ -32,24 +32,31 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar"
-       :description "Root container component with group/avatar for badge sizing"
+       :description "Root avatar container with size variants and optional status badge support."
        :props [[":size" "keyword, optional - Size variant (:default, :sm, :lg)"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+               [":class" "string, optional - Additional Tailwind classes"]
+               ["additional props" "map entries, optional - Forwarded to root container."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar-image"
-       :description "Displays the avatar image"
+       :description "Displays the avatar image."
        :props [[":src" "string, required - Image source URL"]
                [":alt" "string, optional - Alt text for accessibility"]
                [":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar-fallback"
-       :description "Fallback content when image unavailable"
+       :description "Fallback content when image unavailable."
        :props [[":class" "string, optional - Additional Tailwind classes"]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar-badge"
        :description
        "Badge indicator positioned at bottom right of avatar. Automatically sizes based on parent avatar size."
        :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Always provide meaningful :alt text for avatar-image when identity matters."]
+       [:li "Use avatar-fallback for resilient UX in slow or failed image loading states."]
+       [:li "avatar-badge is size-aware relative to parent avatar; avoid manual absolute positioning overrides."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]

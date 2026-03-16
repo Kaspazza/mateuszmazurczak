@@ -17,7 +17,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Field component for building accessible form layouts."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.field)
+            :source-code (embed-source "mateuszmazurczak.ui.components.field")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/field.cljs"
             :filename "field.cljs"}])
 
@@ -34,54 +34,70 @@
     [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "field-set"
-       :description "Field set component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Semantic fieldset wrapper for grouping related controls."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to <fieldset>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-legend"
-       :description "Field legend component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":variant" "keyword, optional (default :legend). One of: :legend | :label"]]}]
+       :description "Legend/title for a field-set section."
+       :props [[":variant" "keyword, optional (default :legend). :legend | :label."]
+               [":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to <legend>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-group"
-       :description "Field group component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Container for vertically grouped fields with consistent spacing."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field"
-       :description "Field component"
-       :props
-       [[":class" "string, optional - Additional Tailwind classes"]
-        [":orientation"
-         "keyword, optional (default :vertical). One of: :vertical | :horizontal | :responsive"]]}]
+       :description "Core field layout wrapper with orientation variants."
+       :props [[":orientation" "keyword, optional (default :vertical). :vertical | :horizontal | :responsive."]
+               [":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-content"
-       :description "Field content component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Groups input/control with description and errors."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-label"
-       :description "Field label component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Field-aware label wrapper around base label component."
+       :props [[":html-for" "string, optional - Associates label with input id."]
+               [":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to underlying label."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-title"
-       :description "Field title component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Title slot used inside complex field labels/cards."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-description"
-       :description "Field description component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Secondary helper text for context and guidance."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["additional props" "map entries, optional - Forwarded to <p>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-separator"
-       :description "Field separator component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :description "Visual separator between field blocks; can render optional children label."
+       :props [[":class" "string, optional - Additional Tailwind classes."]
+               ["children" "optional - Label content displayed over separator line."]
+               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-error"
-       :description "Field error component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":errors" "vector<map>, optional - Error maps, each with :message string"]]}]
+       :description "Validation message renderer supporting one or multiple error messages."
+       :props [[":errors" "vector<map>, optional - Error maps with :message keys."]
+               [":class" "string, optional - Additional Tailwind classes."]
+               ["children" "optional - Custom error content; takes priority over :errors."]]}]
+     [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+      [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+      [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+       [:li "Use :html-for on field-label with matching input :id for accessible label click behavior."]
+       [:li "field-separator can take children; without children it renders a plain separator line."]
+       [:li "Most field helpers forward extra props to underlying DOM nodes for flexibility."]]]
      [:div {:class "border rounded-lg p-4 bg-muted/50"}
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[field-set {}]"]]]]]]))
+       [:code "[field-set {}\n [field-legend {} \"Profile\"]\n [field {}\n  [field-label {:html-for \"display-name\"} \"Display name\"]\n  [field-content {}\n   [input {:id \"display-name\"}]\n   [field-description {} \"Shown publicly\"]]]]"]]]]]]))
 
 (defscene
  field-with-input

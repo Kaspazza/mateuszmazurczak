@@ -14,7 +14,7 @@
           [mm-portfolio-utils/installation-scene
            {:description "Skeleton component for loading placeholders."
             :npm-install "No external dependencies"
-            :source-code (embed-source mateuszmazurczak.ui.components.skeleton)
+            :source-code (embed-source "mateuszmazurczak.ui.components.skeleton")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/skeleton.cljs"
             :filename "skeleton.cljs"}])
 
@@ -30,13 +30,22 @@
              [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "skeleton"
-                :description "Skeleton component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :description "Animated loading placeholder block. Additional props are forwarded to underlying <div>."
+                :props [[":class" "string, optional - Additional Tailwind classes."]
+                        [":role" "string, optional - Accessibility role, e.g. \"status\"."]
+                        [":aria-label" "string, optional - Screen reader label for loading context."]
+                        [":aria-live" "string, optional - Announce updates politely/assertively."]
+                        ["additional props" "map entries, optional - Forwarded to native <div>."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Skeleton is purely visual by default; add ARIA attributes when used as a status indicator."]
+                [:li "Use realistic width/height classes to reduce layout shift during content hydration."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[skeleton {}]"]]]]]]))
+                [:code "[:div {:class \"space-y-2 w-64\"}\n [skeleton {:class \"h-4 w-40\"}]\n [skeleton {:class \"h-4 w-full\"}]\n [skeleton {:class \"h-4 w-5/6\" :role \"status\" :aria-label \"Loading profile\"}]]" ]]]]]]))
 
 (defscene
  skeleton-demo

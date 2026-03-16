@@ -16,7 +16,7 @@
            {:description
             "Scroll-to-bottom button that appears when not at the bottom of a scrollable container."
             :npm-install "npm install lucide-react use-stick-to-bottom"
-            :source-code (embed-source mateuszmazurczak.ui.components.scroll_button)
+            :source-code (embed-source "mateuszmazurczak.ui.components.scroll_button")
             :namespace-path "src/cljs/mateuszmazurczak/ui/components/scroll_button.cljs"
             :filename "scroll_button.cljs"}])
 
@@ -27,23 +27,43 @@
            [:div {:class "p-6 max-w-4xl"}
             [:div {:class "space-y-6"}
              [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Scroll Button components."]]
+              [:p {:class "text-sm text-muted-foreground mb-4"}
+               "Scroll button primitive adapted from Prompt Kit chat patterns. All available props for Scroll Button components."]
+              [:div {:class "flex flex-wrap gap-2"}
+               [:a {:href "https://www.prompt-kit.com/docs/scroll-button"
+                    :target "_blank"
+                    :rel "noopener noreferrer"
+                    :class "inline-flex items-center text-sm text-primary hover:underline"}
+                "Prompt Kit Scroll Button Docs →"]]]
              [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card {:component-name "component"
-                                                      :description "Component"
-                                                      :props []}]
+              [mm-portfolio-utils/api-component-card
+               {:component-name "scroll-button"
+                :description "Floating action button that appears when chat content is not pinned to the bottom. Integrates with use-stick-to-bottom context and scrolls smoothly to the newest message."
+                :props [[":variant" "keyword, optional (default :outline) - Button variant forwarded to button component."]
+                        [":size" "keyword, optional (default :sm) - Button size forwarded to button component."]
+                        [":class" "string, optional - Additional Tailwind classes merged with default visibility/position classes."]
+                        ["additional props" "map entries, optional - Forwarded to the underlying button component."]]}]
+              [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
+               [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
+               [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
+                [:li "Must be rendered inside chat-container-root; otherwise useStickToBottom context is unavailable."]
+                [:li "Include chat-container-scroll-anchor as the last child of chat-container-content for correct bottom detection."]
+                [:li "Visibility is managed automatically via transform/opacity classes based on scroll position."]]]
               [:div {:class "border rounded-lg p-4 bg-muted/50"}
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "[scroll_button {}]"]]]]]]))
+                [:code "[chat-container-root {:class \"relative h-64\"}\n  [chat-container-content {}\n    ;; messages\n    [chat-container-scroll-anchor {}]]\n  [scroll-button {:class \"absolute bottom-4 right-4\"}]]"]]
+               [:div {:class "flex flex-wrap gap-2 mt-3"}
+                [:a {:href "https://www.npmjs.com/package/use-stick-to-bottom"
+                     :target "_blank"
+                     :rel "noopener noreferrer"
+                     :class "inline-flex items-center text-sm text-primary hover:underline"}
+                 "use-stick-to-bottom Docs →"]]]]]]))
 
 (defscene
  scroll-button-chat
  "Scroll-to-bottom button inside chat container.
-
-  Custom component — not from shadcn/ui.
   Uses use-stick-to-bottom context from chat-container.
 
   Appears when user scrolls away from bottom."
@@ -62,8 +82,6 @@
 (defscene
  scroll-button-custom
  "Scroll button with custom styling.
-
-  Custom component — not from shadcn/ui.
   Use class overrides for position or style changes."
  []
  (mm-portfolio-utils/wrap-component
@@ -80,8 +98,6 @@
 (defscene
  scroll-button-standalone
  "Scroll button placement in custom layout.
-
-  Custom component — not from shadcn/ui.
   Place inside any stick-to-bottom container."
  []
  (mm-portfolio-utils/wrap-component

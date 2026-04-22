@@ -24,15 +24,10 @@
             :filename "breadcrumb.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Breadcrumb component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Breadcrumb components."]]
-             [:div {:class "space-y-4"}
+            [:div {:class "space-y-4"}
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb"
                 :description "Root nav wrapper for hierarchical page location trail."

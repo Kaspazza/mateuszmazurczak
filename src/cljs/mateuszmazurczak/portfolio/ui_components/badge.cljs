@@ -22,15 +22,10 @@
 
 (defscene
  api-reference
- "Complete reference for all Badge component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Badge components."]]
-    [:div {:class "space-y-4"}
+   [:div {:class "space-y-4"}
      [mm-portfolio-utils/api-component-card
       {:component-name "badge"
        :description "Compact status/metadata pill with variant styling and optional slot polymorphism."

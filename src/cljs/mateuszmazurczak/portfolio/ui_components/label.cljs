@@ -22,17 +22,12 @@
             :filename "label.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Label component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Label components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "label"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "label"
                 :description "Accessible form label wrapper around Radix Label primitive."
                 :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
                         {:name ":html-for"        :type "string"      :default nil :description "Associates label with control id."}

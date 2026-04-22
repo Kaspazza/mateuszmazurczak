@@ -22,44 +22,19 @@
 
 (defscene
  api-reference
- "Complete reference for all Carousel component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground mb-4"}
-      "Carousel components built on top of Embla Carousel. Keyboard accessible — supports ArrowLeft / ArrowRight navigation."]
-     [:div {:class "flex flex-wrap gap-2"}
-      [:a {:href "https://www.embla-carousel.com/api/options/"
-           :target "_blank"
-           :rel "noopener noreferrer"
-           :class "inline-flex items-center text-sm text-primary hover:underline"}
-       "Embla Options →"]
-      [:a {:href "https://www.embla-carousel.com/api/events/"
-           :target "_blank"
-           :rel "noopener noreferrer"
-           :class "inline-flex items-center text-sm text-primary hover:underline"}
-       "Embla Events →"]
-      [:a {:href "https://www.embla-carousel.com/api/plugins/"
-           :target "_blank"
-           :rel "noopener noreferrer"
-           :class "inline-flex items-center text-sm text-primary hover:underline"}
-       "Embla Plugins →"]
-      [:a {:href "https://www.embla-carousel.com/api/methods/"
-           :target "_blank"
-           :rel "noopener noreferrer"
-           :class "inline-flex items-center text-sm text-primary hover:underline"}
-       "Embla Methods →"]]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "carousel"
-       :description "Carousel root component - creates container with embla-carousel. Sets role=\"region\" and aria-roledescription=\"carousel\" for accessibility."
-       :props [{:name ":opts"        :type "map"      :default nil          :description "Embla carousel options passed directly to embla-carousel. Keys must use camelCase to match Embla's JS API (e.g. :loop, :align, :dragFree, :slidesToScroll). Note: do NOT set :axis here — use :orientation instead, which takes precedence."}
-               {:name ":plugins"     :type "array"    :default nil          :description "Embla carousel plugins (see https://www.embla-carousel.com/api/plugins/)"}
-               {:name ":orientation" :type "keyword"  :default ":horizontal" :description ":horizontal | :vertical. Controls the scroll axis. Overrides any :axis value in :opts."}
-               {:name ":set-api"     :type "function" :default nil          :description "Callback to receive the raw Embla carousel API instance: (fn [api] ...). Use this to attach event listeners or call methods like .scrollTo, .canScrollNext, etc."}
-               {:name ":class"       :type "string"   :default nil          :description "Additional Tailwind classes"}]}]
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "carousel"
+      :link {:href "https://www.embla-carousel.com/api/options/" :label "Embla Carousel Docs"}
+      :description "Carousel root component - creates container with embla-carousel. Sets role=\"region\" and aria-roledescription=\"carousel\" for accessibility."
+      :props [{:name ":opts"        :type "map"      :default nil          :description "Embla carousel options passed directly to embla-carousel. Keys must use camelCase to match Embla's JS API (e.g. :loop, :align, :dragFree, :slidesToScroll). Note: do NOT set :axis here — use :orientation instead, which takes precedence."}
+              {:name ":plugins"     :type "array"    :default nil          :description "Embla carousel plugins (see https://www.embla-carousel.com/api/plugins/)"}
+              {:name ":orientation" :type "keyword"  :default ":horizontal" :description ":horizontal | :vertical. Controls the scroll axis. Overrides any :axis value in :opts."}
+              {:name ":set-api"     :type "function" :default nil          :description "Callback to receive the raw Embla carousel API instance: (fn [api] ...). Use this to attach event listeners or call methods like .scrollTo, .canScrollNext, etc."}
+              {:name ":class"       :type "string"   :default nil          :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "carousel-content"
        :description "Carousel content wrapper - contains the carousel items. Applies default spacing via negative margin (-ml-4 horizontal, -mt-4 vertical). Override with custom -ml-* / -mt-* classes and matching pl-* / pt-* on carousel-item."

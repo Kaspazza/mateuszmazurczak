@@ -23,17 +23,12 @@
             :filename "empty.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Empty component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Empty components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "empty"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "empty"
                 :description "Root empty-state layout wrapper."
                 :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
                         {:name "additional props" :type "map entries" :default nil :description "Forwarded to wrapper element."}]}]

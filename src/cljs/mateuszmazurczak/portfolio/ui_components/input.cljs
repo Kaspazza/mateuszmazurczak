@@ -22,17 +22,12 @@
             :filename "input.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Input component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Input components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "input"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "input"
                 :description "Styled native input element. Supports controlled/uncontrolled form patterns and forwards additional props to underlying <input>."
                 :props [{:name ":type"          :type "string"      :default "\"text\"" :description "Native input type."}
                         {:name ":value"         :type "string"      :default nil        :description "Controlled value."}

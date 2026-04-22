@@ -28,17 +28,13 @@
 
 (defscene
  api-reference
- "Complete reference for all Dropdown Menu component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Dropdown Menu components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "dropdown-menu"
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "dropdown-menu"
+      :link {:href "https://www.radix-ui.com/primitives/docs/components/dropdown-menu" :label "Radix Dropdown Menu Docs"}
        :description "Radix DropdownMenu root controlling menu open state and modality."
        :props [{:name ":open"          :type "boolean"      :default nil    :description "Controlled open state."}
                {:name ":default-open"  :type "boolean"      :default nil    :description "Uncontrolled initial open state."}

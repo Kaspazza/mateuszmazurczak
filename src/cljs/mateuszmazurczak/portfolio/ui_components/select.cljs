@@ -22,19 +22,15 @@
 
 (defscene
  api-reference
- "Complete reference for all Select component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Select components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "select"
-       :description "Radix Select root for controlled/uncontrolled single-value selection."
-       :props [{:name ":value"          :type "string"      :default nil :description "Controlled selected value."}
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "select"
+      :description "Radix Select root for controlled/uncontrolled single-value selection."
+      :link {:href "https://www.radix-ui.com/primitives/docs/components/select" :label "Radix Select Docs"}
+      :props [{:name ":value"          :type "string"      :default nil :description "Controlled selected value."}
                {:name ":default-value"  :type "string"      :default nil :description "Uncontrolled initial value."}
                {:name ":on-value-change" :type "function"   :default nil :description "Callback when selection changes."}
                {:name ":disabled"       :type "boolean"     :default nil :description "Disables the control."}

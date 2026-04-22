@@ -28,17 +28,13 @@
 
 (defscene
  api-reference
- "Complete reference for all Data Table component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Data Table components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "data-table"
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "data-table"
+      :link {:href "https://tanstack.com/table/latest" :label "TanStack Table Docs"}
        :description "Feature-rich TanStack table wrapper with built-in sorting, filtering, faceting, pagination, row selection, expandable rows, and optional drag-and-drop row reordering."
        :props [{:name ":columns"                   :type "js-array | vector"          :default nil  :description "TanStack column definitions."}
                {:name ":data"                      :type "js-array | vector"          :default nil  :description "Row data source."}
@@ -109,17 +105,7 @@
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
        [:code "[data-table {:columns columns\n             :data rows\n             :initial-page-size 10\n             :toolbar-config {:text-filter {:column-id \"title\"\n                                            :placeholder \"Search tasks...\"}}\n             :dnd-config {:get-row-id (fn [row] (aget row \"id\"))\n                          :on-drag-end (fn [active-id over-id] ... )}}]"]]
-      [:div {:class "flex flex-wrap gap-2 mt-3"}
-       [:a {:href "https://tanstack.com/table/latest"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "TanStack Table Docs →"]
-       [:a {:href "https://dndkit.com"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "dnd-kit Docs →"]]]]]]))
+     ]]]]))
 
 (defn make-task-data
   []

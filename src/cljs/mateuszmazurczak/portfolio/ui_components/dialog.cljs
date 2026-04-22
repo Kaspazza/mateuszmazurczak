@@ -26,17 +26,13 @@
             :filename "dialog.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Dialog component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Dialog components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "dialog"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "dialog"
+               :link {:href "https://www.radix-ui.com/primitives/docs/components/dialog" :label "Radix Dialog Docs"}
                 :description "Radix Dialog root that controls modal open/close state and accessibility semantics."
                 :props [{:name ":open"            :type "boolean"      :default nil    :description "Controlled open state."}
                         {:name ":defaultOpen"      :type "boolean"      :default nil    :description "Uncontrolled initial open state."}

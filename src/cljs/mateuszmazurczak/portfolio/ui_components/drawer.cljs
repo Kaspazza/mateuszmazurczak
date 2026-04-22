@@ -22,17 +22,12 @@
             :filename "drawer.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Drawer component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Drawer components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "drawer"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "drawer"
                 :description "Drawer component"
                 :props [{:name ":open"                   :type "boolean"  :default nil      :description "Controlled open state"}
                         {:name ":on-open-change"         :type "function" :default nil      :description "Callback (fn [open?])"}

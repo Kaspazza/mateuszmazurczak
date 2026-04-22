@@ -35,32 +35,32 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper"
        :description "Root context provider for multi-step flows. Coordinates active step state shared by navigation and panels."
-       :props [[":current-step" "string | keyword | number, required - Active step id."]
-               [":on-step-change" "function, optional - Callback when step changes: (fn [step-id])."]
-               [":variant" "keyword, optional (default :horizontal). :horizontal | :vertical | :circle."]
-               [":label-orientation" "keyword, optional (default :horizontal). :horizontal | :vertical."]
-               [":reverse-progress?" "boolean, optional (default false) - Marks progress in reverse direction."]
-               [":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":current-step"      :type "string | keyword | number" :default nil          :description "Active step id."}
+               {:name ":on-step-change"    :type "function"  :default nil          :description "Callback when step changes: (fn [step-id])."}
+               {:name ":variant"           :type "keyword"   :default ":horizontal" :description ":horizontal | :vertical | :circle."}
+               {:name ":label-orientation" :type "keyword"   :default ":horizontal" :description ":horizontal | :vertical."}
+               {:name ":reverse-progress?" :type "boolean"   :default "false"      :description "Marks progress in reverse direction."}
+               {:name ":class"             :type "string"    :default nil          :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-navigation"
        :description "Navigation container that auto-indexes stepper-step children and injects step metadata."
-       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-step"
        :description "Interactive step node with indicator, title/description slots, and optional icon override."
-       :props [[":id" "keyword | string | number, required - Step identifier."]
-               [":disabled?" "boolean, optional - Disables interaction for this step."]
-               [":icon" "hiccup | React element, optional - Replaces numeric step indicator."]
-               [":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":id"        :type "keyword | string | number" :default nil :description "Step identifier."}
+               {:name ":disabled?" :type "boolean"                  :default nil :description "Disables interaction for this step."}
+               {:name ":icon"      :type "hiccup | React element"   :default nil :description "Replaces numeric step indicator."}
+               {:name ":class"     :type "string"                   :default nil :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-panel"
        :description "Content panel bound to a specific step id; renders only when active."
-       :props [[":id" "keyword | string | number, required - Step id this panel belongs to."]
-               [":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":id"    :type "keyword | string | number" :default nil :description "Step id this panel belongs to."}
+               {:name ":class" :type "string"                   :default nil :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-title"
        :description "Title text slot for step labels."
-       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-description"
        :description "Secondary description text slot for step labels."
@@ -68,7 +68,7 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "stepper-controls"
        :description "Layout container for navigation buttons (Back/Next/Finish)."
-       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

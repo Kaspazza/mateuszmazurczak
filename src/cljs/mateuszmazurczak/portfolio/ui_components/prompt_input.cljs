@@ -40,35 +40,35 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "prompt-input"
                 :description "Root composition component for chat-like input. Provides context used by prompt-input-textarea and prompt-input-action children, including disabled/loading and submit behavior. Additional props are forwarded to the wrapper div."
-                :props [[":is-loading?" "boolean, optional (default false) - Visual loading/disabled state for the whole prompt input."]
-                        [":value" "string, optional - Controlled textarea value."]
-                        [":on-value-change" "function, optional - Called when text changes: (fn [new-value] ...)."]
-                        [":max-height" "number | string, optional (default 240) - Maximum textarea height before scrolling."]
-                        [":on-submit" "function, optional - Triggered on Enter (without Shift)."]
-                        [":disabled?" "boolean, optional (default false) - Disables interactions and applies muted styles."]
-                        [":on-click" "function, optional - Click handler for root container (focus behavior is preserved)."]
-                        [":class" "string, optional - Additional Tailwind classes for root container."]
-                        ["additional props" "map entries, optional - Forwarded to root div."]]}]
+                :props [{:name ":is-loading?"    :type "boolean"     :default "false" :description "Visual loading/disabled state for the whole prompt input."}
+                        {:name ":value"          :type "string"      :default nil     :description "Controlled textarea value."}
+                        {:name ":on-value-change" :type "function"   :default nil     :description "Called when text changes: (fn [new-value] ...)."}
+                        {:name ":max-height"     :type "number | string" :default "240" :description "Maximum textarea height before scrolling."}
+                        {:name ":on-submit"      :type "function"    :default nil     :description "Triggered on Enter (without Shift)."}
+                        {:name ":disabled?"      :type "boolean"     :default "false" :description "Disables interactions and applies muted styles."}
+                        {:name ":on-click"       :type "function"    :default nil     :description "Click handler for root container (focus behavior is preserved)."}
+                        {:name ":class"          :type "string"      :default nil     :description "Additional Tailwind classes for root container."}
+                        {:name "additional props" :type "map entries" :default nil    :description "Forwarded to root div."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "prompt-input-textarea"
                 :description "Auto-resizing textarea that consumes prompt-input context. Must be nested inside prompt-input. Additional props are forwarded to textarea component."
-                :props [[":disable-autosize?" "boolean, optional (default false) - Disables automatic textarea height adjustment."]
-                        [":placeholder" "string, optional - Placeholder text."]
-                        [":on-key-down" "function, optional - Additional keydown handler (runs after submit handling)."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to textarea."]]}]
+                :props [{:name ":disable-autosize?" :type "boolean"    :default "false" :description "Disables automatic textarea height adjustment."}
+                        {:name ":placeholder"    :type "string"      :default nil     :description "Placeholder text."}
+                        {:name ":on-key-down"    :type "function"    :default nil     :description "Additional keydown handler (runs after submit handling)."}
+                        {:name ":class"          :type "string"      :default nil     :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil    :description "Forwarded to textarea."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "prompt-input-actions"
                 :description "Horizontal container for action buttons (send, attach, mic, etc.). Additional props are forwarded to container div."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to container div."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to container div."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "prompt-input-action"
                 :description "Tooltip-wrapped action slot. Enhances first child with stopPropagation and disabled state from prompt-input context."
-                :props [[":tooltip" "string | hiccup, required - Tooltip content."]
-                        [":side" "keyword, optional (default :top) - Tooltip side: :top | :bottom | :left | :right."]
-                        [":class" "string, optional - Classes for tooltip content container."]
-                        ["additional props" "map entries, optional - Forwarded to tooltip component."]]}]
+                :props [{:name ":tooltip"       :type "string | hiccup" :default nil  :description "Tooltip content."}
+                        {:name ":side"          :type "keyword"     :default ":top"  :description "Tooltip side: :top | :bottom | :left | :right."}
+                        {:name ":class"         :type "string"      :default nil     :description "Classes for tooltip content container."}
+                        {:name "additional props" :type "map entries" :default nil   :description "Forwarded to tooltip component."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

@@ -33,10 +33,10 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "spinner"
                 :description "Lucide Loader2-based spinner with built-in accessibility defaults."
-                :props [[":class" "string, optional - Additional CSS classes."]
-                        [":role" "string, optional (default \"status\") - Accessibility role."]
-                        [":aria-label" "string, optional (default \"Loading\") - Screen reader label."]
-                        ["additional props" "map entries, optional - Forwarded to underlying icon element."]]}]
+                :props [{:name ":class"          :type "string"      :default nil        :description "Additional CSS classes."}
+                        {:name ":role"           :type "string"      :default "\"status\"" :description "Accessibility role."}
+                        {:name ":aria-label"     :type "string"      :default "\"Loading\"" :description "Screen reader label."}
+                        {:name "additional props" :type "map entries" :default nil        :description "Forwarded to underlying icon element."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -52,7 +52,6 @@
  spinner-basic
  "Basic spinner indicator.
 
-  Based on shadcn/ui Spinner — https://ui.shadcn.com/docs/components/spinner
   Icon: lucide-react Loader2
 
   Use for lightweight loading indicators."
@@ -64,7 +63,6 @@
  spinner-size
  "Spinner size variants using class overrides.
 
-  Based on shadcn/ui Spinner — https://ui.shadcn.com/docs/components/spinner
   Icon: lucide-react Loader2
 
   Adjust size via Tailwind size classes."
@@ -79,7 +77,6 @@
  spinner-button
  "Spinner inside disabled buttons.
 
-  Based on shadcn/ui Spinner — https://ui.shadcn.com/docs/components/spinner
   Icon: lucide-react Loader2
 
   Combine with buttons to show in-progress actions."
@@ -104,7 +101,6 @@
  spinner-badge
  "Spinner embedded in badges.
 
-  Based on shadcn/ui Spinner — https://ui.shadcn.com/docs/components/spinner
   Icon: lucide-react Loader2
 
   Useful for background status updates."
@@ -124,7 +120,6 @@
  spinner-color
  "Spinner color variations.
 
-  Based on shadcn/ui Spinner — https://ui.shadcn.com/docs/components/spinner
   Icon: lucide-react Loader2
 
   Color via text utility classes."
@@ -140,7 +135,6 @@
  spinner-demo
  "Spinner inside list item layout.
 
-  Based on shadcn/ui Spinner — https://ui.shadcn.com/docs/components/spinner
   Icon: lucide-react Loader2
 
   Demonstrates inline usage in a row layout."

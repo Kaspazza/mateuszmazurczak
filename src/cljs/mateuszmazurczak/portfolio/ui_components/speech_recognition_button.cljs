@@ -34,10 +34,10 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "speech-recognition-button"
                 :description "Microphone action button built on react-speech-recognition. Starts/stops listening and streams transcript text through a callback."
-                :props [[":on-transcript-change" "function, optional - Called whenever transcript updates: (fn [text] ...)."]
-                        [":language" "string, optional (default \"en-US\") - Speech recognition locale, e.g. \"pl-PL\" or \"en-US\"."]
-                        [":continuous" "boolean, optional (default true) - Continue listening after pauses in speech."]
-                        [":class" "string, optional - Additional classes applied to the prompt-input action wrapper."]]}]
+                :props [{:name ":on-transcript-change" :type "function" :default nil      :description "Called whenever transcript updates: (fn [text] ...)."}
+                        {:name ":language"             :type "string"   :default "\"en-US\"" :description "Speech recognition locale, e.g. \"pl-PL\" or \"en-US\"."}
+                        {:name ":continuous"           :type "boolean"  :default "true"   :description "Continue listening after pauses in speech."}
+                        {:name ":class"                :type "string"   :default nil      :description "Additional classes applied to the prompt-input action wrapper."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

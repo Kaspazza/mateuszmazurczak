@@ -34,26 +34,24 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "tooltip"
        :description "Tooltip component"
-       :props [[":trigger" "hiccup, required - Tooltip trigger element"]
-               [":content" "string | hiccup, required - Tooltip content"]
-               [":side" "keyword, optional (default :top). One of: :top | :right | :bottom | :left"]
-               [":side-offset" "number, optional (default 4) - Distance from trigger"]
-               [":align" "keyword, optional (default :center). One of: :start | :center | :end"]
-               [":align-offset" "number, optional (default 0) - Alignment offset in pixels"]
-               [":collision-padding" "number, optional (default 0) - Viewport collision padding"]
-               [":avoid-collisions?"
-                "boolean, optional (default true) - Auto reposition to stay in viewport"]
-               [":sticky" "keyword, optional (default :partial). One of: :partial | :always"]
-               [":delay-duration" "number, optional (default 700) - Open delay in ms"]
-               [":skip-delay-duration" "number, optional (default 300) - Delay-skip window in ms"]
-               [":open" "boolean, optional - Controlled open state"]
-               [":default-open" "boolean, optional - Uncontrolled initial open state"]
-               [":on-open-change" "function, optional - Callback (fn [open?])"]
-               [":content-class" "string, optional - Additional classes for content"]
-               [":content-hidden?" "boolean, optional (default false) - Hide tooltip content"]
-               [":trigger-as-child?" "boolean, optional (default false) - Render trigger via Slot"]
-               [":disable-hoverable-content?"
-                "boolean, optional (default false) - Disable hoverable content"]]}]
+       :props [{:name ":trigger"                  :type "hiccup"          :default nil     :description "Tooltip trigger element"}
+               {:name ":content"                  :type "string | hiccup" :default nil     :description "Tooltip content"}
+               {:name ":side"                     :type "keyword"         :default ":top"  :description "One of: :top | :right | :bottom | :left"}
+               {:name ":side-offset"              :type "number"          :default "4"     :description "Distance from trigger"}
+               {:name ":align"                    :type "keyword"         :default ":center" :description "One of: :start | :center | :end"}
+               {:name ":align-offset"             :type "number"          :default "0"     :description "Alignment offset in pixels"}
+               {:name ":collision-padding"        :type "number"          :default "0"     :description "Viewport collision padding"}
+               {:name ":avoid-collisions?"        :type "boolean"         :default "true"  :description "Auto reposition to stay in viewport"}
+               {:name ":sticky"                   :type "keyword"         :default ":partial" :description "One of: :partial | :always"}
+               {:name ":delay-duration"           :type "number"          :default "700"   :description "Open delay in ms"}
+               {:name ":skip-delay-duration"      :type "number"          :default "300"   :description "Delay-skip window in ms"}
+               {:name ":open"                     :type "boolean"         :default nil     :description "Controlled open state"}
+               {:name ":default-open"             :type "boolean"         :default nil     :description "Uncontrolled initial open state"}
+               {:name ":on-open-change"           :type "function"        :default nil     :description "Callback (fn [open?])"}
+               {:name ":content-class"            :type "string"          :default nil     :description "Additional classes for content"}
+               {:name ":content-hidden?"          :type "boolean"         :default "false" :description "Hide tooltip content"}
+               {:name ":trigger-as-child?"        :type "boolean"         :default "false" :description "Render trigger via Slot"}
+               {:name ":disable-hoverable-content?" :type "boolean"       :default "false" :description "Disable hoverable content"}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -75,7 +73,6 @@
  tooltip-demo
  "Basic tooltip with a button trigger.
 
-  Based on shadcn/ui Tooltip — https://ui.shadcn.com/docs/components/tooltip
   Radix primitive: @radix-ui/react-tooltip
 
   Use tooltips for concise, contextual hints."
@@ -89,7 +86,6 @@
  kbd-tooltip
  "Tooltip with keyboard shortcut hints.
 
-  Based on shadcn/ui Tooltip — https://ui.shadcn.com/docs/components/tooltip
   Radix primitive: @radix-ui/react-tooltip
 
   Use inline <kbd> tags to show shortcuts."
@@ -128,7 +124,6 @@
  tooltip-custom-content
  "Tooltip with rich content.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-tooltip
 
   Rich content works well for onboarding hints."

@@ -33,11 +33,9 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "separator"
                 :description "Separator component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]
-                        [":orientation"
-                         "keyword, optional (default :horizontal). One of: :horizontal | :vertical"]
-                        [":decorative"
-                         "boolean, optional (default true) - Decorative vs semantic separator"]]}]
+                :props [{:name ":class"       :type "string"   :default nil         :description "Additional Tailwind classes"}
+                        {:name ":orientation" :type "keyword"  :default ":horizontal" :description "One of: :horizontal | :vertical"}
+                        {:name ":decorative"  :type "boolean"  :default "true"      :description "Decorative vs semantic separator"}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -59,7 +57,6 @@
  separator-demo
  "Horizontal and vertical separators.
 
-  Based on shadcn/ui Separator — https://ui.shadcn.com/docs/components/separator
   Radix primitive: @radix-ui/react-separator
 
   Use separators to divide sections or inline items."
@@ -82,7 +79,6 @@
  breadcrumb-separator
  "Separator used inside breadcrumb navigation.
 
-  Based on shadcn/ui Breadcrumb Separator — https://ui.shadcn.com/docs/components/breadcrumb
   Radix primitive: @radix-ui/react-separator
 
   Custom separators can be inserted between breadcrumb items."
@@ -108,7 +104,6 @@
  separator-custom
  "Separator with custom styling.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-separator
 
   Add classes to adjust thickness or color."

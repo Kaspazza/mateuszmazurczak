@@ -34,117 +34,115 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar"
        :description "Sidebar component"
-       :props [[":open?" "boolean, required - Expanded/open state"]
-               [":is-mobile" "boolean, required - Render mobile variant"]
-               [":on-open-change" "function, optional - Callback (fn [open?])"]
-               [":side" "string, optional (default 'left'). One of: 'left' | 'right'"]
-               [":variant"
-                "string, optional (default 'sidebar'). One of: 'sidebar' | 'floating' | 'inset'"]
-               [":collapsible"
-                "string, optional (default 'offcanvas'). One of: 'offcanvas' | 'icon' | 'none'"]
-               [":class" "string, optional - Additional Tailwind classes"]
-               [":style" "map, optional - Inline style map"]]}]
+       :props [{:name ":open?"         :type "boolean"  :default nil          :description "Expanded/open state"}
+               {:name ":is-mobile"     :type "boolean"  :default nil          :description "Render mobile variant"}
+               {:name ":on-open-change" :type "function" :default nil         :description "Callback (fn [open?])"}
+               {:name ":side"          :type "string"   :default "\"left\""   :description "One of: 'left' | 'right'"}
+               {:name ":variant"       :type "string"   :default "\"sidebar\"" :description "One of: 'sidebar' | 'floating' | 'inset'"}
+               {:name ":collapsible"   :type "string"   :default "\"offcanvas\"" :description "One of: 'offcanvas' | 'icon' | 'none'"}
+               {:name ":class"         :type "string"   :default nil          :description "Additional Tailwind classes"}
+               {:name ":style"         :type "map"      :default nil          :description "Inline style map"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-trigger"
        :description "Sidebar trigger component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":on-click" "function, optional - Click handler (fn [event])"]]}]
+       :props [{:name ":class"    :type "string"   :default nil :description "Additional Tailwind classes"}
+               {:name ":on-click" :type "function" :default nil :description "Click handler (fn [event])"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-rail"
        :description "Sidebar rail component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":on-click" "function, optional - Click handler (fn [event])"]]}]
+       :props [{:name ":class"    :type "string"   :default nil :description "Additional Tailwind classes"}
+               {:name ":on-click" :type "function" :default nil :description "Click handler (fn [event])"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-inset"
        :description "Sidebar inset component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-input"
        :description "Sidebar input component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-header"
        :description "Sidebar header component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-footer"
        :description "Sidebar footer component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-separator"
        :description "Sidebar separator component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-content"
        :description "Sidebar content component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-group"
        :description "Sidebar group component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-group-label"
        :description "Sidebar group label component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
+       :props [{:name ":class"    :type "string"  :default nil   :description "Additional Tailwind classes"}
+               {:name ":as-child" :type "boolean" :default "false" :description "Render via Radix Slot"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-group-action"
        :description "Sidebar group action component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":as-child" "boolean, optional (default false) - Render via Radix Slot"]]}]
+       :props [{:name ":class"    :type "string"  :default nil   :description "Additional Tailwind classes"}
+               {:name ":as-child" :type "boolean" :default "false" :description "Render via Radix Slot"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-group-content"
        :description "Sidebar group content component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu"
        :description "Sidebar menu component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-item"
        :description "Sidebar menu item component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-button"
        :description "Sidebar menu button component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":as-child" "boolean, optional (default false) - Render via Radix Slot"]
-               [":is-active?" "boolean, optional - Active state"]
-               [":tooltip" "string | hiccup, optional - Tooltip content"]
-               [":variant" "keyword, optional (default :default). One of: :default | :outline"]
-               [":size" "keyword, optional (default :default). One of: :default | :sm | :lg"]
-               [":collapsed?" "boolean, optional - Whether sidebar is collapsed"]
-               [":is-mobile" "boolean, required - Render mobile variant"]]}]
+       :props [{:name ":class"      :type "string"          :default nil      :description "Additional Tailwind classes"}
+               {:name ":as-child"   :type "boolean"         :default "false"  :description "Render via Radix Slot"}
+               {:name ":is-active?" :type "boolean"         :default nil      :description "Active state"}
+               {:name ":tooltip"    :type "string | hiccup" :default nil      :description "Tooltip content"}
+               {:name ":variant"    :type "keyword"         :default ":default" :description "One of: :default | :outline"}
+               {:name ":size"       :type "keyword"         :default ":default" :description "One of: :default | :sm | :lg"}
+               {:name ":collapsed?" :type "boolean"         :default nil      :description "Whether sidebar is collapsed"}
+               {:name ":is-mobile"  :type "boolean"         :default nil      :description "Render mobile variant"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-action"
        :description "Sidebar menu action component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":as-child" "boolean, optional (default false) - Render via Radix Slot"]
-               [":show-on-hover?" "boolean, optional (default false) - Show action on hover"]]}]
+       :props [{:name ":class"         :type "string"  :default nil    :description "Additional Tailwind classes"}
+               {:name ":as-child"      :type "boolean" :default "false" :description "Render via Radix Slot"}
+               {:name ":show-on-hover?" :type "boolean" :default "false" :description "Show action on hover"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-badge"
        :description "Sidebar menu badge component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-skeleton"
        :description "Sidebar menu skeleton component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":show-icon?" "boolean, optional (default false) - Show icon skeleton"]]}]
+       :props [{:name ":class"      :type "string"  :default nil    :description "Additional Tailwind classes"}
+               {:name ":show-icon?" :type "boolean" :default "false" :description "Show icon skeleton"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-sub"
        :description "Sidebar menu sub component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-sub-item"
        :description "Sidebar menu sub item component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "sidebar-menu-sub-button"
        :description "Sidebar menu sub button component"
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":as-child" "boolean, optional (default false) - Render via Radix Slot"]
-               [":size" "keyword, optional (default :md). One of: :sm | :md"]
-               [":is-active?" "boolean, optional - Active state"]]}]
+       :props [{:name ":class"      :type "string"  :default nil    :description "Additional Tailwind classes"}
+               {:name ":as-child"   :type "boolean" :default "false" :description "Render via Radix Slot"}
+               {:name ":size"       :type "keyword" :default ":md"  :description "One of: :sm | :md"}
+               {:name ":is-active?" :type "boolean" :default nil    :description "Active state"}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -161,7 +159,6 @@
  sidebar-demo
  "Basic sidebar layout with header, menu, and footer.
 
-  Based on shadcn/ui Sidebar — https://ui.shadcn.com/docs/components/sidebar
   Custom component with composable slots.
 
   Use sidebar-content and sidebar-menu to structure navigation."
@@ -201,7 +198,6 @@
  sidebar-menu
  "Menu items with actions and badges.
 
-  Based on shadcn/ui Sidebar — https://ui.shadcn.com/docs/components/sidebar
   Custom component with optional menu actions.
 
   Use menu-action and menu-badge for per-item utilities."
@@ -233,7 +229,6 @@
  sidebar-menu-sub
  "Sidebar submenu with nested links.
 
-  Based on shadcn/ui Sidebar — https://ui.shadcn.com/docs/components/sidebar
   Custom component with nested menu-sub elements.
 
   Use menu-sub for secondary navigation."
@@ -266,7 +261,6 @@
  sidebar-menu-collapsible
  "Collapsible sidebar (icon mode).
 
-  Based on shadcn/ui Sidebar — https://ui.shadcn.com/docs/components/sidebar
   Custom component supports :collapsible 'icon'.
 
   When collapsed, icons remain visible while labels hide."
@@ -295,7 +289,6 @@
  sidebar-controlled
  "Controlled open/close state.
 
-  Based on shadcn/ui Sidebar — https://ui.shadcn.com/docs/components/sidebar
   Custom component expects open? and callbacks from the consumer.
 
   Use controlled state for responsive layouts."
@@ -322,7 +315,6 @@
  sidebar-mobile
  "Mobile sidebar rendered as a sheet.
 
-  Based on shadcn/ui Sidebar — https://ui.shadcn.com/docs/components/sidebar
   Custom component toggles to a sheet when :is-mobile is true.
 
   Use for off-canvas mobile navigation."

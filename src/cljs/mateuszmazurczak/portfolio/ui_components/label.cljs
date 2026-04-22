@@ -34,9 +34,9 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "label"
                 :description "Accessible form label wrapper around Radix Label primitive."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        [":html-for" "string, optional - Associates label with control id."]
-                        ["additional props" "map entries, optional - Forwarded to underlying label element."]]}]
+                :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name ":html-for"        :type "string"      :default nil :description "Associates label with control id."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to underlying label element."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -52,7 +52,6 @@
  label-demo
  "Label paired with a checkbox.
 
-  Based on shadcn/ui Label — https://ui.shadcn.com/docs/components/label
   Radix primitive: @radix-ui/react-label
 
   Labels improve accessibility and click targets."
@@ -67,7 +66,6 @@
  input-with-label
  "Label with input field.
 
-  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
   Radix primitive: @radix-ui/react-label
 
   Keep labels close to inputs for clarity."
@@ -83,7 +81,6 @@
  textarea-with-label
  "Label with textarea for multi-line input.
 
-  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
   Radix primitive: @radix-ui/react-label
 
   Use labels to describe longer-form fields."

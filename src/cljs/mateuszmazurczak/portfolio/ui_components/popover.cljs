@@ -36,32 +36,32 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "popover"
                 :description "Radix Popover root that controls open/close state for floating content."
-                :props [[":open" "boolean, optional - Controlled open state."]
-                        [":defaultOpen" "boolean, optional - Uncontrolled initial open state."]
-                        [":onOpenChange" "function, optional - Callback when open state changes: (fn [open?] ...)."]
-                        [":modal" "boolean, optional (default false) - Whether to trap focus like a modal."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Popover.Root."]]}]
+                :props [{:name ":open"           :type "boolean"      :default nil    :description "Controlled open state."}
+                        {:name ":defaultOpen"    :type "boolean"      :default nil    :description "Uncontrolled initial open state."}
+                        {:name ":onOpenChange"   :type "function"     :default nil    :description "Callback when open state changes: (fn [open?] ...)."}
+                        {:name ":modal"          :type "boolean"      :default "false" :description "Whether to trap focus like a modal."}
+                        {:name "additional props" :type "map entries" :default nil    :description "Forwarded to Radix Popover.Root."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "popover-trigger"
                 :description "Interactive trigger element that opens/closes the popover."
-                :props [[":asChild" "boolean, optional - Compose with a child element instead of rendering default trigger."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Popover.Trigger."]]}]
+                :props [{:name ":asChild"        :type "boolean"      :default nil :description "Compose with a child element instead of rendering default trigger."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Popover.Trigger."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "popover-anchor"
                 :description "Optional positioning anchor. If omitted, trigger is used as anchor."
-                :props [[":asChild" "boolean, optional - Compose with child element."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Popover.Anchor."]]}]
+                :props [{:name ":asChild"        :type "boolean"      :default nil :description "Compose with child element."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Popover.Anchor."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "popover-content"
                 :description "Portaled floating content container with animations and collision-aware positioning."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        [":align" "string, optional (default \"center\"). One of: \"start\" | \"center\" | \"end\"."]
-                        [":side" "string, optional (default \"bottom\"). One of: \"top\" | \"right\" | \"bottom\" | \"left\"."]
-                        [":sideOffset" "number, optional (default 4) - Distance from trigger/anchor."]
-                        [":alignOffset" "number, optional - Offset along alignment axis."]
-                        [":collisionPadding" "number | map, optional - Viewport collision padding."]
-                        [":avoidCollisions" "boolean, optional (default true) - Enables collision avoidance."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Popover.Content."]]}]
+                :props [{:name ":class"           :type "string"         :default nil        :description "Additional Tailwind classes."}
+                        {:name ":align"           :type "string"         :default "\"center\"" :description "One of: \"start\" | \"center\" | \"end\"."}
+                        {:name ":side"            :type "string"         :default "\"bottom\"" :description "One of: \"top\" | \"right\" | \"bottom\" | \"left\"."}
+                        {:name ":sideOffset"      :type "number"         :default "4"         :description "Distance from trigger/anchor."}
+                        {:name ":alignOffset"     :type "number"         :default nil         :description "Offset along alignment axis."}
+                        {:name ":collisionPadding" :type "number | map"  :default nil         :description "Viewport collision padding."}
+                        {:name ":avoidCollisions" :type "boolean"        :default "true"      :description "Enables collision avoidance."}
+                        {:name "additional props" :type "map entries"    :default nil         :description "Forwarded to Radix Popover.Content."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -84,7 +84,6 @@
  popover-demo
  "Popover with form fields.
 
-  Based on shadcn/ui Popover — https://ui.shadcn.com/docs/components/popover
   Radix primitive: @radix-ui/react-popover
 
   Useful for lightweight edits or inline settings."
@@ -131,7 +130,6 @@
  combobox-popover
  "Combobox built with popover + command list.
 
-  Based on shadcn/ui Combobox Popover — https://ui.shadcn.com/docs/components/popover
   Radix primitives: @radix-ui/react-popover, @radix-ui/react-dialog
 
   Use popover + command for searchable selections."
@@ -181,7 +179,6 @@
  popover-text-only
  "Simple popover with text content.
 
-  Based on shadcn/ui Popover — https://ui.shadcn.com/docs/components/popover
   Radix primitive: @radix-ui/react-popover
 
   Good for quick hints or short explanations."

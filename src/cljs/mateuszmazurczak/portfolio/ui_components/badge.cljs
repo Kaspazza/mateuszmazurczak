@@ -35,12 +35,11 @@
       {:component-name "badge"
        :description "Compact status/metadata pill with variant styling and optional slot polymorphism."
        :props
-       [[":variant"
-         "keyword, optional (default :default). One of: :default | :secondary | :destructive | :outline | :ghost | :link"]
-        [":class" "string, optional - Additional Tailwind classes"]
-        [":as-child" "boolean, optional (default false) - Use Radix Slot polymorphism"]
-        [":on-click" "fn, optional - Click handler"]
-        [":...dom-props" "map entries, optional - Forwarded to the rendered element"]]}]
+       [{:name ":variant"      :type "keyword"      :default ":default" :description "One of: :default | :secondary | :destructive | :outline | :ghost | :link"}
+        {:name ":class"        :type "string"       :default nil        :description "Additional Tailwind classes"}
+        {:name ":as-child"     :type "boolean"      :default "false"    :description "Use Radix Slot polymorphism"}
+        {:name ":on-click"     :type "fn"           :default nil        :description "Click handler"}
+        {:name ":...dom-props" :type "map entries"  :default nil        :description "Forwarded to the rendered element"}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -56,7 +55,6 @@
  badge-demo
  "Badge variants and numeric indicators.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot (for :as-child polymorphism)
 
   Use badges for statuses, labels, and small counters."
@@ -98,7 +96,6 @@
  badge-outline
  "Outlined badge for neutral tags.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot
 
   Outline badges work well for metadata or filters."
@@ -111,7 +108,6 @@
  badge-secondary
  "Secondary badge for low-emphasis labels.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot
 
   Use :secondary for de-emphasized categories."
@@ -124,7 +120,6 @@
  badge-destructive
  "Destructive badge for error states.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot
 
   Use :destructive for failed or blocked statuses."
@@ -137,7 +132,6 @@
  badge-ghost
  "Ghost badge with no background.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot
 
   Use :ghost for minimal emphasis badges."
@@ -150,7 +144,6 @@
  badge-link
  "Link-styled badge with underline on hover.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot
 
   Use :link for clickable text-style badges."
@@ -164,7 +157,6 @@
  spinner-badge
  "Badges paired with inline spinners.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot
 
   Combine spinners with badges to show background activity."
@@ -187,7 +179,6 @@
  badge-as-child
  "Badge rendered as a link via :as-child.
 
-  Based on shadcn/ui Badge — https://ui.shadcn.com/docs/components/badge
   Radix primitive: @radix-ui/react-slot
 
   Our wrapper supports :as-child to render anchors or buttons with badge styles."

@@ -35,44 +35,44 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "table"
                 :description "Table wrapper that adds horizontal overflow container and forwards extra props to <table>."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to native <table>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to native <table>."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-header"
                 :description "Semantic <thead> section with row border styling."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to <thead>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to <thead>."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-body"
                 :description "Semantic <tbody> container for data rows."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to <tbody>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to <tbody>."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-footer"
                 :description "Semantic <tfoot> section with muted background and stronger typography."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to <tfoot>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to <tfoot>."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-row"
                 :description "Table row with hover and selected-state styling via data-state attribute."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        [":data-state" "string, optional - e.g. \"selected\" for selected row styling."]
-                        ["additional props" "map entries, optional - Forwarded to <tr>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name ":data-state"     :type "string"      :default nil :description "e.g. \"selected\" for selected row styling."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to <tr>."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-head"
                 :description "Header cell (<th>) with default left alignment and checkbox spacing helpers."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to <th>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to <th>."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-cell"
                 :description "Body/footer cell (<td>) with whitespace and checkbox alignment helpers."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to <td>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to <td>."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "table-caption"
                 :description "Caption text shown below table body (caption-bottom styling)."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to <caption>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to <caption>."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -89,7 +89,6 @@
  table-demo
  "Invoice table with header, body, and footer.
 
-  Based on shadcn/ui Table — https://ui.shadcn.com/docs/components/table
   Native elements: <table>, <thead>, <tbody>, <tfoot>
 
   Use for structured data with semantic table markup."
@@ -160,7 +159,6 @@
  typography-table
  "Typographic table styling example.
 
-  Based on shadcn/ui Typography Table — https://ui.shadcn.com/docs/components/table
   Native elements: <table>
 
   This example mirrors the typography docs table layout."
@@ -196,7 +194,6 @@
  table-with-actions
  "Table with status badges and row actions.
 
-  Custom example — not from shadcn/ui.
   Shows how to combine badge and dropdown menu inside table cells.
 
   Useful for admin dashboards and data management."

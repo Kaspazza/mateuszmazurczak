@@ -31,11 +31,11 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "skeleton"
                 :description "Animated loading placeholder block. Additional props are forwarded to underlying <div>."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        [":role" "string, optional - Accessibility role, e.g. \"status\"."]
-                        [":aria-label" "string, optional - Screen reader label for loading context."]
-                        [":aria-live" "string, optional - Announce updates politely/assertively."]
-                        ["additional props" "map entries, optional - Forwarded to native <div>."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name ":role"           :type "string"      :default nil :description "Accessibility role, e.g. \"status\"."}
+                        {:name ":aria-label"     :type "string"      :default nil :description "Screen reader label for loading context."}
+                        {:name ":aria-live"      :type "string"      :default nil :description "Announce updates politely/assertively."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to native <div>."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -51,7 +51,6 @@
  skeleton-demo
  "Avatar + text skeleton layout.
 
-  Based on shadcn/ui Skeleton — https://ui.shadcn.com/docs/components/skeleton
   Native element: <div>
 
   Use for loading placeholders while data is fetched."
@@ -67,7 +66,6 @@
  skeleton-card
  "Card-like skeleton placeholder.
 
-  Based on shadcn/ui Skeleton — https://ui.shadcn.com/docs/components/skeleton
   Native element: <div>
 
   Use for cards, previews, or media blocks."
@@ -83,7 +81,6 @@
  skeleton-grid
  "Multi-column skeleton grid.
 
-  Custom example — not from shadcn/ui.
   Native element: <div>
 
   Useful for list or gallery loading states."

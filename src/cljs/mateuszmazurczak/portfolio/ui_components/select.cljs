@@ -34,48 +34,48 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "select"
        :description "Radix Select root for controlled/uncontrolled single-value selection."
-       :props [[":value" "string, optional - Controlled selected value."]
-               [":default-value" "string, optional - Uncontrolled initial value."]
-               [":on-value-change" "function, optional - Callback when selection changes."]
-               [":disabled" "boolean, optional - Disables the control."]
-               [":name" "string, optional - Form field name."]
-               [":required" "boolean, optional - Marks field as required."]
-               ["additional props" "map entries, optional - Forwarded to Radix Select.Root."]]}]
+       :props [{:name ":value"          :type "string"      :default nil :description "Controlled selected value."}
+               {:name ":default-value"  :type "string"      :default nil :description "Uncontrolled initial value."}
+               {:name ":on-value-change" :type "function"   :default nil :description "Callback when selection changes."}
+               {:name ":disabled"       :type "boolean"     :default nil :description "Disables the control."}
+               {:name ":name"           :type "string"      :default nil :description "Form field name."}
+               {:name ":required"       :type "boolean"     :default nil :description "Marks field as required."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Select.Root."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-group"
        :description "Groups related select items under a label."
-       :props [["additional props" "map entries, optional - Forwarded to Radix Select.Group."]]}]
+       :props [{:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Select.Group."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-value"
        :description "Displays selected item text inside trigger."
-       :props [[":placeholder" "string, optional - Placeholder when no value is selected."]
-               ["additional props" "map entries, optional - Forwarded to Radix Select.Value."]]}]
+       :props [{:name ":placeholder"    :type "string"      :default nil :description "Placeholder when no value is selected."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Select.Value."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-trigger"
        :description "Button-like trigger opening the select menu."
-       :props [[":size" "string, optional (default \"default\"). One of: \"default\" | \"sm\"."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Select.Trigger."]]}]
+       :props [{:name ":size"          :type "string"      :default "\"default\"" :description "One of: \"default\" | \"sm\"."}
+               {:name ":class"         :type "string"      :default nil           :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil         :description "Forwarded to Radix Select.Trigger."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-content"
        :description "Portaled options container with popper positioning and scroll buttons."
-       :props [[":position" "string, optional (default \"popper\") - Radix positioning mode."]
-               [":align" "string, optional (default \"center\"). One of: \"start\" | \"center\" | \"end\"."]
-               [":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":position" :type "string" :default "\"popper\""  :description "Radix positioning mode."}
+               {:name ":align"    :type "string" :default "\"center\""  :description "One of: \"start\" | \"center\" | \"end\"."}
+               {:name ":class"    :type "string" :default nil           :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-label"
        :description "Section label inside select content."
-       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-item"
        :description "Selectable option item in select content."
-       :props [[":value" "string, required - Option value."]
-               [":disabled" "boolean, optional - Disables option."]
-               [":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":value"    :type "string"  :default nil :description "Option value."}
+               {:name ":disabled" :type "boolean" :default nil :description "Disables option."}
+               {:name ":class"    :type "string"  :default nil :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "select-separator"
        :description "Visual separator between item groups."
-       :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -98,7 +98,6 @@
  select-demo
  "Basic select with grouped items.
 
-  Based on shadcn/ui Select — https://ui.shadcn.com/docs/components/select
   Radix primitive: @radix-ui/react-select
 
   Our wrapper exposes select, trigger, content, and items as components."
@@ -130,7 +129,6 @@
  select-scrollable
  "Scrollable select content with multiple groups.
 
-  Based on shadcn/ui Select — https://ui.shadcn.com/docs/components/select
   Radix primitive: @radix-ui/react-select
 
   Long lists automatically scroll within the content panel."
@@ -179,8 +177,6 @@
  field-select
  "Select inside Field layout with helper copy.
 
-  Based on shadcn/ui Field + Select —
-  https://ui.shadcn.com/docs/components/field
   Radix primitive: @radix-ui/react-select
 
   Useful for richer forms with descriptions."
@@ -213,7 +209,6 @@
  select-invalid
  "Invalid select state with helper error text.
 
-  Based on shadcn/ui Select — https://ui.shadcn.com/docs/components/select
   Radix primitive: @radix-ui/react-select
 
   Pass :aria-invalid on select-trigger and show error copy beneath field."
@@ -237,7 +232,6 @@
  select-disabled-items
  "Select with disabled items.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-select
 
   Use :disabled on items that are not selectable."

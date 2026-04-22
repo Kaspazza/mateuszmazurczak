@@ -33,19 +33,19 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "textarea"
                 :description "Styled native textarea with optional autosizing behavior. Additional props are forwarded to underlying <textarea>."
-                :props [[":value" "string, optional - Controlled value."]
-                        [":default-value" "string, optional - Uncontrolled initial value."]
-                        [":placeholder" "string, optional - Placeholder text."]
-                        [":disabled" "boolean, optional - Disables textarea."]
-                        [":required" "boolean, optional - Marks textarea as required."]
-                        [":rows" "number, optional - Visible row count."]
-                        [":cols" "number, optional - Visible column count."]
-                        [":on-change" "function, optional - Change handler."]
-                        [":on-blur" "function, optional - Blur handler."]
-                        [":on-focus" "function, optional - Focus handler."]
-                        [":auto-size?" "boolean, optional (default true) - Uses field-sizing-content when true."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to native <textarea>."]]}]
+                :props [{:name ":value"          :type "string"      :default nil    :description "Controlled value."}
+                        {:name ":default-value"  :type "string"      :default nil    :description "Uncontrolled initial value."}
+                        {:name ":placeholder"    :type "string"      :default nil    :description "Placeholder text."}
+                        {:name ":disabled"       :type "boolean"     :default nil    :description "Disables textarea."}
+                        {:name ":required"       :type "boolean"     :default nil    :description "Marks textarea as required."}
+                        {:name ":rows"           :type "number"      :default nil    :description "Visible row count."}
+                        {:name ":cols"           :type "number"      :default nil    :description "Visible column count."}
+                        {:name ":on-change"      :type "function"    :default nil    :description "Change handler."}
+                        {:name ":on-blur"        :type "function"    :default nil    :description "Blur handler."}
+                        {:name ":on-focus"       :type "function"    :default nil    :description "Focus handler."}
+                        {:name ":auto-size?"     :type "boolean"     :default "true" :description "Uses field-sizing-content when true."}
+                        {:name ":class"          :type "string"      :default nil    :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil   :description "Forwarded to native <textarea>."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -62,7 +62,6 @@
  textarea-demo
  "Basic textarea for multi-line input.
 
-  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
   Native element: <textarea>
 
   Uses Tailwind styling and supports auto-sizing via :auto-size?."
@@ -74,7 +73,6 @@
  textarea-disabled
  "Disabled textarea for read-only content.
 
-  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
   Native element: <textarea>
 
   Disabled state applies muted styling and blocks input."
@@ -87,7 +85,6 @@
  textarea-with-label
  "Textarea with a label for accessibility.
 
-  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
   Native element: <textarea>
 
   Use labels for longer form inputs and clarity."
@@ -102,7 +99,6 @@
  textarea-invalid
  "Invalid textarea state with inline error.
 
-  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
   Native element: <textarea>
 
   Pair :aria-invalid with error messaging for clear validation feedback."
@@ -121,7 +117,6 @@
  textarea-with-button
  "Textarea with a submit button.
 
-  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
   Native element: <textarea>
 
   Useful for support forms or quick feedback widgets."
@@ -134,7 +129,6 @@
  textarea-with-text
  "Textarea with helper text.
 
-  Based on shadcn/ui Textarea — https://ui.shadcn.com/docs/components/textarea
   Native element: <textarea>
 
   Helper text clarifies what happens after submission."

@@ -40,102 +40,102 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu"
        :description "Radix DropdownMenu root controlling menu open state and modality."
-       :props [[":open" "boolean, optional - Controlled open state."]
-               [":default-open" "boolean, optional - Uncontrolled initial open state."]
-               [":on-open-change" "function, optional - Callback: (fn [open?] ...)."]
-               [":modal" "boolean, optional (default true) - Whether menu behaves modally."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix DropdownMenu.Root."]]}]
+       :props [{:name ":open"          :type "boolean"      :default nil    :description "Controlled open state."}
+               {:name ":default-open"  :type "boolean"      :default nil    :description "Uncontrolled initial open state."}
+               {:name ":on-open-change" :type "function"    :default nil    :description "Callback: (fn [open?] ...)."}
+               {:name ":modal"         :type "boolean"      :default "true" :description "Whether menu behaves modally."}
+               {:name ":class"         :type "string"       :default nil    :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil   :description "Forwarded to Radix DropdownMenu.Root."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-trigger"
        :description "Interactive trigger for opening/closing the menu."
-       :props [[":as-child" "boolean, optional - Compose trigger behavior into child element."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Trigger."]]}]
+       :props [{:name ":as-child"      :type "boolean"      :default nil :description "Compose trigger behavior into child element."}
+               {:name ":class"         :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Trigger."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-content"
        :description "Portaled menu content with keyboard navigation and collision-aware positioning."
-       :props [[":side-offset" "number, optional (default 4) - Distance from trigger."]
-               [":align" "keyword | string, optional - Content alignment relative to trigger."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Content."]]}]
+       :props [{:name ":side-offset"   :type "number"       :default "4"  :description "Distance from trigger."}
+               {:name ":align"         :type "keyword | string" :default nil :description "Content alignment relative to trigger."}
+               {:name ":class"         :type "string"       :default nil  :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Content."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-item"
        :description "Standard actionable menu item."
-       :props [[":inset" "boolean, optional - Adds inset padding for alignment."]
-               [":disabled" "boolean, optional - Disables selection."]
-               [":on-select" "function, optional - Item select callback."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Item."]]}]
+       :props [{:name ":inset"         :type "boolean"      :default nil :description "Adds inset padding for alignment."}
+               {:name ":disabled"      :type "boolean"      :default nil :description "Disables selection."}
+               {:name ":on-select"     :type "function"     :default nil :description "Item select callback."}
+               {:name ":class"         :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Item."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-checkbox-item"
        :description "Toggleable checkbox item for multi-select preferences."
-       :props [[":checked" "boolean | \"indeterminate\", optional - Checked state."]
-               [":on-checked-change" "function, optional - Callback when checked state changes."]
-               [":disabled" "boolean, optional - Disables item."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix CheckboxItem."]]}]
+       :props [{:name ":checked"           :type "boolean | \"indeterminate\"" :default nil :description "Checked state."}
+               {:name ":on-checked-change" :type "function"     :default nil :description "Callback when checked state changes."}
+               {:name ":disabled"          :type "boolean"      :default nil :description "Disables item."}
+               {:name ":class"             :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props"   :type "map entries"  :default nil :description "Forwarded to Radix CheckboxItem."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-radio-group"
        :description "Container for radio items with single-selection behavior."
-       :props [[":value" "string, optional - Controlled selected value."]
-               [":on-value-change" "function, optional - Callback: (fn [value] ...)."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix RadioGroup."]]}]
+       :props [{:name ":value"          :type "string"       :default nil :description "Controlled selected value."}
+               {:name ":on-value-change" :type "function"    :default nil :description "Callback: (fn [value] ...)."}
+               {:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix RadioGroup."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-radio-item"
        :description "Single option within dropdown-menu-radio-group."
-       :props [[":value" "string, required - Value represented by this item."]
-               [":disabled" "boolean, optional - Disables option."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix RadioItem."]]}]
+       :props [{:name ":value"          :type "string"       :default nil :description "Value represented by this item."}
+               {:name ":disabled"       :type "boolean"      :default nil :description "Disables option."}
+               {:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix RadioItem."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-group"
        :description "Groups related menu items."
-       :props [[":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Group."]]}]
+       :props [{:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Group."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-label"
        :description "Non-interactive section label inside menu content."
-       :props [[":inset" "boolean, optional - Adds inset padding."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Label."]]}]
+       :props [{:name ":inset"          :type "boolean"      :default nil :description "Adds inset padding."}
+               {:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Label."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-separator"
        :description "Visual divider between menu groups."
-       :props [[":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Separator."]]}]
+       :props [{:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Separator."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-shortcut"
        :description "Right-aligned visual shortcut hint (display only)."
-       :props [[":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to underlying span."]]}]
+       :props [{:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to underlying span."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-sub"
        :description "Root for nested submenu interactions."
-       :props [[":open" "boolean, optional - Controlled submenu open state."]
-               [":default-open" "boolean, optional - Uncontrolled initial open state."]
-               [":on-open-change" "function, optional - Callback when submenu state changes."]
-               [":class" "string, optional - Additional classes."]]}]
+       :props [{:name ":open"           :type "boolean"  :default nil :description "Controlled submenu open state."}
+               {:name ":default-open"   :type "boolean"  :default nil :description "Uncontrolled initial open state."}
+               {:name ":on-open-change" :type "function" :default nil :description "Callback when submenu state changes."}
+               {:name ":class"          :type "string"   :default nil :description "Additional classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-sub-trigger"
        :description "Menu item that opens a nested submenu."
-       :props [[":inset" "boolean, optional - Adds inset padding."]
-               [":disabled" "boolean, optional - Disables submenu trigger."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix SubTrigger."]]}]
+       :props [{:name ":inset"          :type "boolean"      :default nil :description "Adds inset padding."}
+               {:name ":disabled"       :type "boolean"      :default nil :description "Disables submenu trigger."}
+               {:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix SubTrigger."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-sub-content"
        :description "Nested submenu content container."
-       :props [[":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix SubContent."]]}]
+       :props [{:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix SubContent."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dropdown-menu-portal"
        :description "Portal wrapper for rendering menu outside local stacking context."
-       :props [[":container" "DOM node, optional - Custom portal target."]
-               [":force-mount" "boolean, optional - Force mounting for animation control."]
-               [":class" "string, optional - Additional classes."]
-               ["additional props" "map entries, optional - Forwarded to Radix Portal."]]}]
+       :props [{:name ":container"      :type "DOM node"     :default nil :description "Custom portal target."}
+               {:name ":force-mount"   :type "boolean"      :default nil :description "Force mounting for animation control."}
+               {:name ":class"          :type "string"       :default nil :description "Additional classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Portal."}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -158,7 +158,6 @@
  dropdown-menu-demo
  "Dropdown menu with grouped items and submenu.
 
-  Based on shadcn/ui Dropdown Menu — https://ui.shadcn.com/docs/components/dropdown-menu
   Radix primitive: @radix-ui/react-dropdown-menu
 
   Use groups, separators, and submenus for structured menus."
@@ -225,7 +224,6 @@
  dropdown-menu-checkboxes
  "Dropdown menu with checkbox items.
 
-  Based on shadcn/ui Dropdown Menu — https://ui.shadcn.com/docs/components/dropdown-menu
   Radix primitive: @radix-ui/react-dropdown-menu
 
   Checkbox items allow toggling view preferences."
@@ -258,7 +256,6 @@
  dropdown-menu-radio-group
  "Dropdown menu with radio group selection.
 
-  Based on shadcn/ui Dropdown Menu — https://ui.shadcn.com/docs/components/dropdown-menu
   Radix primitive: @radix-ui/react-dropdown-menu
 
   Radio groups enforce a single selection within the menu."
@@ -287,8 +284,6 @@
  dropdown-menu-dialog
  "Dropdown menu launching dialogs.
 
-  Based on shadcn/ui Dropdown Menu + Dialog —
-  https://ui.shadcn.com/docs/components/dropdown-menu
   Radix primitives: @radix-ui/react-dropdown-menu, @radix-ui/react-dialog
 
   Useful for contextual actions that open richer modals."

@@ -35,14 +35,14 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "field-set"
        :description "Semantic fieldset wrapper for grouping related controls."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to <fieldset>."]]}]
+       :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to <fieldset>."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-legend"
        :description "Legend/title for a field-set section."
-       :props [[":variant" "keyword, optional (default :legend). :legend | :label."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to <legend>."]]}]
+       :props [{:name ":variant"        :type "keyword"     :default ":legend" :description ":legend | :label."}
+               {:name ":class"          :type "string"      :default nil       :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil      :description "Forwarded to <legend>."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-group"
        :description "Container for vertically grouped fields with consistent spacing."
@@ -51,30 +51,30 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "field"
        :description "Core field layout wrapper with orientation variants."
-       :props [[":orientation" "keyword, optional (default :vertical). :vertical | :horizontal | :responsive."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
+       :props [{:name ":orientation"    :type "keyword"     :default ":vertical" :description ":vertical | :horizontal | :responsive."}
+               {:name ":class"          :type "string"      :default nil         :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil        :description "Forwarded to wrapper <div>."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-content"
        :description "Groups input/control with description and errors."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
+       :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to wrapper <div>."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-label"
        :description "Field-aware label wrapper around base label component."
-       :props [[":html-for" "string, optional - Associates label with input id."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to underlying label."]]}]
+       :props [{:name ":html-for"       :type "string"      :default nil :description "Associates label with input id."}
+               {:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to underlying label."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-title"
        :description "Title slot used inside complex field labels/cards."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to wrapper <div>."]]}]
+       :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to wrapper <div>."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-description"
        :description "Secondary helper text for context and guidance."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to <p>."]]}]
+       :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to <p>."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "field-separator"
        :description "Visual separator between field blocks; can render optional children label."
@@ -84,9 +84,9 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "field-error"
        :description "Validation message renderer supporting one or multiple error messages."
-       :props [[":errors" "vector<map>, optional - Error maps with :message keys."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["children" "optional - Custom error content; takes priority over :errors."]]}]
+       :props [{:name ":errors"  :type "vector<map>" :default nil :description "Error maps with :message keys."}
+               {:name ":class"   :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "children" :type nil           :default nil :description "Custom error content; takes priority over :errors."}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -103,7 +103,6 @@
  field-with-input
  "Field with label, input, and description.
 
-  Based on shadcn/ui Field — https://ui.shadcn.com/docs/components/field
   Custom component for form layouts.
 
   Use field-content to group controls and description text."
@@ -125,7 +124,6 @@
  field-with-textarea
  "Field with textarea.
 
-  Based on shadcn/ui Field — https://ui.shadcn.com/docs/components/field
   Custom component for form layouts.
 
   Use for multi-line inputs and richer descriptions."
@@ -144,7 +142,6 @@
  field-with-select
  "Field with select control.
 
-  Based on shadcn/ui Field — https://ui.shadcn.com/docs/components/field
   Custom component for form layouts.
 
   Combine field + select for structured inputs."
@@ -170,7 +167,6 @@
  field-with-error
  "Field displaying validation errors.
 
-  Based on shadcn/ui Field — https://ui.shadcn.com/docs/components/field
   Custom component for form layouts.
 
   Use field-error to show validation messages."
@@ -191,7 +187,6 @@
  fieldset-multiple-fields
  "Field set with multiple related fields.
 
-  Based on shadcn/ui Field — https://ui.shadcn.com/docs/components/field
   Custom component for form layouts.
 
   Use field-set + field-group for multi-field sections."

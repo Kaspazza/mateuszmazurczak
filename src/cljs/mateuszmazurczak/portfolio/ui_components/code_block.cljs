@@ -43,18 +43,18 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "code-block"
                 :description "Root container for code blocks. Provides border, background, and rounded styling. The props map is optional — children can be passed directly without it. All additional props are forwarded to the underlying div element."
-                :props [[":class" "string, optional - Additional Tailwind classes merged with defaults (border, bg-card, rounded-xl, overflow-clip)."]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes merged with defaults (border, bg-card, rounded-xl, overflow-clip)."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "code-block-code"
                 :description "The primary component — renders syntax-highlighted code using Shiki. Highlighting is async: a plain <pre><code> fallback is shown while Shiki loads, then replaced with highlighted HTML. If Shiki fails, the raw code string is displayed as fallback. All additional props are forwarded to the underlying div element."
-                :props [[":code" "string, required - The code string to highlight. If nil or empty, renders an empty code block."]
-                        [":language" "string, optional (default \"tsx\") - Language for syntax highlighting. Must match a Shiki language identifier (e.g. \"clojure\", \"javascript\", \"python\", \"html\", \"css\")."]
-                        [":theme" "string, optional (default \"github-light\") - Shiki theme name. Common values: \"github-light\", \"github-dark\", \"one-dark-pro\", \"dracula\", \"nord\". See Shiki Themes for the full list."]
-                        [":class" "string, optional - Additional Tailwind classes merged with defaults (overflow-x-auto, text-[13px], padding via [&>pre] selectors)."]]}]
+                :props [{:name ":code"     :type "string" :default nil                :description "The code string to highlight. If nil or empty, renders an empty code block."}
+                        {:name ":language" :type "string" :default "\"tsx\""          :description "Language for syntax highlighting. Must match a Shiki language identifier (e.g. \"clojure\", \"javascript\", \"python\", \"html\", \"css\")."}
+                        {:name ":theme"    :type "string" :default "\"github-light\"" :description "Shiki theme name. Common values: \"github-light\", \"github-dark\", \"one-dark-pro\", \"dracula\", \"nord\". See Shiki Themes for the full list."}
+                        {:name ":class"    :type "string" :default nil                :description "Additional Tailwind classes merged with defaults (overflow-x-auto, text-[13px], padding via [&>pre] selectors)."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "code-block-group"
                 :description "Group container for header elements like filenames, language labels, or action buttons. Renders a flex row with items centered and spaced between. The props map is optional — children can be passed directly without it. All additional props are forwarded to the underlying div element."
-                :props [[":class" "string, optional - Additional Tailwind classes merged with defaults (flex, items-center, justify-between). Typically add px-4 py-2 border-b for a header row."]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes merged with defaults (flex, items-center, justify-between). Typically add px-4 py-2 border-b for a header row."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

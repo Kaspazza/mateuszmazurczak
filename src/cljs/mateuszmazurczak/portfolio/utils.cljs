@@ -1,6 +1,7 @@
 (ns mateuszmazurczak.portfolio.utils
   (:require
    ["lucide-react"                            :refer [Check ChevronDown ChevronUp Copy]]
+   [clojure.string                            :as str]
    [mateuszmazurczak.ui.components.button     :as button]
    [mateuszmazurczak.ui.components.code-block :as code-block]
    [reagent.core                              :as r]))
@@ -111,39 +112,81 @@
       [expandable-code-block {:source-code source-code
                               :filename filename}]]]]))
 
+(defn- prop-type-badges
+  "Renders one or more type badges split on ' | '."
+  [type-str]
+  (let [parts (str/split (or type-str "—") #"\s*\|\s*")]
+    (into [:<>]
+          (interpose [:span {:class "text-xs text-muted-foreground mx-0.5"} "|"]
+                     (for [p parts]
+                       [:code {:class "text-xs bg-muted px-1.5 py-0.5 rounded"} p])))))
+
 (defn api-prop-row
-  "Renders a single prop row in API documentation.
-  
-  Args:
-  - prop-name: Name of the prop (e.g., \":class\")
-  - description: Description of the prop (e.g., \"string, optional - Additional classes\")
-  
+  "Renders a single prop row in a table-based API documentation.
+
+  Args (map):
+  - :name        - Prop name string, e.g. \":class\"
+  - :type        - Type string, e.g. \"string\" or \"boolean | :indeterminate\"
+  - :default     - Default value string, or nil for none (renders —)
+  - :description - Description shown as a second sub-row when provided
+
   Example:
-  [api-prop-row \":class\" \"string, optional - Additional Tailwind classes\"]"
-  [prop-name description]
-  [:div {:class "flex gap-2"}
-   [:code {:class "text-xs bg-muted px-2 py-1 rounded"}
-    prop-name]
-   [:span {:class "text-xs text-muted-foreground"}
-    description]])
+  [api-prop-row {:name \":class\" :type \"string\" :default nil
+                 :description \"Additional Tailwind classes merged with defaults.\"}]"
+  [{:keys [name type default description]}]
+  [:<>
+   [:tr {:class "border-b last:border-0"}
+    [:td {:class "py-3 pr-4 align-top"}
+     [:code {:class "text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded font-medium"}
+      name]]
+    [:td {:class "py-3 pr-4 align-top"}
+     [prop-type-badges type]]
+    [:td {:class "py-3 align-top"}
+     (if default
+       [:code {:class "text-xs bg-muted px-1.5 py-0.5 rounded"} default]
+       [:span {:class "text-xs text-muted-foreground"} "—"])]]
+   (when description
+     [:tr {:class "border-b last:border-0"}
+      [:td {:col-span 3 :class "pb-3 pt-0 text-xs text-muted-foreground"}
+       description]])])
 
 (defn api-component-card
-  "Renders a component card in API documentation.
-  
+  "Renders a component card in API documentation with a Prop/Type/Default table.
+
   Props:
   - :component-name - Name of the component
-  - :description - Brief description
-  - :props - Vector of [prop-name description] tuples
-  
+  - :link           - Optional map {:href \"...\" :label \"...\"} rendered below the name
+  - :description    - Brief description of the component
+  - :props          - Vector of prop maps, each:
+                      {:name \"...\" :type \"...\" :default \"...\" :description \"...\"}
+                      :default and :description are optional (nil renders —/nothing)
+
   Example:
-  [api-component-card {:component-name \"avatar\"
-                       :description \"Root container component\"
-                       :props [[\": class\" \"string, optional - Additional classes\"]]}]"
-  [{:keys [component-name description props]}]
+  [api-component-card
+   {:component-name \"checkbox\"
+    :link           {:href \"https://radix-ui.com/...\" :label \"Radix UI Docs\"}
+    :description    \"Root checkbox component.\"
+    :props          [{:name \":checked\" :type \"boolean\" :default nil
+                      :description \"Controlled checked state.\"}]}]"
+  [{:keys [component-name link description props]}]
   [:div {:class "border rounded-lg p-4"}
-   [:h4 {:class "text-sm font-semibold mb-2"}
+   [:h4 {:class "text-sm font-semibold mb-1"}
     component-name]
-   [:p {:class "text-sm text-muted-foreground mb-3"}
+   (when link
+     [:a {:href   (:href link)
+          :target "_blank"
+          :rel    "noopener noreferrer"
+          :class  "text-xs text-primary underline underline-offset-2 hover:opacity-80 mb-2 inline-block"}
+      (:label link)])
+   [:p {:class "text-sm text-muted-foreground mb-3 mt-2"}
     description]
-   [:div {:class "space-y-2"}
-    (for [[prop-name prop-desc] props] ^{:key prop-name} [api-prop-row prop-name prop-desc])]])
+   [:table {:class "w-full text-sm"}
+    [:thead {}
+     [:tr {:class "border-b"}
+      [:th {:class "pb-2 text-left text-xs font-semibold"} "Prop"]
+      [:th {:class "pb-2 text-left text-xs font-semibold"} "Type"]
+      [:th {:class "pb-2 text-left text-xs font-semibold"} "Default"]]]
+    [:tbody {}
+     (for [{:keys [name] :as prop} props]
+       ^{:key name}
+       [api-prop-row prop])]]])

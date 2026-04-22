@@ -38,56 +38,56 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog"
                 :description "Radix Dialog root that controls modal open/close state and accessibility semantics."
-                :props [[":open" "boolean, optional - Controlled open state."]
-                        [":defaultOpen" "boolean, optional - Uncontrolled initial open state."]
-                        [":onOpenChange" "function, optional - Callback when state changes: (fn [open?] ...)."]
-                        [":modal" "boolean, optional (default true) - Whether dialog behaves as modal."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Root."]]}]
+                :props [{:name ":open"            :type "boolean"      :default nil    :description "Controlled open state."}
+                        {:name ":defaultOpen"      :type "boolean"      :default nil    :description "Uncontrolled initial open state."}
+                        {:name ":onOpenChange"     :type "function"     :default nil    :description "Callback when state changes: (fn [open?] ...)."}
+                        {:name ":modal"            :type "boolean"      :default "true" :description "Whether dialog behaves as modal."}
+                        {:name "additional props"  :type "map entries"  :default nil    :description "Forwarded to Radix Dialog.Root."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-trigger"
                 :description "Interactive trigger that opens the dialog."
-                :props [[":asChild" "boolean, optional - Compose with child component."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Trigger."]]}]
+                :props [{:name ":asChild"         :type "boolean"      :default nil :description "Compose with child component."}
+                        {:name "additional props"  :type "map entries"  :default nil :description "Forwarded to Radix Dialog.Trigger."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-portal"
                 :description "Portal wrapper to render dialog outside normal DOM hierarchy."
-                :props [["additional props" "map entries, optional - Forwarded to Radix Dialog.Portal."]]}]
+                :props [{:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Dialog.Portal."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-close"
                 :description "Control that closes the dialog when activated."
-                :props [[":asChild" "boolean, optional - Compose with child component."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Close."]]}]
+                :props [{:name ":asChild"         :type "boolean"      :default nil :description "Compose with child component."}
+                        {:name "additional props"  :type "map entries"  :default nil :description "Forwarded to Radix Dialog.Close."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-overlay"
                 :description "Backdrop layer behind dialog content."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Overlay."]]}]
+                :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props"  :type "map entries" :default nil :description "Forwarded to Radix Dialog.Overlay."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-content"
                 :description "Main dialog panel with built-in overlay + optional corner close button."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        [":showCloseButton" "boolean, optional (default true) - Show top-right close icon button."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Content."]]}]
+                :props [{:name ":class"            :type "string"      :default nil    :description "Additional Tailwind classes."}
+                        {:name ":showCloseButton"   :type "boolean"     :default "true" :description "Show top-right close icon button."}
+                        {:name "additional props"   :type "map entries" :default nil    :description "Forwarded to Radix Dialog.Content."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-header"
                 :description "Layout wrapper for dialog-title and dialog-description."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to underlying div."]]}]
+                :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props"  :type "map entries" :default nil :description "Forwarded to underlying div."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-footer"
                 :description "Responsive action area (stacked on mobile, row-aligned on desktop)."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to underlying div."]]}]
+                :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props"  :type "map entries" :default nil :description "Forwarded to underlying div."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-title"
                 :description "Accessible title announced by screen readers (aria-labelledby)."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Title."]]}]
+                :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props"  :type "map entries" :default nil :description "Forwarded to Radix Dialog.Title."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "dialog-description"
                 :description "Accessible supporting text announced by screen readers (aria-describedby)."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Description."]]}]
+                :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props"  :type "map entries" :default nil :description "Forwarded to Radix Dialog.Description."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -124,7 +124,6 @@
  dialog-demo
  "Dialog with form fields and footer actions.
 
-  Based on shadcn/ui Dialog — https://ui.shadcn.com/docs/components/dialog
   Radix primitive: @radix-ui/react-dialog
 
   Use dialogs for focused, interruptive workflows such as profile edits."
@@ -150,7 +149,6 @@
  dialog-close-button
  "Dialog with explicit close button in footer.
 
-  Based on shadcn/ui Dialog — https://ui.shadcn.com/docs/components/dialog
   Radix primitive: @radix-ui/react-dialog
 
   Useful for share sheets or info dialogs."
@@ -184,7 +182,6 @@
  command-dialog
  "Command palette rendered inside a dialog.
 
-  Based on shadcn/ui Command Dialog — https://ui.shadcn.com/docs/components/command
   Radix primitive: @radix-ui/react-dialog
 
   Props are idiomatic kebab-case; Reagent converts to camelCase for Radix.
@@ -229,7 +226,6 @@
  drawer-dialog
  "Dialog and drawer pair for responsive workflows.
 
-  Based on shadcn/ui Drawer + Dialog — https://ui.shadcn.com/docs/components/drawer
   Radix primitive: @radix-ui/react-dialog
 
   Here we show both variants side by side (instead of media query)."

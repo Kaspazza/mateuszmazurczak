@@ -39,10 +39,10 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "scroll-button"
                 :description "Floating action button that appears when chat content is not pinned to the bottom. Integrates with use-stick-to-bottom context and scrolls smoothly to the newest message."
-                :props [[":variant" "keyword, optional (default :outline) - Button variant forwarded to button component."]
-                        [":size" "keyword, optional (default :sm) - Button size forwarded to button component."]
-                        [":class" "string, optional - Additional Tailwind classes merged with default visibility/position classes."]
-                        ["additional props" "map entries, optional - Forwarded to the underlying button component."]]}]
+                :props [{:name ":variant"        :type "keyword" :default ":outline" :description "Button variant forwarded to button component."}
+                        {:name ":size"           :type "keyword" :default ":sm"      :description "Button size forwarded to button component."}
+                        {:name ":class"          :type "string"  :default nil        :description "Additional Tailwind classes merged with default visibility/position classes."}
+                        {:name "additional props" :type "map entries" :default nil   :description "Forwarded to the underlying button component."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

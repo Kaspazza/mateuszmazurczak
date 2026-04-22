@@ -32,75 +32,73 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "circular-loader"
        :description "Circular loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "classic-loader"
        :description "Classic loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "pulse-loader"
        :description "Pulse loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "pulse-dot-loader"
        :description "Pulse dot loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "dots-loader"
        :description "Dots loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "typing-loader"
        :description "Typing loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "wave-loader"
        :description "Wave loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "bars-loader"
        :description "Bars loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "terminal-loader"
        :description "Terminal loader component"
-       :props [[":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":size"  :type "keyword" :default ":md" :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil   :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "text-blink-loader"
        :description "Text blink loader component"
-       :props [[":text" "string, optional (default 'Thinking') - Text label"]
-               [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":text"  :type "string"  :default "\"Thinking\"" :description "Text label"}
+               {:name ":size"  :type "keyword" :default ":md"          :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil            :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "text-shimmer-loader"
        :description "Text shimmer loader component"
-       :props [[":text" "string, optional (default 'Thinking') - Text label"]
-               [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":text"  :type "string"  :default "\"Thinking\"" :description "Text label"}
+               {:name ":size"  :type "keyword" :default ":md"          :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil            :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "text-dots-loader"
        :description "Text dots loader component"
-       :props [[":text" "string, optional (default 'Thinking') - Text label"]
-               [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":text"  :type "string"  :default "\"Thinking\"" :description "Text label"}
+               {:name ":size"  :type "keyword" :default ":md"          :description "One of: :sm | :md | :lg"}
+               {:name ":class" :type "string"  :default nil            :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "loader"
        :description "Loader component"
-       :props
-       [[":variant"
-         "keyword, optional (default :circular). One of: :circular | :classic | :pulse | :pulse-dot | :dots | :typing | :wave | :bars | :terminal | :text-blink | :text-shimmer | :loading-dots"]
-        [":size" "keyword, optional (default :md). One of: :sm | :md | :lg"]
-        [":text" "string, optional (default 'Thinking') - Text label"]
-        [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":variant" :type "keyword" :default ":circular" :description "One of: :circular | :classic | :pulse | :pulse-dot | :dots | :typing | :wave | :bars | :terminal | :text-blink | :text-shimmer | :loading-dots"}
+               {:name ":size"    :type "keyword" :default ":md"       :description "One of: :sm | :md | :lg"}
+               {:name ":text"    :type "string"  :default "\"Thinking\"" :description "Text label"}
+               {:name ":class"   :type "string"  :default nil         :description "Additional Tailwind classes"}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

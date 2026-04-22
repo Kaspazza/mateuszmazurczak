@@ -34,17 +34,17 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "input"
                 :description "Styled native input element. Supports controlled/uncontrolled form patterns and forwards additional props to underlying <input>."
-                :props [[":type" "string, optional (default \"text\") - Native input type."]
-                        [":value" "string, optional - Controlled value."]
-                        [":default-value" "string, optional - Uncontrolled initial value."]
-                        [":placeholder" "string, optional - Placeholder text."]
-                        [":disabled" "boolean, optional - Disables input."]
-                        [":required" "boolean, optional - Marks input as required."]
-                        [":on-change" "function, optional - Change handler."]
-                        [":on-blur" "function, optional - Blur handler."]
-                        [":on-focus" "function, optional - Focus handler."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to native <input>."]]}]
+                :props [{:name ":type"          :type "string"      :default "\"text\"" :description "Native input type."}
+                        {:name ":value"         :type "string"      :default nil        :description "Controlled value."}
+                        {:name ":default-value" :type "string"      :default nil        :description "Uncontrolled initial value."}
+                        {:name ":placeholder"   :type "string"      :default nil        :description "Placeholder text."}
+                        {:name ":disabled"      :type "boolean"     :default nil        :description "Disables input."}
+                        {:name ":required"      :type "boolean"     :default nil        :description "Marks input as required."}
+                        {:name ":on-change"     :type "function"    :default nil        :description "Change handler."}
+                        {:name ":on-blur"       :type "function"    :default nil        :description "Blur handler."}
+                        {:name ":on-focus"      :type "function"    :default nil        :description "Focus handler."}
+                        {:name ":class"         :type "string"      :default nil        :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil      :description "Forwarded to native <input>."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -61,7 +61,6 @@
  input-demo
  "Basic input for standard text or email entry.
 
-  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
   Native element: <input>
 
   Our wrapper accepts all standard input props with Tailwind defaults."
@@ -74,7 +73,6 @@
  input-file
  "File input with a label for upload workflows.
 
-  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
   Native element: <input type='file'>
 
   File inputs retain the same base styling for consistency."
@@ -89,7 +87,6 @@
  input-disabled
  "Disabled input state for locked fields.
 
-  Based on shadcn/ui Input — 'https://ui.shadcn.com/docs/components/input'
   Native element: <input>
 
   Disabled inputs are visually muted and non-interactive."
@@ -103,7 +100,6 @@
  input-invalid
  "Invalid input state with validation message.
 
-  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
   Native element: <input>
 
   Use :aria-invalid true and helper/error text for validation feedback."
@@ -122,7 +118,6 @@
  input-with-label
  "Input paired with a label.
 
-  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
   Native element: <input>
 
   Use labels for accessible form controls."
@@ -138,7 +133,6 @@
  input-with-button
  "Input combined with an inline action button.
 
-  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
   Native element: <input>
 
   Useful for newsletter signups or quick actions."
@@ -155,7 +149,6 @@
  input-with-text
  "Input with helper text for guidance.
 
-  Based on shadcn/ui Input — https://ui.shadcn.com/docs/components/input
   Native element: <input>
 
   Helper text clarifies validation or intent."
@@ -173,7 +166,6 @@
  input-controlled
  "Controlled input state managed via r/atom.
 
-  Custom example — not from shadcn/ui.
   Demonstrates how to keep input value in app state.
 
   Use controlled inputs when you need validation or formatting."

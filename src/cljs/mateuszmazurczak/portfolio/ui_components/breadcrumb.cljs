@@ -36,35 +36,35 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb"
                 :description "Root nav wrapper for hierarchical page location trail."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        [":separator" "hiccup/component, optional - Reserved custom separator prop on root (children separators still control rendering)."]]}]
+                :props [{:name ":class"     :type "string"              :default nil :description "Additional Tailwind classes."}
+                        {:name ":separator" :type "hiccup/component"    :default nil :description "Reserved custom separator prop on root (children separators still control rendering)."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-list"
                 :description "Ordered list container for breadcrumb items."
-                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-item"
                 :description "List item wrapper for a single crumb segment."
-                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-link"
                 :description "Navigable breadcrumb segment."
-                :props [[":href" "string, optional - Destination URL."]
-                        [":as-child" "boolean, optional (default false) - Render via Radix Slot."]
-                        [":class" "string, optional - Additional Tailwind classes."]]}]
+                :props [{:name ":href"     :type "string"  :default nil     :description "Destination URL."}
+                        {:name ":as-child" :type "boolean" :default "false" :description "Render via Radix Slot."}
+                        {:name ":class"    :type "string"  :default nil     :description "Additional Tailwind classes."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-page"
                 :description "Current-page segment (non-clickable) with aria-current semantics."
-                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-separator"
                 :description "Visual separator between segments; renders ChevronRight by default, or custom children when provided."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["children" "optional - Custom separator content; overrides default icon."]]}]
+                :props [{:name ":class"    :type "string" :default nil :description "Additional Tailwind classes."}
+                        {:name "children" :type nil       :default nil :description "Custom separator content; overrides default icon."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "breadcrumb-ellipsis"
                 :description "Collapsed-path indicator used when intermediate crumbs are hidden."
-                :props [[":class" "string, optional - Additional Tailwind classes."]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -81,7 +81,6 @@
  breadcrumb-demo
  "Breadcrumb with ellipsis dropdown in the middle.
 
-  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
   Radix primitives: @radix-ui/react-dropdown-menu, @radix-ui/react-separator
 
   Useful for long navigation paths."
@@ -120,7 +119,6 @@
  breadcrumb-simple
  "Simple breadcrumb link example.
 
-  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
   Radix primitive: @radix-ui/react-separator
 
   Use breadcrumb-link for navigable segments and breadcrumb-page for current."
@@ -144,7 +142,6 @@
  breadcrumb-ellipsis
  "Collapsed breadcrumb using ellipsis.
 
-  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
   Radix primitives: @radix-ui/react-separator
 
   Use the ellipsis when intermediate items are hidden."
@@ -172,7 +169,6 @@
  breadcrumb-separator
  "Breadcrumb with custom separator icon.
 
-  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
   Radix primitives: @radix-ui/react-separator
 
   Custom separators can be inserted per segment."
@@ -198,7 +194,6 @@
  breadcrumb-dropdown
  "Breadcrumb with dropdown menu item.
 
-  Based on shadcn/ui Breadcrumb — https://ui.shadcn.com/docs/components/breadcrumb
   Radix primitives: @radix-ui/react-dropdown-menu, @radix-ui/react-separator
 
   Dropdowns can replace intermediate links."
@@ -237,7 +232,6 @@
  breadcrumb-responsive
  "Responsive breadcrumb using dropdown or drawer.
 
-  Based on shadcn/ui Breadcrumb Responsive — https://ui.shadcn.com/docs/components/breadcrumb
   Radix primitives: @radix-ui/react-dropdown-menu, @radix-ui/react-dialog
 
   This example shows both desktop (dropdown) and mobile (drawer) patterns."

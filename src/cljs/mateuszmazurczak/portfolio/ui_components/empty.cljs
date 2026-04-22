@@ -35,34 +35,34 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "empty"
                 :description "Root empty-state layout wrapper."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to wrapper element."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to wrapper element."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-header"
                 :description "Header section for media/title/description."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to wrapper element."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to wrapper element."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-media"
                 :description "Visual media slot for icon/avatar/illustration."
-                :props [[":variant" "keyword, optional (default :default). :default | :icon."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to media wrapper."]]}]
+                :props [{:name ":variant"        :type "keyword"     :default ":default" :description ":default | :icon."}
+                        {:name ":class"          :type "string"      :default nil        :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil       :description "Forwarded to media wrapper."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-title"
                 :description "Primary empty-state headline."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to title element."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to title element."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-description"
                 :description "Supporting explanation text for empty state."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to description element."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to description element."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "empty-content"
                 :description "Action/content area (buttons, links, forms)."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to content wrapper."]]}]
+                :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to content wrapper."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -79,7 +79,6 @@
  empty-demo
  "Primary empty state with actions.
 
-  Based on shadcn/ui Empty — https://ui.shadcn.com/docs/components/empty
   Custom component built for empty or zero states.
 
   Use primary + outline actions for next steps."
@@ -110,7 +109,6 @@
  empty-icon
  "Grid of empty states with icons.
 
-  Based on shadcn/ui Empty — https://ui.shadcn.com/docs/components/empty
   Custom component built for empty or zero states.
 
   Useful for showcasing multiple empty modules."
@@ -154,7 +152,6 @@
  empty-outline
  "Outlined empty state variant.
 
-  Based on shadcn/ui Empty — https://ui.shadcn.com/docs/components/empty
   Custom component built for empty or zero states.
 
   Use a dashed border to emphasize the empty container."
@@ -178,7 +175,6 @@
  empty-avatar
  "Empty state with an avatar media.
 
-  Based on shadcn/ui Empty Avatar — https://ui.shadcn.com/docs/components/empty
   Custom component built for empty or zero states.
 
   Use avatar media for user-centric empty states."
@@ -204,7 +200,6 @@
  empty-background
  "Empty state with muted background.
 
-  Based on shadcn/ui Empty — https://ui.shadcn.com/docs/components/empty
   Custom component built for empty or zero states.
 
   Gradient backgrounds help differentiate the empty section."
@@ -229,7 +224,6 @@
  empty-avatar-group
  "Empty state with avatar group.
 
-  Based on shadcn/ui Empty Avatar Group — https://ui.shadcn.com/docs/components/empty
   Custom component built for empty or zero states.
 
   Use grouped avatars for team invites or collaboration prompts."

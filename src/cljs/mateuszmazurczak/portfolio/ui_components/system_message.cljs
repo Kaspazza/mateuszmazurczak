@@ -38,14 +38,13 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "system-message"
                 :description "System message component"
-                :props [[":variant"
-                         "keyword, optional (default :action). One of: :action | :error | :warning"]
-                        [":fill" "boolean, optional (default false) - Filled background style"]
-                        [":icon" "react-component | hiccup, optional - Custom icon component"]
-                        [":icon-hidden?" "boolean, optional (default false) - Hide icon"]
-                        [":cta" "map, optional - CTA config {:label string :on-click fn}"]
-                        [":class" "string, optional - Additional Tailwind classes"]
-                        ["children" "required - Message content/body text or hiccup."]]}]
+                :props [{:name ":variant"     :type "keyword"               :default ":action" :description "One of: :action | :error | :warning"}
+                        {:name ":fill"        :type "boolean"               :default "false"   :description "Filled background style"}
+                        {:name ":icon"        :type "react-component | hiccup" :default nil    :description "Custom icon component"}
+                        {:name ":icon-hidden?" :type "boolean"              :default "false"   :description "Hide icon"}
+                        {:name ":cta"         :type "map"                   :default nil       :description "CTA config {:label string :on-click fn}"}
+                        {:name ":class"       :type "string"                :default nil       :description "Additional Tailwind classes"}
+                        {:name "children"     :type "hiccup | string"       :default nil       :description "Message content/body text or hiccup."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

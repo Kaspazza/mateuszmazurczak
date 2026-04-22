@@ -35,52 +35,52 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet"
                 :description "Radix Dialog.Root alias used as sheet root controller."
-                :props [[":open" "boolean, optional - Controlled open state."]
-                        [":default-open" "boolean, optional - Uncontrolled initial open state."]
-                        [":on-open-change" "function, optional - Callback when state changes: (fn [open?] ...)."]
-                        [":modal" "boolean, optional (default true) - Whether sheet is modal."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Root."]]}]
+                :props [{:name ":open"           :type "boolean"      :default nil    :description "Controlled open state."}
+                        {:name ":default-open"   :type "boolean"      :default nil    :description "Uncontrolled initial open state."}
+                        {:name ":on-open-change" :type "function"     :default nil    :description "Callback when state changes: (fn [open?] ...)."}
+                        {:name ":modal"          :type "boolean"      :default "true" :description "Whether sheet is modal."}
+                        {:name "additional props" :type "map entries" :default nil    :description "Forwarded to Radix Dialog.Root."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-trigger"
                 :description "Control that opens the sheet."
-                :props [[":as-child" "boolean, optional - Compose with a child element."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Trigger."]]}]
+                :props [{:name ":as-child"       :type "boolean"      :default nil :description "Compose with a child element."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Dialog.Trigger."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-close"
                 :description "Control that closes the sheet."
-                :props [[":as-child" "boolean, optional - Compose with a child element."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Dialog.Close."]]}]
+                :props [{:name ":as-child"       :type "boolean"      :default nil :description "Compose with a child element."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Dialog.Close."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-overlay"
                 :description "Backdrop overlay rendered behind the sheet."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Dialog overlay."]]}]
+                :props [{:name ":class"          :type "string"       :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Dialog overlay."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-content"
                 :description "Sliding panel container with built-in overlay and close button."
-                :props [[":side" "keyword, optional (default :right). One of: :top | :bottom | :left | :right."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Dialog content."]]}]
+                :props [{:name ":side"           :type "keyword"      :default ":right" :description "One of: :top | :bottom | :left | :right."}
+                        {:name ":class"          :type "string"       :default nil      :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil      :description "Forwarded to Dialog content."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-header"
                 :description "Layout wrapper for sheet-title and sheet-description."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to underlying div."]]}]
+                :props [{:name ":class"          :type "string"       :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to underlying div."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-footer"
                 :description "Responsive action area for sheet controls."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to underlying div."]]}]
+                :props [{:name ":class"          :type "string"       :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to underlying div."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-title"
                 :description "Accessible title announced by screen readers."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Dialog.Title."]]}]
+                :props [{:name ":class"          :type "string"       :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Dialog.Title."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "sheet-description"
                 :description "Accessible supporting text for sheet content."
-                :props [[":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Dialog.Description."]]}]
+                :props [{:name ":class"          :type "string"       :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Dialog.Description."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -108,7 +108,6 @@
  sheet-demo
  "Basic sheet with profile form.
 
-  Based on shadcn/ui Sheet — https://ui.shadcn.com/docs/components/sheet
   Radix primitive: @radix-ui/react-dialog
 
   Note: `sheet`, `sheet-trigger`, and `sheet-close` are raw React defs and use `:>`.
@@ -147,7 +146,6 @@
  sheet-side
  "Sheets on all four sides.
 
-  Based on shadcn/ui Sheet — https://ui.shadcn.com/docs/components/sheet
   Radix primitive: @radix-ui/react-dialog
 
   Use :side to control where the sheet appears."
@@ -188,7 +186,6 @@
  sheet-scrollable
  "Sheet with scrollable content.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-dialog
 
   Use overflow classes to handle long content in sheets."

@@ -39,17 +39,17 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "chat-container-root"
        :description "Root scroll container powered by use-stick-to-bottom context."
-       :props [[":class" "string, optional - Additional Tailwind classes"]
-               [":resize" "string, optional (default 'smooth'). One of: 'smooth' | 'instant'"]
-               [":initial" "string, optional (default 'instant'). One of: 'instant' | 'smooth'"]]}]
+       :props [{:name ":class"   :type "string" :default nil        :description "Additional Tailwind classes"}
+               {:name ":resize"  :type "string" :default "\"smooth\"" :description "One of: 'smooth' | 'instant'"}
+               {:name ":initial" :type "string" :default "\"instant\"" :description "One of: 'instant' | 'smooth'"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "chat-container-content"
        :description "Message list/content region within chat-container-root."
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "chat-container-scroll-anchor"
        :description "Anchor marker used for stick-to-bottom behavior and scroll targeting."
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

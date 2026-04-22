@@ -32,12 +32,12 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "tag-combobox"
                 :description "Responsive tag selector that supports both choosing existing tags and creating new tags. Uses Popover on desktop and Sheet on mobile for better ergonomics."
-                :props [[":tags" "set<string> | vector<string>, required - Available tags shown in the list."]
-                        [":selected-tag" "string | nil, optional - Currently selected tag."]
-                        [":on-select" "function, optional - Called when user selects a tag: (fn [tag] ...)."]
-                        [":on-create" "function, optional - Called when user creates a new tag: (fn [new-tag] ...)."]
-                        [":placeholder" "string, optional (default \"+ Add tag\") - Trigger button text when no tag is selected."]
-                        [":class" "string, optional - Additional Tailwind classes merged into the trigger button."]]}]
+                :props [{:name ":tags"         :type "set<string> | vector<string>" :default nil           :description "Available tags shown in the list."}
+                        {:name ":selected-tag" :type "string | nil"                 :default nil           :description "Currently selected tag."}
+                        {:name ":on-select"    :type "function"                     :default nil           :description "Called when user selects a tag: (fn [tag] ...)."}
+                        {:name ":on-create"    :type "function"                     :default nil           :description "Called when user creates a new tag: (fn [new-tag] ...)."}
+                        {:name ":placeholder"  :type "string"                       :default "\"+ Add tag\"" :description "Trigger button text when no tag is selected."}
+                        {:name ":class"        :type "string"                       :default nil           :description "Additional Tailwind classes merged into the trigger button."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

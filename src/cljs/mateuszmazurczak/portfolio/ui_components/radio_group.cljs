@@ -34,23 +34,23 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "radio-group"
                 :description "Container for mutually-exclusive options. Handles keyboard navigation and selected value management. Additional props are forwarded to Radix RadioGroup.Root."
-                :props [[":value" "string, optional - Controlled selected value."]
-                        [":default-value" "string, optional - Uncontrolled initial selected value."]
-                        [":on-value-change" "function, optional - Callback when selected value changes: (fn [value] ...)."]
-                        [":disabled" "boolean, optional - Disables all items in the group."]
-                        [":required" "boolean, optional - Marks group as required for forms."]
-                        [":name" "string, optional - Form field name."]
-                        [":orientation" "keyword, optional (default :vertical) - :vertical or :horizontal."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix RadioGroup.Root."]]}]
+                :props [{:name ":value"          :type "string"      :default nil        :description "Controlled selected value."}
+                        {:name ":default-value"  :type "string"      :default nil        :description "Uncontrolled initial selected value."}
+                        {:name ":on-value-change" :type "function"   :default nil        :description "Callback when selected value changes: (fn [value] ...)."}
+                        {:name ":disabled"       :type "boolean"     :default nil        :description "Disables all items in the group."}
+                        {:name ":required"       :type "boolean"     :default nil        :description "Marks group as required for forms."}
+                        {:name ":name"           :type "string"      :default nil        :description "Form field name."}
+                        {:name ":orientation"    :type "keyword"     :default ":vertical" :description ":vertical or :horizontal."}
+                        {:name ":class"          :type "string"      :default nil        :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil       :description "Forwarded to Radix RadioGroup.Root."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "radio-group-item"
                 :description "Single selectable option inside radio-group."
-                :props [[":value" "string, required - Value represented by this option."]
-                        [":id" "string, optional - ID for associated label :html-for."]
-                        [":disabled" "boolean, optional - Disables this option."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix RadioGroup.Item."]]}]
+                :props [{:name ":value"         :type "string"      :default nil :description "Value represented by this option."}
+                        {:name ":id"            :type "string"      :default nil :description "ID for associated label :html-for."}
+                        {:name ":disabled"      :type "boolean"     :default nil :description "Disables this option."}
+                        {:name ":class"         :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix RadioGroup.Item."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -73,7 +73,6 @@
  radio-group-demo
  "Radio group with labeled options.
 
-  Based on shadcn/ui Radio Group — https://ui.shadcn.com/docs/components/radio-group
   Radix primitive: @radix-ui/react-radio-group
 
   Use for exclusive choices like density or layout."
@@ -104,8 +103,6 @@
  field-radio
  "Radio group embedded in Field layout.
 
-  Based on shadcn/ui Field + Radio Group —
-  https://ui.shadcn.com/docs/components/field
   Radix primitive: @radix-ui/react-radio-group
 
   Ideal for pricing or plan selection with supporting copy."
@@ -144,7 +141,6 @@
  radio-group-disabled
  "Disabled radio items in a group.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-radio-group
 
   Use disabled options for unavailable choices."
@@ -168,7 +164,6 @@
  radio-group-invalid
  "Invalid radio group state with validation hint.
 
-  Based on shadcn/ui Radio Group — https://ui.shadcn.com/docs/components/radio-group
   Radix primitive: @radix-ui/react-radio-group
 
   Apply :aria-invalid on items and show an explicit error message."
@@ -194,7 +189,6 @@
  radio-group-horizontal
  "Horizontal layout variant.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-radio-group
 
   Use :orientation :horizontal for inline radio groups."

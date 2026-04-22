@@ -34,45 +34,43 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer"
                 :description "Drawer component"
-                :props
-                [[":open" "boolean, optional - Controlled open state"]
-                 [":on-open-change" "function, optional - Callback (fn [open?])"]
-                 [":direction"
-                  "keyword, optional (default :bottom). One of: :top | :right | :bottom | :left"]
-                 [":should-scale-background" "boolean, optional - Scale background while open"]
-                 [":modal" "boolean, optional (default true) - Modal behavior"]]}]
+                :props [{:name ":open"                   :type "boolean"  :default nil      :description "Controlled open state"}
+                        {:name ":on-open-change"         :type "function" :default nil      :description "Callback (fn [open?])"}
+                        {:name ":direction"              :type "keyword"  :default ":bottom" :description "One of: :top | :right | :bottom | :left"}
+                        {:name ":should-scale-background" :type "boolean" :default nil      :description "Scale background while open"}
+                        {:name ":modal"                  :type "boolean"  :default "true"   :description "Modal behavior"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-trigger"
                 :description "Drawer trigger component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-close"
                 :description "Drawer close component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-overlay"
                 :description "Drawer overlay component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-content"
                 :description "Drawer content component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-header"
                 :description "Drawer header component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-footer"
                 :description "Drawer footer component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-title"
                 :description "Drawer title component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "drawer-description"
                 :description "Drawer description component"
-                :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

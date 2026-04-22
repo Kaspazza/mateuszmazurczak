@@ -33,25 +33,25 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "collapsible"
                 :description "Radix Collapsible.Root wrapper that controls open/closed state for collapsible sections. Additional props are forwarded to the Radix root primitive."
-                :props [[":open" "boolean, optional - Controlled open state."]
-                        [":default-open" "boolean, optional - Uncontrolled initial open state."]
-                        [":on-open-change" "function, optional - Callback when open state changes: (fn [open?] ...)."]
-                        [":disabled" "boolean, optional - Disables toggling."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Collapsible.Root."]]}]
+                :props [{:name ":open"          :type "boolean"     :default nil :description "Controlled open state."}
+                        {:name ":default-open"  :type "boolean"     :default nil :description "Uncontrolled initial open state."}
+                        {:name ":on-open-change" :type "function"   :default nil :description "Callback when open state changes: (fn [open?] ...)."}
+                        {:name ":disabled"       :type "boolean"    :default nil :description "Disables toggling."}
+                        {:name ":class"          :type "string"     :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Collapsible.Root."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "collapsible-trigger"
                 :description "Toggle control for a collapsible block. Typically wraps a button label or a custom button when using :as-child."
-                :props [[":as-child" "boolean, optional - Use child element as trigger via Radix Slot."]
-                        [":on-click" "function, optional - Additional click handler composed with Radix toggle behavior."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix CollapsibleTrigger."]]}]
+                :props [{:name ":as-child"      :type "boolean"     :default nil :description "Use child element as trigger via Radix Slot."}
+                        {:name ":on-click"      :type "function"    :default nil :description "Additional click handler composed with Radix toggle behavior."}
+                        {:name ":class"         :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix CollapsibleTrigger."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "collapsible-content"
                 :description "Expandable/collapsible content container with Radix state attributes for animation styling."
-                :props [[":force-mount" "boolean, optional - Forces mounting even when collapsed (useful for animation libraries)."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix CollapsibleContent."]]}]
+                :props [{:name ":force-mount"   :type "boolean"     :default nil :description "Forces mounting even when collapsed (useful for animation libraries)."}
+                        {:name ":class"         :type "string"      :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix CollapsibleContent."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -74,7 +74,6 @@
  collapsible-basic
  "Collapsible content with toggle.
 
-  Based on shadcn/ui Collapsible — https://ui.shadcn.com/docs/components/collapsible
   Radix primitive: @radix-ui/react-collapsible
 
   Use to reveal secondary details without leaving the page."
@@ -95,7 +94,6 @@
  collapsible-default-open
  "Collapsible starting in the open state.
 
-  Based on shadcn/ui Collapsible — https://ui.shadcn.com/docs/components/collapsible
   Radix primitive: @radix-ui/react-collapsible
 
   Use :default-open for uncontrolled open state."
@@ -112,7 +110,6 @@
  collapsible-disabled
  "Disabled collapsible trigger.
 
-  Based on shadcn/ui Collapsible — https://ui.shadcn.com/docs/components/collapsible
   Radix primitive: @radix-ui/react-collapsible
 
   Use :disabled to lock the collapsible state."
@@ -133,7 +130,6 @@
  collapsible-multiple
  "Multiple collapsibles in a list.
 
-  Based on shadcn/ui Collapsible — https://ui.shadcn.com/docs/components/collapsible
   Radix primitive: @radix-ui/react-collapsible
 
   Useful for FAQ sections or grouped settings."

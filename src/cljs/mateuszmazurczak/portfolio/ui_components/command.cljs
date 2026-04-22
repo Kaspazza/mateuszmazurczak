@@ -33,32 +33,32 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "command"
        :description "Root cmdk container for searchable command surfaces. Additional props are forwarded to cmdk Command root."
-       :props [[":value" "string, optional - Controlled search query value."]
-               [":onValueChange" "function, optional - Called when query changes: (fn [value] ...)."]
-               [":filter" "function, optional - Custom cmdk filter function: (fn [value search keywords] score)."]
-               [":shouldFilter" "boolean, optional (default true) - Enables/disables built-in filtering."]
-               [":loop" "boolean, optional (default false) - Keyboard navigation loops from last to first."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to cmdk Command root."]]}]
+       :props [{:name ":value"           :type "string"      :default nil    :description "Controlled search query value."}
+               {:name ":onValueChange"   :type "function"    :default nil    :description "Called when query changes: (fn [value] ...)."}
+               {:name ":filter"          :type "function"    :default nil    :description "Custom cmdk filter function: (fn [value search keywords] score)."}
+               {:name ":shouldFilter"    :type "boolean"     :default "true" :description "Enables/disables built-in filtering."}
+               {:name ":loop"            :type "boolean"     :default "false" :description "Keyboard navigation loops from last to first."}
+               {:name ":class"           :type "string"      :default nil    :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil    :description "Forwarded to cmdk Command root."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-dialog"
        :description "Dialog wrapper combining Dialog + Command root. Useful for global command palettes."
-       :props [[":open" "boolean, optional - Controlled dialog open state."]
-               [":defaultOpen" "boolean, optional - Uncontrolled initial open state."]
-               [":onOpenChange" "function, optional - Callback for open state changes: (fn [open?] ...)."]
-               [":modal" "boolean, optional - Whether dialog is modal."]
-               [":title" "string, optional (default \"Command Palette\") - Accessible dialog title."]
-               [":description" "string, optional (default \"Search for a command to run...\") - Accessible dialog description."]
-               [":showCloseButton" "boolean, optional (default true) - Shows/hides close button in dialog content."]
-               [":class" "string, optional - Additional Tailwind classes for dialog content."]]}]
+       :props [{:name ":open"            :type "boolean" :default nil                              :description "Controlled dialog open state."}
+               {:name ":defaultOpen"     :type "boolean" :default nil                              :description "Uncontrolled initial open state."}
+               {:name ":onOpenChange"    :type "function" :default nil                             :description "Callback for open state changes: (fn [open?] ...)."}
+               {:name ":modal"           :type "boolean" :default nil                              :description "Whether dialog is modal."}
+               {:name ":title"           :type "string"  :default "\"Command Palette\""            :description "Accessible dialog title."}
+               {:name ":description"     :type "string"  :default "\"Search for a command to run...\"" :description "Accessible dialog description."}
+               {:name ":showCloseButton" :type "boolean" :default "true"                           :description "Shows/hides close button in dialog content."}
+               {:name ":class"           :type "string"  :default nil                              :description "Additional Tailwind classes for dialog content."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-input"
        :description "Search input field with icon, rendered via cmdk Input primitive."
-       :props [[":placeholder" "string, optional - Input placeholder."]
-               [":value" "string, optional - Controlled input value."]
-               [":onValueChange" "function, optional - Callback when value changes."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to cmdk Input."]]}]
+       :props [{:name ":placeholder"     :type "string"      :default nil :description "Input placeholder."}
+               {:name ":value"           :type "string"      :default nil :description "Controlled input value."}
+               {:name ":onValueChange"   :type "function"    :default nil :description "Callback when value changes."}
+               {:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to cmdk Input."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-list"
        :description "Scrollable list container for command groups and items."
@@ -67,33 +67,33 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "command-empty"
        :description "Empty-state content rendered when query has no matching results."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to cmdk Empty."]]}]
+       :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to cmdk Empty."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-group"
        :description "Groups related command items and optionally renders a heading."
-       :props [[":heading" "string | hiccup, optional - Group heading label."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to cmdk Group."]]}]
+       :props [{:name ":heading"         :type "string | hiccup" :default nil :description "Group heading label."}
+               {:name ":class"           :type "string"          :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries"     :default nil :description "Forwarded to cmdk Group."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-separator"
        :description "Visual separator between command groups."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to cmdk Separator."]]}]
+       :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to cmdk Separator."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-item"
        :description "Selectable command option supporting keyboard and pointer interactions."
-       :props [[":value" "string, optional - Explicit search/select value (otherwise derived from text content)."]
-               [":onSelect" "function, optional - Called when item is selected: (fn [value] ...)."]
-               [":disabled" "boolean, optional - Disables selection."]
-               [":keywords" "vector<string>, optional - Extra search aliases for matching."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to cmdk Item."]]}]
+       :props [{:name ":value"           :type "string"          :default nil :description "Explicit search/select value (otherwise derived from text content)."}
+               {:name ":onSelect"        :type "function"        :default nil :description "Called when item is selected: (fn [value] ...)."}
+               {:name ":disabled"        :type "boolean"         :default nil :description "Disables selection."}
+               {:name ":keywords"        :type "vector<string>"  :default nil :description "Extra search aliases for matching."}
+               {:name ":class"           :type "string"          :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries"     :default nil :description "Forwarded to cmdk Item."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-shortcut"
        :description "Visual hint for keyboard shortcut displayed on the right side of an item."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to underlying span."]]}]
+       :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to underlying span."}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -121,7 +121,6 @@
  command-demo
  "Command list with groups, separators, and disabled items.
 
-  Based on shadcn/ui Command — https://ui.shadcn.com/docs/components/command
   Library: cmdk
 
   Use Command for searchable lists and quick actions."
@@ -156,7 +155,6 @@
  command-dialog
  "Command dialog with open state.
 
-  Based on shadcn/ui Command Dialog — https://ui.shadcn.com/docs/components/command
   Library: cmdk
 
   Useful for global search triggered from a button or shortcut."
@@ -194,7 +192,6 @@
  command-composition
  "Command embedded in a card-like container.
 
-  Custom example — not from shadcn/ui.
   Library: cmdk
 
   Demonstrates how Command can be styled to match surrounding UI."

@@ -55,35 +55,33 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "carousel"
        :description "Carousel root component - creates container with embla-carousel. Sets role=\"region\" and aria-roledescription=\"carousel\" for accessibility."
-       :props [[":opts" "map, optional - Embla carousel options passed directly to embla-carousel. Keys must use camelCase to match Embla's JS API (e.g. :loop, :align, :dragFree, :slidesToScroll). Note: do NOT set :axis here — use :orientation instead, which takes precedence."]
-               [":plugins" "array, optional - Embla carousel plugins (see https://www.embla-carousel.com/api/plugins/)"]
-               [":orientation" "keyword, optional (default :horizontal) - :horizontal | :vertical. Controls the scroll axis. Overrides any :axis value in :opts."]
-               [":set-api" "function, optional - Callback to receive the raw Embla carousel API instance: (fn [api] ...). Use this to attach event listeners or call methods like .scrollTo, .canScrollNext, etc."]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":opts"        :type "map"      :default nil          :description "Embla carousel options passed directly to embla-carousel. Keys must use camelCase to match Embla's JS API (e.g. :loop, :align, :dragFree, :slidesToScroll). Note: do NOT set :axis here — use :orientation instead, which takes precedence."}
+               {:name ":plugins"     :type "array"    :default nil          :description "Embla carousel plugins (see https://www.embla-carousel.com/api/plugins/)"}
+               {:name ":orientation" :type "keyword"  :default ":horizontal" :description ":horizontal | :vertical. Controls the scroll axis. Overrides any :axis value in :opts."}
+               {:name ":set-api"     :type "function" :default nil          :description "Callback to receive the raw Embla carousel API instance: (fn [api] ...). Use this to attach event listeners or call methods like .scrollTo, .canScrollNext, etc."}
+               {:name ":class"       :type "string"   :default nil          :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "carousel-content"
        :description "Carousel content wrapper - contains the carousel items. Applies default spacing via negative margin (-ml-4 horizontal, -mt-4 vertical). Override with custom -ml-* / -mt-* classes and matching pl-* / pt-* on carousel-item."
-       :props [[":class" "string, optional - Additional Tailwind classes. All additional props are forwarded to the underlying DOM element."]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes. All additional props are forwarded to the underlying DOM element."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "carousel-item"
        :description "Carousel item - individual slide in the carousel. Sets role=\"group\" and aria-roledescription=\"slide\" for accessibility. Applies default spacing (pl-4 horizontal, pt-4 vertical) that pairs with carousel-content's negative margin."
-       :props [[":class" "string, optional - Additional Tailwind classes. Use basis-* for sizing (e.g. basis-1/3 for 3 visible slides). All additional props are forwarded to the underlying DOM element."]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes. Use basis-* for sizing (e.g. basis-1/3 for 3 visible slides). All additional props are forwarded to the underlying DOM element."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "carousel-previous"
        :description "Carousel previous button - navigates to previous slide. Automatically disabled when at the start (unless loop is enabled). See Button component for variant visual details."
        :props
-       [[":variant"
-         "keyword, optional (default :outline). One of: :default | :destructive | :outline | :secondary | :ghost | :link. See Button component for visual details."]
-        [":size" "keyword, optional (default :icon). One of: :default | :sm | :lg | :icon"]
-        [":class" "string, optional - Additional Tailwind classes. All additional props are forwarded to the Button component."]]}]
+       [{:name ":variant" :type "keyword" :default ":outline" :description "One of: :default | :destructive | :outline | :secondary | :ghost | :link. See Button component for visual details."}
+        {:name ":size"    :type "keyword" :default ":icon"    :description "One of: :default | :sm | :lg | :icon"}
+        {:name ":class"   :type "string"  :default nil        :description "Additional Tailwind classes. All additional props are forwarded to the Button component."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "carousel-next"
        :description "Carousel next button - navigates to next slide. Automatically disabled when at the end (unless loop is enabled). See Button component for variant visual details."
        :props
-       [[":variant"
-         "keyword, optional (default :outline). One of: :default | :destructive | :outline | :secondary | :ghost | :link. See Button component for visual details."]
-        [":size" "keyword, optional (default :icon). One of: :default | :sm | :lg | :icon"]
-        [":class" "string, optional - Additional Tailwind classes. All additional props are forwarded to the Button component."]]}]
+       [{:name ":variant" :type "keyword" :default ":outline" :description "One of: :default | :destructive | :outline | :secondary | :ghost | :link. See Button component for visual details."}
+        {:name ":size"    :type "keyword" :default ":icon"    :description "One of: :default | :sm | :lg | :icon"}
+        {:name ":class"   :type "string"  :default nil        :description "Additional Tailwind classes. All additional props are forwarded to the Button component."}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -109,7 +107,6 @@
  carousel-demo
  "Basic carousel with previous/next controls.
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel
 
   Use for showcasing images or featured content."
@@ -127,7 +124,6 @@
  carousel-size
  "Carousel with smaller item sizes showing multiple slides.
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel
 
   Use basis-1/3 to show 3 items at once. Adjust with responsive classes as needed."
@@ -147,7 +143,6 @@
  carousel-orientation
  "Vertical carousel orientation.
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel
 
   Use :orientation :vertical for stacked slides. Container height determines visible area."
@@ -167,7 +162,6 @@
  carousel-spacing
  "Carousel with custom spacing between items.
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel
 
   Use pl-* on items with -ml-* on content to create gaps. Shows 3 items to demonstrate spacing."
@@ -187,7 +181,6 @@
  carousel-loop
  "Carousel with infinite looping enabled.
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel — https://www.embla-carousel.com/api/options
 
   Use :loop true in opts for seamless infinite scrolling. Embla auto-adjusts positions."
@@ -206,7 +199,6 @@
  carousel-drag-free
  "Carousel with free-form dragging (no snap points).
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel — https://www.embla-carousel.com/api/options
 
   Use :dragFree true for momentum-based scrolling without snap constraints."
@@ -226,7 +218,6 @@
  carousel-slides-to-scroll
  "Carousel scrolling multiple slides at once.
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel — https://www.embla-carousel.com/api/options
 
   Use :slidesToScroll in opts to advance multiple slides per navigation action."
@@ -296,7 +287,6 @@
   carousel-events
   "Carousel with event listeners for scroll and settle.
 
-  Based on shadcn/ui Carousel — https://ui.shadcn.com/docs/components/carousel
   Library: embla-carousel — https://www.embla-carousel.com/api/events
 
   Listen to events: select, scroll, settle, pointerDown, pointerUp via :set-api."

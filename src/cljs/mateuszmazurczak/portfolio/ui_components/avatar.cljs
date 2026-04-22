@@ -33,24 +33,24 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar"
        :description "Root avatar container with size variants and optional status badge support."
-       :props [[":size" "keyword, optional - Size variant (:default, :sm, :lg)"]
-               [":class" "string, optional - Additional Tailwind classes"]
-               ["additional props" "map entries, optional - Forwarded to root container."]]}]
+       :props [{:name ":size"            :type "keyword"      :default nil :description "Size variant (:default, :sm, :lg)"}
+               {:name ":class"          :type "string"       :default nil :description "Additional Tailwind classes"}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to root container."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar-image"
        :description "Displays the avatar image."
-       :props [[":src" "string, required - Image source URL"]
-               [":alt" "string, optional - Alt text for accessibility"]
-               [":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":src"   :type "string" :default nil :description "Image source URL"}
+               {:name ":alt"   :type "string" :default nil :description "Alt text for accessibility"}
+               {:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar-fallback"
        :description "Fallback content when image unavailable."
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "avatar-badge"
        :description
        "Badge indicator positioned at bottom right of avatar. Automatically sizes based on parent avatar size."
-       :props [[":class" "string, optional - Additional Tailwind classes"]]}]
+       :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes"}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -73,7 +73,6 @@
  avatar-demo
  "Avatar with image, fallback, and grouped stack.
 
-  Based on shadcn/ui Avatar — https://ui.shadcn.com/docs/components/avatar
   Radix primitive: @radix-ui/react-avatar
 
   Use fallbacks for initials or offline states."
@@ -111,7 +110,6 @@
  empty-avatar
  "Avatar-only empty state.
 
-  Based on shadcn/ui Empty Avatar — https://ui.shadcn.com/docs/components/empty
   Radix primitive: @radix-ui/react-avatar
 
   Use a grayscale avatar as the empty media."
@@ -128,7 +126,6 @@
  empty-avatar-group
  "Stacked avatar group for empty states.
 
-  Based on shadcn/ui Empty Avatar Group — https://ui.shadcn.com/docs/components/empty
   Radix primitive: @radix-ui/react-avatar
 
   Use stacked avatars to represent teams or groups."
@@ -158,7 +155,6 @@
  avatar-custom-sizes
  "Avatar size variants.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-avatar
 
   Use the :size prop for consistent sizing."
@@ -178,7 +174,6 @@
  avatar-with-badge
  "Avatar with status badge.
 
-  Based on shadcn/ui Avatar Badge — https://ui.shadcn.com/docs/components/avatar
   Radix primitive: @radix-ui/react-avatar
 
   Use badge to indicate online/offline status or other states."
@@ -196,7 +191,6 @@
  avatar-badge-with-icon
  "Avatar with badge containing an icon.
 
-  Based on shadcn/ui Avatar Badge — https://ui.shadcn.com/docs/components/avatar
   Radix primitive: @radix-ui/react-avatar
 
   Use icon inside badge for actions or enhanced status indicators."

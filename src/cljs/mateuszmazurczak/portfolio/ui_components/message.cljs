@@ -40,34 +40,34 @@
      [mm-portfolio-utils/api-component-card
       {:component-name "message"
        :description "Root chat message row container. Additional props are forwarded to the wrapper element."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to wrapper element."]]}]
+       :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to wrapper element."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-avatar"
        :description "Avatar renderer for message sender identity."
-       :props [[":src" "string, required - Avatar image URL."]
-               [":alt" "string, required - Avatar alt text."]
-               [":fallback" "string, optional - Fallback initials/text."]
-               [":delay-ms" "number, optional - Delay before fallback appears."]
-               [":class" "string, optional - Additional Tailwind classes."]]}]
+       :props [{:name ":src"      :type "string" :default nil :description "Avatar image URL."}
+               {:name ":alt"      :type "string" :default nil :description "Avatar alt text."}
+               {:name ":fallback" :type "string" :default nil :description "Fallback initials/text."}
+               {:name ":delay-ms" :type "number" :default nil :description "Delay before fallback appears."}
+               {:name ":class"    :type "string" :default nil :description "Additional Tailwind classes."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-content"
        :description "Message body container with optional markdown rendering mode."
-       :props [[":markdown?" "boolean, optional (default false) - Render children/content as markdown."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to content container."]]}]
+       :props [{:name ":markdown?"      :type "boolean"      :default "false" :description "Render children/content as markdown."}
+               {:name ":class"          :type "string"       :default nil     :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil     :description "Forwarded to content container."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-actions"
        :description "Action row container for per-message controls (copy/delete/etc.)."
-       :props [[":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to action row container."]]}]
+       :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries" :default nil :description "Forwarded to action row container."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "message-action"
        :description "Tooltip-wrapped message action slot."
-       :props [[":tooltip" "string | hiccup, required - Tooltip content."]
-               [":side" "keyword, optional (default :top). :top | :right | :bottom | :left."]
-               [":class" "string, optional - Additional Tailwind classes."]
-               ["additional props" "map entries, optional - Forwarded to tooltip wrapper."]]}]
+       :props [{:name ":tooltip"        :type "string | hiccup" :default nil   :description "Tooltip content."}
+               {:name ":side"           :type "keyword"         :default ":top" :description ":top | :right | :bottom | :left."}
+               {:name ":class"          :type "string"          :default nil   :description "Additional Tailwind classes."}
+               {:name "additional props" :type "map entries"    :default nil   :description "Forwarded to tooltip wrapper."}]}]
      [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
       [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
       [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

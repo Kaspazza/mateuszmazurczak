@@ -32,7 +32,7 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "theme-toggle"
                 :description "Zero-arity theme switch button. Reads current theme from app state and dispatches an event to toggle between light and dark modes."
-                :props [["arguments" "No props. Render as [theme-toggle]."]]}]
+                :props [{:name "arguments" :type "No props" :default nil :description "Render as [theme-toggle]."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}

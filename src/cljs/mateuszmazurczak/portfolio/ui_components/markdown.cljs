@@ -30,10 +30,10 @@
                                                 [mm-portfolio-utils/api-component-card
                                                  {:component-name "markdown"
                                                   :description "Markdown renderer with GFM support, automatic line breaks, and syntax-highlighted code blocks. Parses input into memoized blocks for better rendering performance."
-                                                  :props [[":children" "string, required - Markdown content to render."]
-                                                          [":id" "string, optional - Stable base ID used for generated block keys."]
-                                                          [":class" "string, optional - Additional Tailwind classes for the wrapper container."]
-                                                          [":components" "map, optional - Custom react-markdown component overrides. Defaults to built-in code/pre renderers."]]}]
+                                                  :props [{:name ":children"   :type "string" :default nil :description "Markdown content to render."}
+                                                          {:name ":id"         :type "string" :default nil :description "Stable base ID used for generated block keys."}
+                                                          {:name ":class"      :type "string" :default nil :description "Additional Tailwind classes for the wrapper container."}
+                                                          {:name ":components" :type "map"    :default nil :description "Custom react-markdown component overrides. Defaults to built-in code/pre renderers."}]}]
                                                 [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                                                  [:h4 {:class "text-sm font-semibold mb-2"}
                                                   "⚠️ Important Notes"]

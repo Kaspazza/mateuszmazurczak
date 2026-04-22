@@ -34,15 +34,15 @@
               [mm-portfolio-utils/api-component-card
                {:component-name "switch"
                 :description "Radix-based boolean toggle control with accessible switch semantics. Additional props are forwarded to the underlying Radix Switch.Root."
-                :props [[":checked" "boolean, optional - Controlled checked state."]
-                        [":default-checked" "boolean, optional - Uncontrolled initial checked state."]
-                        [":on-checked-change" "function, optional - Callback when state changes: (fn [checked?] ...)."]
-                        [":disabled" "boolean, optional - Disables interaction."]
-                        [":required" "boolean, optional - Marks field as required for forms."]
-                        [":name" "string, optional - Form field name."]
-                        [":value" "string, optional - Form field value."]
-                        [":class" "string, optional - Additional Tailwind classes."]
-                        ["additional props" "map entries, optional - Forwarded to Radix Switch.Root."]]}]
+                :props [{:name ":checked"           :type "boolean"      :default nil :description "Controlled checked state."}
+                        {:name ":default-checked"   :type "boolean"      :default nil :description "Uncontrolled initial checked state."}
+                        {:name ":on-checked-change" :type "function"     :default nil :description "Callback when state changes: (fn [checked?] ...)."}
+                        {:name ":disabled"          :type "boolean"      :default nil :description "Disables interaction."}
+                        {:name ":required"          :type "boolean"      :default nil :description "Marks field as required for forms."}
+                        {:name ":name"              :type "string"       :default nil :description "Form field name."}
+                        {:name ":value"             :type "string"       :default nil :description "Form field value."}
+                        {:name ":class"             :type "string"       :default nil :description "Additional Tailwind classes."}
+                        {:name "additional props"   :type "map entries"  :default nil :description "Forwarded to Radix Switch.Root."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -65,7 +65,6 @@
  switch-demo
  "Switch paired with a label.
 
-  Based on shadcn/ui Switch — https://ui.shadcn.com/docs/components/switch
   Radix primitive: @radix-ui/react-switch
 
   Useful for single boolean preferences."
@@ -80,8 +79,6 @@
  field-switch
  "Switch inside Field layout with description.
 
-  Based on shadcn/ui Field + Switch —
-  https://ui.shadcn.com/docs/components/field
   Radix primitive: @radix-ui/react-switch
 
   Use for richer settings forms with copy."
@@ -99,7 +96,6 @@
  switch-disabled
  "Disabled switch state.
 
-  Based on shadcn/ui Switch — https://ui.shadcn.com/docs/components/switch
   Radix primitive: @radix-ui/react-switch
 
   Use disabled state when the preference is locked."
@@ -116,7 +112,6 @@
  switch-invalid
  "Invalid switch state for form validation.
 
-  Based on shadcn/ui Switch — https://ui.shadcn.com/docs/components/switch
   Radix primitive: @radix-ui/react-switch
 
   Use :aria-invalid true and helper text for validation feedback."
@@ -135,7 +130,6 @@
  switch-controlled
  "Controlled switch with live state.
 
-  Custom example — not from shadcn/ui.
   Radix primitive: @radix-ui/react-switch
 
   Use controlled switches when state drives other UI."

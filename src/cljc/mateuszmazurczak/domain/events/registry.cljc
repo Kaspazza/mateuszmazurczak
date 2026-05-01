@@ -8,7 +8,9 @@
    - :category - Logical grouping (:navigation, :page, :i18n)
    - :description - What this event does (behavior, not implementation)
    - :schema - Malli schema for validation
-   - :handler-type - :fx (effects) or :db (pure state update)")
+   - :handler-type - :fx (effects) or :db (pure state update)"
+  (:require
+   [mateuszmazurczak.domain.qr-codes.schema :as qr-codes]))
 
 (def events
   "Registry of all application events.
@@ -211,8 +213,8 @@
                           :schema [:cat [:= :qr-codes/update-size] :int]
                           :handler-type :db}
    :qr-codes/update-format {:category :page
-                            :description "Update output format (:zip or :pdf)."
-                            :schema [:cat [:= :qr-codes/update-format] [:enum :zip :pdf]]
+                            :description "Update output format (:zip, :jpg, or :pdf)."
+                            :schema [:cat [:= :qr-codes/update-format] [:enum :zip :jpg :pdf]]
                             :handler-type :db}
    :qr-codes/generate-preview {:category :page
                                :description "Generate preview QR codes from input."
@@ -222,10 +224,53 @@
                        :description "Download generated QR codes in selected format."
                        :schema [:cat [:= :qr-codes/download]]
                        :handler-type :fx}
+   :qr-codes/worker-ready {:category :page
+                           :description "Handle worker readiness for QR batch generation."
+                           :schema [:cat [:= :qr-codes/worker-ready] map?]
+                           :handler-type :fx}
+   :qr-codes/worker-progress {:category :page
+                              :description
+                              "Handle progress update from worker during QR generation."
+                              :schema [:cat [:= :qr-codes/worker-progress] map?]
+                              :handler-type :fx}
+   :qr-codes/worker-finalizing
+   {:category :page
+    :description "Handle worker starting finalization of archive (PDF/ZIP generation)."
+    :schema [:cat [:= :qr-codes/worker-finalizing] map?]
+    :handler-type :db}
+   :qr-codes/worker-done {:category :page
+                          :description "Handle completion of QR generation with final buffer."
+                          :schema [:cat [:= :qr-codes/worker-done] map?]
+                          :handler-type :fx}
+   :qr-codes/worker-failure {:category :page
+                             :description "Handle failed QR code batch generation."
+                             :schema [:cat [:= :qr-codes/worker-failure] [:vector :string]]
+                             :handler-type :fx}
+   :qr-codes/download-failure {:category :page
+                               :description "Handle failed download of final QR archive."
+                               :schema [:cat [:= :qr-codes/download-failure] :any]
+                               :handler-type :fx}
    :qr-codes/update-show-label {:category :page
                                 :description
                                 "Toggle whether to show QR code value as label below QR code."
                                 :schema [:cat [:= :qr-codes/update-show-label] :boolean]
+                                :handler-type :db}
+   :qr-codes/update-png-background
+   {:category :page
+    :description "Update PNG background mode (:transparent or :white)."
+    :schema [:cat [:= :qr-codes/update-png-background] [:enum :transparent :white]]
+    :handler-type :db}
+   :qr-codes/update-png-margin {:category :page
+                                :description "Update PNG white background margin (modules)."
+                                :schema [:cat [:= :qr-codes/update-png-margin] :any]
+                                :handler-type :db}
+   :qr-codes/update-pdf-layout {:category :page
+                                :description "Update PDF layout preset selection."
+                                :schema [:cat [:= :qr-codes/update-pdf-layout] qr-codes/PdfLayout]
+                                :handler-type :db}
+   :qr-codes/update-pdf-custom {:category :page
+                                :description "Update PDF custom layout values."
+                                :schema [:cat [:= :qr-codes/update-pdf-custom] keyword? :any]
                                 :handler-type :db}})
 
 (defn events-by-category

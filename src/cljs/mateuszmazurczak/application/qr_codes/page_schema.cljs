@@ -20,11 +20,31 @@
    [:format qr-schema/OutputFormat]
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
+   [:png-background [:enum :transparent :white]]
+   [:png-margin
+    [:or
+     :string
+     [:int {:min 0
+            :max 40}]]]
+   [:pdf-layout qr-schema/PdfLayout]
+   [:pdf-custom-cols [:or :string [:int {:min 1}]]]
+   [:pdf-custom-rows [:or :string [:int {:min 1}]]]
+   [:pdf-custom-qr-size-cm [:or :string [:double {:min 0.5}]]]
    [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
+   [:show-validation-errors? :boolean]
    [:loading? {:optional true}
-    :boolean]])
+    :boolean]
+   [:download-progress {:optional true}
+    [:maybe
+     [:map
+      [:current {:optional true}
+       [:maybe :int]]
+      [:total {:optional true}
+       [:maybe :int]]
+      [:status-key {:optional true}
+       :keyword]]]]])
 
 (defn valid-page-data?
   "Validate QR codes page data against schema."
@@ -51,16 +71,37 @@
    [:format qr-schema/OutputFormat]
    [:error-correction qr-schema/ErrorCorrectionLevel]
    [:show-label? :boolean]
+   [:png-background [:enum :transparent :white]]
+   [:png-margin
+    [:or
+     :string
+     [:int {:min 0
+            :max 40}]]]
+   [:pdf-layout qr-schema/PdfLayout]
+   [:pdf-custom-cols [:or :string [:int {:min 1}]]]
+   [:pdf-custom-rows [:or :string [:int {:min 1}]]]
+   [:pdf-custom-qr-size-cm [:or :string [:double {:min 0.5}]]]
    [:preview-codes [:vector qr-schema/GeneratedQrCode]]
    [:generating? :boolean]
    [:errors [:vector :string]]
+   [:show-validation-errors? :boolean]
    [:loading? {:optional true}
     :boolean]
+   [:download-progress {:optional true}
+    [:maybe
+     [:map
+      [:current {:optional true}
+       [:maybe :int]]
+      [:total {:optional true}
+       [:maybe :int]]
+      [:status-key {:optional true}
+       :keyword]]]]
    [:input-count :int]
    [:has-input? :boolean]
    [:can-download? :boolean]
    [:size-options [:vector :any]]
    [:format-options [:vector :any]]
+   [:pdf-layout-options [:vector :any]]
    [:preview-count :int]
    [:preview-display-size :int]
    [:showing-preview? :boolean]
@@ -93,7 +134,15 @@
    :format :zip
    :error-correction :medium
    :show-label? false
+   :png-background :transparent
+   :png-margin "4"
+   :pdf-layout :custom
+   :pdf-custom-cols "1"
+   :pdf-custom-rows "1"
+   :pdf-custom-qr-size-cm "2.0"
    :preview-codes []
    :generating? false
    :errors []
-   :loading? false})
+   :show-validation-errors? false
+   :loading? false
+   :download-progress nil})

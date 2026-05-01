@@ -7,31 +7,62 @@
 
 (defn about-me
   [{:keys [welcome-text description contact-info]}]
-  [:div {:class ["hero-content"
-                 "flex-col"
-                 "lg:flex-row"
-                 "max-w-screen"
-                 "justify-evenly"
+  [:div {:class ["w-full"
+                 "overflow-hidden"
+                 "relative"
                  "bg-gradient-to-r"
-                 "from-primary/60"
-                 "via-primary/40"
-                 "to-background"]}
-   [:div {:class "block overflow-hidden w-80"}
-    [ui-img/optimized-img {:src "/img/mateusz_mazurczak.webp"
-                           :alt "Mateusz Mazurczak"
-                           :width 320
-                           :height 320
-                           :loading "eager"
-                           :fetchpriority "high"
-                           :class "w-full h-auto"}]]
-   [:div
-    [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-foreground"}
-     welcome-text]
-    [:p {:class "py-6 text-md md:text-xl lg:text-3xl text-foreground"}
-     description
-     [:br]]
-    [:p {:class "py-6 text-md md:text-xl lg:text-3xl text-foreground"}
-     contact-info]]])
+                 "from-[oklch(0.6270_0.2650_303.9/0.75)]"
+                 "via-[oklch(0.6270_0.2650_303.9/0.60)]"
+                 "to-[oklch(0.8600_0.030_300/0.85)]"
+                 "bg-cover"
+                 "bg-center"
+                 "bg-no-repeat"
+                 "before:content-['']"
+                 "before:absolute"
+                 "before:inset-[-8%_-4%_0]"
+                 "before:bg-[url('/img/code.webp')]"
+                 "before:bg-cover"
+                 "before:bg-[60%_40%]"
+                 "before:bg-no-repeat"
+                 "before:opacity-10"
+                 "before:pointer-events-none"
+                 "before:[transform:perspective(500px)_rotateX(6deg)_skewY(-2deg)]"
+                 "before:origin-top"]}
+   [:div {:class ["relative"
+                  "flex"
+                  "flex-col"
+                  "lg:flex-row"
+                  "items-center"
+                  "lg:items-end"
+                  "gap-4"
+                  "lg:gap-8"
+                  "mx-auto"
+                  "max-w-6xl"
+                  "px-6"
+                  "lg:px-12"
+                  "pt-4"
+                  "lg:pt-8"
+                  "pb-2"
+                  "text-center"
+                  "lg:text-left"]}
+    [:div
+     {:class
+      "block overflow-hidden self-center lg:self-end mx-auto lg:mx-0 -mb-4 lg:-mb-10 w-64 lg:w-[24rem]"}
+     [ui-img/optimized-img {:src "/img/mateusz_mazurczak.webp"
+                            :alt "Mateusz Mazurczak"
+                            :width 512
+                            :height 512
+                            :loading "eager"
+                            :fetchpriority "high"
+                            :class "w-full h-auto"}]]
+    [:div {:class "lg:self-center"}
+     [:h1 {:class "text-2xl md:text-3xl lg:text-5xl font-bold text-accent text-shadow-lg"}
+      welcome-text]
+     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-lg"}
+      description
+      [:br]]
+     [:p {:class "py-6 text-md md:text-xl lg:text-2xl text-accent text-shadow-lg"}
+      contact-info]]]])
 
 (defn home
   [{:keys [about-me-section navigation articles]}]

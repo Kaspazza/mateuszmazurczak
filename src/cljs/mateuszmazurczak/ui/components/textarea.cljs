@@ -2,7 +2,12 @@
   "Textarea component for forms.
   
   A styled native HTML textarea element with comprehensive styling for
-  multi-line text input."
+  multi-line text input.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
@@ -72,7 +77,8 @@
              :aria-invalid (not (valid? @comment))
              :placeholder \"Required field\"}]
   ```"
-  [{:keys [class]
+  [{:keys [class auto-size?]
+    :or {auto-size? true}
     :as props}]
   [:textarea
    (-> props
@@ -82,9 +88,10 @@
                            "focus-visible:border-ring focus-visible:ring-ring/50 "
                            "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 "
                            "aria-invalid:border-destructive dark:bg-input/30 "
-                           "flex field-sizing-content min-h-16 w-full rounded-md border "
+                           "flex min-h-16 w-full rounded-md border "
                            "bg-transparent px-3 py-2 text-base shadow-xs "
                            "transition-[color,box-shadow] outline-none focus-visible:ring-[3px] "
-                           "disabled:cursor-not-allowed disabled:opacity-50 md:text-sm")
+                           "disabled:cursor-not-allowed disabled:opacity-50 md:text-sm "
+                           (if auto-size? "field-sizing-content" "overflow-y-auto resize-y"))
                       class))
-       (dissoc :class-name))])
+       (dissoc :class-name :auto-size?))])

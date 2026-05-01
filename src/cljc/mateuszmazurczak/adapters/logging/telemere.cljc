@@ -40,9 +40,9 @@
            ([] (init! {:level :info}))
            ([{:keys [level loki-endpoint]}]
             (set-min-level! level)
-            (t/remove-handler! :default/console)
-            (t/add-handler! :console-handler
-                            (t/handler:console {:output-fn logging-utils/format:console-minimal}))
+            #_(t/remove-handler! :default/console)
+            #_(t/add-handler! :console-handler
+                              (t/handler:console {:output-fn logging-utils/format:console-minimal}))
             (when (and loki-endpoint (not (str/blank? loki-endpoint)))
               (t/add-handler! :loki-handler
                               (logging-utils/handler:loki {:endpoint loki-endpoint}))))))

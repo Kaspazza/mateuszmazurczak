@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.empty
   "Empty state component with support for displaying empty states, no data, or placeholder content.
-  Composed of multiple sub-components for flexible layout."
+  Composed of multiple sub-components for flexible layout.
+
+  Version: 1.0.0
+  Last updated: 2026-02-06
+
+  Custom component implementation."
   (:refer-clojure :exclude [empty])
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

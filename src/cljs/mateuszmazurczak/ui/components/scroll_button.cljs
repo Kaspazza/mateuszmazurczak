@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.scroll-button
   "Scroll-to-bottom button that appears when not at the bottom of a scrollable container.
-  Works with chat-container component via use-stick-to-bottom context."
+  Works with chat-container component via use-stick-to-bottom context.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["lucide-react"                        :refer [ChevronDown]]
    ["use-stick-to-bottom"                 :refer [useStickToBottomContext]]

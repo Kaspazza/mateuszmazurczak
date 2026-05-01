@@ -7,7 +7,10 @@
 (def ErrorCorrectionLevel [:enum :low :medium :quartile :high])
 
 ;; Output format
-(def OutputFormat [:enum :zip :pdf])
+(def OutputFormat [:enum :zip :jpg :pdf])
+
+;; PDF layout options
+(def PdfLayout [:enum :per-page-30 :per-page-10 :per-page-6 :per-page-1 :custom])
 
 ;; QR code size (pixels)
 (def QrSize

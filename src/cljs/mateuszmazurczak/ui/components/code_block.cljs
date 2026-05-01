@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.code-block
   "Code block component with syntax highlighting using Shiki.
-  Provides a styled container for displaying code with proper highlighting."
+  Provides a styled container for displaying code with proper highlighting.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["shiki"                       :refer [codeToHtml]]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]

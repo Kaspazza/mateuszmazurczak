@@ -1,5 +1,10 @@
 (ns mateuszmazurczak.ui.components.header
-  "Header component with support for dark/light theme and language selection."
+  "Header component with support for dark/light theme and language selection.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.domain.i18n.language       :as mm-i18n-lang]
    [mateuszmazurczak.frontend-i18n              :as fi18n]

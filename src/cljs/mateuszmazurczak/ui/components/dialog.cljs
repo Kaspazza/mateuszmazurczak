@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.dialog
   "Dialog (modal) component with overlay and content area.
-  https://www.radix-ui.com/primitives/docs/components/dialog"
+  https://www.radix-ui.com/primitives/docs/components/dialog
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/dialog"
   (:require
    ["@radix-ui/react-dialog"      :as RadixDialog]
    ["lucide-react"                :refer [XIcon]]

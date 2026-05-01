@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.loader
   "Comprehensive loader/spinner components with multiple variants and sizes.
-  Provides visual feedback for loading states with various animation styles."
+  Provides visual feedback for loading states with various animation styles.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 

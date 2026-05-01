@@ -2,6 +2,7 @@
   (:require
    ["lucide-react"                          :refer [Download QrCode RefreshCw]]
    [mateuszmazurczak.ui.components.button   :as button]
+   [mateuszmazurczak.ui.components.input    :as input]
    [mateuszmazurczak.ui.components.label    :as label]
    [mateuszmazurczak.ui.components.select   :as select]
    [mateuszmazurczak.ui.components.switch   :as switch]
@@ -95,6 +96,75 @@
        [select/select-item {:value (name value)}
         label])]]])
 
+(defn- png-options
+  "Image export options for background and quiet-zone margin."
+  [{:keys [format text handlers png-background png-margin]}]
+  (when (contains? #{:zip :jpg} format)
+    [:div {:class "space-y-3"}
+     (when (= format :zip)
+       [:div {:class "space-y-2"}
+        [label/label {:htmlFor "png-background"}
+         (:png-background text)]
+        [select/select {:value (name png-background)
+                        :on-value-change #((:on-update-png-background handlers) (keyword %))}
+         [select/select-trigger {:id "png-background"
+                                 :class "w-full"}
+          [select/select-value {:placeholder (:select-png-background text)}]]
+         [select/select-content {}
+          [select/select-item {:value "transparent"}
+           (:png-background-transparent text)]
+          [select/select-item {:value "white"}
+           (:png-background-white text)]]]])
+     (when (or (= format :jpg) (and (= format :zip) (= png-background :white)))
+       [:div {:class "space-y-2"}
+        [label/label {:htmlFor "png-margin"}
+         (:png-margin text)]
+        [input/input {:id "png-margin"
+                      :type "number"
+                      :min 0
+                      :step 1
+                      :value png-margin
+                      :on-change #((:on-update-png-margin handlers) (.. % -target -value))}]
+        [:p {:class "text-xs text-muted-foreground"}
+         (:png-margin-description text)]])]))
+
+(defn- pdf-layout-selector
+  "PDF layout controls (always visible for PDF format)."
+  [{:keys [format text handlers pdf-custom-cols pdf-custom-rows pdf-custom-qr-size-cm]}]
+  (when (= format :pdf)
+    [:div {:class "space-y-3"}
+     [:p {:class "text-xs text-muted-foreground"}
+      (:pdf-layout-description text)]
+     [:div {:class "grid grid-cols-1 sm:grid-cols-3 gap-3"}
+      [:div {:class "space-y-2"}
+       [label/label {:htmlFor "pdf-custom-cols"}
+        (:pdf-custom-cols text)]
+       [input/input {:id "pdf-custom-cols"
+                     :type "number"
+                     :min 1
+                     :step 1
+                     :value pdf-custom-cols
+                     :on-change #((:on-update-pdf-custom handlers) :cols (.. % -target -value))}]]
+      [:div {:class "space-y-2"}
+       [label/label {:htmlFor "pdf-custom-rows"}
+        (:pdf-custom-rows text)]
+       [input/input {:id "pdf-custom-rows"
+                     :type "number"
+                     :min 1
+                     :step 1
+                     :value pdf-custom-rows
+                     :on-change #((:on-update-pdf-custom handlers) :rows (.. % -target -value))}]]
+      [:div {:class "space-y-2"}
+       [label/label {:htmlFor "pdf-custom-size"}
+        (:pdf-custom-size-cm text)]
+       [input/input {:id "pdf-custom-size"
+                     :type "number"
+                     :min 0.5
+                     :step 0.1
+                     :value pdf-custom-qr-size-cm
+                     :on-change
+                     #((:on-update-pdf-custom handlers) :qr-size-cm (.. % -target -value))}]]]]))
+
 (defn- label-toggle
   "Toggle to show QR code value as label."
   [{:keys [show-label? text handlers]}]
@@ -122,26 +192,31 @@
                                          .-value))
                        :placeholder (:enter-values-placeholder text)
                        :rows 10
+                       :auto-size? false
                        :class "font-mono text-sm"}]
    [:p {:class "text-sm text-muted-foreground"}
     input-hint]])
 
 (defn- action-buttons
   "Generate preview and download buttons."
-  [{:keys [has-input? can-download? text handlers]}]
-  [:div {:class "flex flex-col sm:flex-row gap-3"}
-   (button/button {:variant :outline
-                   :disabled (not has-input?)
-                   :on-click (:on-generate-preview handlers)
-                   :class "flex-1"}
-                  [:> RefreshCw {:class "size-4 mr-2"}]
-                  (:generate-preview text))
-   (button/button {:variant :default
-                   :disabled (not can-download?)
-                   :on-click (:on-download handlers)
-                   :class "flex-1"}
-                  [:> Download {:class "size-4 mr-2"}]
-                  (:download text))])
+  [{:keys [has-input? can-download? loading? text handlers download-progress]}]
+  [:div {:class "flex flex-col gap-2"}
+   [:div {:class "flex flex-col sm:flex-row gap-3"}
+    (button/button {:variant :outline
+                    :disabled (not has-input?)
+                    :on-click (:on-generate-preview handlers)
+                    :class "flex-1"}
+                   [:> RefreshCw {:class "size-4 mr-2"}]
+                   (:generate-preview text))
+    (button/button {:variant :default
+                    :disabled (not can-download?)
+                    :on-click (:on-download handlers)
+                    :class "flex-1"}
+                   [:> Download {:class (str "size-4 mr-2" (when loading? " animate-spin"))}]
+                   (:download text))]
+   (when (and download-progress (:generating-qr-codes text))
+     [:p {:class "text-sm text-muted-foreground"}
+      (:generating-qr-codes text)])])
 
 (defn qr-codes-page
   "QR Code Generator page."
@@ -160,9 +235,10 @@
       [:div {:class "p-6 border rounded-lg bg-card"}
        [input-section data]]
       [:div {:class "p-6 border rounded-lg bg-card space-y-6"}
-       [:div {:class "grid grid-cols-1 sm:grid-cols-2 gap-4"}
-        [size-selector data]
-        [format-selector data]]
+       [format-selector data]
+       (when (contains? #{:zip :jpg} (:format data)) [size-selector data])
+       [png-options data]
+       [pdf-layout-selector data]
        [label-toggle data]]
       [error-display data]
       [:div {:class "p-6 border rounded-lg bg-card"}

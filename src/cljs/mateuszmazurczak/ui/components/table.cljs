@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.table
   "Table component primitives for building data tables.
-  Provides semantic HTML table elements with consistent Tailwind styling."
+  Provides semantic HTML table elements with consistent Tailwind styling.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 
@@ -21,7 +26,7 @@
    children]
   (let [rest-props (dissoc props :class)]
     [:div {:data-slot "table-container"
-           :class "relative w-full overmateuszmazurczak-x-auto"}
+           :class "relative w-full overflow-x-auto"}
      (into [:table
             (merge {:data-slot "table"
                     :class (merge-classes "w-full caption-bottom text-sm" class)}

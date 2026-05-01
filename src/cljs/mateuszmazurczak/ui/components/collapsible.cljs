@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.collapsible
   "Collapsible component for showing and hiding content with animation.
-  https://www.radix-ui.com/primitives/docs/components/collapsible"
+  https://www.radix-ui.com/primitives/docs/components/collapsible
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/collapsible"
   (:require
    ["@radix-ui/react-collapsible" :as CollapsiblePrimitive]))
 

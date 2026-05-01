@@ -2,7 +2,12 @@
   "Field component for building accessible form layouts.
   
   Provides a set of composable components for creating form fields with
-  labels, descriptions, errors, and various layout orientations."
+  labels, descriptions, errors, and various layout orientations.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.ui.components.label     :as label-comp]
    [mateuszmazurczak.ui.components.separator :as separator-comp]

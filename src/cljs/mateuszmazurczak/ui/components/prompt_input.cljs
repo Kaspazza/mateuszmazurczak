@@ -1,6 +1,11 @@
 (ns mateuszmazurczak.ui.components.prompt-input
   "Prompt input component for chat interfaces with auto-resizing textarea.
-  Provides a context-based system for sharing state between input and action buttons."
+  Provides a context-based system for sharing state between input and action buttons.
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    ["react"                                 :as react]
    [mateuszmazurczak.ui.components.textarea :as mateuszmazurczak-textarea]

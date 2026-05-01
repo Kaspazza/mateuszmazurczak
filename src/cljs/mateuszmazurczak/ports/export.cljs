@@ -11,7 +11,7 @@
    
    Arguments:
    - codes: Vector of {:content :svg :filename} maps (from generate-batch)
-   - opts: {:size int :filename string :format (:zip|:pdf) :as-svg? bool}
+   - opts: {:size int :filename string :format (:zip|:jpg|:pdf) :as-svg? bool}
    
    Returns: Promise that resolves when download starts"
   [codes opts]
@@ -48,3 +48,12 @@
    - filename: Suggested filename"
   [blob filename]
   (file-export/save-blob! blob filename))
+
+(defn save-array-buffer!
+  "Trigger browser download for an ArrayBuffer.
+   
+   Arguments:
+   - array-buffer: ArrayBuffer to download
+   - opts: {:filename string :format (:zip|:jpg|:pdf)}"
+  [array-buffer opts]
+  (file-export/save-array-buffer! array-buffer opts))

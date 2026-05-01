@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.breadcrumb
   "Breadcrumb navigation component for displaying hierarchical page location.
-  https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/"
+  https://www.w3.org/WAI/ARIA/apg/patterns/breadcrumb/
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/slot"
   (:require
    ["@radix-ui/react-slot"        :refer [Slot]]
    ["lucide-react"                :refer [ChevronRight MoreHorizontal]]
@@ -140,7 +146,7 @@
        (assoc :role "presentation"
               :aria-hidden "true"
               :data-slot "breadcrumb-separator"
-              :class (merge-classes "[&>svg]:w-3.5 [&>svg]:h-3.5" class))
+              :class (merge-classes "[&>svg]:size-3.5" class))
        (dissoc :class-name))
    (if (seq children) (first children) (r/as-element [:> ChevronRight]))])
 

@@ -1,5 +1,13 @@
 {:aliases
- {:antq {:deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}}
+ {:1.12-cljs-storm
+    {:classpath-overrides {org.clojure/clojurescript nil} ;; disable the official compiler
+     :extra-deps {thheller/shadow-cljs {:mvn/version "3.3.4"
+                                        :exclusions [org.clojure/clojurescript]}
+                  ;; bring ClojureScriptStorm
+                  com.github.flow-storm/clojurescript {:mvn/version "1.12.134-3"}
+                  ;; add FlowStorm runtime dep
+                  com.github.flow-storm/flow-storm-inst {:mvn/version "4.5.9"}}}
+  :antq {:deps {com.github.liquidz/antq {:mvn/version "2.11.1276"}}
          :main-opts ["-m" "antq.core"]}
   :cljs-deps {:extra-deps {cljs-ajax/cljs-ajax {:mvn/version "0.8.4"}
                            juji/editscript {:mvn/version "0.7.0"}

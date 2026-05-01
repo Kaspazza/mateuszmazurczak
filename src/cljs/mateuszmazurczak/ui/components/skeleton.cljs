@@ -35,7 +35,13 @@
   [skeleton {:class \"h-20 w-20\"
              :role \"status\"
              :aria-label \"Loading...\"}]
-  ```"
+  ```
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on shadcn/ui component patterns.
+Documentation: https://ui.shadcn.com/docs/components"
   (:require
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))
 

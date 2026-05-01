@@ -177,7 +177,7 @@
     (assoc solution :best-practices-count best-practices-count :clever-count clever-count)))
 
 (defn fetch-solutions
-  "Fetch solutions for a given year and challenge, enriched with vote counts.
+  "Fetch solutions for a given year and challenge, enriched with vote counts and GitHub data.
    
    Takes:
    - db: Database connection
@@ -189,6 +189,7 @@
   (let [results (db/query db build-get-solutions-query year challenge)]
     (->> results
          (map solution-tuple->map)
+         (map solution/enrich-solution-with-github-data)
          (map (partial enrich-with-vote-counts db))
          (solution/sort-solutions-by-created-at))))
 

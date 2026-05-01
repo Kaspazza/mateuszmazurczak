@@ -1,5 +1,10 @@
 (ns mateuszmazurczak.ui.components.footer
-  "Frontend based implementation of footer"
+  "Frontend based implementation of footer
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Custom component implementation."
   (:require
    [mateuszmazurczak.ports.state :as state]
    [mateuszmazurczak.ui.icons    :as icons]))

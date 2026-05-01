@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.switch
   "Switch component for toggle controls.
-  https://www.radix-ui.com/primitives/docs/components/switch"
+  https://www.radix-ui.com/primitives/docs/components/switch
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/switch"
   (:require
    ["@radix-ui/react-switch"      :as SwitchPrimitive]
    [mateuszmazurczak.utils.styles :refer [merge-classes]]))

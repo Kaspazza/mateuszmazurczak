@@ -1,6 +1,12 @@
 (ns mateuszmazurczak.ui.components.dropdown-menu
   "Dropdown menu component for displaying a menu of actions.
-  https://www.radix-ui.com/primitives/docs/components/dropdown-menu"
+  https://www.radix-ui.com/primitives/docs/components/dropdown-menu
+
+Version: 1.0.0
+Last updated: 2026-02-06
+
+Based on Radix UI primitives.
+Documentation: https://www.radix-ui.com/primitives/docs/components/dropdown-menu"
   (:require
    ["@radix-ui/react-dropdown-menu" :as DropdownMenuPrimitive]
    ["lucide-react"                  :refer [Check ChevronRight Circle]]
@@ -177,10 +183,10 @@
       props
       (assoc
        :data-slot "dropdown-menu-sub-trigger"
+       :data-inset inset
        :class
        (merge-classes
-        "flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
-        (when inset "pl-8")
+        "focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
         class))
       (dissoc :class-name :inset))]
    (concat children [(r/as-element [:> ChevronRight {:class "ml-auto"}])])))
@@ -208,7 +214,7 @@
        :data-slot "dropdown-menu-sub-content"
        :class
        (merge-classes
-        "z-50 min-w-[8rem] overmateuszmazurczak-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]"
+        "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md border p-1 shadow-lg"
         class))
       (dissoc :class-name))]
    children))
@@ -245,7 +251,7 @@
         :data-slot "dropdown-menu-content"
         :class
         (merge-classes
-         "z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overmateuszmazurczak-y-auto overmateuszmazurczak-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]"
+         "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md"
          class))
        (dissoc :class-name :side-offset))]
     children)])
@@ -277,10 +283,10 @@
       props
       (assoc
        :data-slot "dropdown-menu-item"
+       :data-inset inset
        :class
        (merge-classes
-        "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
-        (when inset "pl-8")
+        "focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
         class))
       (dissoc :class-name :inset))]
    children))
@@ -313,11 +319,12 @@
        :data-slot "dropdown-menu-checkbox-item"
        :class
        (merge-classes
-        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
         class))
       (dissoc :class-name))]
-   (cons [:span {:class "absolute left-2 flex h-3.5 w-3.5 items-center justify-center"}
-          [:> (.-ItemIndicator DropdownMenuPrimitive) (r/as-element [:> Check {:class "h-4 w-4"}])]]
+   (cons [:span {:class
+                 "pointer-events-none absolute left-2 flex size-3.5 items-center justify-center"}
+          [:> (.-ItemIndicator DropdownMenuPrimitive) (r/as-element [:> Check {:class "size-4"}])]]
          children)))
 
 (defn dropdown-menu-radio-item
@@ -346,13 +353,14 @@
        :data-slot "dropdown-menu-radio-item"
        :class
        (merge-classes
-        "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+        "focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
         class))
       (dissoc :class-name))]
-   (cons [:span {:class "absolute left-2 flex h-3.5 w-3.5 items-center justify-center"}
+   (cons [:span {:class
+                 "pointer-events-none absolute left-2 flex size-3.5 items-center justify-center"}
           [:>
            (.-ItemIndicator DropdownMenuPrimitive)
-           (r/as-element [:> Circle {:class "h-2 w-2 fill-current"}])]]
+           (r/as-element [:> Circle {:class "size-2 fill-current"}])]]
          children)))
 
 (defn dropdown-menu-label
@@ -373,8 +381,9 @@
          (.-Label DropdownMenuPrimitive)
          (-> props
              (assoc :data-slot "dropdown-menu-label"
-                    :class
-                    (merge-classes "px-2 py-1.5 text-sm font-semibold" (when inset "pl-8") class))
+                    :data-inset inset
+                    :class (merge-classes "px-2 py-1.5 text-sm font-medium data-[inset]:pl-8"
+                                          class))
              (dissoc :class-name :inset))]
         children))
 
@@ -394,7 +403,7 @@
    (.-Separator DropdownMenuPrimitive)
    (-> props
        (assoc :data-slot "dropdown-menu-separator"
-              :class (merge-classes "-mx-1 my-1 h-px bg-muted" class))
+              :class (merge-classes "bg-border -mx-1 my-1 h-px" class))
        (dissoc :class-name))])
 
 (defn dropdown-menu-shortcut
@@ -414,6 +423,7 @@
   (into [:span
          (-> props
              (assoc :data-slot "dropdown-menu-shortcut"
-                    :class (merge-classes "ml-auto text-xs tracking-widest opacity-60" class))
+                    :class (merge-classes "text-muted-foreground ml-auto text-xs tracking-widest"
+                                          class))
              (dissoc :class-name))]
         children))

@@ -16,10 +16,11 @@
   (testing "valid sizes"
     (is (gen/valid-size? 100))
     (is (gen/valid-size? 300))
-    (is (gen/valid-size? 1000)))
+    (is (gen/valid-size? 1000))
+    (is (gen/valid-size? 2000)))
   (testing "invalid sizes"
     (is (not (gen/valid-size? 49)))
-    (is (not (gen/valid-size? 1001)))
+    (is (not (gen/valid-size? 2001)))
     (is (not (gen/valid-size? -1)))
     (is (not (gen/valid-size? "300")))))
 

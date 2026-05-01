@@ -16,12 +16,19 @@
                                :entries [mateuszmazurczak.portfolio.portfolio]
                                :init-fn mateuszmazurczak.portfolio.portfolio/init}}}
    :devtools {:after-load mateuszmazurczak.frontend-core/re-render
-              :preloads [re-frisk.preload]
               :repl-pprint true
+               :http-port 8021
+              :preloads [
+                         ;; flow-storm.storm-preload
+                         re-frisk.preload]
               :watch-dir "resources/public"}
    :modules {:mateuszmazurczak-frontend-core {:depends-on #{:mateuszmazurczak-share}
-                                              :init-fn mateuszmazurczak.frontend-core/init!}
-             :mateuszmazurczak-share {:entries []}}
+                                              :init-fn mateuszmazurczak.frontend-core/init!
+                                              }
+             :mateuszmazurczak-share {:entries []}
+             :qr-codes-worker {:depends-on #{:mateuszmazurczak-share}
+                               :init-fn mateuszmazurczak.application.qr-codes.worker/init
+                               :web-worker true}}
    :output-dir "resources/public/js/compiled"
    :release {:build-options {:cache-level :off}
              :closure-defines {mateuszmazurczak.system.config/ENV "production"
@@ -32,7 +39,10 @@
                                 :portfolio false}}
 
    :target :browser}}
- :deps {:aliases [:cljs-deps :cljs-dev-deps]}
+ :deps {:aliases [:cljs-deps :cljs-dev-deps
+                  ;;debug - in production it breaks app
+                  ;; :1.12-cljs-storm
+                  ]}
  :dev-http {8081 [".shadow-cljs/target/browser-test"]}
  :nrepl {:middleware [cider.nrepl/cider-middleware refactor-nrepl.middleware/wrap-refactor]
          :port 8777}}

@@ -22,22 +22,18 @@
             :filename "speech_recognition_button.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Speech Recognition Button component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Speech Recognition Button components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "speech-recognition-button"
-                :description "Microphone action button built on react-speech-recognition. Starts/stops listening and streams transcript text through a callback."
-                :props [{:name ":on-transcript-change" :type "function" :default nil      :description "Called whenever transcript updates: (fn [text] ...)."}
-                        {:name ":language"             :type "string"   :default "\"en-US\"" :description "Speech recognition locale, e.g. \"pl-PL\" or \"en-US\"."}
-                        {:name ":continuous"           :type "boolean"  :default "true"   :description "Continue listening after pauses in speech."}
-                        {:name ":class"                :type "string"   :default nil      :description "Additional classes applied to the prompt-input action wrapper."}]}]
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "speech-recognition-button"
+               :description "Microphone action button built on react-speech-recognition. Starts/stops listening and streams transcript text through a callback."
+               :link {:href "https://www.npmjs.com/package/react-speech-recognition" :label "react-speech-recognition Docs"}
+               :props [{:name ":on-transcript-change" :type "function" :default nil      :description "Called whenever transcript updates: (fn [text] ...)."}
+                       {:name ":language"             :type "string"   :default "\"en-US\"" :description "Speech recognition locale, e.g. \"pl-PL\" or \"en-US\"."}
+                       {:name ":continuous"           :type "boolean"  :default "true"   :description "Continue listening after pauses in speech."}
+                       {:name ":class"                :type "string"   :default nil      :description "Additional classes applied to the prompt-input action wrapper."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
                [:h4 {:class "text-sm font-semibold mb-2"} "⚠️ Important Notes"]
                [:ul {:class "text-xs text-muted-foreground space-y-1 list-disc pl-4"}
@@ -49,12 +45,7 @@
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "(let [value (r/atom \"\")]\n  [prompt-input {:value @value\n                 :on-value-change #(reset! value %)}\n   [prompt-input-textarea {:placeholder \"Speak or type...\"}]\n   [prompt-input-actions {}\n    [speech-recognition-button {:language \"en-US\"\n                                :on-transcript-change #(reset! value %)}]]])"]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.npmjs.com/package/react-speech-recognition"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "react-speech-recognition Docs →"]]]]]]))
+]]]]]]])
 
 (defscene
  speech-recognition-standalone

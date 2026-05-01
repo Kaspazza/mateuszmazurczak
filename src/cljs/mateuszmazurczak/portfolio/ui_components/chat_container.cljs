@@ -21,27 +21,17 @@
 
 (defscene
  api-reference
- "Complete reference for all Chat Container component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground mb-4"}
-      "Chat container primitives adapted from Prompt Kit patterns. All available props for Chat Container components."]
-     [:div {:class "flex flex-wrap gap-2"}
-      [:a {:href "https://www.prompt-kit.com/docs/chat-container"
-           :target "_blank"
-           :rel "noopener noreferrer"
-           :class "inline-flex items-center text-sm text-primary hover:underline"}
-       "Prompt Kit Chat Container Docs →"]]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "chat-container-root"
-       :description "Root scroll container powered by use-stick-to-bottom context."
-       :props [{:name ":class"   :type "string" :default nil        :description "Additional Tailwind classes"}
-               {:name ":resize"  :type "string" :default "\"smooth\"" :description "One of: 'smooth' | 'instant'"}
-               {:name ":initial" :type "string" :default "\"instant\"" :description "One of: 'instant' | 'smooth'"}]}]
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "chat-container-root"
+      :link {:href "https://www.prompt-kit.com/docs/chat-container" :label "Prompt Kit Chat Container Docs"}
+      :description "Root scroll container powered by use-stick-to-bottom context."
+      :props [{:name ":class"   :type "string" :default nil        :description "Additional Tailwind classes"}
+              {:name ":resize"  :type "string" :default "\"smooth\"" :description "One of: 'smooth' | 'instant'"}
+              {:name ":initial" :type "string" :default "\"instant\"" :description "One of: 'instant' | 'smooth'"}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "chat-container-content"
        :description "Message list/content region within chat-container-root."

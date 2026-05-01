@@ -22,18 +22,14 @@
 
 (defscene
  api-reference
- "Complete reference for all Tooltip component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Tooltip components."]]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "tooltip"
-       :description "Tooltip component"
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "tooltip"
+      :link {:href "https://www.radix-ui.com/primitives/docs/components/tooltip" :label "Radix Tooltip Docs"}
+      :description "Self-contained tooltip with configurable placement, delay, controlled state, and Radix slot-based trigger composition."
        :props [{:name ":trigger"                  :type "hiccup"          :default nil     :description "Tooltip trigger element"}
                {:name ":content"                  :type "string | hiccup" :default nil     :description "Tooltip content"}
                {:name ":side"                     :type "keyword"         :default ":top"  :description "One of: :top | :right | :bottom | :left"}
@@ -62,12 +58,7 @@
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
        [:code "[tooltip {:trigger [button {:variant :outline} \"Hover me\"]\n          :content \"Helpful context\"\n          :side :top}]" ]]
-      [:div {:class "flex flex-wrap gap-2 mt-3"}
-       [:a {:href "https://www.radix-ui.com/primitives/docs/components/tooltip"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "Radix Tooltip Docs →"]]]]]))
+      ]]]]))
 
 (defscene
  tooltip-demo

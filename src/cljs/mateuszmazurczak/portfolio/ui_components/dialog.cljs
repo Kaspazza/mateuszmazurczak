@@ -95,12 +95,7 @@
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "[dialog {:open @open?\n         :onOpenChange #(reset! open? %)}\n [dialog-trigger {:asChild true}\n  [button {:variant :outline} \"Open\"]]\n [dialog-content {:class \"sm:max-w-[425px]\"}\n  [dialog-header {}\n   [dialog-title {} \"Edit profile\"]\n   [dialog-description {} \"Update details and save.\"]]\n  [dialog-footer {}\n   [dialog-close {:asChild true} [button {:variant :outline} \"Cancel\"]]\n   [button {:type \"submit\"} \"Save\"]]]]"]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.radix-ui.com/primitives/docs/components/dialog"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Radix Dialog Docs →"]]]]]]))
+              ]]])))
 
 (defn- profile-form
   [{:keys [class]}]

@@ -105,7 +105,7 @@
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
        [:code "[data-table {:columns columns\n             :data rows\n             :initial-page-size 10\n             :toolbar-config {:text-filter {:column-id \"title\"\n                                            :placeholder \"Search tasks...\"}}\n             :dnd-config {:get-row-id (fn [row] (aget row \"id\"))\n                          :on-drag-end (fn [active-id over-id] ... )}}]"]]
-     ]]]]))
+     ]]]))
 
 (defn make-task-data
   []

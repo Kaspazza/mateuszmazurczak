@@ -21,24 +21,20 @@
             :filename "collapsible.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Collapsible component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Collapsible components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "collapsible"
-                :description "Radix Collapsible.Root wrapper that controls open/closed state for collapsible sections. Additional props are forwarded to the Radix root primitive."
-                :props [{:name ":open"          :type "boolean"     :default nil :description "Controlled open state."}
-                        {:name ":default-open"  :type "boolean"     :default nil :description "Uncontrolled initial open state."}
-                        {:name ":on-open-change" :type "function"   :default nil :description "Callback when open state changes: (fn [open?] ...)."}
-                        {:name ":disabled"       :type "boolean"    :default nil :description "Disables toggling."}
-                        {:name ":class"          :type "string"     :default nil :description "Additional Tailwind classes."}
-                        {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Collapsible.Root."}]}]
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "collapsible"
+               :link {:href "https://www.radix-ui.com/primitives/docs/components/collapsible" :label "Radix Collapsible Docs"}
+               :description "Radix Collapsible.Root wrapper that controls open/closed state for collapsible sections. Additional props are forwarded to the Radix root primitive."
+               :props [{:name ":open"          :type "boolean"     :default nil :description "Controlled open state."}
+                       {:name ":default-open"  :type "boolean"     :default nil :description "Uncontrolled initial open state."}
+                       {:name ":on-open-change" :type "function"   :default nil :description "Callback when open state changes: (fn [open?] ...)."}
+                       {:name ":disabled"       :type "boolean"    :default nil :description "Disables toggling."}
+                       {:name ":class"          :type "string"     :default nil :description "Additional Tailwind classes."}
+                       {:name "additional props" :type "map entries" :default nil :description "Forwarded to Radix Collapsible.Root."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "collapsible-trigger"
                 :description "Toggle control for a collapsible block. Typically wraps a button label or a custom button when using :as-child."
@@ -62,13 +58,7 @@
                [:h4 {:class "text-sm font-semibold mb-2"}
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
-                [:code "(let [open? (r/atom false)]\n  [collapsible {:open @open?\n                :on-open-change #(reset! open? %)}\n   [collapsible-trigger {} [button {:variant :outline} \"Toggle details\"]]\n   [collapsible-content {:class \"mt-3\"}\n    [:div {:class \"rounded-md border p-3\"} \"Collapsible content\"]]])"]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.radix-ui.com/primitives/docs/components/collapsible"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Radix Collapsible Docs →"]]]]]]))
+                [:code "(let [open? (r/atom false)]\n  [collapsible {:open @open?\n                :on-open-change #(reset! open? %)}\n   [collapsible-trigger {} [button {:variant :outline} \"Toggle details\"]]\n   [collapsible-content {:class \"mt-3\"}\n    [:div {:class \"rounded-md border p-3\"} \"Collapsible content\"]]])"]]]]]]))
 
 (defscene
  collapsible-basic

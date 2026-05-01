@@ -21,24 +21,14 @@
             :filename "scroll_button.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Scroll Button component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground mb-4"}
-               "Scroll button primitive adapted from Prompt Kit chat patterns. All available props for Scroll Button components."]
-              [:div {:class "flex flex-wrap gap-2"}
-               [:a {:href "https://www.prompt-kit.com/docs/scroll-button"
-                    :target "_blank"
-                    :rel "noopener noreferrer"
-                    :class "inline-flex items-center text-sm text-primary hover:underline"}
-                "Prompt Kit Scroll Button Docs →"]]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "scroll-button"
-                :description "Floating action button that appears when chat content is not pinned to the bottom. Integrates with use-stick-to-bottom context and scrolls smoothly to the newest message."
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "scroll-button"
+               :link {:href "https://www.prompt-kit.com/docs/scroll-button" :label "Prompt Kit Scroll Button Docs"}
+               :description "Floating action button that appears when chat content is not pinned to the bottom. Integrates with use-stick-to-bottom context and scrolls smoothly to the newest message."
                 :props [{:name ":variant"        :type "keyword" :default ":outline" :description "Button variant forwarded to button component."}
                         {:name ":size"           :type "keyword" :default ":sm"      :description "Button size forwarded to button component."}
                         {:name ":class"          :type "string"  :default nil        :description "Additional Tailwind classes merged with default visibility/position classes."}
@@ -54,12 +44,7 @@
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "[chat-container-root {:class \"relative h-64\"}\n  [chat-container-content {}\n    ;; messages\n    [chat-container-scroll-anchor {}]]\n  [scroll-button {:class \"absolute bottom-4 right-4\"}]]"]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.npmjs.com/package/use-stick-to-bottom"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "use-stick-to-bottom Docs →"]]]]]]))
+               ]]]]]))
 
 (defscene
  scroll-button-chat

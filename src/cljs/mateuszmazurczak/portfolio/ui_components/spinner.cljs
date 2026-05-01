@@ -21,17 +21,12 @@
             :filename "spinner.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Spinner component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Spinner components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "spinner"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "spinner"
                 :description "Lucide Loader2-based spinner with built-in accessibility defaults."
                 :props [{:name ":class"          :type "string"      :default nil        :description "Additional CSS classes."}
                         {:name ":role"           :type "string"      :default "\"status\"" :description "Accessibility role."}

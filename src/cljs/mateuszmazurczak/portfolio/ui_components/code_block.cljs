@@ -20,30 +20,15 @@
             :filename "code_block.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Code Block component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground mb-4"}
-               "Code block components with syntax highlighting powered by Shiki. Compose code-block (container), code-block-group (header/actions), and code-block-code (highlighted content)."]
-              [:div {:class "flex flex-wrap gap-2"}
-               [:a {:href "https://shiki.style/themes"
-                    :target "_blank"
-                    :rel "noopener noreferrer"
-                    :class "inline-flex items-center text-sm text-primary hover:underline"}
-                "Shiki Themes →"]
-               [:a {:href "https://shiki.style/languages"
-                    :target "_blank"
-                    :rel "noopener noreferrer"
-                    :class "inline-flex items-center text-sm text-primary hover:underline"}
-                "Shiki Languages →"]]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "code-block"
-                :description "Root container for code blocks. Provides border, background, and rounded styling. The props map is optional — children can be passed directly without it. All additional props are forwarded to the underlying div element."
-                :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes merged with defaults (border, bg-card, rounded-xl, overflow-clip)."}]}]
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "code-block"
+               :link {:href "https://shiki.style/themes" :label "Shiki Docs"}
+               :description "Root container for code blocks. Provides border, background, and rounded styling. The props map is optional — children can be passed directly without it. All additional props are forwarded to the underlying div element."
+               :props [{:name ":class" :type "string" :default nil :description "Additional Tailwind classes merged with defaults (border, bg-card, rounded-xl, overflow-clip)."}]}]
               [mm-portfolio-utils/api-component-card
                {:component-name "code-block-code"
                 :description "The primary component — renders syntax-highlighted code using Shiki. Highlighting is async: a plain <pre><code> fallback is shown while Shiki loads, then replaced with highlighted HTML. If Shiki fails, the raw code string is displayed as fallback. All additional props are forwarded to the underlying div element."

@@ -21,19 +21,15 @@
             :filename "separator.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Separator component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Separator components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "separator"
-                :description "Separator component"
-                :props [{:name ":class"       :type "string"   :default nil         :description "Additional Tailwind classes"}
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "separator"
+               :description "Separator component"
+               :link {:href "https://www.radix-ui.com/primitives/docs/components/separator" :label "Radix Separator Docs"}
+               :props [{:name ":class"       :type "string"   :default nil         :description "Additional Tailwind classes"}
                         {:name ":orientation" :type "keyword"  :default ":horizontal" :description "One of: :horizontal | :vertical"}
                         {:name ":decorative"  :type "boolean"  :default "true"      :description "Decorative vs semantic separator"}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}
@@ -46,12 +42,7 @@
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "[:div {:class \"space-y-3\"}\n [:p \"Section A\"]\n [separator {:orientation :horizontal}]\n [:p \"Section B\"]]" ]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.radix-ui.com/primitives/docs/components/separator"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Radix Separator Docs →"]]]]]]))
+]]]]]]])
 
 (defscene
  separator-demo

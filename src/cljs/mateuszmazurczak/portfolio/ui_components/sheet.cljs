@@ -23,19 +23,15 @@
             :filename "sheet.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Sheet component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Sheet components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "sheet"
-                :description "Radix Dialog.Root alias used as sheet root controller."
-                :props [{:name ":open"           :type "boolean"      :default nil    :description "Controlled open state."}
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "sheet"
+               :description "Radix Dialog.Root alias used as sheet root controller."
+               :link {:href "https://ui.shadcn.com/docs/components/sheet" :label "shadcn Sheet Docs"}
+               :props [{:name ":open"           :type "boolean"      :default nil    :description "Controlled open state."}
                         {:name ":default-open"   :type "boolean"      :default nil    :description "Uncontrolled initial open state."}
                         {:name ":on-open-change" :type "function"     :default nil    :description "Callback when state changes: (fn [open?] ...)."}
                         {:name ":modal"          :type "boolean"      :default "true" :description "Whether sheet is modal."}
@@ -92,17 +88,7 @@
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "[:> sheet {}\n [:> sheet-trigger {:as-child true}\n  [button {:variant :outline} \"Open\"]]\n [sheet-content {:side :right}\n  [sheet-header {}\n   [sheet-title {} \"Edit profile\"]\n   [sheet-description {} \"Update details and save.\"]]\n  [sheet-footer {}\n   [:> sheet-close {:as-child true} [button {:variant :outline} \"Close\"]]]]]"]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://ui.shadcn.com/docs/components/sheet"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "shadcn Sheet Docs →"]
-                [:a {:href "https://www.radix-ui.com/primitives/docs/components/dialog"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Radix Dialog Docs →"]]]]]]))
+]]]]]]])
 
 (defscene
  sheet-demo

@@ -22,24 +22,14 @@
             :filename "prompt_input.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Prompt Input component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground mb-4"}
-               "Prompt input primitives adapted from Prompt Kit patterns. All available props for Prompt Input components."]
-              [:div {:class "flex flex-wrap gap-2"}
-               [:a {:href "https://www.prompt-kit.com/docs/prompt-input"
-                    :target "_blank"
-                    :rel "noopener noreferrer"
-                    :class "inline-flex items-center text-sm text-primary hover:underline"}
-                "Prompt Kit Prompt Input Docs →"]]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "prompt-input"
-                :description "Root composition component for chat-like input. Provides context used by prompt-input-textarea and prompt-input-action children, including disabled/loading and submit behavior. Additional props are forwarded to the wrapper div."
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "prompt-input"
+               :link {:href "https://www.prompt-kit.com/docs/prompt-input" :label "Prompt Kit Prompt Input Docs"}
+               :description "Root composition component for chat-like input. Provides context used by prompt-input-textarea and prompt-input-action children, including disabled/loading and submit behavior. Additional props are forwarded to the wrapper div."
                 :props [{:name ":is-loading?"    :type "boolean"     :default "false" :description "Visual loading/disabled state for the whole prompt input."}
                         {:name ":value"          :type "string"      :default nil     :description "Controlled textarea value."}
                         {:name ":on-value-change" :type "function"   :default nil     :description "Called when text changes: (fn [new-value] ...)."}

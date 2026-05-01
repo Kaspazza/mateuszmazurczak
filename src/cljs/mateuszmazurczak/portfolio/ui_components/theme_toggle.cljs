@@ -20,17 +20,12 @@
             :filename "theme_toggle.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Theme Toggle component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Theme Toggle components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "theme-toggle"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "theme-toggle"
                 :description "Zero-arity theme switch button. Reads current theme from app state and dispatches an event to toggle between light and dark modes."
                 :props [{:name "arguments" :type "No props" :default nil :description "Render as [theme-toggle]."}]}]
               [:div {:class "border rounded-lg p-4 bg-amber-500/10 border-amber-500/30 mb-4"}

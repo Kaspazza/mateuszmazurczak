@@ -19,17 +19,12 @@
             :filename "skeleton.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Skeleton component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Skeleton components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "skeleton"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "skeleton"
                 :description "Animated loading placeholder block. Additional props are forwarded to underlying <div>."
                 :props [{:name ":class"          :type "string"      :default nil :description "Additional Tailwind classes."}
                         {:name ":role"           :type "string"      :default nil :description "Accessibility role, e.g. \"status\"."}

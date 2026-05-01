@@ -22,24 +22,14 @@
 
 (defscene
  api-reference
- "Complete reference for all Message component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground mb-4"}
-      "Message primitives adapted from Prompt Kit chat patterns. All available props for Message components."]
-     [:div {:class "flex flex-wrap gap-2"}
-      [:a {:href "https://www.prompt-kit.com/docs/message"
-           :target "_blank"
-           :rel "noopener noreferrer"
-           :class "inline-flex items-center text-sm text-primary hover:underline"}
-       "Prompt Kit Message Docs →"]]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "message"
-       :description "Root chat message row container. Additional props are forwarded to the wrapper element."
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "message"
+      :link {:href "https://www.prompt-kit.com/docs/message" :label "Prompt Kit Message Docs"}
+      :description "Root chat message row container. Additional props are forwarded to the wrapper element."
        :props [{:name ":class"           :type "string"      :default nil :description "Additional Tailwind classes."}
                {:name "additional props" :type "map entries" :default nil :description "Forwarded to wrapper element."}]}]
      [mm-portfolio-utils/api-component-card

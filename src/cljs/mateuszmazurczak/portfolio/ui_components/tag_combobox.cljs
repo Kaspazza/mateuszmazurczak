@@ -20,19 +20,15 @@
             :filename "tag_combobox.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Tag Combobox component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Tag Combobox components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "tag-combobox"
-                :description "Responsive tag selector that supports both choosing existing tags and creating new tags. Uses Popover on desktop and Sheet on mobile for better ergonomics."
-                :props [{:name ":tags"         :type "set<string> | vector<string>" :default nil           :description "Available tags shown in the list."}
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "tag-combobox"
+               :description "Responsive tag selector that supports both choosing existing tags and creating new tags. Uses Popover on desktop and Sheet on mobile for better ergonomics."
+               :link {:href "https://ui.shadcn.com/docs/components/combobox" :label "Combobox Pattern (shadcn)"}
+               :props [{:name ":tags"         :type "set<string> | vector<string>" :default nil           :description "Available tags shown in the list."}
                         {:name ":selected-tag" :type "string | nil"                 :default nil           :description "Currently selected tag."}
                         {:name ":on-select"    :type "function"                     :default nil           :description "Called when user selects a tag: (fn [tag] ...)."}
                         {:name ":on-create"    :type "function"                     :default nil           :description "Called when user creates a new tag: (fn [new-tag] ...)."}
@@ -49,12 +45,7 @@
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "(let [tags (r/atom #{\"bug\" \"feature\"})\n      selected (r/atom nil)]\n  [tag-combobox {:tags @tags\n                 :selected-tag @selected\n                 :on-select #(reset! selected %)\n                 :on-create (fn [new-tag]\n                              (swap! tags conj new-tag)\n                              (reset! selected new-tag))}])"]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://ui.shadcn.com/docs/components/combobox"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Combobox Pattern (shadcn) →"]]]]]]))
+               ]]]]]))
 
 (defscene
  basic-tag-selection

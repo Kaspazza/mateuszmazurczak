@@ -24,18 +24,14 @@
             :filename "popover.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Popover component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Popover components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "popover"
-                :description "Radix Popover root that controls open/close state for floating content."
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "popover"
+               :link {:href "https://www.radix-ui.com/primitives/docs/components/popover" :label "Radix Popover Docs"}
+               :description "Radix Popover root that controls open/close state for floating content."
                 :props [{:name ":open"           :type "boolean"      :default nil    :description "Controlled open state."}
                         {:name ":defaultOpen"    :type "boolean"      :default nil    :description "Uncontrolled initial open state."}
                         {:name ":onOpenChange"   :type "function"     :default nil    :description "Callback when open state changes: (fn [open?] ...)."}
@@ -74,11 +70,7 @@
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "(let [open? (r/atom false)]\n  [popover {:open @open?\n            :onOpenChange #(reset! open? %)}\n   [popover-trigger {:asChild true}\n    [button {:variant :outline} \"Open\"]]\n   [popover-content {:align \"start\" :sideOffset 8}\n    [:p {:class \"text-sm\"} \"Popover content\"]]])"]]
                [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.radix-ui.com/primitives/docs/components/popover"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Radix Popover Docs →"]]]]]]))
+                ]]]]]))
 
 (defscene
  popover-demo

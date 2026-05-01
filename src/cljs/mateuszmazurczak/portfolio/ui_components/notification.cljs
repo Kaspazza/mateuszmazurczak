@@ -21,18 +21,14 @@
 
 (defscene
  api-reference
- "Complete reference for all Notification component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Notification components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "toaster"
-       :description "Sonner provider component. Mount once near app root before calling show-* helpers."
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "toaster"
+      :link {:href "https://sonner.emilkowal.ski" :label "Sonner Docs"}
+      :description "Sonner provider component. Mount once near app root before calling show-* helpers."
        :props [{:name "arguments"         :type "none"   :default nil :description "(toaster) or (toaster {:position ... :richColors ...})"}
                {:name "supported options" :type "any"    :default nil :description "All Sonner Toaster props are accepted and forwarded."}]}]
      [mm-portfolio-utils/api-component-card
@@ -110,12 +106,7 @@
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
        [:code "[:<>\n [toaster {:position \"top-right\"}]\n [button {:on-click #(show-success \"Saved\" {:description \"Profile updated\"})}\n  \"Notify\"]\n [button {:on-click #(let [id (show-loading \"Uploading...\")]\n                       (js/setTimeout #(dismiss-toast id) 1500))}\n  \"Loading demo\"]]"]]
-      [:div {:class "flex flex-wrap gap-2 mt-3"}
-       [:a {:href "https://sonner.emilkowal.ski"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "Sonner Docs →"]]]]]]))
+      ]]]]))
 
 (defscene
  toast-basic

@@ -21,17 +21,12 @@
             :filename "textarea.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Textarea component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Textarea components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "textarea"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "textarea"
                 :description "Styled native textarea with optional autosizing behavior. Additional props are forwarded to underlying <textarea>."
                 :props [{:name ":value"          :type "string"      :default nil    :description "Controlled value."}
                         {:name ":default-value"  :type "string"      :default nil    :description "Uncontrolled initial value."}

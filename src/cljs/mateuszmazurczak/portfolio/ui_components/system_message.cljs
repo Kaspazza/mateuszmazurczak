@@ -20,24 +20,14 @@
             :filename "system_message.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all System Message component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground mb-4"}
-               "System message primitive adapted from Prompt Kit chat patterns. All available props for System Message components."]
-              [:div {:class "flex flex-wrap gap-2"}
-               [:a {:href "https://www.prompt-kit.com/docs/system-message"
-                    :target "_blank"
-                    :rel "noopener noreferrer"
-                    :class "inline-flex items-center text-sm text-primary hover:underline"}
-                "Prompt Kit System Message Docs →"]]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "system-message"
-                :description "System message component"
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "system-message"
+               :description "System message component"
+               :link {:href "https://www.prompt-kit.com/docs/system-message" :label "Prompt Kit System Message Docs"}
                 :props [{:name ":variant"     :type "keyword"               :default ":action" :description "One of: :action | :error | :warning"}
                         {:name ":fill"        :type "boolean"               :default "false"   :description "Filled background style"}
                         {:name ":icon"        :type "react-component | hiccup" :default nil    :description "Custom icon component"}

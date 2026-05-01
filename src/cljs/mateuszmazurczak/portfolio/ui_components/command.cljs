@@ -21,25 +21,21 @@
 
 (defscene
  api-reference
- "Complete reference for all Command component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Command components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "command"
-       :description "Root cmdk container for searchable command surfaces. Additional props are forwarded to cmdk Command root."
-       :props [{:name ":value"           :type "string"      :default nil    :description "Controlled search query value."}
-               {:name ":onValueChange"   :type "function"    :default nil    :description "Called when query changes: (fn [value] ...)."}
-               {:name ":filter"          :type "function"    :default nil    :description "Custom cmdk filter function: (fn [value search keywords] score)."}
-               {:name ":shouldFilter"    :type "boolean"     :default "true" :description "Enables/disables built-in filtering."}
-               {:name ":loop"            :type "boolean"     :default "false" :description "Keyboard navigation loops from last to first."}
-               {:name ":class"           :type "string"      :default nil    :description "Additional Tailwind classes."}
-               {:name "additional props" :type "map entries" :default nil    :description "Forwarded to cmdk Command root."}]}]
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "command"
+      :link {:href "https://cmdk.paco.me" :label "cmdk Docs"}
+      :description "Root cmdk container for searchable command surfaces. Additional props are forwarded to cmdk Command root."
+      :props [{:name ":value"           :type "string"      :default nil    :description "Controlled search query value."}
+              {:name ":onValueChange"   :type "function"    :default nil    :description "Called when query changes: (fn [value] ...)."}
+              {:name ":filter"          :type "function"    :default nil    :description "Custom cmdk filter function: (fn [value search keywords] score)."}
+              {:name ":shouldFilter"    :type "boolean"     :default "true" :description "Enables/disables built-in filtering."}
+              {:name ":loop"            :type "boolean"     :default "false" :description "Keyboard navigation loops from last to first."}
+              {:name ":class"           :type "string"      :default nil    :description "Additional Tailwind classes."}
+              {:name "additional props" :type "map entries" :default nil    :description "Forwarded to cmdk Command root."}]}]
      [mm-portfolio-utils/api-component-card
       {:component-name "command-dialog"
        :description "Dialog wrapper combining Dialog + Command root. Useful for global command palettes."
@@ -104,18 +100,7 @@
       [:h4 {:class "text-sm font-semibold mb-2"}
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
-       [:code "[command {:class \"rounded-lg border\"}\n  [command-input {:placeholder \"Search actions...\"}]\n  [command-list {}\n    [command-empty {} \"No results.\"]\n    [command-group {:heading \"Actions\"}\n      [command-item {:value \"new-project\"\n                     :onSelect #(js/console.log %)}\n        [:span \"New project\"]\n        [command-shortcut {} \"⌘N\"]]]]]"]]
-      [:div {:class "flex flex-wrap gap-2 mt-3"}
-       [:a {:href "https://cmdk.paco.me"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "cmdk Docs →"]
-       [:a {:href "https://ui.shadcn.com/docs/components/command"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "shadcn Command Docs →"]]]]]]))
+       [:code "[command {:class \"rounded-lg border\"}\n  [command-input {:placeholder \"Search actions...\"}]\n  [command-list {}\n    [command-empty {} \"No results.\"]\n    [command-group {:heading \"Actions\"}\n      [command-item {:value \"new-project\"\n                     :onSelect #(js/console.log %)}\n        [:span \"New project\"]\n        [command-shortcut {} \"⌘N\"]]]]]"]]]]]]))
 
 (defscene
  command-demo

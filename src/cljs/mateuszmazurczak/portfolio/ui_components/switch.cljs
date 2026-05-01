@@ -22,19 +22,15 @@
             :filename "switch.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Switch component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Switch components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "switch"
-                :description "Radix-based boolean toggle control with accessible switch semantics. Additional props are forwarded to the underlying Radix Switch.Root."
-                :props [{:name ":checked"           :type "boolean"      :default nil :description "Controlled checked state."}
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "switch"
+               :description "Radix-based boolean toggle control with accessible switch semantics. Additional props are forwarded to the underlying Radix Switch.Root."
+               :link {:href "https://www.radix-ui.com/primitives/docs/components/switch" :label "Radix Switch Docs"}
+               :props [{:name ":checked"           :type "boolean"      :default nil :description "Controlled checked state."}
                         {:name ":default-checked"   :type "boolean"      :default nil :description "Uncontrolled initial checked state."}
                         {:name ":on-checked-change" :type "function"     :default nil :description "Callback when state changes: (fn [checked?] ...)."}
                         {:name ":disabled"          :type "boolean"      :default nil :description "Disables interaction."}
@@ -54,12 +50,7 @@
                 "Usage Example"]
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "(let [enabled? (r/atom false)]\n  [:div {:class \"flex items-center gap-2\"}\n   [switch {:id \"notifications\"\n            :checked @enabled?\n            :on-checked-change #(reset! enabled? %)\n            :name \"notifications\"\n            :value \"enabled\"}]\n   [label {:html-for \"notifications\"} \"Enable notifications\"]])"]]
-               [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.radix-ui.com/primitives/docs/components/switch"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Radix Switch Docs →"]]]]]]))
+          ]]]]]]])
 
 (defscene
  switch-demo

@@ -22,18 +22,14 @@
             :filename "radio_group.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Radio Group component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component
            [:div {:class "p-6 max-w-4xl"}
-            [:div {:class "space-y-6"}
-             [:div
-              [:p {:class "text-sm text-muted-foreground"}
-               "All available props for Radio Group components."]]
-             [:div {:class "space-y-4"}
-              [mm-portfolio-utils/api-component-card
-               {:component-name "radio-group"
-                :description "Container for mutually-exclusive options. Handles keyboard navigation and selected value management. Additional props are forwarded to Radix RadioGroup.Root."
+            [:div {:class "space-y-4"}
+             [mm-portfolio-utils/api-component-card
+              {:component-name "radio-group"
+               :link {:href "https://www.radix-ui.com/primitives/docs/components/radio-group" :label "Radix Radio Group Docs"}
+               :description "Container for mutually-exclusive options. Handles keyboard navigation and selected value management. Additional props are forwarded to Radix RadioGroup.Root."
                 :props [{:name ":value"          :type "string"      :default nil        :description "Controlled selected value."}
                         {:name ":default-value"  :type "string"      :default nil        :description "Uncontrolled initial selected value."}
                         {:name ":on-value-change" :type "function"   :default nil        :description "Callback when selected value changes: (fn [value] ...)."}
@@ -63,11 +59,7 @@
                [:pre {:class "text-xs overflow-x-auto"}
                 [:code "(let [billing (r/atom \"monthly\")]\n  [radio-group {:value @billing\n                :on-value-change #(reset! billing %)\n                :name \"billing-cycle\"}\n   [:div {:class \"flex items-center gap-2\"}\n    [radio-group-item {:id \"bill-monthly\" :value \"monthly\"}]\n    [label {:html-for \"bill-monthly\"} \"Monthly\"]]\n   [:div {:class \"flex items-center gap-2\"}\n    [radio-group-item {:id \"bill-yearly\" :value \"yearly\"}]\n    [label {:html-for \"bill-yearly\"} \"Yearly\"]]])"]]
                [:div {:class "flex flex-wrap gap-2 mt-3"}
-                [:a {:href "https://www.radix-ui.com/primitives/docs/components/radio-group"
-                     :target "_blank"
-                     :rel "noopener noreferrer"
-                     :class "inline-flex items-center text-sm text-primary hover:underline"}
-                 "Radix Radio Group Docs →"]]]]]]))
+                ]]]]]))
 
 (defscene
  radio-group-demo

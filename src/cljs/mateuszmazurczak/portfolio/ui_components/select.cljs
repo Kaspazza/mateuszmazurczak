@@ -83,12 +83,7 @@
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
        [:code "(let [value (r/atom \"banana\")]\n  [select {:value @value :on-value-change #(reset! value %)}\n   [select-trigger {:class \"w-[180px]\"}\n    [select-value {:placeholder \"Select a fruit\"}]]\n   [select-content {}\n    [select-item {:value \"apple\"} \"Apple\"]\n    [select-item {:value \"banana\"} \"Banana\"]]])"]]
-      [:div {:class "flex flex-wrap gap-2 mt-3"}
-       [:a {:href "https://www.radix-ui.com/primitives/docs/components/select"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "Radix Select Docs →"]]]]]]))
+]]]]]]])
 
 (defscene
  select-demo

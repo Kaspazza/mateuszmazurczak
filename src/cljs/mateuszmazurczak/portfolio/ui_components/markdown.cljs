@@ -19,17 +19,13 @@
             :filename "markdown.cljs"}])
 
 (defscene api-reference
-          "Complete reference for all Markdown component props and usage patterns."
           []
           (mm-portfolio-utils/wrap-component [:div {:class "p-6 max-w-4xl"}
-                                              [:div {:class "space-y-6"}
-                                               [:div
-                                                [:p {:class "text-sm text-muted-foreground"}
-                                                 "All available props for Markdown components."]]
-                                               [:div {:class "space-y-4"}
-                                                [mm-portfolio-utils/api-component-card
-                                                 {:component-name "markdown"
+                                              [:div {:class "space-y-4"}
+                                               [mm-portfolio-utils/api-component-card
+                                                {:component-name "markdown"
                                                   :description "Markdown renderer with GFM support, automatic line breaks, and syntax-highlighted code blocks. Parses input into memoized blocks for better rendering performance."
+                                                  :link {:href "https://github.com/remarkjs/react-markdown" :label "react-markdown Docs"}
                                                   :props [{:name ":children"   :type "string" :default nil :description "Markdown content to render."}
                                                           {:name ":id"         :type "string" :default nil :description "Stable base ID used for generated block keys."}
                                                           {:name ":class"      :type "string" :default nil :description "Additional Tailwind classes for the wrapper container."}
@@ -46,17 +42,7 @@
                                                   "Usage Example"]
                                                  [:pre {:class "text-xs overflow-x-auto"}
                                                   [:code "[markdown {:children \"# Release Notes\\n\\n- Added sync\\n- Fixed edge cases\\n\\n```clojure\\n(defn ready? [state]\\n  (= :ok (:status state)))\\n```\"\n           :class \"prose prose-sm max-w-none\"}]"]]
-                                                [:div {:class "flex flex-wrap gap-2"}
-                                                 [:a {:href "https://github.com/remarkjs/react-markdown"
-                                                      :target "_blank"
-                                                      :rel "noopener noreferrer"
-                                                      :class "inline-flex items-center text-sm text-primary hover:underline"}
-                                                  "react-markdown Docs →"]
-                                                 [:a {:href "https://github.com/remarkjs/remark-gfm"
-                                                      :target "_blank"
-                                                      :rel "noopener noreferrer"
-                                                      :class "inline-flex items-center text-sm text-primary hover:underline"}
-                                                  "remark-gfm Docs →"]]]]]]))
+                                                ]]]]))
 
 (defscene
  markdown-headings

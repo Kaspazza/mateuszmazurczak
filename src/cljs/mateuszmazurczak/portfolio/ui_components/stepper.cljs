@@ -23,17 +23,12 @@
 
 (defscene
  api-reference
- "Complete reference for all Stepper component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Stepper components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "stepper"
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "stepper"
        :description "Root context provider for multi-step flows. Coordinates active step state shared by navigation and panels."
        :props [{:name ":current-step"      :type "string | keyword | number" :default nil          :description "Active step id."}
                {:name ":on-step-change"    :type "function"  :default nil          :description "Callback when step changes: (fn [step-id])."}

@@ -143,12 +143,7 @@
        "Usage Example"]
       [:pre {:class "text-xs overflow-x-auto"}
        [:code "[dropdown-menu {}\n [dropdown-menu-trigger {:as-child true}\n  [button {:variant :outline} \"Open\"]]\n [dropdown-menu-content {:align \"end\"}\n  [dropdown-menu-label {} \"Actions\"]\n  [dropdown-menu-item {:on-select #(js/console.log \"edit\")} \"Edit\"]\n  [dropdown-menu-separator {}]\n  [dropdown-menu-sub {}\n   [dropdown-menu-sub-trigger {} \"More\"]\n   [dropdown-menu-sub-content {}\n    [dropdown-menu-item {} \"Duplicate\"]]]]]"]]
-      [:div {:class "flex flex-wrap gap-2 mt-3"}
-       [:a {:href "https://www.radix-ui.com/primitives/docs/components/dropdown-menu"
-            :target "_blank"
-            :rel "noopener noreferrer"
-            :class "inline-flex items-center text-sm text-primary hover:underline"}
-        "Radix Dropdown Menu Docs →"]]]]]]))
+     ]]])))
 
 (defscene
  dropdown-menu-demo

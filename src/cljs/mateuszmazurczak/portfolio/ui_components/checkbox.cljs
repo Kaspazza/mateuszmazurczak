@@ -23,7 +23,6 @@
     :filename "checkbox.cljs"}])
 
 (defscene api-reference
-  "Complete reference for all Checkbox component props and usage patterns."
   []
   (mm-portfolio-utils/wrap-component
    [:div {:class "p-6 max-w-4xl"}

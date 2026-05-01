@@ -22,17 +22,12 @@
 
 (defscene
  api-reference
- "Complete reference for all Sidebar component props and usage patterns."
  []
  (mm-portfolio-utils/wrap-component
   [:div {:class "p-6 max-w-4xl"}
-   [:div {:class "space-y-6"}
-    [:div
-     [:p {:class "text-sm text-muted-foreground"}
-      "All available props for Sidebar components."]]
-    [:div {:class "space-y-4"}
-     [mm-portfolio-utils/api-component-card
-      {:component-name "sidebar"
+   [:div {:class "space-y-4"}
+    [mm-portfolio-utils/api-component-card
+     {:component-name "sidebar"
        :description "Sidebar component"
        :props [{:name ":open?"         :type "boolean"  :default nil          :description "Expanded/open state"}
                {:name ":is-mobile"     :type "boolean"  :default nil          :description "Render mobile variant"}
